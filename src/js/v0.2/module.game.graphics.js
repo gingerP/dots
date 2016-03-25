@@ -11,6 +11,8 @@ define([
     var pathsGroup;
     var dotsGroup;
 
+    var groups;
+
     var xNum;
     var yNum;
 
@@ -38,17 +40,38 @@ define([
     }
 
     function renderCircles(data) {
-        var elements = dotsGroup.selectAll('circle').data(data);
-        elements.enter().append('circle').attr('r', function (data) {
-            return data.radius;
-        }).attr('cx', function (data) {
-            return data.xInd * STEP + OFFSET;
-        }).attr('cy', function (data) {
-            return data.yInd * STEP + OFFSET;
-        }).attr('id', function (data) {
-            return data.id;
-        });
-        return elements;
+
+        var groups = dotsGroup.selectAll('g')
+            .data(data)
+            .enter()
+            .append('g');
+        groups.each(function(group) {
+                var dots = group.selectAll('circle').data(data);
+                dots.enter()
+                    .append('circle')
+                    .attr('r', function (data) {return data.radius;})
+                    .attr('cx', function (data) {return data.xInd * STEP + OFFSET;})
+                    .attr('cy', function (data) {return data.yInd * STEP + OFFSET;})
+                    .attr('id', function (data) {return data.id;})
+                    .attr('fill', TABLE_STROKE_COLOR)
+                    .each(function(circle) {
+
+                    });
+            });
+
+/*        var dots = dotsGroup.selectAll('circle').data(data);
+        dots.enter()
+            .append('circle')
+            .attr('r', function (data) {return data.radius;})
+            .attr('cx', function (data) {return data.xInd * STEP + OFFSET;})
+            .attr('cy', function (data) {return data.yInd * STEP + OFFSET;})
+            .attr('id', function (data) {return data.id;})
+            .attr('fill', TABLE_STROKE_COLOR)
+            .each(function(circle) {
+
+            });
+
+        return elements;*/
     }
 
     function hoverIn(circle) {
