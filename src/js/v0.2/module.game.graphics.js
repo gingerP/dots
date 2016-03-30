@@ -19,6 +19,13 @@ define([
     var STEP = 20;
     var OFFSET = 20;
     var STROKE_WIDTH = 3;
+    
+    var SELECTION_CIRCLE_RADIUS = 6;
+    var SELECTION_CIRCLE_D_TYPE = 'SELECTION_D_TYPE';
+    
+    var MAIN_CIRCLE_RADIUS = 2;
+    var MAIN_CIRCLE_D_TYPE = 'MAIN_CIRCLE_D_TYPE';
+    
     var TABLE_STROKE_WIDTH = 1;
     var TABLE_STROKE_COLOR = '#AAEEFF';
 
@@ -34,58 +41,97 @@ define([
             pathsGroup.append("line").attr("x1", d3Start.attr('cx')).attr('y1', d3Start.attr('cy')).attr("x2", d3Finish.attr('cx')).attr("y2", d3Finish.attr('cy')).attr("stroke", "gray").attr("stroke-width", STROKE_WIDTH);
         });
     }
+    
+    function prepareCirclesData_(data) {
+        var result = [];
+        if (Array.isArray(data) && data.length) {
+            data.forEach(function(dataItem) {
+                var selectionCircle = {};
+                var mainCircle = {};
+                $.extend(true, selectionCircle, dataItem, {
+                    x_: dataItem.xInd * STEP + OFFSET,
+                    y_: dataItem.yInd * STEP + OFFSET,
+                    r_: SELECTION_CIRCLE_RADIUS,
+                    dType_: SELECTION_CIRCLE_D_TYPE,
+                    fill_: '',
+                    fillOpacity_: 0,
+                    id_: dataItem.id + '_selection'
+                });
+                $.extend(true, mainCircle, dataItem, {
+                    x_: dataItem.xInd * STEP + OFFSET,
+                    y_: dataItem.yInd * STEP + OFFSET,
+                    r_: MAIN_CIRCLE_RADIUS,
+                    dType_: MAIN_CIRCLE_D_TYPE,
+                    fill_: TABLE_STROKE_COLOR,
+                    fillOpacity_: 1,
+                    id_: dataItem.id
+                });
+                result.push(selectionCircle, mainCircle);
+            });
+        }
+        return result;
+    }
+    
+    function prepareCirclesData(data) {
+        return data.map(function(dataItem) {
+            var circle = {};
+            $.extend(true, circle, dataItem, {
+                x_: dataItem.xInd * STEP + OFFSET,
+                y_: dataItem.yInd * STEP + OFFSET
+            });
+            return circle;
+        });
+    }
 
     function renderCircle() {
 
     }
 
     function renderCircles(data) {
-
-        var groups = dotsGroup.selectAll('g')
+        var mouseHoverElements = dotsGroup.selectAll('g')
             .data(data)
             .enter()
             .append('g');
-        groups.each(function(group) {
-                var dots = group.selectAll('circle').data(data);
-                dots.enter()
-                    .append('circle')
-                    .attr('r', function (data) {return data.radius;})
-                    .attr('cx', function (data) {return data.xInd * STEP + OFFSET;})
-                    .attr('cy', function (data) {return data.yInd * STEP + OFFSET;})
-                    .attr('id', function (data) {return data.id;})
-                    .attr('fill', TABLE_STROKE_COLOR)
-                    .each(function(circle) {
-
-                    });
-            });
-
-/*        var dots = dotsGroup.selectAll('circle').data(data);
-        dots.enter()
-            .append('circle')
-            .attr('r', function (data) {return data.radius;})
-            .attr('cx', function (data) {return data.xInd * STEP + OFFSET;})
-            .attr('cy', function (data) {return data.yInd * STEP + OFFSET;})
+        //Main circle
+        mouseHoverElements.append('circle')
+            .attr('r', MAIN_CIRCLE_RADIUS)
+            .attr('cx', function (data) {return data.x_;})
+            .attr('cy', function (data) {return data.y_;})
             .attr('id', function (data) {return data.id;})
+            .attr('d_type', MAIN_CIRCLE_D_TYPE)
             .attr('fill', TABLE_STROKE_COLOR)
-            .each(function(circle) {
-
-            });
-
-        return elements;*/
+            .attr('fill-opacity', 1)
+            .attr('data-id', function(data) {return data.id});
+        //Selection circle
+        mouseHoverElements.append('circle')
+            .attr('r', SELECTION_CIRCLE_RADIUS)
+            .attr('cx', function (data) {return data.x_;})
+            .attr('cy', function (data) {return data.y_;})
+            .attr('id', function (data) {return data.id + '_selection';})
+            .attr('d_type', SELECTION_CIRCLE_D_TYPE)
+            .attr('fill', '')
+            .attr('fill-opacity', 0)
+            .attr('data-id', function(data) {return data.id});
+        return mouseHoverElements;
+    }
+    
+    function getElementsForMouseEvents(elements) {
+        return elements;
+        //return dotsGroup.selectAll('circle[d_type=' + SELECTION_CIRCLE_D_TYPE + ']');        
     }
 
     function hoverIn(circle) {
-        d3.select(circle).attr('r', function (data) {
+        d3.select(circle).select('circle[d_type=' + MAIN_CIRCLE_D_TYPE + ']').attr('r', function (data) {
             return scales.linearUp(data.radius);
         });
     }
 
     function hoverOut(circle) {
-        d3.select(circle).attr('r', function (data) {
+        d3.select(circle).select('circle[d_type=' + MAIN_CIRCLE_D_TYPE + ']').attr('r', function (data) {
             return scales.linearDown(data.radius);
         });
     }
-
+    
     function initEvents(elements) {
         var selectedCircle;
         var wallPath = [];
@@ -105,6 +151,7 @@ define([
 
         elements.on('mouseenter', function () {
             //TODO needs to refactor
+            console.log(this.id);
             if (selectedCircle && this !== selectedCircle && wallPath.indexOf(this) < 0) {
                 wallPath.push(this);
             }
@@ -171,8 +218,8 @@ define([
             tableGroup = gamePane.append('g');
             pathsGroup = gamePane.append('g');
             dotsGroup = gamePane.append('g');
-            elements = api.renderCircles(data);
-            initEvents(elements);
+            elements = api.renderCircles(prepareCirclesData(data));
+            initEvents(getElementsForMouseEvents(elements));
             renderTable();
             return api;
         },
