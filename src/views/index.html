@@ -1,18 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
     <meta charset="UTF-8">
     <title>D3JS</title>
     <script src="/static/js/ext/require-2.2.0.min.js"></script>
     <script src="/static/js/ext/jquery-2.2.1.min.js"></script>
     <script src="/static/js/game1.js"></script>
     <link rel="stylesheet" type="text/css" href="/static/style/style.css">
+    <script id="template-players" type="text/x-handlebars-template">
+        {{#each players}}
+        <a href="#" id="{{id}}" class="player {{#if active}}active-player{{/if}}">{{name}}</a>
+        {{/each}}
+    </script>
 </head>
 <body>
-    <div class="game-viewport">
-        <svg id="game-pane" width="820" height="820">
+<div class="col-center">
+    <div class="toolbar">
+        <button name="restart" class="btn">Restart</button>
+        <button name="copy" class="btn">Copy Link</button>
+        <div id="players">
 
-        </svg>
+        </div>
     </div>
+    <div class="game-viewport">
+        <div>
+            <svg id="game-pane" width="820" height="820">
+
+            </svg>
+        </div>
+    </div>
+</div>
 </body>
 </html>

@@ -2,18 +2,25 @@ require.config({
 	baseUrl: "/static/js/v0.2/",
 	paths: {
 		'd3': '../ext/d3.min',
-		'jquery': '../ext/jquery-2.2.1.min'
+		'jquery': '../ext/jquery-2.2.1.min',
+		'observable': 'module.observable',
+		'handlebars': '../ext/handlebars-v4.0.5'
 	},
 	waitSeconds: 15
 });
 require([
 	'd3',
 	'module.game.business',
-	'module.game.graphics'
-], function(d3, business, graphics) {
+	'module.game.graphics',
+	'module.game.player',
+	'module.game.toolbar'
+], function(d3, business, graphics, Player, toolbar) {
 	var pane = d3.select('#game-pane');
 	var data = createData(40, 40, 2);
-	business.init(graphics);
+	var playerA = new Player().init('red', 'Red', 'red');
+	var playerB = new Player().init('blue', 'Blue', 'blue');
+	toolbar.init(business);
+	business.init(business.modes.local, graphics, data).addPlayers(playerA, playerB).makePlayerActive(playerA);
 	graphics.init(pane, data, 40, 40).setBusiness(business);
 });
 

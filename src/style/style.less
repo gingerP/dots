@@ -1,15 +1,49 @@
 
 body {}
 
-.game-viewport {
+
+.col-center {
   width: 820px;
-  height: 820px;
+  height: 100%;
   top: 0px;
   right: 0px;
   bottom: 0px;
   left: 0px;
-  position: absolute;
+  position: relative;
   margin: auto;
+  .toolbar {
+    background-color: coral;
+    #players {
+      position: absolute;
+      right: 0;
+      float: left;
+      top: 0;
+    }
+    .player {
+      min-width: 30px;
+      position: relative;
+      float: left;
+      margin: 10px;
+    }
+    .btn {
+
+      &[name=copy] {
+        margin: 5px;
+        height: 30px;
+        background-color: #2CCA97;
+      }
+      &[name=restart] {
+        margin: 5px;
+        height: 30px;
+        background-color: orange;
+      }
+    }
+  }
+}
+
+.game-viewport {
+  width: 820px;
+  height: 850px;
   box-shadow: 0 1px 5px #414141;
   canvas {
     width: 500px;
