@@ -9,6 +9,7 @@ define([
     var data;
     var players = [];
     var activePlayer;
+    var activePlayerState = {};
     var observable = new Observable();
     var mode;
     var modes = {
@@ -33,6 +34,11 @@ define([
         isDotsBelongsToActivePlayer
     ];
 
+    var rulesCanChangeActivePlayer = [
+        isActivePlayerSelectDot,
+        isActivePlayerLeadRoundTrappedDots
+    ];
+
     /**
      * line = {start, finish, id}
      */
@@ -46,6 +52,12 @@ define([
     function canConnectDots(data1, data2) {
         return rulesCanConnect.every(function (rule) {
             return rule(data1, data2);
+        });
+    }
+
+    function canChangeActivePlayer() {
+        return rulesCanChangeActivePlayer.every(function (rule) {
+            return rule();
         });
     }
 
@@ -74,6 +86,14 @@ define([
         return activePlayer.hasDot(data1.id) && activePlayer.hasDot(data2.id);
     }
 
+    function isActivePlayerSelectDot() {
+        return true;
+    }
+
+    function isActivePlayerLeadRoundTrappedDots() {
+        return true;
+    }
+
     //------------------------------------------------
 
     function isLocalMode() {
@@ -90,8 +110,11 @@ define([
                 reject();
             } else {
                 activePlayer.addDot(data.id);
+                updateActivePlayerState([data]);
+                observable.propertyChange(api.listen.add_dot, data);
                 resolve(function () {
-                    if (!isLocalMode()) {
+                    //TODO
+                    if (!isLocalMode() && false) {
                         api.makeNextPlayerActive();
                     }
                 });
@@ -126,6 +149,7 @@ define([
     function makePlayerActive(player) {
         if (players.indexOf(player) > -1) {
             activePlayer = player;
+            clearActivePlayerState();
             observable.propertyChange(api.listen.change_active_player, player);
         }
         return api;
@@ -134,11 +158,34 @@ define([
     function makeNextPlayerActive() {
         var index = players.indexOf(activePlayer);
         if (index === players.length - 1) {
-            activePlayer = players[0];
+            makePlayerActive(players[0]);
         } else {
-            activePlayer = players[index + 1];
+            makePlayerActive(players[index + 1]);
         }
         return api;
+    }
+
+    function clearActivePlayerState() {
+        activePlayerState = {};
+        activePlayerState.dots = [];
+        activePlayerState.connectedDots = [];
+    }
+
+    function updateActivePlayerState(selectedDots, connectedDots) {
+        if (selectedDots && selectedDots.length) {
+            selectedDots.forEach(function(dot) {
+                if (activePlayerState.dots.indexOf(dot) < 0) {
+                    activePlayerState.dots.push(dot);
+                }
+            });
+        }
+        if (connectedDots && connectedDots.length) {
+            connectedDots.forEach(function(dot) {
+                if (activePlayerState.connectedDots.indexOf(dot) < 0) {
+                    activePlayerState.connectedDots.push(dot);
+                }
+            });
+        }
     }
 
     api = {
@@ -150,6 +197,8 @@ define([
         },
         canConnectDots: canConnectDots,
         canSelectDot: canSelectDot,
+        canChangeActivePlayer: canChangeActivePlayer,
+
         select: select,
         addPlayers: addPlayers,
         getActivePlayerColor: getActivePlayerColor,
@@ -167,7 +216,8 @@ define([
         },
         listen: {
             change_active_player: 'change_active_player',
-            add_player: 'add_player'
+            add_player: 'add_player',
+            add_dot: 'add_dot'
         },
         modes: modes
     };
