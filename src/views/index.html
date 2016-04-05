@@ -7,9 +7,11 @@
     <script src="/static/js/game1.js"></script>
     <link rel="stylesheet" type="text/css" href="/static/style/style.css">
     <script id="template-players" type="text/x-handlebars-template">
-        {{#each players}}
-        <a href="#" id="{{id}}" class="player {{#if active}}active-player{{/if}}">{{name}}</a>
-        {{/each}}
+        <div class="players-placeholder">
+            {{#each players}}
+            <a href="#" id="{{id}}" class="player {{#if active}}active-player{{/if}} {{id}}">{{name}}</a>
+            {{/each}}
+        </div>
     </script>
 </head>
 <body>
@@ -17,7 +19,6 @@
     <div class="toolbar">
         <button name="restart" class="btn">Restart</button>
         <button name="copy" class="btn">Copy Link</button>
-        <button name="next" class="btn">Next Player</button>
         <div id="players">
 
         </div>

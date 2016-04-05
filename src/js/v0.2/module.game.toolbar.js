@@ -3,17 +3,18 @@ define([
 ], function (Handlebars) {
     'use strict';
 
+    var CLASS_TOOLBAR = 'toolbar';
+    var CLASS_ACTIVE = 'active-player';
+    var NOT_ACTIVE_CLASS = 'not-active-player';
+
     var api;
     var business;
     var toolbarUi = $('.' + CLASS_TOOLBAR);
     var button = {
         restart: $('[name=restart]', toolbarUi),
         copy: $('[name=copy]', toolbarUi),
-        next: $('[name=next]', toolbarUi)
+        next: $('#players', toolbarUi)
     };
-
-    var CLASS_TOOLBAR = 'toolbar';
-    var CLASS_ACTIVE = 'active-player';
 
     var templates = {
         player: Handlebars.compile(document.getElementById('template-players').innerHTML)
@@ -43,17 +44,14 @@ define([
             })
         };
         templatesPlaceholders.player.innerHTML = templates.player(data);
-        dom.players = $('>', templatesPlaceholders.player);
+        dom.players = $('.player', templatesPlaceholders.player);
     }
 
     function listenChangeActivePlayer(activePlayer) {
         var uiId = createPlayerUiId(activePlayer.getId());
-        var activePlayerUi;
-        dom.players.removeClass(CLASS_ACTIVE);
-        activePlayerUi = document.getElementById(uiId);
-        if (activePlayerUi) {
-            activePlayer.className += ' ' + CLASS_ACTIVE;
-        }
+        var activePlayerUi = $('#' + uiId, templatesPlaceholders.player);
+        dom.players.removeClass(CLASS_ACTIVE).addClass(NOT_ACTIVE_CLASS);
+        activePlayerUi.removeClass(NOT_ACTIVE_CLASS).addClass(CLASS_ACTIVE);
     }
 
     function listenAddDot(dot) {
@@ -63,11 +61,8 @@ define([
     }
 
     function initEvents() {
-        dom.players.click(function() {
-
-        });
         button.next.click(function() {
-            business.makeNextPlayerActive().then()
+            business.makeNextPlayerActive();
         });
     }
 
