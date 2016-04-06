@@ -4,7 +4,8 @@ require.config({
 		'd3': '../ext/d3.min',
 		'jquery': '../ext/jquery-2.2.1.min',
 		'observable': 'module.observable',
-		'handlebars': '../ext/handlebars-v4.0.5'
+		'handlebars': '../ext/handlebars-v4.0.5',
+		'socket': '../ext/socket.io-1.4.5'
 	},
 	waitSeconds: 15
 });
@@ -13,7 +14,8 @@ require([
 	'module.game.business',
 	'module.game.graphics',
 	'module.game.player',
-	'module.game.toolbar'
+	'module.game.toolbar',
+	'module.game.transport'
 ], function(d3, business, graphics, Player, toolbar) {
 	var pane = d3.select('#game-pane');
 	var data = createData(40, 40, 2);

@@ -18,6 +18,7 @@
     "log4js": "0.6.33",
     "app-root-path": "1.0.0",
     "dateformat": "1.0.12",
-    "extend": "3.0.0"
+    "extend": "3.0.0",
+    "websocket": "1.0.22"
   }
 }

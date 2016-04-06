@@ -10,7 +10,7 @@ WebServer = function() {
     this.props = {
         "network": {
             "host": "127.0.0.1",
-            "http": 8080,
+            "http": 8180,
             "https": 8443,
             "ssl": {
                 "active": false
@@ -40,7 +40,7 @@ WebServer.prototype._initHTTP = function() {
     inst.server = inst.transport.createServer(inst.app);
     inst.app.set('port', this.port);
     inst.server.listen(inst.props.network.http, inst.props.network.host, function () {
-        logger.info('Node server started on %s:%d ...', inst.props.network.host, inst.props.network.http);
+        logger.info('Node server started on http://%s:%d', inst.props.network.host, inst.props.network.http);
     });
     logger.info('HTTP server successfully created.');
 };
@@ -52,7 +52,7 @@ WebServer.prototype._initHTTPS = function() {
     inst.app.set('port', inst.port);
     inst.server = inst.transport.createServer(inst._getCertFiles(), inst.app);
     inst.server.listen(inst.props.network.https, inst.props.network.host, function () {
-        logger.info('Node server started on %s:%d ...', inst.props.network.host, inst.props.network.https);
+        logger.info('Node server started on https://%s:%d', inst.props.network.host, inst.props.network.https);
     });
     logger.info('HTTPS server successfully created.');
 };
