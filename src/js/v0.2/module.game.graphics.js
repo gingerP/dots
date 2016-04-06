@@ -229,14 +229,14 @@ define([
             if (selectedCircle && this !== selectedCircle && wallPath.indexOf(this) < 0 && business.canConnectDots(data, last.__data__)) {
                 wallPath.push(this);
             }
-            if (business.canSelectDot(data)) {
+            //if (business.canSelectDot(data)) {
                 api.hoverIn(circle);
-            }
+//            }
         }).on('mouseleave', function (data) {
             var circle = this;
-            if (business.canSelectDot(data)) {
+            //if (business.canSelectDot(data)) {
                 api.hoverOut(circle);
-            }
+            //}
         }).on('mousedown', function (data) {
             selectedCircle = this;
             wallPath = [selectedCircle];

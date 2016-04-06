@@ -43,7 +43,12 @@ WSServer.prototype._initEvents = function() {
 			logger.warn('Connection from origin ' + request.origin + ' rejected.');
 			return;
 		}
-		var connection = request.accept('echo-protocol', request.origin);
+		try {
+			var connection = request.accept('echo-protocol', request.origin);
+		} catch (e) {
+			logger.error(e.message);
+			return;
+		}
 		var topic = inst.evaluateTopic(request.resource);
 		logger.info('Peer "%s" connected.', connection.remoteAddress);
 		inst.addConnection(topic, connection, request.key);

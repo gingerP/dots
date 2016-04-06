@@ -21,7 +21,10 @@ define([
      * @type {Array}
      */
     var rulesCanSelect = [
-        isDotFree
+        isDotFree,
+        function() {
+            return !isActivePlayerSelectDot.apply(null, arguments);
+        }
     ];
     /**
      * args - data1, data2
@@ -87,7 +90,7 @@ define([
     }
 
     function isActivePlayerSelectDot() {
-        return true;
+        return activePlayer.history.hasDots();
     }
 
     function isActivePlayerLeadRoundTrappedDots() {
@@ -112,6 +115,7 @@ define([
                 activePlayer.addDot(data.id);
                 updateActivePlayerState([data]);
                 observable.propertyChange(api.listen.add_dot, data);
+                activePlayer.history.addDot(data);
                 resolve(function () {
                     //TODO
                     if (!isLocalMode() && false) {
@@ -147,20 +151,24 @@ define([
     }
 
     function makePlayerActive(player) {
+        var previousHistoryRecordId = activePlayer? activePlayer.history.getId(): null;
         if (players.indexOf(player) > -1) {
             activePlayer = player;
             clearActivePlayerState();
             observable.propertyChange(api.listen.change_active_player, player);
+            activePlayer.history.newRecord(previousHistoryRecordId);
         }
         return api;
     }
 
     function makeNextPlayerActive() {
-        var index = players.indexOf(activePlayer);
-        if (index === players.length - 1) {
-            makePlayerActive(players[0]);
-        } else {
-            makePlayerActive(players[index + 1]);
+        if (api.canChangeActivePlayer()) {
+            var index = players.indexOf(activePlayer);
+            if (index === players.length - 1) {
+                makePlayerActive(players[0]);
+            } else {
+                makePlayerActive(players[index + 1]);
+            }
         }
         return api;
     }

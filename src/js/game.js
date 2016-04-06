@@ -1,40 +1,44 @@
-document.addEventListener('DOMContentLoaded', function () {
-	initializeGamePane('#game-pane');
+require.config({
+	baseUrl: "/static/js/v0.2/",
+	paths: {
+		'd3': '../ext/d3.min',
+		'jquery': '../ext/jquery-2.2.1.min',
+		'observable': 'module.observable',
+		'handlebars': '../ext/handlebars-v4.0.5',
+		'socket': '../ext/socket.io-1.4.5',
+		'engine.io': '../ext/engine.io'
+	},
+	waitSeconds: 15
+});
+require([
+	'd3',
+	'module.game.business',
+	'module.game.graphics',
+	'module.game.player',
+	'module.game.toolbar',
+	'module.game.transport',
+	'module.game.player.history'
+], function(d3, business, graphics, Player, toolbar, transport, History) {
+	var pane = d3.select('#game-pane');
+	var data = createData(40, 40, 2);
+	var playerA = new Player().init('red', 'Red', 'red', new History());
+	var playerB = new Player().init('blue', 'Blue', 'blue', new History());
+	toolbar.init(business);
+	business.init(business.modes.local, graphics, data).addPlayers(playerA, playerB).makePlayerActive(playerA);
+	graphics.init(pane, data, 40, 40).setBusiness(business);
+});
 
-}, false);
-
-function initializeGamePane(selector) {
-
-	var redTeamGraphics = new DotsTeamGraphics().initilize('red', 'red');
-	var redTeam = new DotsTeam().initialize('red', redTeamGraphics);
-
-	var blueTeamGraphics = new DotsTeamGraphics().initilize('blue', 'blue');
-	var blueTeam = new DotsTeam().initialize('blue', blueTeamGraphics);
-
-	var gameGraphicsManager = new GameGraphicsManager().initilize({
-		canvasSelector: selector,
-		size: {
-			xNum: 10,
-			yNum: 10,
-			width : 500,
-			height: 500
-		},
-		dotSize: {
-			width: 20,
-			height: 20
-		},
-		animation: 'poor'
-	}).addTeams(redTeamGraphics, blueTeamGraphics);
-	var gameManager = new GameManager().initilize(
-		gameGraphicsManager, {
-			size: {
-				xNum: 10,
-				yNum: 10
-			}
-		}).addTeams(redTeam, blueTeam);
-
-
-	gameGraphicsManager.render();
-
+function createData(width, height, radius) {
+	var data = [];
+	for (var w = 0; w < width; w++) {
+		for (var h = 0; h < height; h++) {
+			data.push({
+				xInd  : w,
+				yInd  : h,
+				radius: radius,
+				id: 'circle_' + w + '_' + h
+			});
+		}
+	}
+	return data;
 }
-

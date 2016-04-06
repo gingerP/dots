@@ -1,6 +1,7 @@
 define([
-    'handlebars'
-], function (Handlebars) {
+    'handlebars',
+    'jquery'
+], function (Handlebars, $) {
     'use strict';
 
     var CLASS_TOOLBAR = 'toolbar';

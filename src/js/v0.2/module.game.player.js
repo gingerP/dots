@@ -1,12 +1,13 @@
 define([], function() {
     var Player = function() {};
 
-    Player.prototype.init = function(id, name, color) {
+    Player.prototype.init = function(id, name, color, history) {
         this.dots = [];
         this.trappedDots = [];
         this.id = id;
         this.name = name;
         this.color = color;
+        this.history = history;
         return this;
     };
 
