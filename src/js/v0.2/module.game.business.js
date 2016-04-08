@@ -1,12 +1,13 @@
 define([
     'd3',
-    'observable'
-], function (d3, Observable) {
+    'observable',
+    'module.graph'
+], function (d3, Observable, ModuleGraph) {
     'use strict';
 
     var api;
     var graphics;
-    var data;
+    var gameData;
     var players = [];
     var activePlayer;
     var activePlayerState = {};
@@ -116,6 +117,7 @@ define([
                 updateActivePlayerState([data]);
                 observable.propertyChange(api.listen.add_dot, data);
                 activePlayer.history.addDot(data);
+                ModuleGraph.getLoops(gameData, activePlayer.getDots());
                 resolve(function () {
                     //TODO
                     if (!isLocalMode() && false) {
@@ -200,7 +202,7 @@ define([
         init: function (mode_, graphics_, data_) {
             mode = mode_;
             graphics = graphics_;
-            data = data_;
+            gameData = data_;
             return api;
         },
         canConnectDots: canConnectDots,

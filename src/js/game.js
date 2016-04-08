@@ -17,7 +17,8 @@ require([
 	'module.game.player',
 	'module.game.toolbar',
 	'module.game.transport',
-	'module.game.player.history'
+	'module.game.player.history',
+	'module.graph'
 ], function(d3, business, graphics, Player, toolbar, transport, History) {
 	var pane = d3.select('#game-pane');
 	var data = createData(40, 40, 2);

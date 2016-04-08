@@ -17,6 +17,10 @@ define([], function() {
         }
     };
 
+    Player.prototype.getDots = function() {
+        return this.dots;
+    };
+
     Player.prototype.addTrappedDot = function(id) {
         if (this.trappedDots.indexOf(id) < 0) {
             this.trappedDots.push(id);
