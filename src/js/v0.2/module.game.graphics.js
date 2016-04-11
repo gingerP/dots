@@ -46,10 +46,10 @@ define([
     function renderPath(path, color) {
         path.forEach(function (item) {
             pathsGroup.append('line')
-                .attr('x1', item.start.__data__.x_)
-                .attr('y1', item.start.__data__.y_)
-                .attr('x2', item.finish.__data__.x_)
-                .attr('y2', item.finish.__data__.y_)
+                .attr('x1', item.start.x_)
+                .attr('y1', item.start.y_)
+                .attr('x2', item.finish.x_)
+                .attr('y2', item.finish.y_)
                 .attr('stroke', color)
                 .attr('stroke-width', STROKE_WIDTH);
         });
@@ -149,19 +149,19 @@ define([
 
     //Dots
 
-    function hoverIn(circle) {
+    function hoverInCircle(circle) {
         d3.select(circle).select('circle[d_type=' + MAIN_CIRCLE_D_TYPE + ']').attr('r', function (data) {
             return scales.linearUp(data.radius);
         });
     }
 
-    function hoverOut(circle) {
+    function hoverOutCircle(circle) {
         d3.select(circle).select('circle[d_type=' + MAIN_CIRCLE_D_TYPE + ']').attr('r', function (data) {
             return scales.linearDown(data.radius);
         });
     }
 
-    function markPressed(circle, color) {
+    function markPressedCircle(circle, color) {
         d3.select(circle)
             .select('circle[d_type=' + MAIN_CIRCLE_D_TYPE + ']')
             .attr('r', function (data) {
@@ -173,23 +173,24 @@ define([
 
     //Wall
 
-    function renderWall(path) {
+    function renderWall(path_) {
+        var path = convertWallPath(path_);
         var pathForRender = getNotExistingPath(path);
         if (pathForRender.length) {
             lines = lines.concat(pathForRender.map(function (item) {
                 item.id = getLineId(item.start, item.finish);
                 return item;
             }));
-            api.renderPath(pathForRender, business.getActivePlayerColor());
+            renderPath(pathForRender, business.getActivePlayerColor());
         }
     }
 
     function getLineId(startCircle, finCircle) {
         return 'line_' +
-            startCircle.__data__.x_ + '_' +
-            startCircle.__data__.y_ + '_' +
-            finCircle.__data__.x_ + '_' +
-            finCircle.__data__.y_;
+            startCircle.x_ + '_' +
+            startCircle.y_ + '_' +
+            finCircle.x_ + '_' +
+            finCircle.y_;
     }
 
     function getNotExistingPath(path) {
@@ -217,53 +218,51 @@ define([
         });
     }
 
+    function convertWallPath(path) {
+        var result = [];
+        path.forEach(function (pathItem, index) {
+            if (path[index + 1]) {
+                result.push({
+                    start: pathItem,
+                    finish: path[index + 1]
+                });
+            }
+        });
+        return result;
+    }
+
     function initEvents(elements) {
         var selectedCircle;
         var wallPath = [];
 
-        function convertWallPath(path) {
-            var result = [];
-            path.forEach(function (pathItem, index) {
-                if (path[index + 1]) {
-                    result.push({
-                        start: pathItem,
-                        finish: path[index + 1]
-                    });
-                }
-            });
-            return result;
-        }
-
         elements.on('mouseenter', function (data) {
             //TODO needs to refactor
-            var circle = this;
             var last = wallPath[wallPath.length - 1];
-            if (selectedCircle && this !== selectedCircle && wallPath.indexOf(this) < 0 && business.canConnectDots(data, last.__data__)) {
-                wallPath.push(this);
+            if (selectedCircle && data !== selectedCircle && wallPath.indexOf(data) < 0 && business.canConnectDots(data, last)) {
+                wallPath.push(data);
             }
             //if (business.canSelectDot(data)) {
-            api.hoverIn(circle);
+            hoverInCircle(this);
 //            }
         }).on('mouseleave', function (data) {
-            var circle = this;
             //if (business.canSelectDot(data)) {
-            api.hoverOut(circle);
+            hoverOutCircle(this);
             //}
         }).on('mousedown', function (data) {
-            selectedCircle = this;
-            wallPath = [selectedCircle];
+            selectedCircle = data;
+            wallPath = [data];
         }).on('mouseup', function (data) {
             selectedCircle = null;
             wallPath = [];
         }).on('mousemove', function (data) {
-            if (selectedCircle && this !== selectedCircle) {
-                renderWall(convertWallPath(wallPath));
+            if (selectedCircle && data !== selectedCircle) {
+                renderWall(wallPath);
             }
         }).on('click', function (data) {
             var circle = this;
             if (business.canSelectDot(data)) {
                 business.select(data).then(function (callback) {
-                    markPressed(circle, business.getActivePlayerColor());
+                    markPressedCircle(circle, business.getActivePlayerColor());
                     callback();
                 });
             }
@@ -326,12 +325,9 @@ define([
             business = module;
             return api;
         },
-        hoverIn: hoverIn,
-        hoverOut: hoverOut,
         renderWall: renderWall,
         renderCircle: renderCircle,
-        renderCircles: renderCircles,
-        markPressed: markPressed
+        renderCircles: renderCircles
     };
     return api;
 });

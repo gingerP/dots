@@ -2,6 +2,7 @@ define([], function() {
 	'use strict';
 
 	var api;
+    var moduleGameBusiness;
 	var cache;
     const DATA_UID_PREFIX = 'graph_id';
 
@@ -50,13 +51,16 @@ define([], function() {
 	function getLoops_(gameData, vertexData, passedWay, selfData, loops, enemyData) {
         var prevVertexData = passedWay[passedWay.length - 1];
         var neighbors = getNeighbors_(gameData, vertexData, prevVertexData, selfData);
-        passedWay.push(vertexData);
+        logVertexData(vertexData, neighbors);
 		if (neighbors.length) {
+            passedWay.push(vertexData);
             neighbors.forEach(function(neighbor) {
                 var loop;
                 if (isExistInArray(neighbor, passedWay)) {
                     loop = getPath_(neighbor, passedWay);
                     if (getTrappedDots(loop, enemyData).length) {
+                        loop.push(neighbor);
+                        logLoopData(loop);
                         loops.push(loop);
                     }
                 } else {
@@ -64,6 +68,7 @@ define([], function() {
                 }
             });
         }
+        return !!neighbors.length;
 	}
 
 
@@ -176,15 +181,30 @@ define([], function() {
         return result;
     }*/
 
+    function logVertexData(vertex, path) {
+        console.log('%c vertex: %s ; path: ', 'color: ' + moduleGameBusiness.getActivePlayerColor(),  [vertex.xInd, vertex.yInd].join(','), path.map(function(vertex) {
+            return vertex.xInd + ',' + vertex.yInd;
+        }).join('; '));
+    }
+
+    function logLoopData(loop) {
+        console.log('%c loop: %s ', 'color: ' + moduleGameBusiness.getActivePlayerColor(),  loop.map(function(vertex) {
+            return vertex.xInd + ',' + vertex.yInd;
+        }).join('; '));
+    }
+
     function isExistInArray(search, array) {
         return array.some(function(item) {
             return item.id === search.id;
         });
     }
 
-	api = {
+    api = {
 		getLoops: getLoops,
-		getTrappedDots: getTrappedDots
+		getTrappedDots: getTrappedDots,
+        sb: function(module) {
+            moduleGameBusiness = module;
+        }
 	};
 	return api;
 });

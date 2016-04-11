@@ -5,7 +5,11 @@ define([
 ], function (d3, Observable, ModuleGraph) {
     'use strict';
 
+    function getId() {
+        return id;
+    }
     var api;
+    var id = Date.now();
     var graphics;
     var gameData;
     var gameDataMatrix;
@@ -79,17 +83,17 @@ define([
     }
 
     function isDotsSelected(data1, data2) {
-        return hasPlayersDots(data1.id, data2.id);
+        return hasPlayersDots(data1, data2);
     }
 
     function isDotsBelongsToOnePlayer(data1, data2) {
         return players.some(function (player) {
-            return player.hasDot(data1.id) && player.hasDot(data2.id);
+            return player.hasDot(data1) && player.hasDot(data2);
         });
     }
 
     function isDotsBelongsToActivePlayer(data1, data2) {
-        return activePlayer.hasDot(data1.id) && activePlayer.hasDot(data2.id);
+        return activePlayer.hasDot(data1) && activePlayer.hasDot(data2);
     }
 
     function isActivePlayerSelectDot() {
@@ -122,13 +126,15 @@ define([
                 activePlayer.history.addDot(data);
                 loops = ModuleGraph.getLoops(gameDataMatrix, activePlayer.getDots(), getEnemyPlayerDots());
                 if (loops.length) {
-                    graphics.renderWall(loops[0]);
+                    loops.forEach(function(loop) {
+                        graphics.renderWall(loop);
+                    });
                 }
                 resolve(function () {
                     //TODO
-                    if (!isLocalMode() && false) {
+                    //if (!isLocalMode() && false) {
                         api.makeNextPlayerActive();
-                    }
+                    //}
                 });
             }
         })
@@ -256,5 +262,6 @@ define([
         },
         modes: modes
     };
+    ModuleGraph.sb(api);
     return api;
 });

@@ -6,7 +6,18 @@ require.config({
 		'observable': 'module.observable',
 		'handlebars': '../ext/handlebars-v4.0.5',
 		'socket': '../ext/socket.io-1.4.5',
-		'engine.io': '../ext/engine.io'
+		'engine.io': '../ext/engine.io',
+		'module.game.business': './module.game.business',
+		'module.game.graphics': './module.game.graphics',
+		'module.game.player': './module.game.player',
+		'module.game.toolbar': './module.game.toolbar',
+		'module.game.transport': './module.game.transport',
+		'module.game.player.history': './module.game.player.history',
+		'module.graph': './module.graph',
+		'module.observable': './module.observable'
+	},
+	shim: {
+		'moduleGameBusiness': 'module.game.business'
 	},
 	waitSeconds: 15
 });
@@ -17,8 +28,7 @@ require([
 	'module.game.player',
 	'module.game.toolbar',
 	'module.game.transport',
-	'module.game.player.history',
-	'module.graph'
+	'module.game.player.history'
 ], function(d3, business, graphics, Player, toolbar, transport, History) {
 	var pane = d3.select('#game-pane');
 	var data = createData(40, 40, 2);
