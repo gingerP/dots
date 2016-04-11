@@ -87,12 +87,9 @@ define([
 
     function prepareCirclesData(data) {
         return data.map(function (dataItem) {
-            var circle = {};
-            $.extend(true, circle, dataItem, {
-                x_: dataItem.xInd * STEP + OFFSET,
-                y_: dataItem.yInd * STEP + OFFSET
-            });
-            return circle;
+            dataItem.x_ = dataItem.xInd * STEP + OFFSET;
+            dataItem.y_ = dataItem.yInd * STEP + OFFSET;
+            return dataItem;
         });
     }
 
@@ -331,7 +328,7 @@ define([
         },
         hoverIn: hoverIn,
         hoverOut: hoverOut,
-        renderPath: renderPath,
+        renderWall: renderWall,
         renderCircle: renderCircle,
         renderCircles: renderCircles,
         markPressed: markPressed

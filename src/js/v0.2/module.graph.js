@@ -9,6 +9,7 @@ define([], function() {
         var passedWay = [];
         var loops = [];
         getLoops_(gameData, selfData[0], passedWay, selfData, loops, enemyData);
+        return loops;
 	}
 
 	function getTrappedDots(loopData, enemyGameData) {

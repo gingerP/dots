@@ -10,6 +10,7 @@ define([
     var gameData;
     var gameDataMatrix;
     var players = [];
+    var enemyPlayers;
     var activePlayer;
     var activePlayerState = {};
     var observable = new Observable();
@@ -111,6 +112,7 @@ define([
 
     function select(data) {
         return new Promise(function (resolve, reject) {
+            var loops;
             if (!canSelectDot(data)) {
                 reject();
             } else {
@@ -118,7 +120,10 @@ define([
                 updateActivePlayerState([data]);
                 observable.propertyChange(api.listen.add_dot, data);
                 activePlayer.history.addDot(data);
-                ModuleGraph.getLoops(gameDataMatrix, activePlayer.getDots(), activePlayer.getDots());
+                loops = ModuleGraph.getLoops(gameDataMatrix, activePlayer.getDots(), getEnemyPlayerDots());
+                if (loops.length) {
+                    graphics.renderWall(loops[0]);
+                }
                 resolve(function () {
                     //TODO
                     if (!isLocalMode() && false) {
@@ -157,6 +162,7 @@ define([
         var previousHistoryRecordId = activePlayer? activePlayer.history.getId(): null;
         if (players.indexOf(player) > -1) {
             activePlayer = player;
+            makePlayersEnemyExept(activePlayer);
             clearActivePlayerState();
             observable.propertyChange(api.listen.change_active_player, player);
             activePlayer.history.newRecord(previousHistoryRecordId);
@@ -174,6 +180,23 @@ define([
             }
         }
         return api;
+    }
+
+    function makePlayersEnemyExept(activePlayer) {
+        enemyPlayers = [];
+        players.forEach(function(player) {
+            if (player != activePlayer) {
+                enemyPlayers.push(player);
+            }
+        });
+    }
+
+    function getEnemyPlayerDots() {
+        var result = [];
+        enemyPlayers.forEach(function(player) {
+            result = result.concat(player.getDots());
+        });
+        return result;
     }
 
     function clearActivePlayerState() {
