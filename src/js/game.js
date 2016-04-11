@@ -25,7 +25,7 @@ require([
 	var playerA = new Player().init('red', 'Red', 'red', new History());
 	var playerB = new Player().init('blue', 'Blue', 'blue', new History());
 	toolbar.init(business);
-	business.init(business.modes.local, graphics, data).addPlayers(playerA, playerB).makePlayerActive(playerA);
+	business.init(business.modes.local, graphics, data, convertData(data)).addPlayers(playerA, playerB).makePlayerActive(playerA);
 	graphics.init(pane, data, 40, 40).setBusiness(business);
 });
 
@@ -42,4 +42,13 @@ function createData(width, height, radius) {
 		}
 	}
 	return data;
+}
+
+function convertData(data) {
+	var result = [];
+	data.forEach(function(dataItem) {
+		result[dataItem.xInd] = result[dataItem.xInd] || [];
+		result[dataItem.xInd][dataItem.yInd] = dataItem;
+	});
+	return result;
 }

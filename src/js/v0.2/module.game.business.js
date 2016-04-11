@@ -8,6 +8,7 @@ define([
     var api;
     var graphics;
     var gameData;
+    var gameDataMatrix;
     var players = [];
     var activePlayer;
     var activePlayerState = {};
@@ -113,11 +114,11 @@ define([
             if (!canSelectDot(data)) {
                 reject();
             } else {
-                activePlayer.addDot(data.id);
+                activePlayer.addDot(data);
                 updateActivePlayerState([data]);
                 observable.propertyChange(api.listen.add_dot, data);
                 activePlayer.history.addDot(data);
-                ModuleGraph.getLoops(gameData, activePlayer.getDots());
+                ModuleGraph.getLoops(gameDataMatrix, activePlayer.getDots(), activePlayer.getDots());
                 resolve(function () {
                     //TODO
                     if (!isLocalMode() && false) {
@@ -199,10 +200,11 @@ define([
     }
 
     api = {
-        init: function (mode_, graphics_, data_) {
+        init: function (mode_, graphics_, data_, gameDataMatrix_) {
             mode = mode_;
             graphics = graphics_;
             gameData = data_;
+            gameDataMatrix = gameDataMatrix_;
             return api;
         },
         canConnectDots: canConnectDots,

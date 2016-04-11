@@ -1,7 +1,7 @@
 define([
     'd3',
-
-], function (d3) {
+    'jquery'
+], function (d3, $) {
     'use strict';
 
     var api;
@@ -18,7 +18,7 @@ define([
     var xNum;
     var yNum;
 
-    var STEP = 20;
+    var STEP = 40;
     var OFFSET = 20;
     var STROKE_WIDTH = 2;
 
@@ -32,7 +32,7 @@ define([
     var TABLE_STROKE_COLOR = '#AAEEFF';
 
     function getter(key) {
-        return function(data) {
+        return function (data) {
             return data[key];
         }
     }
@@ -127,6 +127,21 @@ define([
             .attr('fill', '')
             .attr('fill-opacity', 0)
             .attr('data-id', getter('id'));
+        tableGroup.selectAll("text")
+            .data(data)
+            .enter()
+            .append("text")
+            .attr("x", getter('x_'))
+            .attr("y", function(data) {
+                return data.y_ + 8;
+            })
+            .text(function (d) {
+                return d.xInd + ", " + d.yInd;
+            })
+            .attr("font-family", "sans-serif")
+            .attr("font-size", "9px")
+            .attr("fill", "black");
+
         return mouseHoverElements;
     }
 
@@ -230,12 +245,12 @@ define([
                 wallPath.push(this);
             }
             //if (business.canSelectDot(data)) {
-                api.hoverIn(circle);
+            api.hoverIn(circle);
 //            }
         }).on('mouseleave', function (data) {
             var circle = this;
             //if (business.canSelectDot(data)) {
-                api.hoverOut(circle);
+            api.hoverOut(circle);
             //}
         }).on('mousedown', function (data) {
             selectedCircle = this;
@@ -250,7 +265,7 @@ define([
         }).on('click', function (data) {
             var circle = this;
             if (business.canSelectDot(data)) {
-                business.select(data).then(function(callback) {
+                business.select(data).then(function (callback) {
                     markPressed(circle, business.getActivePlayerColor());
                     callback();
                 });

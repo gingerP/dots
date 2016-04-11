@@ -11,20 +11,20 @@ define([], function() {
         return this;
     };
 
-    Player.prototype.addDot = function(id) {
-        if (this.dots.indexOf(id) < 0) {
-            this.dots.push(id);
-        }
+    Player.prototype.addDot = function(data) {
+        //if (this.dots.indexOf(data) < 0) {
+            this.dots.push(data);
+        //}
     };
 
     Player.prototype.getDots = function() {
         return this.dots;
     };
 
-    Player.prototype.addTrappedDot = function(id) {
-        if (this.trappedDots.indexOf(id) < 0) {
-            this.trappedDots.push(id);
-        }
+    Player.prototype.addTrappedDot = function(data) {
+        //if (this.trappedDots.indexOf(data) < 0) {
+            this.trappedDots.push(data);
+        //}
     };
 
     Player.prototype.hasDot = function(id) {

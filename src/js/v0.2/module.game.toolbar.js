@@ -6,7 +6,8 @@ define([
 
     var CLASS_TOOLBAR = 'toolbar';
     var CLASS_ACTIVE = 'active-player';
-    var NOT_ACTIVE_CLASS = 'not-active-player';
+    var CLASS_NOT_ACTIVE = 'not-active-player';
+    var CLASS_PLAYERS_FREEZE = 'players-freeze';
 
     var api;
     var business;
@@ -21,7 +22,7 @@ define([
         player: Handlebars.compile(document.getElementById('template-players').innerHTML)
     };
     var templatesPlaceholders = {
-        player: document.getElementById('players')
+        player: $('#players')
     };
     var dom = {
         players: null
@@ -44,15 +45,16 @@ define([
                 }
             })
         };
-        templatesPlaceholders.player.innerHTML = templates.player(data);
+        templatesPlaceholders.player.html(templates.player(data));
         dom.players = $('.player', templatesPlaceholders.player);
     }
 
     function listenChangeActivePlayer(activePlayer) {
         var uiId = createPlayerUiId(activePlayer.getId());
         var activePlayerUi = $('#' + uiId, templatesPlaceholders.player);
-        dom.players.removeClass(CLASS_ACTIVE).addClass(NOT_ACTIVE_CLASS);
-        activePlayerUi.removeClass(NOT_ACTIVE_CLASS).addClass(CLASS_ACTIVE);
+        dom.players.removeClass(CLASS_ACTIVE).addClass(CLASS_NOT_ACTIVE);
+        activePlayerUi.removeClass(CLASS_NOT_ACTIVE).addClass(CLASS_ACTIVE);
+        templatesPlaceholders.player.addClass(CLASS_PLAYERS_FREEZE);
     }
 
     function listenAddDot(dot) {
