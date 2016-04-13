@@ -228,6 +228,17 @@ define([
         }
     }
 
+    function convertDataArrayForGraphModule(data) {
+        return data.map(convertDataForGraphModule);
+    }
+
+    function convertDataForGraphModule(data) {
+        return {
+            x: data.xInd,
+            y: data.yInd
+        }
+    }
+
     api = {
         init: function (mode_, graphics_, data_, gameDataMatrix_) {
             mode = mode_;
