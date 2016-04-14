@@ -201,14 +201,24 @@ define([], function () {
 
     function getLoopsV2(dataArray) {
         var borders = getBorders_(dataArray);
-        var workData = createWorkData_(borders.max.x - borders.min.x, borders.max.y - borders.min.y, dataArray);
+        var minX = borders.min.x;
+        var minY = borders.min.y;
+        var workData = createWorkData_(
+            borders.max.x - minX  + 1,
+            borders.max.y - minY  + 1,
+            minX,
+            minY,
+            dataArray);
         var loops = [];
         var path = [];
         dataArray.forEach(function(data) {
-            if (workData[data.x][data.y] && !workData[data.x][data.y].isVisited) {
-                findLoops(getRelPos_(data, borders), path, loops, workData);
+            var relX = data.x - minX;
+            var relY = data.y - minY;
+            if (workData[relX][relY] && !workData[relX][relY].isVisited) {
+                findLoops({x: relX, y: relY}, path, loops, workData);
             }
         });
+        return loops;
     }
 
     function findLoops(pos, path, loops, workData) {
@@ -217,18 +227,18 @@ define([], function () {
         workData[pos.x][pos.y].isInPath = true;
         path.push(pos);
         neighbors = getNeighborsV2_(
-            workData,
             pos,
+            workData,
             path[path.length - 2]? [path[path.length - 2]]: undefined
         );
         if (neighbors.length) {
             neighbors.forEach(function(neighbor) {
                 var workNeighbor = workData[neighbor.x][neighbor.y];
                 if (workNeighbor.isInPath) {
-                    loops.push(extractLoop_(path, workNeighbor));
+                    loops.push(extractLoop_(path, neighbor));
                 } else {
                     workNeighbor.isVisited = true;
-                    isDeadlock = isDeadlock && findLoops(workNeighbor, path, loops, workData);
+                    isDeadlock = isDeadlock && findLoops(neighbor, path, loops, workData);
                 }
             });
         } else {
@@ -243,12 +253,16 @@ define([], function () {
 
     function extractLoop_(path, startItem) {
         var loop = [];
-        path.every(function(pathItem) {
-            loop.push(pathItem);
-            return pathItem.x === startItem.x && pathItem.y === startItem.y;
-        });
+        var index = path.length - 1;
+        while(index > -1) {
+            loop.push(path[index]);
+            if (path[index].x === startItem.x && path[index].y === startItem.y) {
+                break
+            }
+            index--;
+        }
         if (loop.length) {
-            loop.splice(0, 1, startItem);
+            loop.splice(0, 0, startItem);
         }
         return loop;
     }
@@ -270,7 +284,8 @@ define([], function () {
             var x = pos.x + shift[0];
             var y = pos.y + shift[1];
             if (x > -1 && y > -1) {
-                if (workData[x][y]
+                if (workData[x]
+                    && workData[x][y]
                     && !workData[x][y].isDeadlock
                     && checkExclude_(excludes, {x: x, y: y})) {
                     result.push({x: x, y: y});
@@ -290,14 +305,14 @@ define([], function () {
         return result;
     }
 
-    function createWorkData_(sizeX, sizeY, sourceData) {
+    function createWorkData_(sizeX, sizeY, minX, minY, sourceData) {
         var workData = [];
         var xInd = 0;
         for (; xInd < sizeX; xInd++) {
             workData.push([]);
         }
         sourceData.forEach(function (data) {
-            workData[data.x][data.y] = getEmptyWorkDataBlock();
+            workData[data.x - minX][data.y - minY] = getEmptyWorkDataBlock();
         });
         return workData;
     }
@@ -312,10 +327,10 @@ define([], function () {
     }
 
     function getBorders_(dataArray) {
-        var minX;
-        var minY;
-        var maxX;
-        var maxY;
+        var minX = dataArray[0].x;
+        var minY = dataArray[0].y;
+        var maxX = dataArray[0].x;
+        var maxY = dataArray[0].y;
         dataArray.forEach(function (data) {
             maxX = data.x > maxX ? data.x : maxX;
             maxY = data.y > maxY ? data.y : maxY;
@@ -323,7 +338,7 @@ define([], function () {
             minY = data.y < minY ? data.y : minY;
         });
         return {
-            mix: {
+            min: {
                 x: minX,
                 y: minY
             },

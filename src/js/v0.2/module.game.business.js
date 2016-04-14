@@ -124,7 +124,7 @@ define([
                 updateActivePlayerState([data]);
                 observable.propertyChange(api.listen.add_dot, data);
                 activePlayer.history.addDot(data);
-                loops = ModuleGraph.getLoops(gameDataMatrix, activePlayer.getDots(), getEnemyPlayerDots());
+                loops = ModuleGraph.getLoops(convertDataArrayForGraphModule(activePlayer.getDots()));
                 if (loops.length) {
                     loops.forEach(function(loop) {
                         graphics.renderWall(loop);
