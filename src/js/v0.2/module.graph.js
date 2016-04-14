@@ -212,14 +212,45 @@ define([], function () {
     }
 
     function findLoops(pos, path, loops, workData) {
-        var neighbors = getNeighborsV2_(workData, pos);
+        var neighbors;
+        var isDeadlock = true; // must be 'true' for correct logic
+        workData[pos.x][pos.y].isInPath = true;
+        path.push(pos);
+        neighbors = getNeighborsV2_(
+            workData,
+            pos,
+            path[path.length - 2]? [path[path.length - 2]]: undefined
+        );
         if (neighbors.length) {
             neighbors.forEach(function(neighbor) {
-                if (workData[neighbor.x][neighbor.y].isVisited) {
-
+                var workNeighbor = workData[neighbor.x][neighbor.y];
+                if (workNeighbor.isInPath) {
+                    loops.push(extractLoop_(path, workNeighbor));
+                } else {
+                    workNeighbor.isVisited = true;
+                    isDeadlock = isDeadlock && findLoops(workNeighbor, path, loops, workData);
                 }
             });
+        } else {
+            isDeadlock = true;
         }
+        if (isDeadlock) {
+            workData[pos.x][pos.y].isDeadlock = true;
+            path.pop();
+        }
+        return isDeadlock;
+    }
+
+    function extractLoop_(path, startItem) {
+        var loop = [];
+        path.every(function(pathItem) {
+            loop.push(pathItem);
+            return pathItem.x === startItem.x && pathItem.y === startItem.y;
+        });
+        if (loop.length) {
+            loop.splice(0, 1, startItem);
+        }
+        return loop;
     }
 
     function getRelPos_(data, borders) {
@@ -229,7 +260,7 @@ define([], function () {
         };
     }
 
-    function getNeighborsV2_(pos, workData) {
+    function getNeighborsV2_(pos, workData, excludes) {
         var result = [];
         var shifts = [
             [-1, -1], [0, -1], [1, -1],
@@ -239,11 +270,23 @@ define([], function () {
             var x = pos.x + shift[0];
             var y = pos.y + shift[1];
             if (x > -1 && y > -1) {
-                if (workData[x][y] && !workData[x][y].isInPath && !workData[x][y].isDeadlock) {
+                if (workData[x][y]
+                    && !workData[x][y].isDeadlock
+                    && checkExclude_(excludes, {x: x, y: y})) {
                     result.push({x: x, y: y});
                 }
             }
         });
+        return result;
+    }
+
+    function checkExclude_(excludes, data) {
+        var result = true;
+        if (excludes && excludes.length) {
+            result = !excludes.some(function(excl) {
+                return excl.x === data.x && excl.y === data.y;
+            });
+        }
         return result;
     }
 
