@@ -48,6 +48,10 @@ define([
         isActivePlayerSelectDot,
         isActivePlayerLeadRoundTrappedDots
     ];
+    var loopCheckers = [
+        ModuleGraph.checkers.isCorrectNumbersOfVertexes,
+        ModuleGraph.checkers.isLoopSurroundsVertexes
+    ];
 
     /**
      * line = {start, finish, id}
@@ -125,9 +129,10 @@ define([
                 observable.propertyChange(api.listen.add_dot, data);
                 activePlayer.history.addDot(data);
                 loops = ModuleGraph.getLoops(convertDataArrayForGraphModule(activePlayer.getDots()));
+                loops = ModuleGraph.getCorrectLoops(loops, loopCheckers, convertDataForGraphModule(enemyData));
                 if (loops.length) {
                     loops.forEach(function(loop) {
-                        graphics.renderWall(loop);
+                        graphics.renderWall(convertGraphDataToDataArray(loop));
                     });
                 }
                 resolve(function () {
@@ -237,6 +242,12 @@ define([
             x: data.xInd,
             y: data.yInd
         }
+    }
+
+    function convertGraphDataToDataArray(data) {
+        return data.map(function(graphData) {
+            return gameDataMatrix[graphData.x][graphData.y];
+        });
     }
 
     api = {

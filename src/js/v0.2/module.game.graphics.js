@@ -18,7 +18,7 @@ define([
     var xNum;
     var yNum;
 
-    var STEP = 40;
+    var STEP = 20;
     var OFFSET = 20;
     var STROKE_WIDTH = 2;
 
@@ -124,6 +124,7 @@ define([
             .attr('fill', '')
             .attr('fill-opacity', 0)
             .attr('data-id', getter('id'));
+/*
         tableGroup.selectAll("text")
             .data(data)
             .enter()
@@ -138,6 +139,7 @@ define([
             .attr("font-family", "sans-serif")
             .attr("font-size", "9px")
             .attr("fill", "black");
+*/
 
         return mouseHoverElements;
     }

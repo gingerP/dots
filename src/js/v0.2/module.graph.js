@@ -199,7 +199,7 @@ define([], function () {
         });
     }
 
-    function getLoopsV2(dataArray) {
+    function getLoopsV2(dataArray, checkers) {
         var borders = getBorders_(dataArray);
         var minX = borders.min.x;
         var minY = borders.min.y;
@@ -210,6 +210,7 @@ define([], function () {
             minY,
             dataArray);
         var loops = [];
+        var extLoops = [];
         var path = [];
         dataArray.forEach(function(data) {
             var relX = data.x - minX;
@@ -218,7 +219,13 @@ define([], function () {
                 findLoops({x: relX, y: relY}, path, loops, workData);
             }
         });
-        return loops;
+        extLoops = loops.map(function(loop) {
+            return convertLoopToExtData(loop, minX, minY);
+        });
+        if (checkers && checkers.length) {
+            extLoops = getCorrectLoops_(loops, checkers);
+        }
+        return extLoops;
     }
 
     function findLoops(pos, path, loops, workData) {
@@ -249,6 +256,15 @@ define([], function () {
             path.pop();
         }
         return isDeadlock;
+    }
+
+    function convertLoopToExtData(loop, xShift, yShift) {
+        return loop.map(function(loopItem) {
+           return {
+               x: loopItem.x + xShift,
+               y: loopItem.y + yShift
+           }
+        });
     }
 
     function extractLoop_(path, startItem) {
@@ -349,9 +365,64 @@ define([], function () {
         };
     }
 
+    function getCorrectLoops_(loops, checkers) {
+        var result = [];
+        loops.forEach(function(loop) {
+            var isValid = checkers.every(function(check) {
+                return check(loop);
+            });
+            if (isValid) {
+                result.push(loop);
+            }
+        });
+        return result;
+    }
+
+    function isCorrectNumbersOfVertexes(loop, vertexes) {
+        return loop.length > 3;
+    }
+
+    function isLoopSurroundsVertexes(loop, vertexes) {
+        if (vertexes) {
+            return getVertexesInsideLoop(loop, vertexes).length;
+        }
+        return false;
+    }
+
+    function getVertexesInsideLoop(loop, vertexes) {
+        var borders;
+        var vertexesInsideBorders;
+        if (vertexes && vertexes.length) {
+            borders = getBorders_(loop);
+            vertexesInsideBorders = filterVertexesByBorders_(vertexes, borders.min, borders.max);
+
+
+        }
+    }
+
+    function filterVertexesByBorders_(vertexes, topLeft, bottomRight) {
+        var result = [];
+        vertexes.forEach(function(vertex) {
+            if (vertex.x >= topLeft.x && vertex.x <= bottomRight.x
+                && vertex.y >= topLeft.y && vertex.y <= bottomRight.y) {
+                result.push(vertex);
+            }
+        });
+        return result;
+    }
+
+
     api = {
         getLoops: getLoopsV2,
         getTrappedDots: getTrappedDots,
+        getVertexesInsideLoop: getVertexesInsideLoop,
+        getCorrectLoops: function(loops, checkers, vertexes) {
+            return getCorrectLoops_(loops, checkers, vertexes);
+        },
+        checkers: {
+            isCorrectNumbersOfVertexes: isCorrectNumbersOfVertexes,
+            isLoopSurroundsVertexes: isLoopSurroundsVertexes
+        },
         sb: function (module) {
             moduleGameBusiness = module;
         }
