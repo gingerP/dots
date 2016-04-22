@@ -167,15 +167,15 @@ define([
         logger.log(stepNumber++, loops.concat(activePlayer.getDots()[0]));
         if (loops.length) {
             loops.forEach(function(loop) {
-                /*var trappedDots = ModuleGraph.filterVertexesInsideLoop(enemyDots, loop);*/
+                var trappedDots = ModuleGraph.filterVertexesInsideLoop(enemyDots, loop);
                 var trappedDotsData;
-                /*if (trappedDots && trappedDots.length) {*/
+                if (trappedDots && trappedDots.length) {
                     trappedDotsData = convertGraphDataToDataArray(trappedDots);
                     activePlayer.addTrappedDots(trappedDotsData);
                     activePlayer.addLoop(loop);
                     enemyPlayers[0].addLosingDots(trappedDotsData);
                     graphics.renderLoop(convertGraphDataToDataArray(loop));
-                /*}*/
+                }
             });
         }
     }
