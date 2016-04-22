@@ -18,7 +18,7 @@ define([
     var xNum;
     var yNum;
 
-    var STEP = 20;
+    var STEP = 30;
     var OFFSET = 20;
     var STROKE_WIDTH = 2;
 
@@ -124,7 +124,7 @@ define([
             .attr('fill', '')
             .attr('fill-opacity', 0)
             .attr('data-id', getter('id'));
-/*
+
         tableGroup.selectAll("text")
             .data(data)
             .enter()
@@ -139,7 +139,7 @@ define([
             .attr("font-family", "sans-serif")
             .attr("font-size", "9px")
             .attr("fill", "black");
-*/
+
 
         return mouseHoverElements;
     }
@@ -185,6 +185,11 @@ define([
             }));
             renderPath(pathForRender, business.getActivePlayerColor());
         }
+    }
+
+    function renderLoop(loop) {
+        renderWall(loop.concat(loop[0]));
+        return api;
     }
 
     function getLineId(startCircle, finCircle) {
@@ -328,6 +333,7 @@ define([
             return api;
         },
         renderWall: renderWall,
+        renderLoop: renderLoop,
         renderCircle: renderCircle,
         renderCircles: renderCircles
     };

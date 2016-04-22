@@ -1,16 +1,21 @@
 
-body {}
+body {
+  background: #F1F1F1;
+}
 
 
 .col-center {
   width: 820px;
   height: 100%;
+  /*
   top: 0px;
   right: 0px;
   bottom: 0px;
   left: 0px;
+  */
   position: relative;
-  margin: auto;
+/*  margin: auto;*/
+  float: left;
   .toolbar {
     background-color: coral;
     position: relative;
@@ -82,9 +87,20 @@ body {}
 .game-viewport {
   width: 820px;
   height: 850px;
-  box-shadow: 0 1px 5px #414141;
+  box-shadow: 0 1px 2px #C1C1C1;
+  background: #FFF;
   canvas {
     width: 500px;
     height: 400px;
   }
+}
+
+.logger {
+  float: left;
+  width: 600px;
+  height: 800px;
+  position: relative;
+  box-shadow: 0 1px 2px #c1c1c1;
+  background: #FFF;
+  margin-left: 10px;
 }

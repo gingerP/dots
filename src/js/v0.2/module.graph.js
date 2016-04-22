@@ -1,203 +1,16 @@
+if (typeof(define) != 'function') {
+    function define(deps, module) {
+        module.exports = module();
+    }
+}
+
 define([], function () {
     'use strict';
 
     var api;
     var moduleGameBusiness;
     var cache;
-    const DATA_UID_PREFIX = 'graph_id';
-
-    function getLoops(gameData, selfData, enemyData) {
-        var passedWay = [];
-        var loops = [];
-        getLoops_(gameData, selfData[0], passedWay, selfData, loops, enemyData);
-        return loops;
-    }
-
-    function getTrappedDots(loopData, enemyGameData) {
-        var result = [];
-        if (enemyGameData.length) {
-            enemyGameData.forEach(function (enemy) {
-                var inter = getIntersectionNumWithLoopByX_(enemy, loopData);
-                if (inter.left && inter.right
-                    && Math.floor(inter.left / 2) !== inter.left / 2
-                    && Math.floor(inter.right / 2) !== inter.right / 2) {
-                    result.push(enemy);
-                }
-            });
-        }
-        return result;
-    }
-
-    function getIntersectionNumWithLoopByX_(vertexData, loopData) {
-        var leftInter = 0;
-        var rightInter = 0;
-        if (loopData.length) {
-            loopData.forEach(function (loopVertex) {
-                if (loopVertex.yInd === vertexData.yInd) {
-                    if (loopVertex.xInd > vertexData.xInd) {
-                        rightInter++;
-                    } else if (loopVertex.xInd < vertexData.xInd) {
-                        leftInter++;
-                    }
-                }
-            });
-        }
-        return {
-            left: leftInter,
-            right: rightInter
-        }
-    }
-
-    function getLoops_(gameData, vertexData, passedWay, selfData, loops, enemyData) {
-        var prevVertexData = passedWay[passedWay.length - 1];
-        var neighbors = getNeighbors_(gameData, vertexData, prevVertexData, selfData);
-        logVertexData(vertexData, neighbors);
-        if (neighbors.length) {
-            passedWay.push(vertexData);
-            neighbors.forEach(function (neighbor) {
-                var loop;
-                if (isExistInArray(neighbor, passedWay)) {
-                    loop = getPath_(neighbor, passedWay);
-                    if (getTrappedDots(loop, enemyData).length) {
-                        loop.push(neighbor);
-                        logLoopData(loop);
-                        loops.push(loop);
-                    }
-                } else {
-                    getLoops_(gameData, neighbor, passedWay, selfData, loops, enemyData);
-                }
-            });
-        }
-        return !!neighbors.length;
-    }
-
-
-    function getNeighbors_(gameData, vertexData, prevVertexData, selfData) {
-        var result = [];
-        var shifts = [
-            [-1, -1], [0, -1], [1, -1],
-            [-1, 0], [1, 0],
-            [-1, 1], [0, 1], [1, 1]];
-        var pos = {
-            x: vertexData.xInd,
-            y: vertexData.yInd
-        };
-        shifts.forEach(function (shift) {
-            var x = pos.x + shift[0];
-            var y = pos.y + shift[1];
-            if (x > -1 && y > -1) {
-                var data = gameData[x][y];
-                if (data.id !== vertexData.id && isExistInArray(data, selfData)
-                    && (prevVertexData && data.id !== prevVertexData.id || !prevVertexData)) {
-                    result.push(data);
-                }
-            }
-        });
-        return result;
-    }
-
-    function convertToGraph_(gameData) {
-        if (!cache) {
-            gameData.forEach(function (data) {
-
-            });
-        }
-        return cache;
-    }
-
-    function getDataUId_(data) {
-        return DATA_UID_PREFIX + '_' + data.id;
-    }
-
-    function getPath_(lastVertex, path) {
-        var result = [];
-        var index = path.length - 1;
-        while (index > -1) {
-            result.push(path[index]);
-            if (path[index].id === lastVertex.id) {
-                break;
-            }
-            index--;
-        }
-        return result.reverse();
-    }
-
-    /*    function getTrappedDots(loop, gameData) {
-     var max = 0;
-     var min = 0;
-     var partitionOnY = {};
-     var partitionOnYKey;
-     loop.forEach(function(data, index) {
-     max = data.yInd > max? data.yInd: max;
-     min = data.yInd < min? data.yInd: min;
-     partitionOnY[data.yInd] = partitionOnY[data.yInd] || [];
-     partitionOnY[data.yInd].push([loop[index - 1], data, loop[index + 1]]);
-     });
-
-     for(partitionOnYKey in partitionOnY) {
-     partitionOnY[partitionOnYKey].sort(function(data1, data2) {
-     return data1[1].xInd - data2[1].xInd;
-     });
-     getTrappedDotsIterator_(partitionOnY[partitionOnYKey]);
-     }
-
-     }
-
-     function getTrappedDotsIterator_(borders) {
-     var result = [];
-     var isInner = false;
-     borders.forEach(function(item, index) {
-     /!**
-     *   \
-     *    *
-     *     \
-     *!/
-     if (item[0].yInd > item[1].yInd && item[2].yInd < item[1].yInd
-     /!**
-     *     /
-     *    *
-     *   /
-     *!/
-     || item[0].yInd < item[1].yInd && item[2].yInd > item[1].yInd) {
-     isInner = !isInner;
-     if (isInner) {
-
-     }
-     }
-     });
-     return result;
-     }*/
-
-    /*    function getBordersSub(array, startElement, endElement) {
-     var result = [];
-     var isBegining = false;
-     array.some(function(element) {
-     if (element[1] === startElement) {
-     isBegining =
-     }
-     return
-     });
-
-     return result;
-     }*/
-
-    function logVertexData(vertex, path) {
-        console.log('%c vertex: %s ; path: ', 'color: ' + moduleGameBusiness.getActivePlayerColor(), [vertex.xInd, vertex.yInd].join(','), path.map(function (vertex) {
-            return vertex.xInd + ',' + vertex.yInd;
-        }).join('; '));
-    }
-
-    function logLoopData(loop) {
-        console.log('%c loop: %s ', 'color: ' + moduleGameBusiness.getActivePlayerColor(), loop.map(function (vertex) {
-            return vertex.xInd + ',' + vertex.yInd;
-        }).join('; '));
-    }
-
-    function isExistInArray(search, array) {
-        return array.some(function (item) {
-            return item.id === search.id;
-        });
-    }
+    var DATA_UID_PREFIX = 'graph_id';
 
     function getLoopsV2(dataArray, checkers) {
         var borders = getBorders_(dataArray);
@@ -217,6 +30,7 @@ define([], function () {
             var relY = data.y - minY;
             if (workData[relX][relY] && !workData[relX][relY].isVisited) {
                 findLoops({x: relX, y: relY}, path, loops, workData);
+                clearInPath(workData);
             }
         });
         extLoops = loops.map(function(loop) {
@@ -252,6 +66,7 @@ define([], function () {
             isDeadlock = true;
         }
         if (isDeadlock) {
+            console.info('isDeadlock true: %s %s', pos.x, pos.y);
             workData[pos.x][pos.y].isDeadlock = true;
             path.pop();
         }
@@ -267,18 +82,28 @@ define([], function () {
         });
     }
 
+    function clearInPath(workData) {
+        workData.forEach(function(row) {
+            row.forEach(function(item) {
+                if (item.isInPath) {
+                    item.isInPath = false;
+                }
+            })
+        })
+    }
+
     function extractLoop_(path, startItem) {
         var loop = [];
         var index = path.length - 1;
         while(index > -1) {
             loop.push(path[index]);
             if (path[index].x === startItem.x && path[index].y === startItem.y) {
-                break
+                break;
             }
             index--;
         }
         if (loop.length) {
-            loop.splice(0, 0, startItem);
+            //loop.splice(0, 0, startItem);
         }
         return loop;
     }
@@ -365,11 +190,11 @@ define([], function () {
         };
     }
 
-    function getCorrectLoops_(loops, checkers) {
+    function getCorrectLoops_(loops, checkers, vertexes) {
         var result = [];
         loops.forEach(function(loop) {
             var isValid = checkers.every(function(check) {
-                return check(loop);
+                return check(loop, vertexes);
             });
             if (isValid) {
                 result.push(loop);
@@ -384,38 +209,63 @@ define([], function () {
 
     function isLoopSurroundsVertexes(loop, vertexes) {
         if (vertexes) {
-            return getVertexesInsideLoop(loop, vertexes).length;
+            return vertexes.some(function(vertex) {
+                return isVertexInsideLoop_(loop, vertex);
+            });
         }
         return false;
     }
 
-    function getVertexesInsideLoop(loop, vertexes) {
-        var borders;
-        var vertexesInsideBorders;
-        if (vertexes && vertexes.length) {
-            borders = getBorders_(loop);
-            vertexesInsideBorders = filterVertexesByBorders_(vertexes, borders.min, borders.max);
-
-
+    function isVertexInsideLoop_(loop, vertex) {
+        var left = 0;
+        var right = 0;
+        var pack;
+        function add(item) {
+            if (item.x > vertex.x) {
+                right++;
+            } else if (item.x < vertex.x) {
+                left++
+            }
         }
+        loop.forEach(function(current, index) {
+            var next;
+            var prev;
+            var isIncrease = false;
+            if (current.y === vertex.y) {
+                pack = {};
+                next = loop[index + 1]? loop[index + 1]: loop[0];
+                prev = loop[index - 1]? loop[index - 1]: loop[loop.length - 1];
+                if (prev.y < current.y && next.y > current.y
+                    || prev.y > current.y && next.y < current.y) {
+                    add(current);
+                } else if (prev.y < current.y && next.y < current.y
+                    || prev.y > current.y && next.y > current.y) {
+                    //tangent
+                } else if ((prev.y < current.y || prev.y > current.y) && next.y === vertex.y) {
+                    isIncrease = prev.y < current.y;
+                } else if ((next.y < current.y || next.y > current.y) && prev.y === vertex.y) {
+                    if (isIncrease && next.y > current.y || !isIncrease && next.y > current.y) {
+                        add(current);
+                    }
+                }
+            }
+        });
+        return left && right && Math.floor(right / 2) !== right / 2 && Math.floor(left / 2) !== left / 2;
     }
 
-    function filterVertexesByBorders_(vertexes, topLeft, bottomRight) {
+    function filterVertexesInsideLoop(vertexes, loop) {
         var result = [];
         vertexes.forEach(function(vertex) {
-            if (vertex.x >= topLeft.x && vertex.x <= bottomRight.x
-                && vertex.y >= topLeft.y && vertex.y <= bottomRight.y) {
+            if (isVertexInsideLoop_(loop, vertex)) {
                 result.push(vertex);
             }
         });
         return result;
     }
 
-
     api = {
         getLoops: getLoopsV2,
-        getTrappedDots: getTrappedDots,
-        getVertexesInsideLoop: getVertexesInsideLoop,
+        filterVertexesInsideLoop: filterVertexesInsideLoop,
         getCorrectLoops: function(loops, checkers, vertexes) {
             return getCorrectLoops_(loops, checkers, vertexes);
         },

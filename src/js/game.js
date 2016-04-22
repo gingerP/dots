@@ -14,7 +14,8 @@ require.config({
 		'module.game.transport': './module.game.transport',
 		'module.game.player.history': './module.game.player.history',
 		'module.graph': './module.graph',
-		'module.observable': './module.observable'
+		'module.observable': './module.observable',
+		'beautify': '../ext/beautify'
 	},
 	shim: {
 		'moduleGameBusiness': 'module.game.business'
@@ -28,14 +29,17 @@ require([
 	'module.game.player',
 	'module.game.toolbar',
 	'module.game.transport',
-	'module.game.player.history'
-], function(d3, business, graphics, Player, toolbar, transport, History) {
+	'module.game.player.history',
+	'module.src.editor',
+	'../ext/ace/ace/ace'
+], function(d3, business, graphics, Player, toolbar, transport, History, Logger) {
 	var pane = d3.select('#game-pane');
 	var data = createData(40, 40, 2);
-	var playerA = new Player().init('red', 'Red', 'red', new History());
-	var playerB = new Player().init('blue', 'Blue', 'blue', new History());
+	var playerA = new Player().init('red', 'Red', '#df815a', new History());
+	var playerB = new Player().init('blue', 'Blue', '#639bb4', new History());
+	Logger.init($('.col-right'));
 	toolbar.init(business);
-	business.init(business.modes.local, graphics, data, convertData(data)).addPlayers(playerA, playerB).makePlayerActive(playerA);
+	business.init(business.modes.local, graphics, data, convertData(data), Logger).addPlayers(playerA, playerB).makePlayerActive(playerA);
 	graphics.init(pane, data, 40, 40).setBusiness(business);
 });
 

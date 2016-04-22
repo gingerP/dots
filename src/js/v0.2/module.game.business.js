@@ -19,6 +19,8 @@ define([
     var activePlayerState = {};
     var observable = new Observable();
     var mode;
+    var logger;
+    var stepNumber = 0;
     var modes = {
         local: 'local',
         network: 'network'
@@ -49,8 +51,8 @@ define([
         isActivePlayerLeadRoundTrappedDots
     ];
     var loopCheckers = [
-        ModuleGraph.checkers.isCorrectNumbersOfVertexes,
-        ModuleGraph.checkers.isLoopSurroundsVertexes
+        ModuleGraph.checkers.isCorrectNumbersOfVertexes/*,
+        ModuleGraph.checkers.isLoopSurroundsVertexes*/
     ];
 
     /**
@@ -120,7 +122,6 @@ define([
 
     function select(data) {
         return new Promise(function (resolve, reject) {
-            var loops;
             if (!canSelectDot(data)) {
                 reject();
             } else {
@@ -128,13 +129,7 @@ define([
                 updateActivePlayerState([data]);
                 observable.propertyChange(api.listen.add_dot, data);
                 activePlayer.history.addDot(data);
-                loops = ModuleGraph.getLoops(convertDataArrayForGraphModule(activePlayer.getDots()));
-                loops = ModuleGraph.getCorrectLoops(loops, loopCheckers, convertDataForGraphModule(enemyData));
-                if (loops.length) {
-                    loops.forEach(function(loop) {
-                        graphics.renderWall(convertGraphDataToDataArray(loop));
-                    });
-                }
+                updateCapturedState();
                 resolve(function () {
                     //TODO
                     //if (!isLocalMode() && false) {
@@ -163,6 +158,26 @@ define([
                 return player.hasDot(id);
             });
         })
+    }
+
+    function updateCapturedState() {
+        var loops = ModuleGraph.getLoops(convertDataArrayForGraphModule(activePlayer.getDots()));
+        var enemyDots = convertDataArrayForGraphModule(getEnemyPlayerDots());
+        loops = ModuleGraph.getCorrectLoops(loops, loopCheckers, enemyDots);
+        logger.log(stepNumber++, loops.concat(activePlayer.getDots()[0]));
+        if (loops.length) {
+            loops.forEach(function(loop) {
+                /*var trappedDots = ModuleGraph.filterVertexesInsideLoop(enemyDots, loop);*/
+                var trappedDotsData;
+                /*if (trappedDots && trappedDots.length) {*/
+                    trappedDotsData = convertGraphDataToDataArray(trappedDots);
+                    activePlayer.addTrappedDots(trappedDotsData);
+                    activePlayer.addLoop(loop);
+                    enemyPlayers[0].addLosingDots(trappedDotsData);
+                    graphics.renderLoop(convertGraphDataToDataArray(loop));
+                /*}*/
+            });
+        }
     }
 
     function getActivePlayerColor() {
@@ -251,10 +266,11 @@ define([
     }
 
     api = {
-        init: function (mode_, graphics_, data_, gameDataMatrix_) {
+        init: function (mode_, graphics_, data_, gameDataMatrix_, logger_) {
             mode = mode_;
             graphics = graphics_;
             gameData = data_;
+            logger = logger_;
             gameDataMatrix = gameDataMatrix_;
             return api;
         },

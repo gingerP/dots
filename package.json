@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node bin\/start.js"
+    "start": "node bin/start.js"
   },
   "dependencies": {
     "body-parser": "~1.13.2",
@@ -20,6 +20,7 @@
     "dateformat": "1.0.12",
     "extend": "3.0.0",
     "websocket": "1.0.22",
-    "q": "1.4.1"
+    "q": "1.4.1",
+    "requirejs": "2.2.0"
   }
 }
