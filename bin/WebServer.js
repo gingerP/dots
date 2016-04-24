@@ -9,7 +9,7 @@ WebServer = function() {
     this.transport;
     this.props = {
         "network": {
-            "host": "127.0.0.1",
+            "host": "0.0.0.0",
             "http": 8180,
             "https": 8443,
             "ssl": {

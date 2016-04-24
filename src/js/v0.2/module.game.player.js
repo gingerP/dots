@@ -29,6 +29,10 @@ define([], function() {
         return this.dots;
     };
 
+    Player.prototype.getTrappedDots = function() {
+        return this.trappedDots;
+    };
+
     Player.prototype.addTrappedDots = function(dots) {
         var inst = this;
         dots.forEach(function(dot) {

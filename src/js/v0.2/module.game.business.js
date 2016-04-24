@@ -51,8 +51,19 @@ define([
         isActivePlayerLeadRoundTrappedDots
     ];
     var loopCheckers = [
-        ModuleGraph.checkers.isCorrectNumbersOfVertexes/*,
-        ModuleGraph.checkers.isLoopSurroundsVertexes*/
+        ModuleGraph.checkers.isCorrectNumbersOfVertexes,
+        function isLoopNotSurroundsVertexes(loop) {
+            var enemyPlayersTrappedDots = getEnemyPlayersTrappedDots();
+            if (enemyPlayersTrappedDots.length) {
+                return !ModuleGraph.checkers.isLoopSurroundsVertexes(
+                    loop,
+                    convertDataArrayForGraphModule(enemyPlayersTrappedDots)
+                );
+            }
+            return true;
+        },
+        ModuleGraph.checkers.isLoopSurroundsVertexes,
+        ModuleGraph.checkers.isStartAndFinishNeighbor
     ];
 
     /**
@@ -164,18 +175,18 @@ define([
         var loops = ModuleGraph.getLoops(convertDataArrayForGraphModule(activePlayer.getDots()));
         var enemyDots = convertDataArrayForGraphModule(getEnemyPlayerDots());
         loops = ModuleGraph.getCorrectLoops(loops, loopCheckers, enemyDots);
-        logger.log(stepNumber++, loops.concat(activePlayer.getDots()[0]));
+        //logger.log(stepNumber++, loops.concat(activePlayer.getDots()[0]));
         if (loops.length) {
             loops.forEach(function(loop) {
-                /*var trappedDots = ModuleGraph.filterVertexesInsideLoop(enemyDots, loop);*/
+                var trappedDots = ModuleGraph.filterVertexesInsideLoop(enemyDots, loop);
                 var trappedDotsData;
-                /*if (trappedDots && trappedDots.length) {*/
+                if (trappedDots && trappedDots.length) {
                     trappedDotsData = convertGraphDataToDataArray(trappedDots);
                     activePlayer.addTrappedDots(trappedDotsData);
                     activePlayer.addLoop(loop);
                     enemyPlayers[0].addLosingDots(trappedDotsData);
                     graphics.renderLoop(convertGraphDataToDataArray(loop));
-                /*}*/
+                }
             });
         }
     }
@@ -221,6 +232,14 @@ define([
         var result = [];
         enemyPlayers.forEach(function(player) {
             result = result.concat(player.getDots());
+        });
+        return result;
+    }
+
+    function getEnemyPlayersTrappedDots() {
+        var result = [];
+        enemyPlayers.forEach(function(player) {
+            result = result.concat(player.getTrappedDots());
         });
         return result;
     }

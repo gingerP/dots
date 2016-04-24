@@ -1,35 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
-    <meta charset="UTF-8">
-    <title>D3JS</title>
-    <script src="/static/js/ext/require-2.2.0.min.js"></script>
-    <script src="/static/js/game.js"></script>
-    <link rel="stylesheet" type="text/css" href="/static/style/style.css">
-    <script id="template-players" type="text/x-handlebars-template">
-        <div class="players-placeholder">
-            {{#each players}}
-            <a href="#" id="{{id}}" class="player {{#if active}}active-player{{/if}} {{id}}">{{name}}</a>
-            {{/each}}
-        </div>
-    </script>
+<meta charset="UTF-8">
+<title>D3JS</title>
+<script src="/static/js/ext/require-2.2.0.min.js"></script>
+<script src="/static/js/game.js"></script>
+<link rel="stylesheet" type="text/css" href="/static/style/style.css">
+<script id="template-players" type="text/x-handlebars-template">
+    <div class="players-placeholder">
+        {{#each players}}
+        <a href="#" id="{{id}}" class="player {{#if active}}active-player{{/if}} {{id}}">{{name}}</a>
+        {{/each}}
+    </div>
+</script>
 </head>
 <body>
 <div class="col-center">
-    <div class="toolbar">
-        <button name="restart" class="btn">Restart</button>
-        <button name="copy" class="btn">Copy Link</button>
-        <div id="players">
-
-        </div>
-    </div>
     <div class="game-viewport">
         <div>
             <svg id="game-pane" width="820" height="820"></svg>
         </div>
     </div>
 </div>
-<div class="col-right logger">
+<div class="toolbar">
+    <div class="btn-placeholder">
+        <button name="restart" class="btn button-toolbar">Restart</button>
+        <button name="copy" class="btn button-toolbar">Copy Link</button>
+        <div id="players">
 
+        </div>
+    </div>
 </div>
 </body>
 </html>
