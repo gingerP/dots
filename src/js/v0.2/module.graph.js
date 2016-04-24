@@ -67,7 +67,6 @@ define([], function () {
                 var workNeighbor = workData[neighbor.x][neighbor.y];
                 if (workNeighbor.isInPath) {
                     loops.push(extractLoop_(path, neighbor));
-                    isDeadlock = false;
                 } else {
                     workNeighbor.isVisited = true;
                     if (findLoops(neighbor, path, loops, workData)) {
