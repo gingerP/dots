@@ -1,6 +1,9 @@
 require.config({
 	baseUrl: "/static/js/v0.2/",
 	paths: {
+		'i18n': './module.i18n',
+		'react': '../ext/react-15.0.2',
+		'reactDom': '../ext/react-dom-15.0.2',
 		'd3': '../ext/d3.min',
 		'jquery': '../ext/jquery-2.2.1.min',
 		'observable': 'module.observable',
@@ -30,7 +33,8 @@ require([
 	'module.game.toolbar',
 	'module.game.transport',
 	'module.game.player.history',
-	'../ext/ace/ace/ace'
+	'../ext/ace/ace/ace',
+	'./module.ui.components'
 ], function(d3, business, graphics, Player, toolbar, transport, History) {
 	var pane = d3.select('#game-pane');
 	var data = createData(40, 40, 2);

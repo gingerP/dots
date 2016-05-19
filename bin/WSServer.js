@@ -126,7 +126,7 @@ WSServer.prototype.removeConnection = function(connection, reason) {
 WSServer.prototype.createConnectionWrapper = function(connection, topic, id) {
 	var inst = this;
 	var api;
-	var topicEvent = 'on' + topic.slice(0, 1).toUpperCase() + topic.slice(1, topic.length - 1) + 'Change';
+	var topicEvent = 'on' + topic.slice(0, 1).toUpperCase() + topic.slice(1) + 'Change';
 	api = {
 		getTopic: function() {
 			return topic;

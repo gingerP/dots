@@ -5,29 +5,54 @@
 <script src="/static/js/ext/require-2.2.0.min.js"></script>
 <script src="/static/js/game.js"></script>
 <link rel="stylesheet" type="text/css" href="/static/style/style.css">
-<script id="template-players" type="text/x-handlebars-template">
+
+<script type="text/x-handlebars-template" id="template-players">
     <div class="players-placeholder">
         {{#each players}}
-        <a href="#" id="{{id}}" class="player {{#if active}}active-player{{/if}} {{id}}">{{name}}</a>
+        <div id="{{id}}" class="player {{#if active}}active-player{{/if}} {{id}} {{type}}">{{name}}</div>
         {{/each}}
+        <a href="#" name="next" class="link-reset"></a>
+    </div>
+</script>
+<script type="text/x-handlebars-template" id="handlebars-user-popup">
+    <div id="user-settings-popup-container">
+        <div class="full-screen-shadow hidden"></div>
+        <div class="popup user-settings-popup hidden">
+            <div class="form-horizontal user-popup-content">
+                <div class="form-group">
+                    <label for="user-popup-name" class="control-label col-sm-4">{{i18n.user.name}}</label>
+                    <div class="col-sm-8">
+                        <input type="text" id="user-popup-name" name="name" class="form-control"/>
+                    </div>
+                </div>
+                <div class="form-group hidden">
+                    <label for="user-popup-email" class="control-label col-sm-5">{{i18n.user.email}}</label>
+                    <div class="col-sm-7">
+                        <input type="email" id="user-popup-email" name="email" class="form-control"/>
+                    </div>
+                </div>
+                <button name="submit" class="btn-custom-success btn-right">{{i18n.user.submit}}</button>
+                <div class="close-btn">&#215</div>
+            </div>
+        </div>
     </div>
 </script>
 </head>
 <body>
 <div class="col-center">
+    <div class="bar left-bar"></div>
     <div class="game-viewport">
         <div>
             <svg id="game-pane" width="820" height="820"></svg>
         </div>
     </div>
+    <div class="bar right-bar"></div>
 </div>
 <div class="toolbar">
     <div class="btn-placeholder">
-        <button name="restart" class="btn button-toolbar">Restart</button>
-        <button name="copy" class="btn button-toolbar">Copy Link</button>
-        <div id="players">
-
-        </div>
+        <a href="#" name="restart" class="btn button-toolbar link-reset">Restart</a>
+        <a href="#" name="copy" class="btn button-toolbar link-reset">Copy Link</a>
+        <div id="players"></div>
     </div>
 </div>
 </body>

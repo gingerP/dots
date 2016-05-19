@@ -2,6 +2,7 @@ define([], function(engine) {
 	'use strict';
 	var api;
 	var connection;
+	var TOPIC = '/dots';
 
 	function init() {
 		window.WebSocket = window.WebSocket || window.MozWebSocket;
@@ -11,7 +12,7 @@ define([], function(engine) {
 		}
 		var wsProtocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
 		try {
-			connection = new WebSocket(wsProtocol + window.location.host, 'echo-protocol');
+			connection = new WebSocket(wsProtocol + window.location.host + '/' + TOPIC, 'echo-protocol');
 		} catch (e) {
 			console.error(e.message);
 		}

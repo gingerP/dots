@@ -22,7 +22,7 @@ define([
         player: Handlebars.compile(document.getElementById('template-players').innerHTML)
     };
     var templatesPlaceholders = {
-        player: $('#players')
+        player: $(document.getElementById('players'))
     };
     var dom = {
         players: null
@@ -45,16 +45,14 @@ define([
                 }
             })
         };
-        templatesPlaceholders.player.html(templates.player(data));
+        templatesPlaceholders.player.get(0).innerHTML = templates.player(data);
         dom.players = $('.player', templatesPlaceholders.player);
     }
 
     function listenChangeActivePlayer(activePlayer) {
-        var uiId = createPlayerUiId(activePlayer.getId());
-        var activePlayerUi = $('#' + uiId, templatesPlaceholders.player);
-        dom.players.removeClass(CLASS_ACTIVE).addClass(CLASS_NOT_ACTIVE);
-        activePlayerUi.removeClass(CLASS_NOT_ACTIVE).addClass(CLASS_ACTIVE);
-        templatesPlaceholders.player.addClass(CLASS_PLAYERS_FREEZE);
+        var asctivePlayerId = createPlayerUiId(activePlayer.id);
+        dom.players.removeClass('active-player');
+        $('#' + asctivePlayerId).addClass('active-player');
     }
 
     function listenAddDot(dot) {
@@ -64,21 +62,32 @@ define([
     }
 
     function initEvents() {
-        button.next.click(function() {
-            business.makeNextPlayerActive();
+        button.next.click(function () {
+            //business.makeNextPlayerActive();
         });
     }
 
     function enableNextButton(state) {
-        state = typeof(state) == 'boolean'? state: true;
+        state = typeof(state) == 'boolean' ? state : true;
         console.info('Enable next button: ' + state);
+    }
+
+    function renderActivePlayer(player) {
+/*        var data = {
+            id: createPlayerUiId(player.getId()),
+            name: player.getName(),
+            color: player.getColor(),
+            active: true
+        };
+        templatesPlaceholders.player.html(templates.player({players: [data]}));
+        dom.players = $('.player', templatesPlaceholders.player);*/
     }
 
     function init(module) {
         business = module;
         business.addListener(business.listen.change_active_player, listenChangeActivePlayer, true);
         business.addListener(business.listen.add_player, listenPlayers, true);
-        business.addListener(business.listen.add_dot, listenAddDot, true);
+//        business.addListener(business.listen.add_dot, listenAddDot, true);
 
         initEvents();
     }
