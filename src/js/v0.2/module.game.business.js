@@ -1,8 +1,9 @@
 define([
     'd3',
     'observable',
-    'module.graph'
-], function (d3, Observable, ModuleGraph) {
+    'module.graph',
+    'module.game.transport'
+], function (d3, Observable, ModuleGraph, Transport) {
     'use strict';
 
     function getId() {
@@ -65,6 +66,15 @@ define([
         ModuleGraph.checkers.isLoopSurroundsVertexes,
         ModuleGraph.checkers.isStartAndFinishNeighbor
     ];
+
+    var transportUtils = {
+        addDot: function(dot) {
+            Transport.sendData({
+                type: Transport.listen.add_dot,
+                content: dot
+            })
+        }
+    };
 
     /**
      * line = {start, finish, id}
@@ -140,12 +150,13 @@ define([
                 updateActivePlayerState([data]);
                 observable.propertyChange(api.listen.add_dot, data);
                 activePlayer.history.addDot(data);
+                transportUtils.addDot(data);
                 updateCapturedState();
                 resolve(function () {
                     //TODO
-                    //if (!isLocalMode() && false) {
+                    if (!isLocalMode()) {
                         api.makeNextPlayerActive();
-                    //}
+                    }
                 });
             }
         })
@@ -156,6 +167,7 @@ define([
         players_.forEach(function (player) {
             if (players.indexOf(player) < 0) {
                 players.push(player);
+                player.position = players.indexOf(player);
             }
         });
         observable.propertyChange(api.listen.add_player, players_);
@@ -174,6 +186,7 @@ define([
     function updateCapturedState() {
         var loops = ModuleGraph.getLoops(convertDataArrayForGraphModule(activePlayer.getDots()));
         var enemyDots = convertDataArrayForGraphModule(getEnemyPlayerDots());
+        var trappedDotsCount = 0;
         loops = ModuleGraph.getCorrectLoops(loops, loopCheckers, enemyDots);
         //logger.log(stepNumber++, loops.concat(activePlayer.getDots()[0]));
         if (loops.length) {
@@ -186,8 +199,12 @@ define([
                     activePlayer.addLoop(loop);
                     enemyPlayers[0].addLosingDots(trappedDotsData);
                     graphics.renderLoop(convertGraphDataToDataArray(loop));
+                    trappedDotsCount += trappedDots.length;
                 }
             });
+            if (trappedDotsCount) {
+                observable.propertyChange(api.listen.conquer_dots, activePlayer);
+            }
         }
     }
 
@@ -284,6 +301,14 @@ define([
         });
     }
 
+    function listenEnemyAddDot() {
+
+    }
+
+    function init() {
+        Transport.addListener(Transport.listen.add_dot, listenEnemyAddDot);
+    }
+
     api = {
         init: function (mode_, graphics_, data_, gameDataMatrix_, logger_) {
             mode = mode_;
@@ -291,6 +316,7 @@ define([
             gameData = data_;
             logger = logger_;
             gameDataMatrix = gameDataMatrix_;
+            init();
             return api;
         },
         canConnectDots: canConnectDots,
@@ -315,7 +341,8 @@ define([
         listen: {
             change_active_player: 'change_active_player',
             add_player: 'add_player',
-            add_dot: 'add_dot'
+            add_dot: 'add_dot',
+            conquer_dots: 'conquer_dots'
         },
         modes: modes
     };

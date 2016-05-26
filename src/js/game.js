@@ -31,17 +31,16 @@ require([
 	'module.game.graphics',
 	'module.game.player',
 	'module.game.toolbar',
-	'module.game.transport',
 	'module.game.player.history',
 	'../ext/ace/ace/ace',
 	'./module.ui.components'
-], function(d3, business, graphics, Player, toolbar, transport, History) {
+], function(d3, business, graphics, Player, toolbar, History) {
 	var pane = d3.select('#game-pane');
 	var data = createData(40, 40, 2);
 	var playerA = new Player().init('red', 'Red', '#df815a', new History());
 	var playerB = new Player().init('blue', 'Blue', '#639bb4', new History());
 	toolbar.init(business);
-	business.init(business.modes.local, graphics, data, convertData(data)).addPlayers(playerA, playerB).makePlayerActive(playerA);
+	business.init(business.modes.network, graphics, data, convertData(data)).addPlayers(playerA, playerB).makePlayerActive(playerA);
 	graphics.init(pane, data, 40, 40).setBusiness(business);
 });
 

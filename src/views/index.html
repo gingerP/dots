@@ -7,12 +7,14 @@
 <link rel="stylesheet" type="text/css" href="/static/style/style.css">
 
 <script type="text/x-handlebars-template" id="template-players">
-    <div class="players-placeholder">
-        {{#each players}}
-        <div id="{{id}}" class="player {{#if active}}active-player{{/if}} {{id}} {{type}}">{{name}}</div>
-        {{/each}}
-        <a href="#" name="next" class="link-reset"></a>
+    <div class="players-scroll">
+        <div class="players-placeholder">
+            {{#each players}}
+            <div id="{{id}}" class="player {{#if active}}active-player{{/if}} {{id}} {{type}}">{{name}}</div>
+            {{/each}}
+        </div>
     </div>
+    <a href="#" name="next" class="link-reset"></a>
 </script>
 <script type="text/x-handlebars-template" id="handlebars-user-popup">
     <div id="user-settings-popup-container">
@@ -53,6 +55,11 @@
         <a href="#" name="restart" class="btn button-toolbar link-reset">Restart</a>
         <a href="#" name="copy" class="btn button-toolbar link-reset">Copy Link</a>
         <div id="players"></div>
+        <span id="score" class="btn button-toolbar btn-score">
+            <span class="player-score-red player-score"></span>
+            <span class="score-delimiter">:</span>
+            <span class="player-score-blue player-score"></span>
+        </span>
     </div>
 </div>
 </body>

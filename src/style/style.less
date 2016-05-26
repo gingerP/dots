@@ -1,5 +1,8 @@
 @gameWidth: 820px;
 
+@player_color_blue: #2196F3;
+@player_color_red: #f44336;
+
 @import "./user-popup";
 
 body {
@@ -34,6 +37,32 @@ body {
       transition: margin 300ms;
       float: left;
     }
+    .btn-score {
+      width: 100px;
+      position: absolute;
+      right: 0;
+      .player-score {
+        position: relative;
+        float: left;
+        text-align: center;
+        width: 50%;
+        height: 100%;
+        border-color: #4CAF50;
+      }
+    }
+    .score-delimiter {
+      position: absolute;
+      width: 100%;
+      text-align: center;
+      top: 0;
+      left: 0;
+    }
+    .player-score-red-blue {
+      border-left-color: @player_color_red;
+      border-top-color: @player_color_red;
+      border-right-color: @player_color_blue;
+      border-bottom-color: @player_color_blue;
+    }
   }
 
   #players {
@@ -46,9 +75,18 @@ body {
     margin: auto;
     width: 100px;
     height: 100%;
+    .players-scroll {
+      width: 100px;
+      height: 40px;
+      overflow: hidden;
+      position: relative;
+    }
     .players-placeholder {
       overflow: hidden;
       height: 100%;
+      transition: top 300ms;
+      position: absolute;
+      display: table;
     }
     a {
       text-decoration: inherit; /* no underline */
@@ -60,26 +98,31 @@ body {
   }
   .player {
     margin-top: 0px;
-    position: absolute;
-    width: 100%;
+    position: relative;
+    width: 100px;
     height: 40px;
     text-align: center;
     line-height: 40px;
     display: block;
-    transition: margin 300ms, opacity 300ms;
-    opacity: 0;
+    &-position-0 {
+      top: 0;
+    }
+    &-position-1 {
+      top: -40px;
+    }
   }
+
   .active-player {
     opacity: 1;
   }
   .player_blue {
-    background-color: #2196F3;;
-    color: #01355F;
+    background-color: @player_color_blue;
+    color: darken(@player_color_blue, 25%);
     text-shadow: 0 0 5px #DAE5FF;
   }
   .player_red {
-    background-color: #f44336;
-    color: #9E2F2F;
+    background-color: @player_color_red;
+    color: darken(@player_color_red, 25%);
     text-shadow: 0px 0px 5px #EAD0D0;
   }
   .btn {

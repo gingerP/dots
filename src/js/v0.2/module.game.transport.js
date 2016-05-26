@@ -1,7 +1,10 @@
-define([], function(engine) {
+define([
+	'observable'
+], function(Observable) {
 	'use strict';
 	var api;
 	var connection;
+	var observable = new Observable();
 	var TOPIC = '/dots';
 
 	function init() {
@@ -28,7 +31,9 @@ define([], function(engine) {
 		};
 
 		connection.onmessage = function (message) {
-
+			if (message.type) {
+				observable.propertyChange(message.type, message.content);
+			}
 		};
 	}
 
@@ -41,11 +46,18 @@ define([], function(engine) {
 	initEvents();
 
 	function sendData(data) {
-		
+		connection.send(JSON.stringify(data));
 	}
 
 	api = {
-		sendData: sendData
+		sendData: sendData,
+		addListener: function(property, listener) {
+			observable.addListener(property, listener);
+			return api;
+		},
+		listen: {
+			add_dot: 'add_dot'
+		}
 	};
 	return api;
 });

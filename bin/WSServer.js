@@ -14,7 +14,8 @@ function WSServer(http) {
 WSServer.prototype = Object.create(Observable.prototype);
 WSServer.prototype.constructor = WSServer;
 
-WSServer.prototype.init = function() {
+WSServer.prototype.init = function(removeTimeout) {
+	this.removeTimeout = removeTimeout;
 	this.ws = new WebSocketServer({
 		httpServer: this.http,
 		// You should not use autoAcceptConnections for production
