@@ -39,6 +39,14 @@
         </div>
     </div>
 </script>
+<script type="text/x-handlebars-template" id="handlebars-users-list">
+    {{#each clients}}
+    <div id="{{id}}" class="player-item">
+        <i class="player-icon"></i>
+        <span class="player-name">{{name}}</span>
+    </div>
+    {{/each}}
+</script>
 </head>
 <body>
 <div class="col-center">
@@ -48,7 +56,11 @@
             <svg id="game-pane" width="820" height="820"></svg>
         </div>
     </div>
-    <div class="bar right-bar"></div>
+    <div class="bar right-bar">
+        <div id="players-list">
+            <div class="players-list-placeholder"</div>
+        </div>
+    </div>
 </div>
 <div class="toolbar">
     <div class="btn-placeholder">

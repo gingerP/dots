@@ -26,6 +26,7 @@ define([
         local: 'local',
         network: 'network'
     };
+    var clients = [];
     /**
      * args - data
      * @type {Array}
@@ -305,8 +306,25 @@ define([
 
     }
 
+    function listenAddClient(client) {
+        if (addClient(client)) {
+            observable.propertyChange(api.listen.add_client, client);
+        }
+    }
+
+    function addClient(pack) {
+        if (!clients.some(function(client) {
+            return client.id === pack.id;
+        })) {
+            clients.push(pack);
+            return true;
+        }
+        return false;
+    }
+
     function init() {
         Transport.addListener(Transport.listen.add_dot, listenEnemyAddDot);
+        Transport.addListener(Transport.listen.add_client, listenAddClient);
     }
 
     api = {
@@ -338,9 +356,12 @@ define([
             observable.addListener(property, listener);
             return api;
         },
+        getClients: function() {
+            return clients;
+        },
         listen: {
             change_active_player: 'change_active_player',
-            add_player: 'add_player',
+            add_client: 'add_client',
             add_dot: 'add_dot',
             conquer_dots: 'conquer_dots'
         },

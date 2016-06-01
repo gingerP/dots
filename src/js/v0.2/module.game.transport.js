@@ -31,8 +31,12 @@ define([
 		};
 
 		connection.onmessage = function (message) {
-			if (message.type) {
-				observable.propertyChange(message.type, message.content);
+			var data;
+			if (message.data) {
+				data = JSON.parse(message.data);
+				if (data.data.type) {
+					observable.propertyChange(data.data.type, data.data);
+				}
 			}
 		};
 	}
@@ -56,7 +60,8 @@ define([
 			return api;
 		},
 		listen: {
-			add_dot: 'add_dot'
+			add_dot: 'add_dot',
+			add_client: 'add_client'
 		}
 	};
 	return api;

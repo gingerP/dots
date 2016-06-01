@@ -2,8 +2,8 @@ var server;
 var Observable = require('./Observable').class;
 var WebSocketServer = require('websocket').server;
 var logger = _req('src/js/logger').create('WSServer');
-var listenerToOut = '__toOut';
-var listenerToIn = '__toIn';
+var listenerToOut = 'out::';
+var listenerToIn = 'in::';
 
 function WSServer(http) {
 	this.http = http;
@@ -52,15 +52,12 @@ WSServer.prototype._initEvents = function() {
 		}
 		var topic = inst.evaluateTopic(request.resource);
 		logger.info('Peer "%s" connected.', connection.remoteAddress);
-		inst.addConnection(topic, connection, request.key);
+		var wrapper = inst.addConnection(topic, connection, request.key);
 		connection.on('message', function (message) {
 			var data;
 			if (message.type == 'utf8') {
 				data = inst.extractMessage(message.utf8Data);
-				inst.propertyChange('income_' + data.type, [
-					data,
-					connection
-				]);
+				inst.propertyChange(listenerToIn + data.type, { client: wrapper, data: data });
 			}
 		});
 		connection.on('close', function (reasonCode, description) {
@@ -105,7 +102,7 @@ WSServer.prototype.addConnection = function(topic, connection, id) {
 		this.addListener(topic + listenerToOut, connectionWraper);
 		this.propertyChange('new_connection', connectionWraper);
 	}
-	return this;
+	return connectionWraper;
 };
 
 WSServer.prototype.getListeners = function(topic) {
@@ -159,6 +156,14 @@ WSServer.prototype.prepareMessage = function(data, type, extend) {
 
 WSServer.prototype.extractMessage = function(data) {
 	return JSON.parse(data);
+};
+
+WSServer.prototype.addListenerIn = function(property, listener) {
+	this.addListener(listenerToIn + property, listener);
+};
+
+WSServer.prototype.addListenerOut = function(property, listener) {
+	this.addListener(listenerToOut + property, listener);
 };
 
 module.exports = {

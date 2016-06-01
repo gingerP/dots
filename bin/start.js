@@ -4,4 +4,4 @@ var WsServer = require('./WSServer');
 var server = new Server().init().start();
 require('../controller-pages').init(server.app);
 var wsServer = WsServer.instance(server.server);
-var MessageBroker = _req('/src/back/modules/MessageBroker').init(wsServer);
+var MessageBroker = _req('/src/back/modules/Business').init(wsServer);
