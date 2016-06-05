@@ -15,6 +15,7 @@ define([
     var gameData;
     var gameDataMatrix;
     var players = [];
+    var clients = [];
     var enemyPlayers;
     var activePlayer;
     var activePlayerState = {};
@@ -26,7 +27,6 @@ define([
         local: 'local',
         network: 'network'
     };
-    var clients = [];
     /**
      * args - data
      * @type {Array}
@@ -163,7 +163,7 @@ define([
         })
     }
 
-    function addPlayers() {
+    function addActivePlayers() {
         var players_ = (arguments.length === 1 ? [arguments[0]] : Array.apply(null, arguments));
         players_.forEach(function (player) {
             if (players.indexOf(player) < 0) {
@@ -171,7 +171,7 @@ define([
                 player.position = players.indexOf(player);
             }
         });
-        observable.propertyChange(api.listen.add_player, players_);
+        observable.propertyChange(api.listen.add_active_player, players_);
         return api;
     }
 
@@ -342,7 +342,7 @@ define([
         canChangeActivePlayer: canChangeActivePlayer,
 
         select: select,
-        addPlayers: addPlayers,
+        addActivePlayers: addActivePlayers,
         getActivePlayerColor: getActivePlayerColor,
         makePlayerActive: makePlayerActive,
         makeNextPlayerActive: makeNextPlayerActive,
@@ -360,6 +360,7 @@ define([
             return clients;
         },
         listen: {
+            add_active_player: 'add_active_player',
             change_active_player: 'change_active_player',
             add_client: 'add_client',
             add_dot: 'add_dot',

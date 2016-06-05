@@ -1,0 +1,29 @@
+@import (reference) "./variables";
+
+.toolbar {
+  background-color: @color-toolbar;
+  position: fixed;
+  width: 100%;
+  height: @toolbar-height;
+  top: 0;
+
+  &-left {
+    top: 0px;
+    left: 0px;
+  }
+
+  &-center {
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    position: absolute;
+    margin: auto;
+    width: 300px;
+  }
+
+  &-right {
+    top: 0px;
+    right: 0px;
+  }
+}

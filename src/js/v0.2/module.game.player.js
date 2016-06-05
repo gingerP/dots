@@ -1,7 +1,7 @@
 define([], function() {
     var Player = function() {};
 
-    Player.prototype.init = function(id, name, color, history) {
+    Player.prototype.init = function(id, name, color, style, history) {
         this.dots = [];
         this.trappedDots = [];
         this.losingDots = [];
@@ -9,8 +9,14 @@ define([], function() {
         this.id = id;
         this.name = name;
         this.color = color;
+        this.style = style;
         this.history = history;
+        this.isActive = false;
         return this;
+    };
+
+    Player.prototype.updateActive = function(isActive) {
+        return this.isActive;
     };
 
     Player.prototype.addDot = function(data) {
@@ -70,6 +76,14 @@ define([], function() {
 
     Player.prototype.getColor = function() {
         return this.color;
+    };
+
+    Player.prototype.setStyle = function(style) {
+        this.style = style;
+    };
+
+    Player.prototype.getStyle = function() {
+        return this.style;
     };
 
     Player.prototype.getId = function() {

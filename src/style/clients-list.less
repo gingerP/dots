@@ -1,0 +1,28 @@
+@import (reference) "./variables";
+
+clients-list {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: @clients-list-width;
+  min-height: @clients-list-min-height;
+  background-color: lighten(@color-dark, 20%);
+
+  .clients-placeholder {
+    margin: 5px 0;
+  }
+
+  .client {
+    height: @client-item-height;
+    line-height: @client-item-height;
+    padding: 0 10px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: background-color .2s;
+    background-color: lighten(@color-dark, 20%);
+
+    &:hover {
+      background-color: lighten(@color-dark, 40%);
+    }
+  }
+}

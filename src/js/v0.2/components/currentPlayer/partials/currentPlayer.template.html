@@ -1,0 +1,10 @@
+<div class="current-player">
+    <div class="players-list">
+        <div class="player player-style-{{player.style}}"
+             ng-class="{'active-player': player.id === currentPlayerCtrl.activePlayer.id}"
+             ng-repeat="player in currentPlayerCtrl.players">
+            {{player.id}}
+        </div>
+    </div>
+    <a href="javascript:void(0)" type="button" class="player-next" ng-click="currentPlayerCtrl.nextPlayer()"></a>
+</div>

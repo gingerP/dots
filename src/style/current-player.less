@@ -1,0 +1,45 @@
+@import (reference) "./variables";
+
+.current-player {
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  position: absolute;
+  margin: auto;
+  width: 200px;
+  .players-list {
+    overflow: hidden;
+    height: @toolbar-height;
+  }
+
+  .player {
+    height: @toolbar-height;
+    line-height: @toolbar-height;
+    text-align: center;
+  }
+}
+
+.player-next {
+  background-color: @color_next_button;
+  width: @player-next-button;
+  height: @player-next-button;
+  position: absolute;
+  top: 0;
+  right: -@toolbar-height;
+  margin: 5px;
+  border-radius: 50%;
+  box-shadow: 0px 0px 6px darken(@color_next_button, 15%);
+}
+
+.active-player {
+
+}
+
+.player-style-red {
+  background-color: #ff3616;
+}
+
+.player-style-blue {
+  background-color: #4b8bff;
+}

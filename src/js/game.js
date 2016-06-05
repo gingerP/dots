@@ -1,6 +1,8 @@
 require.config({
 	baseUrl: "/static/js/v0.2/",
 	paths: {
+		'angular': './angularAMD',
+		'angularJs': '../node_modules/angular/angular.min',
 		'i18n': './module.i18n',
 		'react': '../ext/react-15.0.2',
 		'reactDom': '../ext/react-dom-15.0.2',
@@ -31,19 +33,14 @@ require([
 	'module.game.business',
 	'module.game.graphics',
 	'module.game.player',
-	'module.game.toolbar',
-	'module.game.players.list',
 	'module.game.player.history',
-	'../ext/ace/ace/ace',
-	'./module.ui.components'
-], function(d3, business, graphics, Player, toolbar, playersList, History) {
+	'./components/components.module'
+], function(d3, business, graphics, Player, History) {
 	var pane = d3.select('#game-pane');
 	var data = createData(40, 40, 2);
-	var playerA = new Player().init('red', 'Red', '#df815a', new History());
-	var playerB = new Player().init('blue', 'Blue', '#639bb4', new History());
-	toolbar.init(business);
-	playersList.init(business);
-	business.init(business.modes.network, graphics, data, convertData(data)).addPlayers(playerA, playerB).makePlayerActive(playerA);
+	var playerA = new Player().init('red', 'Red', '#df815a', 'red', new History());
+	var playerB = new Player().init('blue', 'Blue', '#639bb4', 'blue', new History());
+	business.init(business.modes.network, graphics, data, convertData(data)).addActivePlayers(playerA, playerB).makePlayerActive(playerA);
 	graphics.init(pane, data, 40, 40).setBusiness(business);
 });
 
