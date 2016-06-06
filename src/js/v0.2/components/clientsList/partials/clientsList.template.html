@@ -1,7 +1,8 @@
 <div class="clients-list">
     <div class="clients-placeholder">
         <div ng-repeat="client in clientsListCtrl.clientsList" class="client">
-            {{client.id}}
+            <span ng-bind="client.id"></span>
+            <a class="btn-right btn-invite"></a>
         </div>
     </div>
 </div>
