@@ -18,7 +18,7 @@ define([
 		Business.addListener(Business.listen.add_client, listenPlayers, true);
 
 		vm.invite = function invite(client) {
-			Business.invitePlayer(client).then(function() {
+			Business.invite.ask(client.id).then(function() {
 
 			}, function() {
 

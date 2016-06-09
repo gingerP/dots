@@ -27,12 +27,13 @@ WSServer.prototype._initEvents = function() {
 	this.ws.on('connection', function (connection) {
 		logger.info('Peer "%s" connected.', connection.client.conn.remoteAddress);
 		var wrapper = inst.addConnection('client', connection, connection.id);
-		connection.on('event', function (message) {
-			var data;
-			if (message.type == 'utf8') {
-				data = inst.extractMessage(message.utf8Data);
-				inst.propertyChange(listenerToIn + data.type, { client: wrapper, data: data });
+		connection.on('dots', function (message) {
+			try {
+				var data = inst.extractMessage(message);
+			} catch (e) {
+				logger.error('While parsing input message: ' + e.message);
 			}
+			inst.propertyChange(listenerToIn + data.type, { client: wrapper, data: data });
 		});
 		connection.on('disconnect', function (reasonCode, description) {
 			inst.removeConnection(this, {code: reasonCode, description: description});
@@ -107,8 +108,11 @@ WSServer.prototype.createConnectionWrapper = function(connection, topic, id) {
 			return id;
 		},
 		sendData: function(data, type) {
-			connection.emit(type, data);
-			return api;
+			return new Promise(function(resolve) {
+				connection.emit(type, data, function(data) {
+					resolve(data);
+				});
+			});
 		},
 		equalConnection: function(con) {
 			return connection == con;

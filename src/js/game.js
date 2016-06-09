@@ -17,10 +17,11 @@ require.config({
 		'module.game.player': './module.game.player',
 		'module.game.toolbar': './module.game.toolbar',
 		'module.game.players.list': './module.game.players.list',
-		'module.game.transport': './module.game.transport',
+		'module.transport': './module.transport',
 		'module.game.player.history': './module.game.player.history',
 		'module.graph': './module.graph',
 		'module.observable': './module.observable',
+		'module.backend.service': './module.backend.service',
 		'beautify': '../ext/beautify',
 	},
 	shim: {

@@ -1,24 +1,21 @@
 define([
 	'observable',
 	'socket'
-], function(Observable, IO) {
+], function(Observable, io) {
 	'use strict';
 	var api;
 	var connection;
 	var observable = new Observable();
-	var TOPIC = '/dots';
-	var socket = IO(TOPIC);
+	var socket = io();
 
 	function initEvents() {
 		socket.on('connection', function(socket){
 			//TODO
 		});
-		socket.on('message', function(message){
-			var data;
-			if (message.data) {
-				data = JSON.parse(message.data);
-				if (data.data.type) {
-					observable.propertyChange(data.data.type, data.data);
+		socket.on('dots', function listenMessage(message){
+			if (message.extend) {
+				if (message.type) {
+					observable.propertyChange(message.type, message.extend);
 				}
 			}
 		});
@@ -27,8 +24,8 @@ define([
 	initEvents();
 
 	function sendData(data) {
-		new Promise(function(resolve) {
-			socket.emit('dots', JSON.stringify(data), function(response) {
+		return new Promise(function(resolve) {
+			socket.emit('dots', JSON.stringify(data), function (response) {
 				resolve(response);
 			});
 		});
@@ -44,6 +41,9 @@ define([
 			add_dot: 'add_dot',
 			add_client: 'add_client',
 			invite_player: 'invite_player'
+		},
+		getId: function() {
+			return socket.id;
 		}
 	};
 	return api;

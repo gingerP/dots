@@ -2,8 +2,8 @@ define([
     'd3',
     'observable',
     'module.graph',
-    'module.game.transport'
-], function (d3, Observable, ModuleGraph, Transport) {
+    'module.backend.service'
+], function (d3, Observable, ModuleGraph, Backend) {
     'use strict';
 
     function getId() {
@@ -308,33 +308,36 @@ define([
         });
     }
 
-    function listenEnemyAddDot() {
-
-    }
-
-    function listenAddClient(client) {
-        if (addClient(client)) {
-            observable.propertyChange(api.listen.add_client, client);
-        }
-    }
-
-    function invitePlayer() {
-
+    function isIdEqualToMyself(myselfId, id) {
+        return id === '/#' + myselfId;
     }
 
     function addClient(pack) {
-        if (!clients.some(function(client) {
-            return client.id === pack.id;
-        })) {
-            clients.push(pack);
-            return true;
+        if (!isIdEqualToMyself(Backend.getId(), pack.id)) {
+            if (!clients.some(function (client) {
+                    return client.id === pack.id;
+                })) {
+                clients.push(pack);
+                return true;
+            }
         }
         return false;
     }
 
     function init() {
-        Transport.addListener(Transport.listen.add_dot, listenEnemyAddDot);
-        Transport.addListener(Transport.listen.add_client, listenAddClient);
+        Backend.on(Backend.event.add_dot, function listenEnemyAddDot() {
+
+        });
+
+        Backend.on(Backend.event.add_client, function listenAddClient(client) {
+            if (addClient(client)) {
+                observable.propertyChange(api.listen.add_client, client);
+            }
+        });
+
+        Backend.on(Backend.event.invite, function invitePlayer(client) {
+
+        });
     }
 
     api = {
@@ -370,6 +373,18 @@ define([
         },
         getClients: function() {
             return clients;
+        },
+
+        invite: {
+            ask: function(client) {
+                return Backend.emit.invite.ask(client);
+            },
+            success: function(client) {
+                return Backend.emit.invite.success(client);
+            },
+            reject: function(client) {
+                return Backend.emit.invite.reject(client);
+            }
         },
         listen: {
             invite_player: 'invite_player',

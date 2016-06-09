@@ -1,7 +1,10 @@
 var _ = require('lodash');
+var Service = require('./Service');
 var Client = require('./Client');
-'use strict';
+var logger = _req('src/js/logger').create('Business');
+
 var Business = (function() {
+    'use strict';
     var api;
     var clients = [];
     var listen = {
@@ -20,7 +23,10 @@ var Business = (function() {
         newConnection: function(clientConnection) {
             var client = new Client(clientConnection);
             clients.push(client);
-            notifyClients(createPack.addClient(client), clients);
+            Service.notifyClients(clients, Service.event.add_client, {
+                id: client.getId(),
+                name: client.getName()
+            });
         },
         addDot: function() {
 
@@ -36,11 +42,18 @@ var Business = (function() {
             });
         },
         inviteToPlay: function(pack) {
-            var partner = utils.getClientById(pack.data.id);
-            var invite;
-            if (partner) {
-                invite = createPack.inviteToPlay(partner.getId(), partner.getName());
-                notifyClients(invite, partner);
+            var partnerId = pack.data.clients && pack.data.clients.length ? pack.data.clients[0]: null;
+            if (partnerId) {
+                var partner = utils.getClientById(partnerId);
+                if (partner) {
+                    Service.notifyClients(partner, Service.event.invite, {
+                        action: 'ask'
+                    });
+                } else {
+                    logger.warn('Didnt find client for id \'' + partnerId + '\'');
+                }
+            } else {
+                logger.warn('Empty client list to invite!');
             }
         },
         approveToPlay: function(pack) {
@@ -105,11 +118,12 @@ var Business = (function() {
     }
 
     function init(wsServer) {
-        wsServer.addListener(listen.new_connection, listener.newConnection);
-        wsServer.addListenerIn(listen.add_dot, listener.addDot);
-        wsServer.addListenerIn(listen.update_client_id, listener.updateClientId);
-        wsServer.addListenerIn(listen.invite_to_play, listener.inviteToPlay);
-        wsServer.addListenerIn(listen.approve_to_play, listener.approveToPlay);
+        var e = Service.event;
+        Service.init(wsServer);
+        Service.on(e.new_connection, listener.newConnection);
+        Service.on(e.add_dot, listener.addDot);
+        Service.on(e.update_client_id, listener.updateClientId);
+        Service.on(e.invite, listener.inviteToPlay);
     }
 
     api = {
