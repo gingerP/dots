@@ -31,7 +31,8 @@
     "sequelize": "3.17.1",
     "serve-favicon": "~2.3.0",
     "webpack": "^1.13.0",
-    "websocket": "1.0.22"
+    "websocket": "1.0.22",
+    "socket.io": "1.4.6"
   },
   "devDependencies": {
     "grunt": "^1.0.1",

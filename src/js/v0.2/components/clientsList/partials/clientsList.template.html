@@ -2,7 +2,7 @@
     <div class="clients-placeholder">
         <div ng-repeat="client in clientsListCtrl.clientsList" class="client">
             <span ng-bind="client.id"></span>
-            <a class="btn-right btn-invite"></a>
+            <button class="btn-override btn-right btn-invite" ng-click="clientsListCtrl.invite(client)"></button>
         </div>
     </div>
 </div>

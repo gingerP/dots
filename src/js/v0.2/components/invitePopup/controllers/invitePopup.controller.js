@@ -7,5 +7,6 @@ define([
     angular.module('invitePopup.module').controller('invitePopupCtrl', GenericPopupController);
 
     function GenericPopupController($scope) {
+
     }
 });

@@ -16,6 +16,14 @@ define([
 		vm.clientsList = [{id: 111111111111111111}];
 
 		Business.addListener(Business.listen.add_client, listenPlayers, true);
+
+		vm.invite = function invite(client) {
+			Business.invitePlayer(client).then(function() {
+
+			}, function() {
+
+			})
+		}
 	}
 
 	function listenPlayers(pack) {

@@ -14,6 +14,7 @@ var Business = (function() {
         update_client_id: 'update_client_id',
         clients: 'clients'
     };
+    var TOPIC = 'dots';
     var games = [];
     var listener = {
         newConnection: function(clientConnection) {
@@ -99,7 +100,7 @@ var Business = (function() {
 
     function notifyClients(pack, clients) {
         _.forEach(_.isArray(clients) ? clients : [clients], function(client) {
-            client.getConnection().sendData(pack);
+            client.getConnection().sendData(pack, TOPIC);
         });
     }
 

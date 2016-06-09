@@ -74,6 +74,12 @@ define([
                 type: Transport.listen.add_dot,
                 content: dot
             })
+        },
+        invitePlayer: function(player) {
+            return Transport.sendData({
+                type: Transport.listen.invite_player,
+                content: player
+            })
         }
     };
 
@@ -312,6 +318,10 @@ define([
         }
     }
 
+    function invitePlayer() {
+
+    }
+
     function addClient(pack) {
         if (!clients.some(function(client) {
             return client.id === pack.id;
@@ -340,7 +350,9 @@ define([
         canConnectDots: canConnectDots,
         canSelectDot: canSelectDot,
         canChangeActivePlayer: canChangeActivePlayer,
-
+        invitePlayer: function(player) {
+            return transportUtils.invitePlayer(player);
+        },
         select: select,
         addActivePlayers: addActivePlayers,
         getActivePlayerColor: getActivePlayerColor,
@@ -360,6 +372,7 @@ define([
             return clients;
         },
         listen: {
+            invite_player: 'invite_player',
             add_active_player: 'add_active_player',
             change_active_player: 'change_active_player',
             add_client: 'add_client',

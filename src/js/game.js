@@ -21,7 +21,7 @@ require.config({
 		'module.game.player.history': './module.game.player.history',
 		'module.graph': './module.graph',
 		'module.observable': './module.observable',
-		'beautify': '../ext/beautify'
+		'beautify': '../ext/beautify',
 	},
 	shim: {
 		'moduleGameBusiness': 'module.game.business'

@@ -6,7 +6,8 @@ clients-list {
   right: 0;
   width: @clients-list-width;
   min-height: @clients-list-min-height;
-  background-color: @color-dark;
+  background-color: #ffffff;
+  box-shadow: 0 1px 2px #C1C1C1;
 
   .clients-placeholder {
     margin: 5px 0;
@@ -19,11 +20,11 @@ clients-list {
     overflow: hidden;
     text-overflow: ellipsis;
     transition: background-color .2s;
-    background-color: @color-dark;
+    background-color: #ffffff;
     position: relative;
 
     &:hover {
-      background-color: lighten(@color-dark, 20%);
+      background-color: lighten(@color-dark, 50%);
       .btn-invite {
         right: 0;
       }
@@ -32,8 +33,7 @@ clients-list {
       margin: calc((@client-item-height - @client-item-btn-height) / 2);
       height: @client-item-btn-height;
       width: @client-item-btn-height;
-      background-color: @color_next_button;
-      box-shadow: 0px 0px 6px darken(@color_next_button, 15%);
+      background-color: @color-dark;
       right: calc((-2) * @client-item-btn-height);
       transition: right .3s;
       border-radius: 50%;

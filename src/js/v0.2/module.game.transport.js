@@ -1,36 +1,19 @@
 define([
-	'observable'
-], function(Observable) {
+	'observable',
+	'socket'
+], function(Observable, IO) {
 	'use strict';
 	var api;
 	var connection;
 	var observable = new Observable();
 	var TOPIC = '/dots';
-
-	function init() {
-		window.WebSocket = window.WebSocket || window.MozWebSocket;
-		if (!window.WebSocket) {
-			console.error('Sorry, but your browser doesn\'t support WebSockets.');
-			return;
-		}
-		var wsProtocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
-		try {
-			connection = new WebSocket(wsProtocol + window.location.host + '/' + TOPIC, 'echo-protocol');
-		} catch (e) {
-			console.error(e.message);
-		}
-	}
+	var socket = IO(TOPIC);
 
 	function initEvents() {
-		connection.onopen = function () {
-
-		};
-
-		connection.onerror = function (error) {
-
-		};
-
-		connection.onmessage = function (message) {
+		socket.on('connection', function(socket){
+			//TODO
+		});
+		socket.on('message', function(message){
 			var data;
 			if (message.data) {
 				data = JSON.parse(message.data);
@@ -38,19 +21,17 @@ define([
 					observable.propertyChange(data.data.type, data.data);
 				}
 			}
-		};
+		});
 	}
-
-	init();
-	if (!connection) {
-		return;
-	}
-
 
 	initEvents();
 
 	function sendData(data) {
-		connection.send(JSON.stringify(data));
+		new Promise(function(resolve) {
+			socket.emit('dots', JSON.stringify(data), function(response) {
+				resolve(response);
+			});
+		});
 	}
 
 	api = {
@@ -61,7 +42,8 @@ define([
 		},
 		listen: {
 			add_dot: 'add_dot',
-			add_client: 'add_client'
+			add_client: 'add_client',
+			invite_player: 'invite_player'
 		}
 	};
 	return api;
