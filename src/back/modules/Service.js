@@ -14,6 +14,14 @@ var service = (function() {
         }
     }
 
+    function createInvitePack(fromClientId, toClientId, action) {
+        return createGenericPack(api.event.invite, {
+            from: fromClientId,
+            to: toClientId,
+            action: action
+        });
+    }
+
     function addDefaultListener(type) {
         return function(data) {
             observable.propertyChange(type, data);
@@ -41,10 +49,15 @@ var service = (function() {
             });
             return api;
         },
-        notifyClient: function(client, type, data) {
-            var pack = createGenericPack(type, data);
+        notifyClient: function(client, pack) {
             client.getConnection().sendData(pack, TYPE);
             return api;
+        },
+        inviteClient: {
+            ask: function(fromClient, toClient) {
+                var pack = createInvitePack(fromClient.getId(), toClient.getId(), 'ask');
+                api.notifyClient(toClient, pack);
+            }
         },
         on: function(event, listener) {
             observable.addListener(event, listener);

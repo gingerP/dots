@@ -46,9 +46,7 @@ var Business = (function() {
             if (partnerId) {
                 var partner = utils.getClientById(partnerId);
                 if (partner) {
-                    Service.notifyClients(partner, Service.event.invite, {
-                        action: 'ask'
-                    });
+                    Service.inviteClient.ask(partner);
                 } else {
                     logger.warn('Didnt find client for id \'' + partnerId + '\'');
                 }

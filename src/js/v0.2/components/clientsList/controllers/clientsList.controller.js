@@ -13,7 +13,7 @@ define([
 	function ClientsListController($scope) {
 		vm = this;
 		scope = $scope;
-		vm.clientsList = [{id: 111111111111111111}];
+		vm.clientsList = [];
 
 		Business.addListener(Business.listen.add_client, listenPlayers, true);
 
