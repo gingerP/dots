@@ -6,6 +6,7 @@ define([
 
     var observable = new Observable();
     var api;
+    var myself;
     var createPack = {
         invite: function(client, action) {
             return createGenericPack(
@@ -42,28 +43,35 @@ define([
 
     }
 
+    function getMyself() {
+        return Transport.getMyself();
+    }
+
     api = {
         on: listen,
         emit: {
             addDot: addDot,
             invitePlayer: invitePlayer,
             cancelGame: cancelGame,
-            invite: {
-                ask: function(client) {
-                    return Transport.sendData(createPack.invite(client, 'ask'));
-                },
-                success: function(client) {
-                    return Transport.sendData(createPack.invite(client, 'success'));
-                },
-                reject: function(client) {
-                    return Transport.sendData(createPack.invite(client, 'reject'));
-                }
+            getMyself: getMyself,
+            clientReconnect: function(client) {
+                return Transport.send(client, 'client_reconnect');
+            },
+            newClient: function() {
+                return Transport.send({}, 'new_client');
+            },
+            inviteAsk: function(client) {
+                return Transport.send(createPack.invite(client, 'invite_player'));
+            },
+            inviteSuccess: function(client) {
+                return Transport.send(createPack.invite(client, 'success_invite_player'));
+            },
+            inviteReject: function(client) {
+                return Transport.send(createPack.invite(client, 'reject_invite_player'));
+            },
+            getClients: function getClients() {
+                return Transport.send({}, 'get_clients_list');
             }
-        },
-        event: {
-            invite: 'invite',
-            add_dot: 'add_dot',
-            add_client: 'add_client'
         },
         getId: function() {
           return Transport.getId();

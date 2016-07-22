@@ -325,7 +325,7 @@ define([
     }
 
     function init() {
-        Backend.on(Backend.event.add_dot, function listenEnemyAddDot() {
+       /* Backend.on(Backend.event.add_dot, function listenEnemyAddDot() {
 
         });
 
@@ -336,8 +336,8 @@ define([
         });
 
         Backend.on(Backend.event.invite, function invitePlayer(client) {
-
-        });
+            observable.propertyChange(api.listen.invite_player, client);
+        });*/
     }
 
     api = {

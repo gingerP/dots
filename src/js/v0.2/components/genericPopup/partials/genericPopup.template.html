@@ -1,4 +1,6 @@
-<div class="popup-container">
-    <ng-transclude></ng-transclude>
+<div ng-class="{'visible-popup': genericPopupCtrl.isVisible}">
+    <div class="popup-container">
+        <ng-transclude></ng-transclude>
+    </div>
+    <div class="popup-shadow"></div>
 </div>
-<div class="popup-shadow"></div>

@@ -1,14 +1,17 @@
 define([
 	'angular',
+	'lodash',
 	'module.game.business',
+	'module.backend.service',
 	'../clientsList.module'
-], function(angular, Business) {
+], function(angular, _, Business, Service) {
 	'use strict';
 
 	angular.module('clientsList.module').controller('clientsListCtrl', ClientsListController);
 
 	var vm,
-		scope;
+		scope,
+		myself;
 
 	function ClientsListController($scope) {
 		vm = this;
@@ -23,7 +26,16 @@ define([
 			}, function() {
 
 			})
-		}
+		};
+
+		Service.emit.getMyself().then(function(client) {
+			myself = client;
+		}).then(function() {
+			return Service.emit.getClients();
+		}).then(function(clients) {
+			vm.clientsList = _.reject(clients, {connection_id: myself.connection_id});
+			$scope.$apply();
+		});
 	}
 
 	function listenPlayers(pack) {

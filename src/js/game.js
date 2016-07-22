@@ -2,7 +2,10 @@ require.config({
 	baseUrl: "/static/js/v0.2/",
 	paths: {
 		'angular': './angularAMD',
+		'local.storage': '../node_modules/lockr/lockr.min',
+		'q': '../node_modules/q/q',
 		'angularJs': '../node_modules/angular/angular.min',
+		'lodash': '../node_modules/lodash/lodash.min',
 		'i18n': './module.i18n',
 		'react': '../ext/react-15.0.2',
 		'reactDom': '../ext/react-dom-15.0.2',

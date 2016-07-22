@@ -24,16 +24,19 @@ WSServer.prototype.init = function(removeTimeout) {
 
 WSServer.prototype._initEvents = function() {
 	var inst = this;
+	this.ws.on('reconnection', function() {
+
+	});
 	this.ws.on('connection', function (connection) {
 		logger.info('Peer "%s" connected.', connection.client.conn.remoteAddress);
 		var wrapper = inst.addConnection('client', connection, connection.id);
-		connection.on('dots', function (message) {
+		connection.on('dots', function (message, callback) {
 			try {
 				var data = inst.extractMessage(message);
+				inst.propertyChange(listenerToIn + data.type, { client: wrapper, data: data, callback: callback});
 			} catch (e) {
 				logger.error('While parsing input message: ' + e.message);
 			}
-			inst.propertyChange(listenerToIn + data.type, { client: wrapper, data: data });
 		});
 		connection.on('disconnect', function (reasonCode, description) {
 			inst.removeConnection(this, {code: reasonCode, description: description});
@@ -116,6 +119,16 @@ WSServer.prototype.createConnectionWrapper = function(connection, topic, id) {
 		},
 		equalConnection: function(con) {
 			return connection == con;
+		},
+		registerListeners: function(key) {
+			connection.on(key, function (message, callback) {
+				try {
+					var data = inst.extractMessage(message);
+					inst.propertyChange(key, { client: api, data: data, callback: callback});
+				} catch (e) {
+					logger.error('While parsing input message: ' + e.message);
+				}
+			});
 		}
 	};
 	api[topicEvent] = function(data) {

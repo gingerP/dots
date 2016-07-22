@@ -1,4 +1,7 @@
+var constants = require('../constants');
+
 GenericService = function() {};
+
 GenericService.prototype.setManager = function(manager) {
     this.manager = manager;
 };
@@ -41,6 +44,12 @@ GenericService.prototype.list = function(mappings) {
             resolve(entities);
         });
     });
+};
+
+GenericService.prototype.postConstructor = function() {};
+
+GenericService.prototype.getName = function() {
+    return constants.GENERIC_SERVICE;
 };
 
 module.exports = {

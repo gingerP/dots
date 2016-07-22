@@ -1,5 +1,6 @@
 define([
 	'angular',
+	'./game/components/game.component',
 	'./clientsList/components/clientsList.component',
 	'./currentPlayer/components/currentPlayer.component',
 	'./playerScore/components/playerScore.component',
@@ -8,6 +9,7 @@ define([
 	'use strict';
 
 	angular.module('app', [
+		'game.module',
 		'clientsList.module',
 		'currentPlayer.module',
 		'playerScore.module',

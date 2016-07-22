@@ -46,7 +46,7 @@ var Business = (function() {
             if (partnerId) {
                 var partner = utils.getClientById(partnerId);
                 if (partner) {
-                    Service.inviteClient.ask(partner);
+                    Service.inviteClient.ask(pack.client, partner);
                 } else {
                     logger.warn('Didnt find client for id \'' + partnerId + '\'');
                 }
@@ -107,7 +107,7 @@ var Business = (function() {
                 return ids.indexOf(client.getId()) >= 0;
             });
         }
-    }
+    };
 
     function notifyClients(pack, clients) {
         _.forEach(_.isArray(clients) ? clients : [clients], function(client) {
@@ -115,13 +115,23 @@ var Business = (function() {
         });
     }
 
+    function preProcessInboundData(handler) {
+        //TODO is client from connection has the same id as client from list ?
+        return function(data) {
+            handler({
+                client: utils.getClientById(data.client.getId()),
+                data: data.data
+            });
+        }
+    }
+
     function init(wsServer) {
         var e = Service.event;
         Service.init(wsServer);
         Service.on(e.new_connection, listener.newConnection);
-        Service.on(e.add_dot, listener.addDot);
-        Service.on(e.update_client_id, listener.updateClientId);
-        Service.on(e.invite, listener.inviteToPlay);
+        Service.on(e.add_dot, preProcessInboundData(listener.addDot));
+        Service.on(e.update_client_id, preProcessInboundData(listener.updateClientId));
+        Service.on(e.invite, preProcessInboundData(listener.inviteToPlay));
     }
 
     api = {

@@ -6,7 +6,9 @@ define([
     'use strict';
 
     angular.module('genericPopup.module').component('genericPopup', {
-        bindings: {},
+        bindings: {
+            isVisible: '>'
+        },
         controller: 'genericPopupCtrl',
         controllerAs: 'genericPopupCtrl',
         templateUrl: '/static/js/v0.2/components/genericPopup/partials/genericPopup.template.html',
