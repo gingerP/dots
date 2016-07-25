@@ -4,7 +4,7 @@ define([
 	'module.game.business',
 	'module.backend.service',
 	'../clientsList.module'
-], function(angular, _, Business, Service) {
+], function(angular, _, Business, backend) {
 	'use strict';
 
 	angular.module('clientsList.module').controller('clientsListCtrl', ClientsListController);
@@ -21,19 +21,19 @@ define([
 		Business.addListener(Business.listen.add_client, listenPlayers, true);
 
 		vm.invite = function invite(client) {
-			Business.invite.ask(client.id).then(function() {
+			Business.invite.ask(client._id).then(function() {
 
 			}, function() {
 
 			})
 		};
 
-		Service.emit.getMyself().then(function(client) {
+		backend.emit.getMyself().then(function(client) {
 			myself = client;
 		}).then(function() {
-			return Service.emit.getClients();
+			return backend.emit.getClients();
 		}).then(function(clients) {
-			vm.clientsList = _.reject(clients, {connection_id: myself.connection_id});
+			vm.clientsList = _.reject(clients, {_id: myself._id});
 			$scope.$apply();
 		});
 	}

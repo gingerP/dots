@@ -1,8 +1,9 @@
 define([
     'angular',
     'module.game.business',
+    'module.backend.service',
     '../currentPlayer.module'
-], function (angular, Business) {
+], function (angular, Business, backend) {
     'use strict';
 
     angular.module('currentPlayer.module').controller('currentPlayerCtrl', CurrentPlayerController);
@@ -10,8 +11,8 @@ define([
     function CurrentPlayerController($scope) {
         var vm = this,
             scope = $scope;
-        vm.players = [];
-        vm.activePlayer;
+
+        vm.myself;
 
         vm.nextPlayer = function nextPlayer() {
 
@@ -19,21 +20,11 @@ define([
 
         init();
 
-        Business.addListener(Business.listen.add_active_player, listenAddActivePlayers, true);
-        Business.addListener(Business.listen.change_active_player, listenActivePlayer, true);
-
-        function listenAddActivePlayers() {
-            vm.players = Business.getPlayers();
-            scope.$apply();
-        }
-
-        function listenActivePlayer(player) {
-            vm.activePlayer = player;
-        }
-
         function init() {
-            vm.players = Business.getPlayers();
-            vm.activePlayer = Business.getActivePlayer();
+            backend.emit.getMyself().then(function(client) {
+                vm.myself = client;
+                $scope.$apply();
+            })
         }
     }
 });

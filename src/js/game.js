@@ -2,6 +2,7 @@ require.config({
 	baseUrl: "/static/js/v0.2/",
 	paths: {
 		'angular': './angularAMD',
+		'storage': '../ext/basil.min',
 		'local.storage': '../node_modules/lockr/lockr.min',
 		'q': '../node_modules/q/q',
 		'angularJs': '../node_modules/angular/angular.min',

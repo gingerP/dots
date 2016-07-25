@@ -1,6 +1,7 @@
 var events = require('../events');
 var constants = require('../constants');
 var GenericController = require('./generic.controller').class;
+var _ = require('lodash');
 
 function GameController() {}
 

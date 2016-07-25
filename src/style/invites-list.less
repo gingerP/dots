@@ -1,0 +1,28 @@
+@import (reference) "./variables";
+
+invites-list {
+  position: relative;
+  width: 100%;
+
+  .empty-invite-item,
+  .invite-item {
+    height: @client-item-height;
+    line-height: @client-item-height;;
+  }
+
+  .invite-item {
+    padding: 0 10px;
+    transition: background-color .2s;
+    background-color: #ffffff;
+    cursor: pointer;
+    &:hover {
+      background-color: lighten(@color-dark, 65%);
+    }
+  }
+
+  .empty-invite-item {
+    color: darkgray;
+    text-align: center;
+  }
+
+}

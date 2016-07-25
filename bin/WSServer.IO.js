@@ -8,6 +8,7 @@ var listenerToIn = 'in::';
 function WSServer(http) {
 	this.http = http;
 	this.connections = {};
+	this.connectionWrappers = {};
 	this.listeners = {};
 }
 
@@ -74,9 +75,11 @@ WSServer.prototype.addConnection = function(topic, connection, id) {
 		return;
 	}
 	this.connections[topic] = this.connections[topic] || [];
+	this.connectionWrappers[topic] = this.connectionWrappers[topic] || [];
 	if (this.connections[topic].indexOf(connection) < 0) {
-		this.connections[topic].push(connection);
 		connectionWraper = this.createConnectionWrapper(connection, topic, id);
+		this.connections[topic].push(connection);
+		this.connectionWrappers[topic].push(connectionWraper);
 		this.addListener(topic + listenerToOut, connectionWraper);
 		this.propertyChange('new_connection', connectionWraper);
 	}
@@ -88,12 +91,19 @@ WSServer.prototype.getListeners = function(topic) {
 };
 
 WSServer.prototype.removeConnection = function(connection, reason) {
-	var index;
+	var index, wrapperIndex;
 	for(var topic in this.connections) {
 		index = this.connections[topic].indexOf(connection);
+		wrapperIndex = this.connectionWrappers[topic].indexOf(connection);
 		if (index > -1) {
 			this.connections[topic].splice(index, 1);
 			this.propertyChange('remove_connection', [connection, reason]);
+		}
+		for(wrapperIndex = 0; wrapperIndex < this.connectionWrappers[topic].length; wrapperIndex++) {
+			if (this.connectionWrappers[topic][wrapperIndex].equalConnection(connection)) {
+				this.connectionWrappers[topic].splice(wrapperIndex, 1);
+				break;
+			}
 		}
 	}
 	return this;
@@ -115,6 +125,9 @@ WSServer.prototype.createConnectionWrapper = function(connection, topic, id) {
 				connection.emit(type, data, function(data) {
 					resolve(data);
 				});
+				/*connection.send(type, data, function(data) {
+					resolve(data);
+				});*/
 			});
 		},
 		equalConnection: function(con) {
@@ -135,6 +148,24 @@ WSServer.prototype.createConnectionWrapper = function(connection, topic, id) {
 		connection.sendUTF(inst.prepareMessage(data, 'global_' + topic));
 	};
 	return api;
+};
+
+WSServer.prototype.getWrappers = function(ids) {
+	if (!ids) {
+		return [];
+	}
+	var result = [];
+	var wrapperIndex;
+	var idList = Array.isArray(ids) ? ids : [ids];
+
+	for(var topic in this.connections) {
+		for(wrapperIndex = 0; wrapperIndex < this.connectionWrappers[topic].length; wrapperIndex++) {
+			if (ids.indexOf(this.connectionWrappers[topic][wrapperIndex].getId()) > -1) {
+				result.push(this.connectionWrappers[topic][wrapperIndex]);
+			}
+		}
+	}
+	return result;
 };
 
 WSServer.prototype.prepareMessage = function(data, type, extend) {

@@ -1,13 +1,8 @@
 @import (reference) "./variables";
 
 clients-list {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: @clients-list-width;
-  min-height: @clients-list-min-height;
-  background-color: #ffffff;
-  box-shadow: 0 1px 2px #C1C1C1;
+  position: relative;
+  width: 100%;
 
   .clients-placeholder {
     margin: 5px 0;
@@ -22,9 +17,10 @@ clients-list {
     transition: background-color .2s;
     background-color: #ffffff;
     position: relative;
+    cursor: pointer;
 
     &:hover {
-      background-color: lighten(@color-dark, 50%);
+      background-color: lighten(@color-dark, 65%);
       .btn-invite {
         right: 0;
       }

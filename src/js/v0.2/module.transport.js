@@ -3,7 +3,7 @@ define([
     'socket',
     'q',
     'local.storage'
-], function (Observable, io, q, LocalStorage) {
+], function (Observable, io, q, Storage) {
     'use strict';
 
     var api;
@@ -13,6 +13,7 @@ define([
     var servicePoints = [];
     var connectionTimes = 0;
     var myself;
+    //var storage = initStorage(Storage);
 
     function initEvents() {
         socket.on('disconnect', function () {
@@ -34,6 +35,22 @@ define([
         });
     }
 
+    function initStorage() {
+        return new Storage({
+            // Namespace. Namespace your Basil stored data
+            // default: 'b45i1'
+            namespace: 'foo',
+
+            // storages. Specify all Basil supported storages and priority order
+            // default: `['local', 'cookie', 'session', 'memory']`
+            storages: ['cookie', 'session'],
+
+            // expireDays. Default number of days before cookies expiration
+            // default: 365
+            expireDays: 31
+        });
+    }
+
     initEvents();
 
     function send(data, key) {
@@ -46,18 +63,18 @@ define([
 
     function updateClient(connectionTimes) {
         if (connectionTimes === 1) {
-            myself = LocalStorage.get('client');
+            myself = Storage.get('client');
             connectionTimes += myself ? 1 : 0;
         }
         if (connectionTimes === 1) {
-            api.send({}, 'new_client').then(function(data) {
+            api.send({}, 'new_client').then(function (data) {
                 myself = data;
-                LocalStorage.set('client', myself);
+                Storage.set('client', myself);
             });
         } else {
-            api.send(myself, 'client_reconnect').then(function(data) {
+            api.send(myself, 'client_reconnect').then(function (data) {
                 myself = data;
-                LocalStorage.set('client', myself);
+                Storage.set('client', myself);
             });
         }
     }
@@ -65,16 +82,12 @@ define([
     api = {
         send: send,
         addListener: function (property, listener) {
-            observable.addListener(property, listener);
+            socket.on(property, listener);
+            //observable.addListener(property, listener);
             return api;
         },
-        getMyself: function() {
-            if (!myself) {
-                return api.send({}, 'get_myself');
-            }
-            return q(function() {
-                return myself;
-            });
+        getMyself: function () {
+            return api.send({}, 'get_myself');
         },
         listen: {
             add_dot: 'add_dot',

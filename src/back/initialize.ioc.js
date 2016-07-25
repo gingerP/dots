@@ -29,6 +29,7 @@ function initialize(wss) {
     _.merge(container, initializeIOCType('controllers', '.controller.js'));
     _.merge(container, initializeIOCType('services', '.service.js'));
     _.merge(container, initializeIOCType('db', '.manager.js'));
+    _.merge(container, initializeIOCType('transmitters', '.transmitter.js'));
     container[constants.WSS] = wss;
     return container;
 }

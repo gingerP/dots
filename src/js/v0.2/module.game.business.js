@@ -377,13 +377,13 @@ define([
 
         invite: {
             ask: function(client) {
-                return Backend.emit.invite.ask(client);
+                return Backend.emit.inviteAsk(client);
             },
             success: function(client) {
-                return Backend.emit.invite.success(client);
+                return Backend.emit.inviteSuccess(client);
             },
             reject: function(client) {
-                return Backend.emit.invite.reject(client);
+                return Backend.emit.inviteReject(client);
             }
         },
         listen: {

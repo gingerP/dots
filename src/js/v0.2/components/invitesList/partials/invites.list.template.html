@@ -1,0 +1,7 @@
+<div class="invites-list">
+    <div class="accordion-header">Invites</div>
+    <div class="empty-invite-item" ng-if="!invitesListCtrl.invitesList.length">Empty</div>
+    <div ng-repeat="invite in invitesListCtrl.invitesList" class="invite-item">
+        <div ng-bind="invite.name"></div>
+    </div>
+</div>

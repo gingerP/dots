@@ -8,21 +8,24 @@ define([
     var api;
     var myself;
     var createPack = {
-        invite: function(client, action) {
+        invite: function(type, client) {
             return createGenericPack(
-                api.event.invite,
-                client,
-                {
-                    action: action
-                }
+                type,
+                client
             )
         }
     };
+    var events = {
+        invite_player: 'invite_player',
+        success_invite_player: 'success_invite_player',
+        reject_invite_player: 'reject_invite_player'
+    };
+
     function createGenericPack(type, clients, extend) {
         return {
             type: type,
             clients: Array.isArray(clients) ? clients : [clients],
-            extend: extend
+            extend: extend || {}
         }
     }
 
@@ -47,8 +50,19 @@ define([
         return Transport.getMyself();
     }
 
+    function createListener(event) {
+        return function(listener) {
+            listen(event, listener);
+        }
+    }
+
     api = {
         on: listen,
+        listen: {
+            invitePlayer: createListener(events.invite_player),
+            inviteSuccessPlayer: createListener(events.success_invite_player),
+            inviteRejectPlayer: createListener(events.reject_invite_player)
+        },
         emit: {
             addDot: addDot,
             invitePlayer: invitePlayer,
@@ -61,13 +75,13 @@ define([
                 return Transport.send({}, 'new_client');
             },
             inviteAsk: function(client) {
-                return Transport.send(createPack.invite(client, 'invite_player'));
+                return Transport.send(createPack.invite(events.invite_player, client), events.invite_player);
             },
             inviteSuccess: function(client) {
-                return Transport.send(createPack.invite(client, 'success_invite_player'));
+                return Transport.send(createPack.invite(events.success_invite_player, client), events.success_invite_player);
             },
             inviteReject: function(client) {
-                return Transport.send(createPack.invite(client, 'reject_invite_player'));
+                return Transport.send(createPack.invite(events.reject_invite_player, client), events.reject_invite_player);
             },
             getClients: function getClients() {
                 return Transport.send({}, 'get_clients_list');

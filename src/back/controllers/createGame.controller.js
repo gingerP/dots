@@ -19,8 +19,10 @@ CreateGameController.prototype.onRejectPlayer = function (handler) {
     this.wss.addListener(events.reject_invite_player, handler);
 };
 
-CreateGameController.prototype.invitePlayer = function () {
-
+CreateGameController.prototype.invitePlayer = function (fromClient, toClient) {
+    this.transmitter.send(toClient.connection_id, events.invite_player, {
+        from: fromClient
+    });
 };
 
 CreateGameController.prototype.rejectPlayer = function () {
@@ -37,6 +39,7 @@ CreateGameController.prototype.getName = function () {
 
 CreateGameController.prototype.postConstructor = function(ioc) {
     this.wss = ioc[constants.WSS];
+    this.transmitter = ioc[constants.COMMON_TRANSMITTER];
 };
 
 

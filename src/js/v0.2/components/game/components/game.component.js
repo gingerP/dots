@@ -5,7 +5,8 @@ define([
     'components/clientsList/components/clientsList.component',
     'components/currentPlayer/components/currentPlayer.component',
     'components/playerScore/components/playerScore.component',
-    'components/toolbar/components/toolbar.component'
+    'components/toolbar/components/toolbar.component',
+    'components/accordion/components/accordion.component'
 ], function(angular) {
     'use strict';
 
