@@ -1,7 +1,16 @@
 <div class="invites-list">
-    <div class="accordion-header">Invites</div>
-    <div class="empty-invite-item" ng-if="!invitesListCtrl.invitesList.length">Empty</div>
-    <div ng-repeat="invite in invitesListCtrl.invitesList" class="invite-item">
-        <div ng-bind="invite.name"></div>
+    <div class="accordion-header"
+         ng-click="invitesListCtrl.triggerListVisibility()">
+        <span>Invites</span>
+        <span class="invites-number" ng-show="invitesListCtrl.invitesList.length"
+              ng-bind="invitesListCtrl.invitesList.length"></span>
+    </div>
+    <div ng-show="invitesListCtrl.isInvitesListVisible">
+        <div class="empty-invite-item" ng-if="!invitesListCtrl.invitesList.length">Empty</div>
+        <div ng-repeat="invite in invitesListCtrl.invitesList" class="invite-item">
+            <span ng-bind="invite.name"></span>
+            <button class="btn-override btn-invite-submit" ng-click="clientsListCtrl.submitInvite(invite)"></button>
+            <button class="btn-override btn-invite-reject" ng-click="clientsListCtrl.rejectInvite(invite)"></button>
+        </div>
     </div>
 </div>

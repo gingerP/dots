@@ -11,6 +11,7 @@ invites-list {
   }
 
   .invite-item {
+    position: relative;
     padding: 0 10px;
     transition: background-color .2s;
     background-color: #ffffff;
@@ -23,6 +24,43 @@ invites-list {
   .empty-invite-item {
     color: darkgray;
     text-align: center;
+  }
+
+  .invites-number {
+    border-radius: 12px;
+    min-width: 24px;
+    display: block;
+    position: absolute;
+    left: 0;
+    top: 0;
+    line-height: 24px;
+    margin: 7px;
+  }
+
+  .btn-invite-submit,
+  .btn-invite-reject {
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    margin: 5px;
+    background-repeat: no-repeat;
+    background-position: center;
+    position: absolute;
+    border: 1px solid transparent;
+    transition: border-color .5s;
+    border-radius: 50%;
+    &:hover{
+      border-color: @color-dark;
+    }
+  }
+
+  .btn-invite-submit {
+    background-image: url('/static/images/submit.png');
+    right:40px;
+  }
+  .btn-invite-reject {
+    background-image: url('/static/images/cancel.png');
+    right: 0px;
   }
 
 }

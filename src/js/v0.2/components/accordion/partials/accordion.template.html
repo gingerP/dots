@@ -1,5 +1,5 @@
 <div class="accordion">
-    <invites-list></invites-list>
-    <hr class="delimiter">
+    <invites-list ng-show="accordionCtrl.isInvitesVisible"></invites-list>
+    <hr ng-show="accordionCtrl.isInvitesVisible" class="delimiter">
     <clients-list></clients-list>
 </div>
