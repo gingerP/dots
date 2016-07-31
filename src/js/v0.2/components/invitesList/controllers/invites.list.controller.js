@@ -2,7 +2,7 @@ define([
     'angular',
     'module.backend.service',
     '../invites.list.module',
-    '../../game/constant/events.constant'
+    '../../constants/events.constant'
 ], function(angular, backend) {
     'use strict';
 

@@ -2,8 +2,8 @@ define([
     'observable',
     'socket',
     'q',
-    'local.storage'
-], function (Observable, io, q, Storage) {
+    'module.storage'
+], function (Observable, io, q, storage) {
     'use strict';
 
     var api;
@@ -13,7 +13,6 @@ define([
     var servicePoints = [];
     var connectionTimes = 0;
     var myself;
-    //var storage = initStorage(Storage);
 
     function initEvents() {
         socket.on('disconnect', function () {
@@ -35,22 +34,6 @@ define([
         });
     }
 
-    function initStorage() {
-        return new Storage({
-            // Namespace. Namespace your Basil stored data
-            // default: 'b45i1'
-            namespace: 'foo',
-
-            // storages. Specify all Basil supported storages and priority order
-            // default: `['local', 'cookie', 'session', 'memory']`
-            storages: ['cookie', 'session'],
-
-            // expireDays. Default number of days before cookies expiration
-            // default: 365
-            expireDays: 31
-        });
-    }
-
     initEvents();
 
     function send(data, key) {
@@ -63,18 +46,18 @@ define([
 
     function updateClient(connectionTimes) {
         if (connectionTimes === 1) {
-            myself = Storage.get('client');
+            myself = storage.getClient();
             connectionTimes += myself ? 1 : 0;
         }
         if (connectionTimes === 1) {
             api.send({}, 'new_client').then(function (data) {
                 myself = data;
-                Storage.set('client', myself);
+                storage.setClient(myself);
             });
         } else {
             api.send(myself, 'client_reconnect').then(function (data) {
                 myself = data;
-                Storage.set('client', myself);
+                storage.setClient(myself);
             });
         }
     }

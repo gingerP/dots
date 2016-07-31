@@ -2,7 +2,8 @@ var constants = require('../constants');
 var events = require('../events');
 var GenericController = require('./generic.controller').class;
 
-function CreateGameController() {}
+function CreateGameController() {
+}
 
 CreateGameController.prototype = Object.create(GenericController.prototype);
 CreateGameController.prototype.constructor = CreateGameController;
@@ -25,19 +26,35 @@ CreateGameController.prototype.invitePlayer = function (fromClient, toClient) {
     });
 };
 
-CreateGameController.prototype.rejectPlayer = function () {
-
+CreateGameController.prototype.rejectPlayer = function (fromClient, toClient) {
+    this.transmitter.send(fromClient.connection_id, events.reject_invite_player, {
+        to: toClient
+    });
 };
 
-CreateGameController.prototype.successPlayer = function () {
+CreateGameController.prototype.rejectPlayerBeLate = function (fromClient, toClient) {
+    this.transmitter.send(fromClient.connection_id, events.reject_invite_player_to_late, {
+        to: toClient
+    });
+};
 
+CreateGameController.prototype.successPlayer = function (fromClient, toClient) {
+    this.transmitter.send(fromClient.connection_id, events.success_invite_player, {
+        to: toClient
+    })
+};
+
+CreateGameController.prototype.successPlayerBeLate = function (fromClient, toClient) {
+    this.transmitter.send(toClient.connection_id, events.success_invite_player_to_late, {
+        from: fromClient
+    })
 };
 
 CreateGameController.prototype.getName = function () {
     return constants.CREATE_GAME_CONTROLLER;
 };
 
-CreateGameController.prototype.postConstructor = function(ioc) {
+CreateGameController.prototype.postConstructor = function (ioc) {
     this.wss = ioc[constants.WSS];
     this.transmitter = ioc[constants.COMMON_TRANSMITTER];
 };

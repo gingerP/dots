@@ -1,7 +1,8 @@
 define([
     'module.transport',
-    'module.observable'
-], function(Transport, Observable) {
+    'module.observable',
+    'module.storage'
+], function(Transport, Observable, storage) {
     'use strict';
 
     var observable = new Observable();
@@ -17,8 +18,10 @@ define([
     };
     var events = {
         invite_player: 'invite_player',
+        reject_invite_player: 'reject_invite_player',
+        reject_invite_player_to_late: 'reject_invite_player_to_late',
         success_invite_player: 'success_invite_player',
-        reject_invite_player: 'reject_invite_player'
+        success_invite_player_to_late: 'success_invite_player_to_late'
     };
 
     function createGenericPack(type, clients, extend) {
@@ -61,7 +64,9 @@ define([
         listen: {
             invitePlayer: createListener(events.invite_player),
             inviteSuccessPlayer: createListener(events.success_invite_player),
-            inviteRejectPlayer: createListener(events.reject_invite_player)
+            inviteSuccessPlayerToLate: createListener(events.success_invite_player_to_late),
+            inviteRejectPlayer: createListener(events.reject_invite_player),
+            inviteRejectPlayerToLate: createListener(events.reject_invite_player_to_late)
         },
         emit: {
             addDot: addDot,

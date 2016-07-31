@@ -1,5 +1,9 @@
 @import (reference) "./variables";
 
+@buttons-container-size: 150px;
+@buttons-reject: 100px;
+@buttons-succes: 50px;
+
 clients-list {
   position: relative;
   width: 100%;
@@ -21,9 +25,19 @@ clients-list {
 
     &:hover {
       background-color: lighten(@color-dark, 65%);
-      .btn-invite {
-        right: 0;
+      .invite-btns-container:not(.ng-hide) {
+        .invite-mark {
+          right: -@client-item-height;
+        }
+        .btn-invite-submit,
+        .btn-invite-reject {
+          top: 0;
+        }
+        button {
+          opacity: 1;
+        }
       }
+
     }
     .btn-invite {
       margin: calc((@client-item-height - @client-item-btn-height) / 2);
@@ -34,6 +48,66 @@ clients-list {
       transition: right .3s;
       border-radius: 50%;
       cursor: pointer;
+    }
+
+    .invite-btns-container {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 40px;
+      width: @buttons-container-size;
+
+      button {
+        height: 30px;
+        line-height:30px;
+        border: 1px solid white;
+        border-radius: 2px;
+        cursor: pointer;
+        font-size: 1em;
+        opacity: 0;
+        transition: opacity .3s;
+      }
+
+      .invite-mark {
+        border: 1px solid lighten(#22502C, 30%);
+        border-radius: 2px;
+        background-color: #6bd181;
+        font-size: .8em;
+        color: #22502C;
+        display: table;
+        padding: 3px;
+        line-height: .8em;
+        margin: auto;
+        position: absolute;
+        top: 0;
+        right: 20px;
+        bottom: 0;
+        opacity: 1;
+        transition: opacity .6s, right .2s;
+      }
+
+      .btn-invite-submit,
+      .btn-invite-reject {
+        top: calc(@client-item-height * 2);
+        transition: top .3s;
+        opacity: 1;
+        position: relative;
+        float: left;
+        margin: 5px 0;
+      }
+
+      .btn-invite-submit {
+        width: calc(@buttons-succes - 2);
+      }
+      .btn-invite-reject {
+        width: calc(@buttons-reject - 2);
+      }
+
+        &.ng-hide {
+        .invite-mark {
+          opacity: 0;
+        }
+      }
     }
   }
 

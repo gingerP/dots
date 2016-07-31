@@ -1,7 +1,9 @@
 {
     "invite_player": "invite_player",
     "reject_invite_player": "reject_invite_player",
+    "reject_invite_player_to_late": "reject_invite_player_to_late",
     "success_invite_player": "success_invite_player",
+    "success_invite_player_to_late": "success_invite_player_to_late",
     "get_clients_list": "get_clients_list",
     "new_client": "new_client",
     "client_reconnect": "client_reconnect",

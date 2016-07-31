@@ -1,22 +1,27 @@
 define([
 	'angular',
 	'lodash',
+	'components/constants/events.constant',
+	'module.storage',
 	'module.game.business',
 	'module.backend.service',
-	'../clientsList.module'
-], function(angular, _, Business, backend) {
+	'components/clientsList/factories/clientsListUtil.factory',
+	'components/clientsList/clientsList.module'
+], function(angular, _, events, storage, Business, backend) {
 	'use strict';
 
 	angular.module('clientsList.module').controller('clientsListCtrl', ClientsListController);
 
-	var vm,
-		scope,
-		myself;
+	function ClientsListController($rootScope, $scope, clientsListUtilFactory) {
+		var vm = this,
+			myself;
 
-	function ClientsListController($scope) {
-		vm = this;
-		scope = $scope;
 		vm.clientsList = [];
+
+		function listenPlayers(pack) {
+			vm.clientsList.push(pack);
+			$scope.$apply();
+		}
 
 		Business.addListener(Business.listen.add_client, listenPlayers, true);
 
@@ -28,19 +33,47 @@ define([
 			})
 		};
 
+		vm.submitInvite = function(toClient) {
+			backend.emit.inviteSuccess(toClient._id);
+		};
+
+		vm.rejectInvite = function(toClient) {
+			var client = _.find(vm.clientsList, {_id: toClient._id});
+			client.mode = 'common';
+			backend.emit.inviteReject(toClient._id);
+		};
+
 		backend.emit.getMyself().then(function(client) {
 			myself = client;
 		}).then(function() {
 			return backend.emit.getClients();
 		}).then(function(clients) {
+			clients = _.map(clients, clientsListUtilFactory.prepareClientForUI);
 			vm.clientsList = _.reject(clients, {_id: myself._id});
 			$scope.$apply();
 		});
-	}
 
-	function listenPlayers(pack) {
-		vm.clientsList.push(pack);
-		scope.$apply();
+		backend.listen.invitePlayer(function(message) {
+			if (message.from) {
+				clientsListUtilFactory.mergeInvite(message.from, vm.clientsList);
+				$scope.$apply();
+			}
+		});
+
+		backend.listen.inviteSuccessPlayer(function(message) {
+			if (message.from) {
+				clientsListUtilFactory.mergeInvite(message.from, vm.clientsList);
+				$scope.$apply();
+			}
+		});
+
+		backend.listen.inviteRejectPlayer(function(message) {
+			if (message.to) {
+				clientsListUtilFactory.mergeReject(message.to, vm.clientsList);
+				$scope.$apply();
+			}
+		});
+
 	}
 
 });
