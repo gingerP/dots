@@ -1,8 +1,22 @@
 <div class="current-player">
-    <div class="players-list">
+    <div class="myself-player player">
         <div class="player player-style">
             {{currentPlayerCtrl.myself.name}}
         </div>
     </div>
-    <a href="javascript:void(0)" type="button" class="player-next" ng-click="currentPlayerCtrl.nextPlayer()"></a>
+    <a href="javascript:void(0)" type="button" class="player-next" ng-click="currentPlayerCtrl.nextPlayer()">Next</a>
+    <div ng-show="currentPlayerCtrl.opponent" class="opponent-player opponent-block player">
+        <div class="player player-style">
+            {{currentPlayerCtrl.myself.name}}
+        </div>
+    </div>
+    <div ng-show="!currentPlayerCtrl.opponent" class="choose-opponent player">
+        <a href="javascript:void(0)" type="button" ng-click="currentPlayerCtrl.triggerOpenMenu()">Choose opponent...</a>
+    </div>
+    <div class="menu-open">
+
+    </div>
+    <div>
+        <notification></notification>
+    </div>
 </div>

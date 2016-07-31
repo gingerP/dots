@@ -7,7 +7,34 @@
   left: 0;
   position: absolute;
   margin: auto;
-  width: 200px;
+
+  .myself-player,
+  .opponent-player,
+  .choose-opponent {
+    position: absolute;
+  }
+
+  .myself-player {
+    left: 0;
+  }
+
+  .choose-opponent,
+  .opponent-player {
+    right: 0;
+  }
+
+  .choose-opponent a{
+    height: @toolbar-height;
+    line-height: @toolbar-height;
+    text-decoration: none;
+    border-bottom: 1px black dashed;
+    color: black;
+  }
+
+  >div,
+  >a {
+    float: left;
+  }
   .players-list {
     overflow: hidden;
     height: @toolbar-height;
@@ -21,15 +48,18 @@
 }
 
 .player-next {
-  background-color: @color_next_button;
-  width: @player-next-button;
-  height: @player-next-button;
+  background-color: #565177;
+  width: 120px;
+  height: @toolbar-height;
   position: absolute;
   top: 0;
-  right: -@toolbar-height;
-  margin: 5px;
-  border-radius: 50%;
-  box-shadow: 0px 0px 6px darken(@color_next_button, 15%);
+  right: 0;
+  bottom: 0;
+  left: 0;
+  margin: auto;
+  line-height: @toolbar-height;
+  text-align: center;
+  text-decoration: none;
 }
 
 .active-player {

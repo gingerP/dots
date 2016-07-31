@@ -1,13 +1,14 @@
 define([
 	'angular',
 	'lodash',
+	'components/utils/scope.utils',
 	'components/constants/events.constant',
 	'module.storage',
 	'module.game.business',
 	'module.backend.service',
 	'components/clientsList/factories/clientsListUtil.factory',
 	'components/clientsList/clientsList.module'
-], function(angular, _, events, storage, Business, backend) {
+], function(angular, _, scopeUtils, events, storage, Business, backend) {
 	'use strict';
 
 	angular.module('clientsList.module').controller('clientsListCtrl', ClientsListController);
@@ -53,23 +54,25 @@ define([
 			$scope.$apply();
 		});
 
-		backend.listen.invitePlayer(function(message) {
+
+		scopeUtils.onRoot($scope, events.INVITE, function(message) {
 			if (message.from) {
-				clientsListUtilFactory.mergeInvite(message.from, vm.clientsList);
+				$rootScope.$emit(events.INVITE, message.from);
+				clientsListUtilFactory.setInvite(message.from, vm.clientsList);
 				$scope.$apply();
 			}
 		});
 
-		backend.listen.inviteSuccessPlayer(function(message) {
+		scopeUtils.onRoot($scope, events.CREATE_GAME, function(message) {
 			if (message.from) {
-				clientsListUtilFactory.mergeInvite(message.from, vm.clientsList);
+				clientsListUtilFactory.setSuccess(message.from, vm.clientsList);
 				$scope.$apply();
 			}
 		});
 
-		backend.listen.inviteRejectPlayer(function(message) {
+		scopeUtils.onRoot($scope, events.INVITE_REJECT, function(message) {
 			if (message.to) {
-				clientsListUtilFactory.mergeReject(message.to, vm.clientsList);
+				clientsListUtilFactory.setReject(message.to, vm.clientsList);
 				$scope.$apply();
 			}
 		});

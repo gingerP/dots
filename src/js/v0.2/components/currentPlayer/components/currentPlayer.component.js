@@ -1,7 +1,8 @@
 define([
     'angular',
-    '../currentPlayer.module',
-    '../controllers/currentPlayer.controller'
+    'components/currentPlayer/currentPlayer.module',
+    'components/currentPlayer/controllers/currentPlayer.controller',
+    'components/notification/components/notification.component'
 ], function(angular) {
     'use strict';
 

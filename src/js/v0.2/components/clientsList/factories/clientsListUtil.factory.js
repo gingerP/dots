@@ -13,7 +13,19 @@ define([
             invite: 'invite'
         };
 
-        function mergeReject(invite, clients) {
+        function setSuccess(invite, clients) {
+            var clientIndex = _.findIndex(clients, {_id: invite._id});
+            var client;
+            if (clientIndex === -1) {
+                clients.splice(0, 0, invite);
+            } else if (clientIndex > 0) {
+                client = clients.splice(clientIndex, 1)[0];
+                clients.splice(0, 0, client);
+            }
+            client.mode = modes.common;
+        }
+
+        function setReject(invite, clients) {
             var client = _.find(clients, {_id: invite._id});
             if (!client) {
                 client = invite;
@@ -22,13 +34,16 @@ define([
             client.mode = modes.common;
         }
 
-        function mergeInvite(invite, clients) {
-            var client = _.find(clients, {_id: invite._id});
-            if (!client) {
-                client = invite;
+        function setInvite(invite, clients) {
+            var clientIndex = _.findIndex(clients, {_id: invite._id});
+            var client;
+            if (clientIndex === -1) {
+                clients.splice(0, 0, invite);
+            } else if (clientIndex !== 0) {
+                client = clients.splice(clientIndex, 1)[0];
                 clients.splice(0, 0, client);
             }
-            client.mode = modes.invite;
+            clients[0].mode = modes.invite;
         }
 
         function prepareClientForUI(client) {
@@ -37,8 +52,9 @@ define([
         }
 
         return {
-            mergeInvite: mergeInvite,
-            mergeReject: mergeReject,
+            setSuccess: setSuccess,
+            setInvite: setInvite,
+            setReject: setReject,
             prepareClientForUI: prepareClientForUI
         }
     }

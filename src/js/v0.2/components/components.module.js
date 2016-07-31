@@ -1,12 +1,14 @@
 define([
 	'angular',
-	'./game/components/game.component',
-	'./clientsList/components/clientsList.component',
-	'./currentPlayer/components/currentPlayer.component',
-	'./playerScore/components/playerScore.component',
-	'./toolbar/components/toolbar.component',
-	'./accordion/components/accordion.component',
-	'./invitesList/components/invites.list.component'
+	'components/game/components/game.component',
+	'components/clientsList/components/clientsList.component',
+	'components/currentPlayer/components/currentPlayer.component',
+	'components/playerScore/components/playerScore.component',
+	'components/toolbar/components/toolbar.component',
+	'components/accordion/components/accordion.component',
+	'components/invitesList/components/invites.list.component',
+	'components/notification/notification.module',
+	'components/playerMenu/components/playerMenu.component'
 ], function(angular) {
 	'use strict';
 
@@ -17,7 +19,9 @@ define([
 		'playerScore.module',
 		'toolbar.module',
 		'accordion.module',
-		'invites.list.module'
+		'invites.list.module',
+		'notification.module',
+		'player.menu.module'
 	]);
 	angular.element(document).ready(function() {
 		angular.bootstrap(document, ['app']);
