@@ -1,4 +1,4 @@
-var constants = require('../constants');
+var constants = require('../constants/constants');
 var events = require('../events');
 var GenericController = require('./generic.controller').class;
 
@@ -38,9 +38,10 @@ CreateGameController.prototype.rejectPlayerBeLate = function (fromClient, toClie
     });
 };
 
-CreateGameController.prototype.successPlayer = function (fromClient, toClient) {
-    this.transmitter.send(fromClient.connection_id, events.success_invite_player, {
-        to: toClient
+CreateGameController.prototype.successPlayer = function (fromClient, toClient, gameId) {
+    this.transmitter.send([fromClient.connection_id, toClient.connection_id], events.success_invite_player, {
+        to: toClient,
+        game: gameId
     })
 };
 

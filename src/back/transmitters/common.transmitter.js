@@ -1,5 +1,5 @@
 var GenericTransmitter = require('./generic.transmitter').class;
-var constants = require('../constants');
+var constants = require('../constants/constants');
 
 function CommonTransmitter() {}
 

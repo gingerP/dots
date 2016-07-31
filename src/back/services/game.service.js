@@ -1,9 +1,10 @@
 var GenericService = require('./generic.service').class;
-var constants = require('../constants');
+var constants = require('../constants/constants');
 var animals = require('../animals');
 var colors = require('../colors');
 var _ = require('lodash');
 var funcUtils = require('../utils/function-utils');
+var gameStatuses = require('../constants/game-statuses');
 
 (function () {
     'use strict';
@@ -66,15 +67,20 @@ var funcUtils = require('../utils/function-utils');
         }
     };
 
+    GameService.prototype.newGame = function(clientAId, clientBId) {
+        return this.gameDBManager.createGame(clientAId, clientBId, gameStatuses.active);
+    };
+
     GameService.prototype.getName = function () {
         return constants.GAME_SERVICE;
     };
 
     GameService.prototype.postConstructor = function (ioc) {
         this.gameController = ioc[constants.GAME_CONTROLLER];
-        this.gameController.onNewClient(funcUtils.wrapListener(this, this.onNewClient));
-        this.gameController.onReconnect(funcUtils.wrapListener(this, this.onReconnect));
+        this.gameController.onNewClient(this.onNewClient.bind(this));
+        this.gameController.onReconnect(this.onReconnect.bind(this));
         this.clientsDBManager = ioc[constants.CLIENTS_DB_MANAGER];
+        this.gameDBManager = ioc[constants.GAME_DB_MANAGER];
     };
 
     module.exports = {

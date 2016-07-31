@@ -1,4 +1,4 @@
-var constants = require('./constants');
+var constants = require('./constants/constants');
 var _ = require('lodash');
 var fs = require('fs');
 var ROOT_PATH = './src/back';

@@ -1,5 +1,5 @@
 var _ = require('lodash');
-var constants = require('../constants');
+var constants = require('../constants/constants');
 
 function GenericTransmitter() {}
 

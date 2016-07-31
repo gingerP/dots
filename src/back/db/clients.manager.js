@@ -1,5 +1,5 @@
 var GenericDBManager = require('./genericDB.manager').class;
-var constants = require('../constants');
+var constants = require('../constants/constants');
 var funcUtils = require('../utils/function-utils');
 
 function ClientsDBManager() {}

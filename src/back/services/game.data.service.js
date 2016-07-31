@@ -1,5 +1,5 @@
 var GenericService = require('./generic.service').class;
-var constants = require('../constants');
+var constants = require('../constants/constants');
 var funcUtils = require('../utils/function-utils');
 
 function GameDataService() {

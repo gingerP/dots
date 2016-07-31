@@ -1,5 +1,5 @@
 var GenericDBManager = require('./genericDB.manager').class;
-var constants = require('../constants');
+var constants = require('../constants/constants');
 
 function CreateGameDBManager() {
 }
@@ -17,8 +17,8 @@ CreateGameDBManager.prototype.getName = function () {
 
 CreateGameDBManager.prototype.createInvite = function (fromClient, toClient, status) {
     var data = {
-        from: fromClient,
-        to: toClient,
+        from: fromClient._id,
+        to: toClient._id,
         status: status,
         timestamp: Date.now()
     };
@@ -27,8 +27,8 @@ CreateGameDBManager.prototype.createInvite = function (fromClient, toClient, sta
 
 CreateGameDBManager.prototype.getInvite = function (fromClientId, toClientId, inviteStatus) {
     var criteria = {
-        'from._id' : this._getObjectId(fromClientId),
-        'to._id': this._getObjectId(toClientId),
+        from : this._getObjectId(fromClientId),
+        to: this._getObjectId(toClientId),
         status: inviteStatus
     };
     return this.getByCriteria(criteria).then(function(invite) {

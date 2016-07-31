@@ -1,4 +1,4 @@
-var constants = _req('src/back/constants');
+var constants = _req('src/back/constants/constants');
 var logger = _req('src/js/logger').create('DB');
 var appRoot = require('app-root-path');
 var cfg = _req('prop').db;

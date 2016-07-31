@@ -1,5 +1,5 @@
 var GenericService = require('./generic.service').class;
-var constants = require('../constants');
+var constants = require('../constants/constants');
 var inviteStatuses = require('../constants/invite-statuses.json');
 var funcUtils = require('../utils/function-utils');
 var uuid = require('uuid');
@@ -57,10 +57,21 @@ CreateGameService.prototype.onSuccess = function (message) {
         if (answer.isInviteExist) {
             answer.invite.status = inviteStatuses.successful;
             inst.createGameDBManager.save(answer.invite);
-            inst.controller.successPlayer(answer.fromClient, answer.toClient);
+            inst.newGame(answer.fromClient, answer.toClient).then(function(gameId) {
+                inst.controller.successPlayer(answer.fromClient, answer.toClient, gameId);
+            });
         } else {
             inst.controller.successPlayerBeLate(answer.fromClient, answer.toClient);
         }
+    });
+};
+
+CreateGameService.prototype.newGame = function(clientA, clientB, invite) {
+    var inst = this;
+    return this.gameService.newGame(clientA._id, clientB._id).then(function(gameId) {
+        invite.game = gameId;
+        inst.createGameDBManager.save(invite);
+        return gameId;
     });
 };
 
