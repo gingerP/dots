@@ -2,12 +2,17 @@
 
 player-menu {
   .player-menu {
+    border-bottom: 1px solid darken(@color-dark, 10%);
     position: fixed;
     width: 100%;
     min-height: 300px;
-    background-color: lighten(@color-dark, 10%);
+    background-color: @color-dark;
     top: @toolbar-height;
     left: 0;
+
+    .player-menu-left-header {
+      padding: 0 5px;
+    }
 
     .player-menu-clients {
       width: 820px;

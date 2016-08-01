@@ -4,9 +4,20 @@
 @buttons-reject: 100px;
 @buttons-succes: 50px;
 
+@clients-background: lighten(@color-dark, 5%);
+@client-background: @clients-background;
+@hover-client-background: darken(@clients-background, 3%);
+
 clients-list {
   position: relative;
   width: 100%;
+  min-height: 300px;
+  display: block;
+  background-color: #fff;
+  margin: 5px 0;
+  padding: 5px 0;
+  border-radius: 2px;
+  box-shadow: 0 1px 2px rgba(0,0,0,.1);
 
   .clients-placeholder {
     margin: 5px 0;
@@ -19,12 +30,14 @@ clients-list {
     overflow: hidden;
     text-overflow: ellipsis;
     transition: background-color .2s;
-    background-color: #ffffff;
+    background-color: @client-item-height;
     position: relative;
     cursor: pointer;
+    color: @text-color-dark;
 
     &:hover {
-      background-color: lighten(@color-dark, 65%);
+      color: @text-color-light;
+      background-color: @hover-client-background;
       .invite-btns-container:not(.ng-hide) {
         .invite-mark {
           right: -@client-item-height;

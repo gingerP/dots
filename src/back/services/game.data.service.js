@@ -24,10 +24,6 @@ GameDataService.prototype.onSuccess = function () {
 
 };
 
-GameDataService.prototype.getAnimals = function () {
-    return animals;
-};
-
 GameDataService.prototype.getName = function () {
     return constants.GAME_DATA_SERVICE;
 };

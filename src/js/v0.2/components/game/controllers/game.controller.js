@@ -17,7 +17,7 @@ define([
         });
 
         backend.listen.inviteSuccessPlayer(function(message) {
-            if (message.from) {
+            if (message.to) {
                 $rootScope.$emit(events.CREATE_GAME, message);
             }
         });
