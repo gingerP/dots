@@ -3,13 +3,14 @@
         <div ng-repeat="client in clientsListCtrl.clientsList" class="client">
             <span ng-bind="client.name"></span>
             <div ng-show="client.mode == 'common'" class="invite-btns-container">
-                <button class="btn-override btn-right btn-invite-ask" ng-click="clientsListCtrl.invite(client)">Invite</button>
+                <button class="btn-override btn-right btn-invite-ask btn-client" ng-click="clientsListCtrl.invite(client)">To Invite</button>
             </div>
             <div ng-show="client.mode == 'invite'" class="invite-btns-container">
                 <div class="invite-mark">Invite</div>
-                <button class="btn-override btn-right btn-invite-submit" ng-click="clientsListCtrl.submitInvite(client)">Ok</button>
-                <button class="btn-override btn-right btn-invite-reject" ng-click="clientsListCtrl.rejectInvite(client)">Cancel</button>
+                <button class="btn-override btn-right btn-invite-submit btn-client" ng-click="clientsListCtrl.submitInvite(client)">Ok</button>
+                <button class="btn-override btn-right btn-invite-reject btn-client" ng-click="clientsListCtrl.rejectInvite(client)">Cancel</button>
             </div>
         </div>
+        <div ng-if="!clientsListCtrl.clientsList.length" class="empty-list">No gamers...</div>
     </div>
 </div>

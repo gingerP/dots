@@ -49,6 +49,24 @@
     line-height: @toolbar-height;
     text-align: center;
   }
+
+  .menu-open {
+    cursor: pointer;
+    position: absolute;
+    top: 0;
+    right: -50px;
+    width: @client-item-height;
+    height: @client-item-height;
+
+    background-image: url('/static/images/down-arrow.png');
+    background-repeat: no-repeat;
+    background-position: 50%;
+    transition: transform .3s;
+
+    &.menu-open-up {
+      transform: rotate(180deg);
+    }
+  }
 }
 
 .player-next {

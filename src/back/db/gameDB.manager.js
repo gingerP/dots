@@ -25,15 +25,26 @@ GameDBManager.prototype.createGame = function (fromClientId, toClientId, status)
     return this.save(data);
 };
 
-GameDBManager.prototype.getInvite = function (fromClientId, toClientId, inviteStatus) {
+GameDBManager.prototype.getGame = function (clientA, clientB, status) {
     var criteria = {
-        from : this._getObjectId(fromClientId),
-        to: this._getObjectId(toClientId),
-        status: inviteStatus
+        $or: [
+            {
+                $and: [
+                    {from: clientA},
+                    {to: clientB}
+                ]
+            },
+            {
+                $and: [
+                    {from: clientA},
+                    {to: clientB}
+                ]
+            }
+
+        ],
+        status: status
     };
-    return this.getByCriteria(criteria).then(function(invite) {
-        return invite;
-    });
+    return this.getByCriteria(criteria);
 };
 
 GameDBManager.prototype.deleteInvite = function () {

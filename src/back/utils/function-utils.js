@@ -8,5 +8,10 @@ module.exports = {
         return new Promise(function(resolve) {
             resolve(data);
         });
+    },
+    controllerHandler: function(wss, event, handler) {
+        return function() {
+            wss.addListener(event, handler);
+        }
     }
 };

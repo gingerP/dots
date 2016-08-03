@@ -32,6 +32,14 @@ ClientsDBManager.prototype.getName = function() {
     return constants.CLIENTS_DB_MANAGER;
 };
 
+ClientsDBManager.prototype.getClientsPair = function(clientId, connectionId) {
+    var inst = this;
+    return Promise.all([
+        inst.getClient(clientId),                            //To
+        inst.getClientByConnectionId(connectionId)           //From
+    ]);
+};
+
 ClientsDBManager.prototype.postConstructor = function() {
   this.collectionName = constants.DB_COLLECTION_CLIENTS;
 };

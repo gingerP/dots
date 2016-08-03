@@ -4,20 +4,28 @@
 @buttons-reject: 100px;
 @buttons-succes: 50px;
 
+@client-btn-background: #565177;
 @clients-background: lighten(@color-dark, 5%);
 @client-background: @clients-background;
+@clients-list-height: 300px;
 @hover-client-background: darken(@clients-background, 3%);
 
 clients-list {
   position: relative;
   width: 100%;
-  min-height: 300px;
+  height: @clients-list-height;
   display: block;
   background-color: #fff;
   margin: 5px 0;
   padding: 5px 0;
   border-radius: 2px;
   box-shadow: 0 1px 2px rgba(0,0,0,.1);
+
+  .empty-list {
+    color: lightgrey;
+    line-height: @clients-list-height;
+    text-align: center;
+  }
 
   .clients-placeholder {
     margin: 5px 0;
@@ -50,13 +58,23 @@ clients-list {
           opacity: 1;
         }
       }
-
     }
+
+    .btn-client {
+      margin: 5px 5px 5px 0;
+      transition: background-color .3s, color .3s;
+      border: 1px solid @client-btn-background;
+      color: @client-btn-background;
+      &:hover {
+        background-color: @client-btn-background;
+        color: #ffffff;
+      }
+    }
+
     .btn-invite {
       margin: calc((@client-item-height - @client-item-btn-height) / 2);
       height: @client-item-btn-height;
       width: @client-item-btn-height;
-      background-color: @color-dark;
       right: calc((-2) * @client-item-btn-height);
       transition: right .3s;
       border-radius: 50%;
@@ -73,7 +91,6 @@ clients-list {
       button {
         height: 30px;
         line-height:30px;
-        border: 1px solid white;
         border-radius: 2px;
         cursor: pointer;
         font-size: 1em;

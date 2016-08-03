@@ -21,7 +21,8 @@ define([
         reject_invite_player: 'reject_invite_player',
         reject_invite_player_to_late: 'reject_invite_player_to_late',
         success_invite_player: 'success_invite_player',
-        success_invite_player_to_late: 'success_invite_player_to_late'
+        success_invite_player_to_late: 'success_invite_player_to_late',
+        cancel_game: 'cancel_game'
     };
 
     function createGenericPack(type, clients, extend) {
@@ -42,10 +43,6 @@ define([
     }
 
     function invitePlayer() {
-
-    }
-
-    function cancelGame() {
 
     }
 
@@ -71,7 +68,6 @@ define([
         emit: {
             addDot: addDot,
             invitePlayer: invitePlayer,
-            cancelGame: cancelGame,
             getMyself: getMyself,
             clientReconnect: function(client) {
                 return Transport.send(client, 'client_reconnect');
@@ -79,14 +75,19 @@ define([
             newClient: function() {
                 return Transport.send({}, 'new_client');
             },
-            inviteAsk: function(client) {
-                return Transport.send(createPack.invite(events.invite_player, client), events.invite_player);
+            cancelGame: function(clientOpponentId) {
+                return Transport.send({
+                    opponent: clientOpponentId
+                }, events.cancel_game);
             },
-            inviteSuccess: function(client) {
-                return Transport.send(createPack.invite(events.success_invite_player, client), events.success_invite_player);
+            inviteAsk: function(clientId) {
+                return Transport.send(createPack.invite(events.invite_player, clientId), events.invite_player);
             },
-            inviteReject: function(client) {
-                return Transport.send(createPack.invite(events.reject_invite_player, client), events.reject_invite_player);
+            inviteSuccess: function(clientId) {
+                return Transport.send(createPack.invite(events.success_invite_player, clientId), events.success_invite_player);
+            },
+            inviteReject: function(clientId) {
+                return Transport.send(createPack.invite(events.reject_invite_player, clientId), events.reject_invite_player);
             },
             getClients: function getClients() {
                 return Transport.send({}, 'get_clients_list');

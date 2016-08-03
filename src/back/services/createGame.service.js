@@ -84,7 +84,7 @@ CreateGameService.prototype.giveAnAnswerToClient = function(message) {
     if (message.data && message.data.clients.length) {
         clientId = message.data.clients[0];
         connectionId = message.client.getId();
-        return this.getClientsPair(clientId, connectionId)
+        return this.clientsDBManager.getClientsPair(clientId, connectionId)
             .then(function (clients) {
                 fromClient = clients[0];
                 toClient = clients[1];
@@ -102,13 +102,6 @@ CreateGameService.prototype.giveAnAnswerToClient = function(message) {
         logger.error('Incorrect data while give answer to client!');
         return Promise();
     }
-};
-
-CreateGameService.prototype.getClientsPair = function (clientId, connectionId) {
-    return Promise.all([
-        this.clientsDBManager.getClient(clientId),                            //To
-        this.clientsDBManager.getClientByConnectionId(connectionId)           //From
-    ]);
 };
 
 CreateGameService.prototype.getName = function () {

@@ -15,18 +15,7 @@ define([
 
         function setSuccess(invite, clients) {
             var clientIndex = _.findIndex(clients, {_id: invite._id});
-            var client;
-            if (clientIndex > 0) {
-                client = clients.splice(clientIndex, 1)[0];
-                clients.splice(0, 0, client);
-            } else if (clientIndex === -1) {
-                clients.splice(0, 0, invite);
-                client = clients[0];
-            } else {
-                client = clients[0];
-            }
-
-            client.mode = modes.common;
+            return clients.splice(clientIndex, 1)[0];
         }
 
         function setReject(invite, clients) {

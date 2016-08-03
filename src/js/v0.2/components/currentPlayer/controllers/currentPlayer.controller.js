@@ -34,10 +34,11 @@ define([
         });
 
         scopeUtils.onRoot($scope, events.CREATE_GAME, function(message) {
-            var client;
-            if (message.to) {
-                client = storage.getClient();
-                vm.opponent = client._id === message.to._id ? message.from : message.to._id;
+            var myself;
+            var opponent;
+            if (message.to && message.from && message.game) {
+                myself = storage.getClient();
+                vm.opponent = myself._id === message.to._id ? message.from : message.to;
                 $scope.$apply();
             }
         });

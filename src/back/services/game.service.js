@@ -5,6 +5,7 @@ var colors = require('../colors');
 var _ = require('lodash');
 var funcUtils = require('../utils/function-utils');
 var gameStatuses = require('../constants/game-statuses');
+var logger = _req('src/js/logger').create('GameService');
 
 (function () {
     'use strict';
@@ -31,6 +32,16 @@ var gameStatuses = require('../constants/game-statuses');
 
     GameService.prototype = Object.create(GenericService.prototype);
     GameService.prototype.constructor = GameService;
+
+    GameService.prototype.onCancelGame = function(message) {
+        var clientId;
+        var connectionId;
+        if (message.data && message.data.clients.length) {
+            clientId = message.data.clients[0];
+            connectionId = message.client.getId();
+            this.clientsDBManager.getClientsPair(clientId, connectionId).then(this.cancelGame.bind(this));
+        }
+    };
 
     GameService.prototype.onNewClient = function (message) {
         var inst = this;
@@ -67,6 +78,19 @@ var gameStatuses = require('../constants/game-statuses');
         }
     };
 
+    GameService.prototype.cancelGame = function(clientA, clientB) {
+        var inst = this;
+        return this.gameDBManager.getGame(clientA, clientB, gameStatuses.active).then(function(game) {
+            if (game) {
+                game.status = gameStatuses.closed;
+                inst.gameDBManager.save(game);
+                inst.gameController.cancelGame([clientA, clientB], game);
+            } else {
+                logger.error('No game found for %s and %s clients', clientA, clientB);
+            }
+        });
+    };
+
     GameService.prototype.newGame = function(clientAId, clientBId) {
         return this.gameDBManager.createGame(clientAId, clientBId, gameStatuses.active);
     };
@@ -79,6 +103,7 @@ var gameStatuses = require('../constants/game-statuses');
         this.gameController = ioc[constants.GAME_CONTROLLER];
         this.gameController.onNewClient(this.onNewClient.bind(this));
         this.gameController.onReconnect(this.onReconnect.bind(this));
+        this.gameController.onCancelGame(this.onCancelGame.bind(this));
         this.clientsDBManager = ioc[constants.CLIENTS_DB_MANAGER];
         this.gameDBManager = ioc[constants.GAME_DB_MANAGER];
     };

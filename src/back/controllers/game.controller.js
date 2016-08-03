@@ -24,6 +24,10 @@ GameController.prototype.onReconnect = function(handler) {
     this.wss.addListener(events.client_reconnect, handler);
 };
 
+GameController.prototype.onCancelGame = function(handler) {
+    this.wss.addListener(events.cancel_game, handler);
+};
+
 GameController.prototype.invitePlayer = function() {
 
 };
@@ -32,8 +36,17 @@ GameController.prototype.rejectPlayer = function() {
 
 };
 
+GameController.prototype.cancelGame = function(clients, game) {
+    var connectionIds = _.map(clients, 'connection_id');
+    this.transmitter.send(connectionIds, events.cancel_game, {
+        clients: clients,
+        game: game
+    });
+};
+
 GameController.prototype.postConstructor = function(ioc) {
     this.wss = ioc[constants.WSS];
+    this.transmitter = ioc[constants.COMMON_TRANSMITTER];
 };
 
 GameController.prototype.getName = function() {
