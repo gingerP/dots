@@ -36,7 +36,7 @@ var logger = _req('src/js/logger').create('GameService');
     GameService.prototype.onCancelGame = function(message) {
         var clientId;
         var connectionId;
-        if (message.data && message.data.clients.length) {
+        if (message.data && message.data.clients && message.data.clients.length) {
             clientId = message.data.clients[0];
             connectionId = message.client.getId();
             this.clientsDBManager.getClientsPair(clientId, connectionId).then(this.cancelGame.bind(this));
@@ -78,15 +78,17 @@ var logger = _req('src/js/logger').create('GameService');
         }
     };
 
-    GameService.prototype.cancelGame = function(clientA, clientB) {
+    GameService.prototype.cancelGame = function(clients) {
         var inst = this;
-        return this.gameDBManager.getGame(clientA, clientB, gameStatuses.active).then(function(game) {
+        return this.gameDBManager.getGame(clients[0]._id, clients[1]._id, gameStatuses.active).then(function(game) {
+            var gameCopy;
             if (game) {
                 game.status = gameStatuses.closed;
+                gameCopy = _.cloneDeep(game);
                 inst.gameDBManager.save(game);
-                inst.gameController.cancelGame([clientA, clientB], game);
+                inst.gameController.cancelGame(clients, gameCopy);
             } else {
-                logger.error('No game found for %s and %s clients', clientA, clientB);
+                logger.error('No game found for %s and %s clients', clients[0]._id, clients[1]._id);
             }
         });
     };

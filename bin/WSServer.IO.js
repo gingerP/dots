@@ -139,7 +139,7 @@ WSServer.prototype.createConnectionWrapper = function(connection, topic, id) {
 					var data = inst.extractMessage(message);
 					inst.propertyChange(key, { client: api, data: data, callback: callback});
 				} catch (e) {
-					logger.error('While parsing input message: ' + e.message);
+					logger.error(e.stack);
 				}
 			});
 		}

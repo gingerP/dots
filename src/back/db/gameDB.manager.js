@@ -25,20 +25,19 @@ GameDBManager.prototype.createGame = function (fromClientId, toClientId, status)
     return this.save(data);
 };
 
-GameDBManager.prototype.getGame = function (clientA, clientB, status) {
+GameDBManager.prototype.getGame = function (clientAId, clientBId, status) {
+    var clientAIdDB = this._getObjectId(clientAId);
+    var clientBIdDB = this._getObjectId(clientBId);
+
     var criteria = {
         $or: [
             {
-                $and: [
-                    {from: clientA},
-                    {to: clientB}
-                ]
+                from: clientAIdDB,
+                to: clientBIdDB
             },
             {
-                $and: [
-                    {from: clientA},
-                    {to: clientB}
-                ]
+                from: clientBIdDB,
+                to: clientAIdDB
             }
 
         ],

@@ -2,6 +2,9 @@ define([
     'storage'
 ], function (Storage) {
     var storage = initStorage();
+    var CLIENT = 'client';
+    var OPPONENT = 'opponent';
+    var GAME_ID = 'game_id';
 
     function initStorage() {
         console.info('initStorage');
@@ -26,18 +29,38 @@ define([
         return storage.get(key);
     }
 
-    function setClient(client) {
-        set('client', client);
+    function genericSet(key) {
+        return function (value) {
+            set(key, value);
+        }
     }
 
-    function getClient() {
-        return get('client');
+    function genericGet(key) {
+        return function () {
+            return get(key);
+        }
+    }
+
+    function genericClear(key) {
+        return function() {
+            storage.remove(key);
+        }
     }
 
     return {
         set: set,
         get: get,
-        setClient: setClient,
-        getClient: getClient
+
+        setClient: genericSet(CLIENT),
+        getClient: genericGet(CLIENT),
+        clearClient: genericClear(CLIENT),
+
+        setOpponent: genericSet(OPPONENT),
+        getOpponent: genericGet(OPPONENT),
+        clearOpponent: genericClear(OPPONENT),
+
+        setGameId: genericSet(GAME_ID),
+        getGameId: genericGet(GAME_ID),
+        clearGameId: genericClear(GAME_ID)
     }
 });

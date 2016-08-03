@@ -30,5 +30,10 @@ define([
             vm.opponent = message.opponent;
             $scope.$apply();
         });
+
+        scopeUtils.onRoot($scope, events.CANCEL_GAME, function() {
+            delete vm.opponent;
+            $scope.$apply();
+        });
     }
 });

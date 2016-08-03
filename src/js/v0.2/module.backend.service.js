@@ -63,7 +63,8 @@ define([
             inviteSuccessPlayer: createListener(events.success_invite_player),
             inviteSuccessPlayerToLate: createListener(events.success_invite_player_to_late),
             inviteRejectPlayer: createListener(events.reject_invite_player),
-            inviteRejectPlayerToLate: createListener(events.reject_invite_player_to_late)
+            inviteRejectPlayerToLate: createListener(events.reject_invite_player_to_late),
+            cancelGame: createListener(events.cancel_game)
         },
         emit: {
             addDot: addDot,
@@ -76,9 +77,7 @@ define([
                 return Transport.send({}, 'new_client');
             },
             cancelGame: function(clientOpponentId) {
-                return Transport.send({
-                    opponent: clientOpponentId
-                }, events.cancel_game);
+                return Transport.send(createGenericPack(events.cancel_game, clientOpponentId), events.cancel_game);
             },
             inviteAsk: function(clientId) {
                 return Transport.send(createPack.invite(events.invite_player, clientId), events.invite_player);

@@ -18,7 +18,7 @@ CreateGameService.prototype.onInvite = function (message) {
     var inst = this;
     if (message.data.clients && message.data.clients.length) {
         clientId = message.data.clients[0];
-        this.getClientsPair(clientId, message.client.getId()).then(function (clients) {
+        this.clientsDBManager.getClientsPair(clientId, message.client.getId()).then(function (clients) {
             var to = clients[0];
             var from = clients[1];
             var isActive = true;
@@ -71,7 +71,7 @@ CreateGameService.prototype.newGame = function(clientA, clientB, invite) {
     return this.gameService.newGame(clientA._id, clientB._id).then(function(gameId) {
         invite.game = gameId;
         inst.createGameDBManager.save(invite);
-        return gameId;
+        return inst.gameDBManager.get(gameId);
     });
 };
 
@@ -119,6 +119,7 @@ CreateGameService.prototype.postConstructor = function (ioc) {
 
     this.clientsDBManager = ioc[constants.CLIENTS_DB_MANAGER];
     this.createGameDBManager = ioc[constants.CREATE_GAME_DB_MANAGER];
+    this.gameDBManager = ioc[constants.GAME_DB_MANAGER];
 };
 
 module.exports = {
