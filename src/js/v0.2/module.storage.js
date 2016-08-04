@@ -7,7 +7,6 @@ define([
     var GAME = 'game';
 
     function initStorage() {
-        console.info('initStorage');
         return new Storage({
             // Namespace. Namespace your Basil stored data
             // default: 'b45i1'

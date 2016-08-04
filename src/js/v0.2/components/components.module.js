@@ -8,7 +8,8 @@ define([
 	'components/accordion/components/accordion.component',
 	'components/invitesList/components/invites.list.component',
 	'components/notification/notification.module',
-	'components/playerMenu/components/playerMenu.component'
+	'components/playerMenu/components/playerMenu.component',
+	'components/gamePane/components/gamePane.component'
 ], function(angular) {
 	'use strict';
 
@@ -21,7 +22,8 @@ define([
 		'accordion.module',
 		'invites.list.module',
 		'notification.module',
-		'player.menu.module'
+		'player.menu.module',
+		'gamePane.module'
 	]);
 	angular.element(document).ready(function() {
 		angular.bootstrap(document, ['app']);

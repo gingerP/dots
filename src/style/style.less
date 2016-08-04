@@ -1,5 +1,6 @@
-@import "./generic-popup";
 @import "./variables";
+
+@import "./generic-popup";
 @import "./current-player";
 @import "./toolbar";
 @import "./clients-list";
@@ -8,7 +9,7 @@
 @import "./player-menu";
 
 body {
-  background: #F1F1F1;
+  background: @game-background-color;
   margin: 0;
 }
 
@@ -26,8 +27,7 @@ body {
 .game-viewport {
   width: 820px;
   height: 820px;
-  box-shadow: 0 1px 2px #C1C1C1;
-  background: #FFF;
+  background: @game-background-color;
   canvas {
     width: 500px;
     height: 400px;

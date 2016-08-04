@@ -7,7 +7,8 @@ define([
     'components/playerScore/components/playerScore.component',
     'components/toolbar/components/toolbar.component',
     'components/accordion/components/accordion.component',
-    'components/playerMenu/components/playerMenu.component'
+    'components/playerMenu/components/playerMenu.component',
+    'components/gamePane/components/gamePane.component'
 ], function(angular) {
     'use strict';
 
