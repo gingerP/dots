@@ -57,8 +57,8 @@ CreateGameService.prototype.onSuccess = function (message) {
         if (answer.isInviteExist) {
             answer.invite.status = inviteStatuses.successful;
             inst.createGameDBManager.save(answer.invite);
-            inst.newGame(answer.fromClient, answer.toClient, answer.invite).then(function(gameId) {
-                inst.controller.successPlayer(answer.fromClient, answer.toClient, gameId);
+            inst.newGame(answer.fromClient, answer.toClient, answer.invite).then(function(game) {
+                inst.controller.successPlayer(answer.fromClient, answer.toClient, game);
             });
         } else {
             inst.controller.successPlayerBeLate(answer.fromClient, answer.toClient);

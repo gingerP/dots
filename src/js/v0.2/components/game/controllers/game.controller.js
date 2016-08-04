@@ -26,7 +26,7 @@ define([
             if (message.to) {
                 message.opponent = getOpponent(message.to, message.from);
                 storage.setOpponent(message.opponent);
-                storage.setGameId(message.game._id);
+                storage.setGame(message.game);
                 $rootScope.$emit(events.CREATE_GAME, message);
             }
         });
@@ -38,9 +38,12 @@ define([
         });
 
         backend.listen.cancelGame(function(message) {
-            var currentGameId = storage.getGameId();
-            if (message.game._id && currentGameId && currentGameId === message.game._id) {
-                storage.clearGameId();
+            var currentGame = storage.getGame();
+            var opponent = storage.getOpponent();
+            if (message.game._id && currentGame._id && currentGame._id === message.game._id) {
+                storage.clearGame();
+                storage.clearOpponent();
+                message.opponent = opponent;
                 $rootScope.$emit(events.CANCEL_GAME, message);
             }
         });

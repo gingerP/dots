@@ -13,6 +13,14 @@ define([
             invite: 'invite'
         };
 
+        function setCancelGame(opponent, clients) {
+            var isInList = _.find(clients, {_id: opponent._id});
+            if (!isInList) {
+                clients.push(opponent);
+                opponent.mode = modes.common;
+            }
+        }
+
         function setSuccess(invite, clients) {
             var clientIndex = _.findIndex(clients, {_id: invite._id});
             return clients.splice(clientIndex, 1)[0];
@@ -51,6 +59,7 @@ define([
             setSuccess: setSuccess,
             setInvite: setInvite,
             setReject: setReject,
+            setCancelGame: setCancelGame,
             prepareClientForUI: prepareClientForUI
         }
     }

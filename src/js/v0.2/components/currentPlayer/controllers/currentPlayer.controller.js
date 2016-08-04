@@ -4,9 +4,10 @@ define([
     'module.backend.service',
     'components/constants/events.constant',
     'components/utils/scope.utils',
+    'components/utils/game.utils',
     'module.storage',
     'components/currentPlayer/currentPlayer.module'
-], function (angular, Business, backend, events, scopeUtils, storage) {
+], function (angular, Business, backend, events, scopeUtils, gameUtils, storage) {
     'use strict';
 
     angular.module('currentPlayer.module').controller('currentPlayerCtrl', CurrentPlayerController);
@@ -16,7 +17,7 @@ define([
             scope = $scope;
 
         vm.myself;
-        vm.opponent;
+        vm.opponent = gameUtils.getOpponent();
         vm.isMenuOpened = false;
 
         vm.nextPlayer = function nextPlayer() {
@@ -31,6 +32,10 @@ define([
         backend.emit.getMyself().then(function (client) {
             vm.myself = client;
             $scope.$apply();
+        });
+
+        scopeUtils.onRoot($scope, events.CANCEL_GAME, function(message) {
+            delete vm.opponent;
         });
 
         scopeUtils.onRoot($scope, events.CREATE_GAME, function(message) {

@@ -2,13 +2,14 @@ define([
     'angular',
     'lodash',
     'components/utils/scope.utils',
+    'components/utils/game.utils',
     'components/constants/events.constant',
     'module.storage',
     'module.game.business',
     'module.backend.service',
     'components/clientsList/factories/clientsListUtil.factory',
     'components/clientsList/clientsList.module'
-], function (angular, _, scopeUtils, events, storage, Business, backend) {
+], function (angular, _, scopeUtils, gameUtils, events, storage, Business, backend) {
     'use strict';
 
     angular.module('clientsList.module').controller('clientsListCtrl', ClientsListController);
@@ -18,10 +19,17 @@ define([
             myself;
 
         vm.clientsList = [];
+        vm.opponent = gameUtils.getOpponent();
 
         function listenPlayers(pack) {
             vm.clientsList.push(pack);
             $scope.$apply();
+        }
+
+        function rejectClient(exclusionsIdsList) {
+            return function(client) {
+                return exclusionsIdsList.indexOf(client._id) > -1;
+            }
         }
 
         Business.addListener(Business.listen.add_client, listenPlayers, true);
@@ -49,8 +57,9 @@ define([
         }).then(function () {
             return backend.emit.getClients();
         }).then(function (clients) {
+            var exclusion = vm.opponent ? [myself._id, vm.opponent._id] : [myself._id];
             clients = _.map(clients, clientsListUtilFactory.prepareClientForUI);
-            vm.clientsList = _.reject(clients, {_id: myself._id});
+            vm.clientsList = _.reject(clients, rejectClient(exclusion));
             $scope.$apply();
         });
 
@@ -71,13 +80,19 @@ define([
             }
         });
 
+        scopeUtils.onRoot($scope, events.CANCEL_GAME, function (message) {
+            var myself = storage.getClient();
+            if (message.game && message.opponent) {
+                clientsListUtilFactory.setCancelGame(message.opponent, vm.clientsList);
+                $scope.$apply();
+            }
+        });
+
         scopeUtils.onRoot($scope, events.INVITE_REJECT, function (message) {
             if (message.to) {
                 clientsListUtilFactory.setReject(message.to, vm.clientsList);
                 $scope.$apply();
             }
         });
-
     }
-
 });

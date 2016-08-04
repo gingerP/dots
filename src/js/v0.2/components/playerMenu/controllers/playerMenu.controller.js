@@ -1,11 +1,12 @@
 define([
     'angular',
     'components/utils/scope.utils',
+    'components/utils/game.utils',
     'components/constants/events.constant',
     'module.storage',
     'module.backend.service',
     'components/playerMenu/playerMenu.module'
-], function(angular, scopeUtils, events, storage, backend) {
+], function(angular, scopeUtils, gameUtils, events, storage, backend) {
     'use strict';
 
     angular.module('player.menu.module').controller('playerMenuController', playerMenuController);
@@ -14,7 +15,7 @@ define([
         var vm = this;
 
         vm.isMenuClosed = true;
-        vm.opponent;
+        vm.opponent = gameUtils.getOpponent();
 
         vm.cancelGame = function() {
             if (vm.opponent) {

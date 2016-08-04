@@ -4,7 +4,7 @@ define([
     var storage = initStorage();
     var CLIENT = 'client';
     var OPPONENT = 'opponent';
-    var GAME_ID = 'game_id';
+    var GAME = 'game';
 
     function initStorage() {
         console.info('initStorage');
@@ -59,8 +59,8 @@ define([
         getOpponent: genericGet(OPPONENT),
         clearOpponent: genericClear(OPPONENT),
 
-        setGameId: genericSet(GAME_ID),
-        getGameId: genericGet(GAME_ID),
-        clearGameId: genericClear(GAME_ID)
+        setGame: genericSet(GAME),
+        getGame: genericGet(GAME),
+        clearGame: genericClear(GAME)
     }
 });

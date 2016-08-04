@@ -7,6 +7,7 @@ define([
     'use strict';
 
     angular.module('player.menu.module').component('playerMenu', {
+        bindings: {},
         templateUrl: '/static/js/v0.2/components/playerMenu/partials/playerMenu.template.html',
         controller: 'playerMenuController',
         controllerAs: 'playerMenuCtrl'
