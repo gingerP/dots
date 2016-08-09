@@ -22,7 +22,7 @@
         return result;
     }
 
-    function getSelectedNeighborsFrom4Direction(pos, vertexes) {
+    function getSelectedNeighborsFrom_4_Direction(pos, vertexes) {
         var result = [];
         var shifts = [
                     [-1, 0],
@@ -35,7 +35,28 @@
             if (x > -1 && y > -1) {
                 if (vertexes[x]
                     && vertexes[x][y]
-                    && !vertexes[x][y].isSelected) {
+                    && vertexes[x][y].isSelected) {
+                    result.push({x: x, y: y});
+                }
+            }
+        });
+        return result;
+    }
+
+    function getSelectedNeighborsFrom_8_Direction(pos, vertexes) {
+        var result = [];
+        var shifts = [
+            [-1, -1],[-1, 0],[-1, 1],
+            [0, -1],        [0, 1],
+            [1, -1], [1, 0],[1, 1]
+        ];
+        shifts.forEach(function (shift) {
+            var x = pos.x + shift[0];
+            var y = pos.y + shift[1];
+            if (x > -1 && y > -1) {
+                if (vertexes[x]
+                    && vertexes[x][y]
+                    && vertexes[x][y].isSelected) {
                     result.push({x: x, y: y});
                 }
             }
@@ -56,7 +77,8 @@
 
     module.exports = {
         getNeighbors: getNeighbors,
-        getSelectedNeighborsFrom4Direction: getSelectedNeighborsFrom4Direction
+        getSelectedNeighborsFrom_4_Direction: getSelectedNeighborsFrom_4_Direction,
+        getSelectedNeighborsFrom_8_Direction: getSelectedNeighborsFrom_8_Direction
     };
 
 })();

@@ -1,6 +1,8 @@
 (function() {
     'use strict';
 
+    var _ = require('lodash');
+
     function getMinMaxCorners(dataArray) {
         var minX = dataArray[0].x;
         var minY = dataArray[0].y;
@@ -58,9 +60,14 @@
         return result;
     }
 
+    function makeUniqVertexesList(vertexes) {
+        return _.uniqWith(vertexes, _.isEqual);
+    }
+
     module.exports = {
         getMinMaxCorners: getMinMaxCorners,
         findFirstUnselectedUnvisitedPosition: findFirstUnselectedUnvisitedPosition,
-        getUnselectedUnvisitedVertexesCount: getUnselectedUnvisitedVertexesCount
+        getUnselectedUnvisitedVertexesCount: getUnselectedUnvisitedVertexesCount,
+        makeUniqVertexesList: makeUniqVertexesList
     };
 })();
