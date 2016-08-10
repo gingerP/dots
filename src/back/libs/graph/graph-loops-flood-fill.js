@@ -5,7 +5,7 @@
     var convertUtils = require('./utils/convert-utils');
     var loopCheckerUtils = require('./utils/loop-checker-utils');
     var vertexUtils = require('./utils/vertex-utils');
-    var WHILE_LIMIT = 10000;
+    var WHILE_LIMIT = Infinity;
 
     function prepareInbound(array) {
         var borders = commonUtils.getMinMaxCorners(array);
@@ -39,9 +39,12 @@
             var passedLine;
             var loops = [[]];
             var unBrokenLoops = [];
-            while (unpassVertexesCount > 0 && whileLimitIndex < WHILE_LIMIT) {
+            var passedLoops = [];
+            var passed;
+            while (unpassVertexesCount > 0) {
                 isUnbroken = true;
                 lineIndex = 0;
+                passed = 0;
                 if (whileLimitIndex) {
                     firstPosition = commonUtils.findFirstUnselectedUnvisitedPosition(prepared.vertexes);
                     if (firstPosition) {
@@ -50,8 +53,9 @@
                         break;
                     }
                 }
-                while (lineIndex < futureLines.length && lineIndex < WHILE_LIMIT) {
+                while (lineIndex < futureLines.length) {
                     passedLine = passLine(lineIndex, futureLines, prepared.vertexes);
+                    passed += passedLine.passed;
                     isUnbroken = isUnbroken && !passedLine.isSpill;
                     unpassVertexesCount -= passedLine.passed;
                     loops[loopIndex].push.apply(loops[loopIndex], passedLine.selected);
@@ -59,6 +63,7 @@
                 }
                 if (loops[loopIndex].length && isUnbroken) {
                     unBrokenLoops.push(loops[loopIndex]);
+                    passedLoops.push(passed);
                 }
                 if (loops[loopIndex].length) {
                     loops.push([]);
@@ -68,9 +73,17 @@
             }
         }
         console.timeEnd('getLoops');
+        console.time('uniq');
+
+        unBrokenLoops.forEach(function(list, index) {
+            console.info('selected: %s, passed: %s', list.length, passedLoops[index]);
+        });
+
         unBrokenLoops = unBrokenLoops.map(function(list) {
             return commonUtils.makeUniqVertexesList(list);
         });
+        console.timeEnd('uniq');
+
         return unBrokenLoops.length ? unBrokenLoops[0]: [];
     }
 
@@ -170,7 +183,7 @@
     function getFutureLineSize(x, y, direction, vertexes) {
         var index = y;
         var result = 0;
-        while (vertexes[x][index] && !vertexes[x][index].isSelected && result < WHILE_LIMIT) {
+        while (vertexes[x][index] && !vertexes[x][index].isSelected) {
             index += direction;
             result++;
         }
