@@ -26,6 +26,7 @@
 
     function createVertexItem(extendData) {
         return {
+            isInFutureLines: false,
             isSelected: false,
             isVisited: false,
             isDeadlock: false,

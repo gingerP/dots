@@ -32,42 +32,40 @@
         var isUnbroken;
         if (firstPosition) {
             var unpassVertexesCount = commonUtils.getUnselectedUnvisitedVertexesCount(prepared.vertexes);
-            var futureLines = [].concat(getFutureLine(firstPosition.x, firstPosition.y, [], prepared.vertexes));
+            var futureLines = [getFutureLine(firstPosition.x, firstPosition.y, [], prepared.vertexes)];
             var lineIndex = 0;
             var loopIndex = 0;
             var whileLimitIndex = 0;
             var passedLine;
-            var loops = [[]];
-            var unBrokenLoops = [];
-            var passedLoops = [];
+            var loops = [];
             var passed;
+            var selected;
             while (unpassVertexesCount > 0) {
                 isUnbroken = true;
                 lineIndex = 0;
                 passed = 0;
+                selected = {};
                 if (whileLimitIndex) {
                     firstPosition = commonUtils.findFirstUnselectedUnvisitedPosition(prepared.vertexes);
                     if (firstPosition) {
-                        futureLines = [].concat(getFutureLine(firstPosition.x, firstPosition.y, [], prepared.vertexes));
+                        futureLines = [getFutureLine(firstPosition.x, firstPosition.y, [], prepared.vertexes)];
                     } else {
                         break;
                     }
                 }
                 while (lineIndex < futureLines.length) {
-                    passedLine = passLine(lineIndex, futureLines, prepared.vertexes);
+                    passedLine = passLine(lineIndex, futureLines, selected, prepared.vertexes);
                     passed += passedLine.passed;
                     isUnbroken = isUnbroken && !passedLine.isSpill;
                     unpassVertexesCount -= passedLine.passed;
-                    loops[loopIndex].push.apply(loops[loopIndex], passedLine.selected);
+                    //loops[loopIndex].push.apply(loops[loopIndex], passedLine.selected);
                     lineIndex++;
                 }
-                if (loops[loopIndex].length && isUnbroken) {
-                    unBrokenLoops.push(loops[loopIndex]);
-                    passedLoops.push(passed);
-                }
-                if (loops[loopIndex].length) {
-                    loops.push([]);
-                    loopIndex++;
+                if (Object.keys(selected).length && isUnbroken) {
+                    loops.push({
+                        selected: selected,
+                        passed: passed
+                    });
                 }
                 whileLimitIndex++;
             }
@@ -75,43 +73,49 @@
         console.timeEnd('getLoops');
         console.time('uniq');
 
-        unBrokenLoops.forEach(function(list, index) {
-            console.info('selected: %s, passed: %s', list.length, passedLoops[index]);
-        });
 
-        unBrokenLoops = unBrokenLoops.map(function(list) {
-            return commonUtils.makeUniqVertexesList(list);
+        loops.forEach(function(loop) {
+            //selected: 743010, passed: 124001
+            console.info('selected: %s, passed: %s', Object.keys(loop.selected).length, loop.passed);
         });
         console.timeEnd('uniq');
 
-        return unBrokenLoops.length ? unBrokenLoops[0]: [];
+        /*unBrokenLoops = unBrokenLoops.map(function(list) {
+            return commonUtils.makeUniqVertexesList(list);
+        });
+        unBrokenLoops.forEach(function(list, index) {
+            console.info('selected: %s, passed: %s', list.length, passedLoops[index]);
+        });
+*/
     }
 
-    function passLine(futureLineIndex, futureLines, vertexes) {
+    function passLine(futureLineIndex, futureLines, selected, vertexes) {
         var line = futureLines[futureLineIndex];
         var passed = 0;
-        var selected = [];
-        var limit = vertexes[line.pos.x].length;
         var index = line.pos.y;
         var newFutureLines;
         var isSpill = false;
-        while (passed < line.size && index >= 0 && !vertexes[line.pos.x][index].isSelected) {
-            vertexes[line.pos.x][index].isVisited = true;
+        var vertex = vertexes[line.pos.x][index];
+        while (vertex && index >= 0 && !vertex.isSelected && !vertex.isInFutureLines) {
+            vertex.isVisited = true;
+            vertex.isInFutureLines = true;
             newFutureLines = getFutureLineForVertex(line.pos.x, index, futureLines, vertexes);
-            selected.push.apply(selected, vertexUtils.getSelectedNeighborsFrom_8_Direction({
-                x: line.pos.x,
-                y: index
-            }, vertexes));
+            vertexUtils.applySelectedNeighborsFrom_8_Direction(
+                {x: line.pos.x, y: index},
+                selected,
+                vertexes
+            );
             futureLines.push.apply(futureLines, newFutureLines);
             index += line.direction;
+            vertex = vertexes[line.pos.x][index];
             passed++;
         }
-        if (passed === line.size && (!vertexes[line.pos.x][index] || !vertexes[line.pos.x][line.pos.y - 1])) {
+
+        if (!vertexes[line.pos.x][index] || !vertexes[line.pos.x][line.pos.y - 1]) {
             isSpill = true;
         }
         return {
             passed: passed,
-            selected: selected,
             isSpill: isSpill
         };
     }
@@ -147,7 +151,7 @@
 
     function getFutureLine(x, y, futureLines, vertexes) {
         var line;
-        if (isFutureLineAvailable(x, y, futureLines, vertexes)) {
+        if (!vertexes[x][y].isSelected && !vertexes[x][y].isInFutureLines) {
             line = {
                 pos: {
                     x: x,
@@ -155,40 +159,16 @@
                 },
                 direction: getDirection(x, y, vertexes)
             };
-            line.size = getFutureLineSize(x, y, line.direction, vertexes);
+            //line.size = getFutureLineSize(x, y, line.direction, vertexes);
         }
         return line;
     }
 
-    function isFutureLineAvailable(x, y, futureLines, vertexes) {
-        var result = !vertexes[x][y].isSelected;
-        var lineIndex = 0;
-        var line;
-        if (result) {
-            while (lineIndex < futureLines.length) {
-                line = futureLines[lineIndex];
-                if (line.pos.x === x &&
-                    (line.direction === 1 && y >= line.pos.y && y <= line.pos.y + line.size)
-                    || (line.direction === -1 && y <= line.pos.y && y >= line.pos.y - line.size)
-                ) {
-                    result = false;
-                    break;
-                }
-                lineIndex++;
-            }
-        }
-        return result;
-    }
+/*
+    function tryToGetVerticalLine(x, y, ) {
 
-    function getFutureLineSize(x, y, direction, vertexes) {
-        var index = y;
-        var result = 0;
-        while (vertexes[x][index] && !vertexes[x][index].isSelected) {
-            index += direction;
-            result++;
-        }
-        return result;
     }
+*/
 
     function getDirection(x, y, vertexes) {
         var direction = 1;
@@ -207,29 +187,15 @@
     }
 
     function isPrevAndNextNotExist(x, y, vertexes) {
-        return !vertexes[x][y + 1] && !vertexes[x][y - 1];
+        return y + 1 >= vertexes[x].length && y <= 0;
     }
 
     function isPrevNotExistAndNextIsSelected(x, y, vertexes) {
-        return vertexes[x][y + 1] && vertexes[x][y + 1].isSelected && !vertexes[x][y - 1];
+        return y + 1 < vertexes[x].length && vertexes[x][y + 1].isSelected && y <= 0;
     }
 
     function isNextNotExistAndPrevIsSelected(x, y, vertexes) {
-        return vertexes[x][y - 1] && vertexes[x][y - 1].isSelected && !vertexes[x][y + 1];
-    }
-
-    function getSelectedNeighbors(x, y, vertexes) {
-        var result = [];
-        if (vertexes[x + 1][y].isSelected) {
-            result.push(vertexes[x + 1][y]);
-        }
-        if (vertexes[x][y + 1].isSelected) {
-            result.push(vertexes[x][y + 1]);
-        }
-        if (vertexes[x + 1][y].isSelected) {
-            result.push(vertexes[x + 1][y]);
-        }
-        return result;
+        return y > 0 && vertexes[x][y - 1].isSelected && y + 1 >= vertexes[x].length;
     }
 
     module.exports = {

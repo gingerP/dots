@@ -12,12 +12,8 @@
     var files = fs.readdirSync(__dirname + '/test-data/');
     files.forEach(function(filePath) {
         var fileName = filePath.replace(/\.json$/, '');
+        logger.info(fileName);
         var testData = require('./test-data/' + fileName);
         var loops = floodFill.getLoops(testData.inbound);
-        if (_.isEqual(loops, testData.outbound)) {
-            logger.info('PASSED: ' + fileName);
-        } else {
-            logger.error('FAILED: ' + fileName);
-        }
     });
 })();

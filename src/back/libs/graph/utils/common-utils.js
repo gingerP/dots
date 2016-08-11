@@ -31,7 +31,7 @@
         var xIndex = beginFromX || 0;
         var yIndex = beginFromY || 0;
         for(; xIndex < array.length; xIndex++) {
-            for(yIndex = 0; yIndex < array[xIndex].length; yIndex++) {
+            for(; yIndex < array[xIndex].length; yIndex++) {
                 if (!array[xIndex][yIndex].isSelected && !array[xIndex][yIndex].isVisited) {
                     return {
                         x: xIndex,
@@ -39,6 +39,7 @@
                     }
                 }
             }
+            yIndex = 0;
         }
         return undefined;
     }

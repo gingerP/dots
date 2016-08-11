@@ -64,6 +64,28 @@
         return result;
     }
 
+    function applySelectedNeighborsFrom_8_Direction(pos, selected, vertexes) {
+        var result = [];
+        var shifts = [
+            [-1, -1],[-1, 0],[-1, 1],
+            [0, -1],        [0, 1],
+            [1, -1], [1, 0],[1, 1]
+        ];
+        var index = shifts.length - 1;
+        while(index >= 0) {
+            var x = pos.x + shifts[index][0];
+            var y = pos.y + shifts[index][1];
+            if (x > -1 && y > -1) {
+                if (vertexes[x]
+                    && vertexes[x][y]
+                    && vertexes[x][y].isSelected) {
+                    selected[x + '.' + y] = vertexes[x][y];
+                }
+            }
+            index--;
+        }
+    }
+
     function checkExclude(excludes, data) {
         var result = true;
         if (excludes && excludes.length) {
@@ -78,7 +100,8 @@
     module.exports = {
         getNeighbors: getNeighbors,
         getSelectedNeighborsFrom_4_Direction: getSelectedNeighborsFrom_4_Direction,
-        getSelectedNeighborsFrom_8_Direction: getSelectedNeighborsFrom_8_Direction
+        getSelectedNeighborsFrom_8_Direction: getSelectedNeighborsFrom_8_Direction,
+        applySelectedNeighborsFrom_8_Direction: applySelectedNeighborsFrom_8_Direction
     };
 
 })();
