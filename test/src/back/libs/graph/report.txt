@@ -33,7 +33,7 @@ getLoops: 826ms
 selected: 743010, passed: 124001
 
 -----------------------------------------------------------------
-Accumulate selected items in object - inly uniq values
+Accumulate selected items in object - only uniq values
 
 [2016-08-12 02:24:35.155] [INFO] graph-loops-flood-fill-spec - big-data-100
 getLoops: 27ms
