@@ -1,0 +1,57 @@
+---------------------------------------------------------------
+with FOR loops
+
+[2016-08-12 00:29:59.406] [INFO] graph-loops-flood-fill-spec - big-data-100
+getLoops: 59ms
+selected: 28610, passed: 4801
+[2016-08-12 00:29:59.471] [INFO] graph-loops-flood-fill-spec - big-data-200
+getLoops: 637ms
+selected: 117210, passed: 19601
+[2016-08-12 00:30:00.118] [INFO] graph-loops-flood-fill-spec - big-data-300
+getLoops: 2742ms
+selected: 265810, passed: 44401
+[2016-08-12 00:30:02.887] [INFO] graph-loops-flood-fill-spec - big-data-500
+getLoops: 36039ms
+selected: 743010, passed: 124001
+---------------------------------------------------------------
+-1 while loop
+
+[2016-08-12 01:23:48.090] [INFO] graph-loops-flood-fill-spec - big-data-100
+getLoops: 28ms
+selected: 28610, passed: 4801
+[2016-08-12 01:23:48.126] [INFO] graph-loops-flood-fill-spec - big-data-200
+getLoops: 114ms
+selected: 117210, passed: 19601
+[2016-08-12 01:23:48.251] [INFO] graph-loops-flood-fill-spec - big-data-300
+getLoops: 279ms
+selected: 265810, passed: 44401
+[2016-08-12 01:23:48.553] [INFO] graph-loops-flood-fill-spec - big-data-400
+getLoops: 541ms
+selected: 474410, passed: 79201
+[2016-08-12 01:23:49.143] [INFO] graph-loops-flood-fill-spec - big-data-500
+getLoops: 826ms
+selected: 743010, passed: 124001
+
+-----------------------------------------------------------------
+Accumulate selected items in object - inly uniq values
+
+[2016-08-12 02:24:35.155] [INFO] graph-loops-flood-fill-spec - big-data-100
+getLoops: 27ms
+selected: 4999, passed: 4801
+uniq: 1ms
+[2016-08-12 02:24:35.191] [INFO] graph-loops-flood-fill-spec - big-data-200
+getLoops: 90ms
+selected: 19999, passed: 19601
+uniq: 4ms
+[2016-08-12 02:24:35.296] [INFO] graph-loops-flood-fill-spec - big-data-300
+getLoops: 145ms
+selected: 44999, passed: 44401
+uniq: 12ms
+[2016-08-12 02:24:35.476] [INFO] graph-loops-flood-fill-spec - big-data-400
+getLoops: 277ms
+selected: 79999, passed: 79201
+uniq: 20ms
+[2016-08-12 02:24:35.811] [INFO] graph-loops-flood-fill-spec - big-data-500
+getLoops: 380ms
+selected: 124999, passed: 124001
+uniq: 33ms
