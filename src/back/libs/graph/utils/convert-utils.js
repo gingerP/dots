@@ -28,10 +28,7 @@
         return {
             isInFutureLines: false,
             isSelected: false,
-            isVisited: false,
-            isDeadlock: false,
-            isInPath: false,
-            extendData: extendData || {}
+            isVisited: false
         }
     }
 

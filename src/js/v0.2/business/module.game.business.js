@@ -1,7 +1,5 @@
 define([
     'd3',
-    'observable',
-    'module.graph',
     'module.backend.service'
 ], function (d3, Observable, ModuleGraph, Backend) {
     'use strict';
@@ -324,6 +322,10 @@ define([
         return false;
     }
 
+    function setSize(width, height) {
+
+    }
+
     function init() {
        /* Backend.on(Backend.event.add_dot, function listenEnemyAddDot() {
 
@@ -341,15 +343,15 @@ define([
     }
 
     api = {
-        init: function (mode_, graphics_, data_, gameDataMatrix_, logger_) {
-            mode = mode_;
+        init: function (graphics_, data_, gameDataMatrix_, observable_) {
             graphics = graphics_;
             gameData = data_;
-            logger = logger_;
+            observable = observable_;
             gameDataMatrix = gameDataMatrix_;
             init();
             return api;
         },
+        setSize: setSize,
         canConnectDots: canConnectDots,
         canSelectDot: canSelectDot,
         canChangeActivePlayer: canChangeActivePlayer,

@@ -4,6 +4,7 @@ define([
     'use strict';
 
     return {
+        GAME_PANE_RENDER: 'GAME_PANE_RENDER',
         INVITES_VISIBILITY: 'INVITES_VISIBILITY',
         INVITE_REJECT: 'INVITE_REJECT',
         INVITE: 'INVITE',

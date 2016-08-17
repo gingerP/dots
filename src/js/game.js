@@ -40,21 +40,6 @@ require([
 
 });
 
-function createData(width, height, radius) {
-	var data = [];
-	for (var w = 0; w < width; w++) {
-		for (var h = 0; h < height; h++) {
-			data.push({
-				xInd  : w,
-				yInd  : h,
-				radius: radius,
-				id: 'circle_' + w + '_' + h
-			});
-		}
-	}
-	return data;
-}
-
 function convertData(data) {
 	var result = [];
 	data.forEach(function(dataItem) {

@@ -1,7 +1,8 @@
 define([
     'd3',
-    'jquery'
-], function (d3, $) {
+    'jquery',
+    'graphics/graphics-utils'
+], function (d3, $, utils) {
     'use strict';
 
     var api;
@@ -314,12 +315,16 @@ define([
             .attr('stroke-width', TABLE_STROKE_WIDTH)
     }
 
+    function setSize(width, height, radius) {
+
+    }
+
     api = {
-        init: function (gamePane_, data, xNum_, yNum_) {
+        init: function (gamePaneSelector, data, xNum_, yNum_) {
             var elements;
             xNum = xNum_;
             yNum = yNum_;
-            gamePane = gamePane_;
+            gamePane = d3.select(gamePaneSelector);
             tableGroup = gamePane.append('g');
             pathsGroup = gamePane.append('g');
             dotsGroup = gamePane.append('g');
@@ -328,6 +333,7 @@ define([
             renderTable();
             return api;
         },
+        setSize: setSize,
         setBusiness: function (module) {
             business = module;
             return api;

@@ -32,7 +32,7 @@
         var isUnbroken;
         if (firstPosition) {
             var unpassVertexesCount = commonUtils.getUnselectedUnvisitedVertexesCount(prepared.vertexes);
-            var futureLines = [getFutureLine(firstPosition.x, firstPosition.y, [], prepared.vertexes)];
+            var futureLines = [getFutureLine(firstPosition.x, firstPosition.y, prepared.vertexes)];
             var lineIndex = 0;
             var loopIndex = 0;
             var whileLimitIndex = 0;
@@ -48,18 +48,18 @@
                 if (whileLimitIndex) {
                     firstPosition = commonUtils.findFirstUnselectedUnvisitedPosition(prepared.vertexes);
                     if (firstPosition) {
-                        futureLines = [getFutureLine(firstPosition.x, firstPosition.y, [], prepared.vertexes)];
+                        futureLines = [getFutureLine(firstPosition.x, firstPosition.y, prepared.vertexes)];
                     } else {
                         break;
                     }
                 }
-                while (lineIndex < futureLines.length) {
+                while (futureLines.length && lineIndex < futureLines.length && lineIndex > -1) {
                     passedLine = passLine(lineIndex, futureLines, selected, prepared.vertexes);
                     passed += passedLine.passed;
                     isUnbroken = isUnbroken && !passedLine.isSpill;
                     unpassVertexesCount -= passedLine.passed;
                     //loops[loopIndex].push.apply(loops[loopIndex], passedLine.selected);
-                    lineIndex++;
+                    lineIndex = futureLines.length - 1;
                 }
                 if (Object.keys(selected).length && isUnbroken) {
                     loops.push({
@@ -91,6 +91,8 @@
 
     function passLine(futureLineIndex, futureLines, selected, vertexes) {
         var line = futureLines[futureLineIndex];
+        futureLines[futureLineIndex] = null;
+        futureLines.length--;
         var passed = 0;
         var index = line.pos.y;
         var newFutureLines;
@@ -99,7 +101,7 @@
         while (vertex && index >= 0 && !vertex.isSelected && !vertex.isInFutureLines) {
             vertex.isVisited = true;
             vertex.isInFutureLines = true;
-            newFutureLines = getFutureLineForVertex(line.pos.x, index, futureLines, vertexes);
+            newFutureLines = getFutureLineForVertex(line.pos.x, index, vertexes);
             vertexUtils.applySelectedNeighborsFrom_8_Direction(
                 {x: line.pos.x, y: index},
                 selected,
@@ -124,7 +126,7 @@
 
     }
 
-    function getFutureLineForVertex(x, y, futureLines, vertexes) {
+    function getFutureLineForVertex(x, y, vertexes) {
         var result = [];
         var xLimit = vertexes.length;
         var topLine;
@@ -132,7 +134,7 @@
 
         //top
         if (x) {
-            topLine = getFutureLine(x - 1, y, futureLines, vertexes);
+            topLine = getFutureLine(x - 1, y, vertexes);
             if (topLine) {
                 result.push(topLine);
             }
@@ -140,7 +142,7 @@
 
         //bottom
         if (x < xLimit - 1) {
-            bottomLine = getFutureLine(x + 1, y, futureLines, vertexes);
+            bottomLine = getFutureLine(x + 1, y, vertexes);
             if (bottomLine) {
                 result.push(bottomLine);
             }
@@ -149,7 +151,7 @@
         return result;
     }
 
-    function getFutureLine(x, y, futureLines, vertexes) {
+    function getFutureLine(x, y, vertexes) {
         var line;
         if (!vertexes[x][y].isSelected && !vertexes[x][y].isInFutureLines) {
             line = {
