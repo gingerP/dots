@@ -1,8 +1,7 @@
 define([
     'd3',
-    'jquery',
-    'graphics/graphics-utils'
-], function (d3, $, utils) {
+    'jquery'
+], function (d3, $) {
     'use strict';
 
     var api;

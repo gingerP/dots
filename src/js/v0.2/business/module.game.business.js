@@ -1,7 +1,7 @@
 define([
     'd3',
     'module.backend.service'
-], function (d3, Observable, ModuleGraph, Backend) {
+], function (d3, Backend) {
     'use strict';
 
     function getId() {
@@ -17,9 +17,9 @@ define([
     var enemyPlayers;
     var activePlayer;
     var activePlayerState = {};
-    var observable = new Observable();
     var mode;
     var logger;
+    var observable;
     var stepNumber = 0;
     var modes = {
         local: 'local',
@@ -50,7 +50,7 @@ define([
         isActivePlayerSelectDot,
         isActivePlayerLeadRoundTrappedDots
     ];
-    var loopCheckers = [
+/*    var loopCheckers = [
         ModuleGraph.checkers.isCorrectNumbersOfVertexes,
         function isLoopNotSurroundsVertexes(loop) {
             var enemyPlayersTrappedDots = getEnemyPlayersTrappedDots();
@@ -64,9 +64,9 @@ define([
         },
         ModuleGraph.checkers.isLoopSurroundsVertexes,
         ModuleGraph.checkers.isStartAndFinishNeighbor
-    ];
+    ];*/
 
-    var transportUtils = {
+/*    var transportUtils = {
         addDot: function(dot) {
             Transport.sendData({
                 type: Transport.listen.add_dot,
@@ -79,7 +79,7 @@ define([
                 content: player
             })
         }
-    };
+    };*/
 
     /**
      * line = {start, finish, id}
@@ -155,7 +155,7 @@ define([
                 updateActivePlayerState([data]);
                 observable.propertyChange(api.listen.add_dot, data);
                 activePlayer.history.addDot(data);
-                transportUtils.addDot(data);
+              //  transportUtils.addDot(data);
                 updateCapturedState();
                 resolve(function () {
                     //TODO
@@ -189,10 +189,10 @@ define([
     }
 
     function updateCapturedState() {
-        var loops = ModuleGraph.getLoops(convertDataArrayForGraphModule(activePlayer.getDots()));
+/*        var loops = ModuleGraph.getLoops(convertDataArrayForGraphModule(activePlayer.getDots()));
         var enemyDots = convertDataArrayForGraphModule(getEnemyPlayerDots());
         var trappedDotsCount = 0;
-        loops = ModuleGraph.getCorrectLoops(loops, loopCheckers, enemyDots);
+       // loops = ModuleGraph.getCorrectLoops(loops, loopCheckers, enemyDots);
         //logger.log(stepNumber++, loops.concat(activePlayer.getDots()[0]));
         if (loops.length) {
             loops.forEach(function(loop) {
@@ -210,7 +210,7 @@ define([
             if (trappedDotsCount) {
                 observable.propertyChange(api.listen.conquer_dots, activePlayer);
             }
-        }
+        }*/
     }
 
     function getActivePlayerColor() {
@@ -343,11 +343,9 @@ define([
     }
 
     api = {
-        init: function (graphics_, data_, gameDataMatrix_, observable_) {
+        init: function (graphics_, observable_) {
             graphics = graphics_;
-            gameData = data_;
             observable = observable_;
-            gameDataMatrix = gameDataMatrix_;
             init();
             return api;
         },
@@ -356,7 +354,7 @@ define([
         canSelectDot: canSelectDot,
         canChangeActivePlayer: canChangeActivePlayer,
         invitePlayer: function(player) {
-            return transportUtils.invitePlayer(player);
+            /*return transportUtils.invitePlayer(player);*/
         },
         select: select,
         addActivePlayers: addActivePlayers,
@@ -398,6 +396,6 @@ define([
         },
         modes: modes
     };
-    ModuleGraph.sb(api);
+    /*ModuleGraph.sb(api);*/
     return api;
 });

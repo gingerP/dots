@@ -32,7 +32,7 @@ define([
             }
         }
 
-        Business.addListener(Business.listen.add_client, listenPlayers, true);
+        //Business.addListener(Business.listen.add_client, listenPlayers, true);
 
         vm.invite = function invite(client) {
             Business.invite.ask(client._id).then(function () {
