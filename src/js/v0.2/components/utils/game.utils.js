@@ -12,6 +12,21 @@ define([
                 result = opponent;
             }
             return result;
+        },
+        generateVertexes: function(xSize, ySize, radius) {
+            var xIndex = 0;
+            var yIndex = 0;
+            var result = [];
+            for(;xIndex < xSize ; xIndex++) {
+                for(yIndex = 0; yIndex < ySize; yIndex++) {
+                    result.push({
+                        xInd: xIndex,
+                        yInd: yIndex,
+                        radius: radius
+                    });
+                }
+            }
+            return result;
         }
     }
 });

@@ -21,6 +21,7 @@ define([
     var logger;
     var observable;
     var stepNumber = 0;
+    var IS_GAME_STARTED = false;
     var modes = {
         local: 'local',
         network: 'network'
@@ -30,6 +31,7 @@ define([
      * @type {Array}
      */
     var rulesCanSelect = [
+        isGameStarted,
         isDotFree,
         function() {
             return !isActivePlayerSelectDot.apply(null, arguments);
@@ -105,6 +107,10 @@ define([
 
     //RULES-------------------------------------------
 
+    function isGameStarted() {
+        return IS_GAME_STARTED;
+    }
+
     function isDotFree(data) {
         return !hasPlayersDots(data.id);
     }
@@ -177,40 +183,6 @@ define([
         });
         observable.propertyChange(api.listen.add_active_player, players_);
         return api;
-    }
-
-    function hasPlayersDots() {
-        var ids = (arguments.length === 1 ? [arguments[0]] : Array.apply(null, arguments));
-        return players.some(function (player) {
-            return ids.every(function (id) {
-                return player.hasDot(id);
-            });
-        })
-    }
-
-    function updateCapturedState() {
-/*        var loops = ModuleGraph.getLoops(convertDataArrayForGraphModule(activePlayer.getDots()));
-        var enemyDots = convertDataArrayForGraphModule(getEnemyPlayerDots());
-        var trappedDotsCount = 0;
-       // loops = ModuleGraph.getCorrectLoops(loops, loopCheckers, enemyDots);
-        //logger.log(stepNumber++, loops.concat(activePlayer.getDots()[0]));
-        if (loops.length) {
-            loops.forEach(function(loop) {
-                var trappedDots = ModuleGraph.filterVertexesInsideLoop(enemyDots, loop);
-                var trappedDotsData;
-                if (trappedDots && trappedDots.length) {
-                    trappedDotsData = convertGraphDataToDataArray(trappedDots);
-                    activePlayer.addTrappedDots(trappedDotsData);
-                    activePlayer.addLoop(loop);
-                    enemyPlayers[0].addLosingDots(trappedDotsData);
-                    graphics.renderLoop(convertGraphDataToDataArray(loop));
-                    trappedDotsCount += trappedDots.length;
-                }
-            });
-            if (trappedDotsCount) {
-                observable.propertyChange(api.listen.conquer_dots, activePlayer);
-            }
-        }*/
     }
 
     function getActivePlayerColor() {

@@ -6,8 +6,9 @@ define([
     'module.storage',
     'components/constants/events.constant',
     'module.backend.service',
+    'components/utils/game.utils',
     'components/game/game.module'
-], function(angular, business, graphics, Observable, storage, events, backend) {
+], function(angular, business, graphics, Observable, storage, events, backend, gameUtils) {
     'use strict';
 
     angular.module('game.module').controller('gameCtrl', gameCtrl);
@@ -52,8 +53,11 @@ define([
         });
 
         $rootScope.$on(events.GAME_PANE_RENDER, function() {
+            var xSize = 40;
+            var ySize = 40;
+            var radius = 2;
             business.init(graphics, new Observable($rootScope));
-            graphics.init('#game-pane');
+            graphics.init('#game-pane', xSize, ySize, gameUtils.generateVertexes(xSize, ySize, radius)).setBusiness(business);
         });
     }
 });

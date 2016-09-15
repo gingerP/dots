@@ -319,7 +319,7 @@ define([
     }
 
     api = {
-        init: function (gamePaneSelector, data, xNum_, yNum_) {
+        init: function (gamePaneSelector, xNum_, yNum_, data) {
             var elements;
             xNum = xNum_;
             yNum = yNum_;

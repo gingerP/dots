@@ -5,9 +5,10 @@ define([
     'module.game.graphics',
     'module.game.player',
     'module.game.player.history',
+    'components/constants/events.constant',
     'components/gamePane/gamePane.module',
     'components/gamePane/controllers/gamePane.controller'
-], function (angular, d3, business, graphics, Player, History) {
+], function (angular, d3, business, graphics, Player, History, events) {
     'use strict';
 
     angular.module('gamePane.module').directive('gamePane', gamePaneDirective);
@@ -15,7 +16,7 @@ define([
     function gamePaneDirective() {
 
         function link(scope, elem, attr) {
-
+            scope.$root.$emit(events.GAME_PANE_RENDER);
         }
 
         return {
