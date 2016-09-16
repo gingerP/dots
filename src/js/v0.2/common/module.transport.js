@@ -2,8 +2,9 @@ define([
     'observable',
     'socket',
     'q',
-    'module.storage'
-], function (Observable, io, q, storage) {
+    'module.storage',
+    'business/game.storage'
+], function (Observable, io, q, storage, gameStorage) {
     'use strict';
 
     var api;

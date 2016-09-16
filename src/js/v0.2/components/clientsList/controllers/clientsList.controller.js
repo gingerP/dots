@@ -2,14 +2,15 @@ define([
     'angular',
     'lodash',
     'components/utils/scope.utils',
-    'components/utils/game.utils',
+    'utils/game-utils',
     'components/constants/events.constant',
     'module.storage',
     'module.game.business',
+    'business/business.invite',
     'module.backend.service',
     'components/clientsList/factories/clientsListUtil.factory',
     'components/clientsList/clientsList.module'
-], function (angular, _, scopeUtils, gameUtils, events, storage, Business, backend) {
+], function (angular, _, scopeUtils, gameUtils, events, storage, Business, inviteBusiness, backend) {
     'use strict';
 
     angular.module('clientsList.module').controller('clientsListCtrl', ClientsListController);
@@ -35,7 +36,7 @@ define([
         //Business.addListener(Business.listen.add_client, listenPlayers, true);
 
         vm.invite = function invite(client) {
-            Business.invite.ask(client._id).then(function () {
+            inviteBusiness.ask(client._id).then(function () {
 
             }, function () {
 
@@ -43,13 +44,13 @@ define([
         };
 
         vm.submitInvite = function (toClient) {
-            backend.emit.inviteSuccess(toClient._id);
+            inviteBusiness.success(toClient._id);
         };
 
         vm.rejectInvite = function (toClient) {
             var client = _.find(vm.clientsList, {_id: toClient._id});
             client.mode = 'common';
-            backend.emit.inviteReject(toClient._id);
+            inviteBusiness.reject(toClient._id);
         };
 
         backend.emit.getMyself().then(function (client) {

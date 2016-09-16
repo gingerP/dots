@@ -4,7 +4,7 @@ define([
     'module.backend.service',
     'components/constants/events.constant',
     'components/utils/scope.utils',
-    'components/utils/game.utils',
+    'utils/game-utils',
     'module.storage',
     'components/currentPlayer/currentPlayer.module'
 ], function (angular, Business, backend, events, scopeUtils, gameUtils, storage) {

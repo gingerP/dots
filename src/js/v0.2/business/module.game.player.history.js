@@ -1,17 +1,14 @@
 define([
-    'jquery'
-], function($) {
+    'jquery',
+    'utils/common-utils'
+], function($, commonUtils) {
     'use strict';
 
     var RECORD_ID_PREFIX = 'history_record';
 
-    function getRandomString() {
-        return Math.random().toString(36).substring(7);
-    }
-
-    var PlayerHistory = function() {
+    function PlayerHistory() {
         this.historyRecords = [];
-    };
+    }
 
     PlayerHistory.prototype.addDot = function(data) {
         this.record.addDot(data);
@@ -57,7 +54,7 @@ define([
     /***********************************************************************/
 
     var HistoryRecord = function() {
-        this.id = RECORD_ID_PREFIX + '_' + getRandomString() + '_' + Date.now();
+        this.id = RECORD_ID_PREFIX + '_' + commonUtils.getRandomString() + '_' + Date.now();
         this.startTimeStamp = Date.now();
         this.finishTimeStamp;
         this.dots = [];

@@ -1,7 +1,11 @@
 define([
     'd3',
-    'module.backend.service'
-], function (d3, Backend) {
+    'module.backend.service',
+    'business/module.game.player',
+    'business/business.invite',
+    'business/game.rules',
+    'business/game.storage'
+], function (d3, Backend, Player, businessInvite, rules, gameStorage) {
     'use strict';
 
     function getId() {
@@ -11,145 +15,36 @@ define([
     var id = Date.now();
     var graphics;
     var gameData;
-    var gameDataMatrix;
-    var players = [];
-    var clients = [];
-    var enemyPlayers;
-    var activePlayer;
-    var activePlayerState = {};
-    var mode;
     var logger;
     var observable;
     var stepNumber = 0;
-    var IS_GAME_STARTED = false;
-    var modes = {
-        local: 'local',
-        network: 'network'
-    };
-    /**
-     * args - data
-     * @type {Array}
-     */
-    var rulesCanSelect = [
-        isGameStarted,
-        isDotFree,
-        function() {
-            return !isActivePlayerSelectDot.apply(null, arguments);
-        }
-    ];
-    /**
-     * args - data1, data2
-     * @type {Array}
-     */
-    var rulesCanConnect = [
-        isDotsNeighbors,
-        isDotsSelected,
-        isDotsBelongsToOnePlayer,
-        isDotsBelongsToActivePlayer
-    ];
-
-    var rulesCanChangeActivePlayer = [
-        isActivePlayerSelectDot,
-        isActivePlayerLeadRoundTrappedDots
-    ];
-/*    var loopCheckers = [
-        ModuleGraph.checkers.isCorrectNumbersOfVertexes,
-        function isLoopNotSurroundsVertexes(loop) {
-            var enemyPlayersTrappedDots = getEnemyPlayersTrappedDots();
-            if (enemyPlayersTrappedDots.length) {
-                return !ModuleGraph.checkers.isLoopSurroundsVertexes(
-                    loop,
-                    convertDataArrayForGraphModule(enemyPlayersTrappedDots)
-                );
-            }
-            return true;
-        },
-        ModuleGraph.checkers.isLoopSurroundsVertexes,
-        ModuleGraph.checkers.isStartAndFinishNeighbor
-    ];*/
-
-/*    var transportUtils = {
-        addDot: function(dot) {
-            Transport.sendData({
-                type: Transport.listen.add_dot,
-                content: dot
-            })
-        },
-        invitePlayer: function(player) {
-            return Transport.sendData({
-                type: Transport.listen.invite_player,
-                content: player
-            })
-        }
-    };*/
-
-    /**
-     * line = {start, finish, id}
-     */
 
     function canSelectDot(data) {
-        return rulesCanSelect.every(function (rule) {
+        return rules.rulesCanSelect.every(function (rule) {
             return rule(data);
         });
     }
 
     function canConnectDots(data1, data2) {
-        return rulesCanConnect.every(function (rule) {
+        return rules.rulesCanConnect.every(function (rule) {
             return rule(data1, data2);
         });
     }
 
     function canChangeActivePlayer() {
-        return rulesCanChangeActivePlayer.every(function (rule) {
+        return rules.rulesCanChangeActivePlayer.every(function (rule) {
             return rule();
         });
-    }
-
-    //RULES-------------------------------------------
-
-    function isGameStarted() {
-        return IS_GAME_STARTED;
-    }
-
-    function isDotFree(data) {
-        return !hasPlayersDots(data.id);
-    }
-
-    function isDotsNeighbors(data1, data2) {
-        return Math.abs(data1.xInd - data2.xInd) <= 1
-            && Math.abs(data1.yInd - data2.yInd) <= 1;
-    }
-
-    function isDotsSelected(data1, data2) {
-        return hasPlayersDots(data1, data2);
-    }
-
-    function isDotsBelongsToOnePlayer(data1, data2) {
-        return players.some(function (player) {
-            return player.hasDot(data1) && player.hasDot(data2);
-        });
-    }
-
-    function isDotsBelongsToActivePlayer(data1, data2) {
-        return activePlayer.hasDot(data1) && activePlayer.hasDot(data2);
-    }
-
-    function isActivePlayerSelectDot() {
-        return activePlayer.history.hasDots();
-    }
-
-    function isActivePlayerLeadRoundTrappedDots() {
-        return true;
     }
 
     //------------------------------------------------
 
     function isLocalMode() {
-        return mode === modes.local;
+        return gameStorage.mode === gameStorage.mode.local;
     }
 
     function isNetworkMode() {
-        return mode === modes.network;
+        return gameStorage.mode === gameStorage.mode.network;
     }
 
     function select(data) {
@@ -261,23 +156,6 @@ define([
         }
     }
 
-    function convertDataArrayForGraphModule(data) {
-        return data.map(convertDataForGraphModule);
-    }
-
-    function convertDataForGraphModule(data) {
-        return {
-            x: data.xInd,
-            y: data.yInd
-        }
-    }
-
-    function convertGraphDataToDataArray(data) {
-        return data.map(function(graphData) {
-            return gameDataMatrix[graphData.x][graphData.y];
-        });
-    }
-
     function isIdEqualToMyself(myselfId, id) {
         return id === '/#' + myselfId;
     }
@@ -292,10 +170,6 @@ define([
             }
         }
         return false;
-    }
-
-    function setSize(width, height) {
-
     }
 
     function init() {
@@ -314,6 +188,8 @@ define([
         });*/
     }
 
+    gameStorage.activePlayer = new Player();
+
     api = {
         init: function (graphics_, observable_) {
             graphics = graphics_;
@@ -321,7 +197,6 @@ define([
             init();
             return api;
         },
-        setSize: setSize,
         canConnectDots: canConnectDots,
         canSelectDot: canSelectDot,
         canChangeActivePlayer: canChangeActivePlayer,
@@ -347,17 +222,7 @@ define([
             return clients;
         },
 
-        invite: {
-            ask: function(client) {
-                return Backend.emit.inviteAsk(client);
-            },
-            success: function(client) {
-                return Backend.emit.inviteSuccess(client);
-            },
-            reject: function(client) {
-                return Backend.emit.inviteReject(client);
-            }
-        },
+        invite: businessInvite,
         listen: {
             invite_player: 'invite_player',
             add_active_player: 'add_active_player',
@@ -365,8 +230,7 @@ define([
             add_client: 'add_client',
             add_dot: 'add_dot',
             conquer_dots: 'conquer_dots'
-        },
-        modes: modes
+        }
     };
     /*ModuleGraph.sb(api);*/
     return api;

@@ -1,7 +1,7 @@
 define([
     'angular',
     'components/utils/scope.utils',
-    'components/utils/game.utils',
+    'utils/game-utils',
     'components/constants/events.constant',
     'module.storage',
     'module.backend.service',
