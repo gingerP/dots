@@ -28,7 +28,7 @@ define([
         socket.on('dots', function listenMessage(message) {
             if (message.extend) {
                 if (message.type) {
-                    observable.propertyChange(message.type, message.extend);
+                    observable.emit(message.type, message.extend);
                 }
             }
         });
@@ -46,18 +46,18 @@ define([
 
     function updateClient(connectionTimes) {
         if (connectionTimes === 1) {
-            myself = gameStorage.getServerClient();
+            myself = gameStorage.getClient();
             connectionTimes += myself ? 1 : 0;
         }
         if (connectionTimes === 1) {
             api.send({}, 'new_client').then(function (data) {
                 myself = data;
-                gameStorage.setServerClient(myself);
+                gameStorage.setClient(myself);
             });
         } else {
             api.send(myself, 'client_reconnect').then(function (data) {
                 myself = data;
-                gameStorage.setServerClient(myself);
+                gameStorage.setClient(myself);
             });
         }
     }

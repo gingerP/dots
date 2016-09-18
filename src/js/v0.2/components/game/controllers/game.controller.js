@@ -31,7 +31,7 @@ define([
         inviteBusiness.listen.success(function(message) {
             if (message.to) {
                 message.opponent = getOpponent(message.to, message.from);
-                storage.setServerOpponent(message.opponent);
+                storage.setOpponent(message.opponent);
                 storage.setGame(message.game);
                 observable.emit(events.CREATE_GAME, message);
             }

@@ -40,7 +40,7 @@ define([
         return storage.get(key);
     }
 
-    function gamerServerSet(key) {
+    function gamerSet(key) {
         return function (obj) {
             if (obj) {
                 set(key, obj);
@@ -55,7 +55,7 @@ define([
         };
     }
 
-    function gamerServerGet(key) {
+    function gamerGet(key) {
         return function () {
             return get(key);
         };
@@ -80,14 +80,14 @@ define([
     }
 
     function hasOpponent() {
-        return isOpponentExist;
+        return Boolean(gamers.opponent);
     }
 
-    function setClient(clientObj) {
+    function setGameClient(clientObj) {
         gamers.client = clientObj;
     }
 
-    function getClient() {
+    function getGameClient() {
         return gamers.client;
     }
 
@@ -96,11 +96,11 @@ define([
         storage.remove(keys.CLIENT)
     }
 
-    function setOpponent(opponentObj) {
+    function setGameOpponent(opponentObj) {
         gamers.opponent = opponentObj;
     }
 
-    function getOpponent() {
+    function getGameOpponent() {
         return gamers.opponent;
     }
 
@@ -113,16 +113,16 @@ define([
         set: set,
         get: get,
 
-        setServerClient: gamerServerSet(keys.CLIENT),
-        getServerClient: gamerServerGet(keys.CLIENT),
-        setClient: setClient,
-        getClient: getClient,
+        setGameClient: setGameClient,
+        getGameClient: getGameClient,
+        setClient: gamerSet(keys.CLIENT),
+        getClient: gamerGet(keys.CLIENT),
         clearClient: clearClient,
 
-        setServerOpponent: gamerServerSet(keys.OPPONENT),
-        getServerOpponent: gamerServerGet(keys.OPPONENT),
-        setOpponent: setOpponent,
-        getOpponent: getOpponent,
+        setGameOpponent: setGameOpponent,
+        getGameOpponent: getGameOpponent,
+        setOpponent: gamerSet(keys.OPPONENT),
+        getOpponent: gamerGet(keys.OPPONENT),
         clearOpponent: clearOpponent,
         hasOpponent: hasOpponent,
 
@@ -131,8 +131,8 @@ define([
         clearGame: genericClear(keys.GAME)
     };
 
-    api.setServerClient(get(keys.CLIENT));
-    api.setServerOpponent(get(keys.OPPONENT));
+    api.setClient(get(keys.CLIENT));
+    api.setOpponent(get(keys.OPPONENT));
 
     return api;
 });

@@ -37,7 +37,7 @@ define([
             backend.emit.getClients().then(function (clients) {
                 var myself = gameStorage.getClient();
                 var opponent = gameStorage.getOpponent();
-                var exclusion = opponent ? [myself.id, opponent.id] : [myself.id];
+                var exclusion = opponent ? [myself._id, opponent._id] : [myself._id];
                 clients = _.map(clients, clientsListUtilFactory.prepareClientForUI);
                 vm.clientsList = _.reject(clients, rejectClient(exclusion));
                 $scope.$apply();
