@@ -55,6 +55,11 @@ define([
         };
     }
 
+    function gamerServerGet(key) {
+        return function () {
+            return get(key);
+        };
+    }
 
     function genericSet(key) {
         return function (value) {
@@ -109,11 +114,13 @@ define([
         get: get,
 
         setServerClient: gamerServerSet(keys.CLIENT),
+        getServerClient: gamerServerGet(keys.CLIENT),
         setClient: setClient,
         getClient: getClient,
         clearClient: clearClient,
 
         setServerOpponent: gamerServerSet(keys.OPPONENT),
+        getServerOpponent: gamerServerGet(keys.OPPONENT),
         setOpponent: setOpponent,
         getOpponent: getOpponent,
         clearOpponent: clearOpponent,

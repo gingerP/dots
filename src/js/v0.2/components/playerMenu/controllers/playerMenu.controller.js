@@ -1,17 +1,18 @@
 define([
     'angular',
-    'components/utils/scope.utils',
+    'module.observable',
     'business/game.storage',
     'components/constants/events.constant',
     'business/business.invite',
     'components/playerMenu/playerMenu.module'
-], function(angular, observable, scopeUtils, gameStorage, events, inviteBusiness) {
+], function(angular, Observable, gameStorage, events, inviteBusiness) {
     'use strict';
 
     angular.module('player.menu.module').controller('playerMenuController', playerMenuController);
 
     function playerMenuController($scope) {
-        var vm = this;
+        var vm = this,
+            observable = Observable.instance;
 
         vm.isMenuClosed = true;
         vm.opponent = gameStorage.getOpponent();

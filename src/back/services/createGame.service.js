@@ -100,7 +100,7 @@ CreateGameService.prototype.cancelGame = function(clients) {
             }
             inst.controller.cancelGame(clients, gameCopy);
         } else {
-            logger.error('No game found for %s and %s clients', clients[0]._id, clients[1]._id);
+            logger.warn('No game found for %s and %s clients', clients[0]._id, clients[1]._id);
         }
     }).catch(funcUtils.error(logger));
 };

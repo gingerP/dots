@@ -46,7 +46,7 @@ define([
 
     function updateClient(connectionTimes) {
         if (connectionTimes === 1) {
-            myself = gameStorage.getClient();
+            myself = gameStorage.getServerClient();
             connectionTimes += myself ? 1 : 0;
         }
         if (connectionTimes === 1) {

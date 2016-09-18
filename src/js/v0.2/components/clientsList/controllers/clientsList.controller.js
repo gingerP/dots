@@ -1,7 +1,7 @@
 define([
     'angular',
-    'observable',
     'lodash',
+    'module.observable',
     'components/utils/scope.utils',
     'business/game.storage',
     'components/constants/events.constant',
@@ -10,13 +10,14 @@ define([
     'module.backend.service',
     'components/clientsList/factories/clientsListUtil.factory',
     'components/clientsList/clientsList.module'
-], function (angular, _, observable, scopeUtils, gameStorage, events, Business, inviteBusiness, backend) {
+], function (angular, _, Observable, scopeUtils, gameStorage, events, Business, inviteBusiness, backend) {
     'use strict';
 
     angular.module('clientsList.module').controller('clientsListCtrl', ClientsListController);
 
     function ClientsListController($rootScope, $scope, clientsListUtilFactory) {
-        var vm = this;
+        var vm = this,
+            observable = Observable.instance;
 
         vm.clientsList = [];
         vm.opponent;

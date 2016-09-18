@@ -1,11 +1,12 @@
 define([
     'd3',
+    'module.observable',
     'module.backend.service',
     'business/module.game.player',
     'business/business.invite',
     'business/game.rules',
     'business/game.storage'
-], function (d3, Backend, Player, businessInvite, rules, gameStorage) {
+], function (d3, Observable, Backend, Player, businessInvite, rules, gameStorage) {
     'use strict';
 
     function getId() {
@@ -16,7 +17,7 @@ define([
     var graphics;
     var gameData;
     var logger;
-    var observable;
+    var observable = Observable.instance;
     var stepNumber = 0;
 
     function canSelectDot(data) {
@@ -191,9 +192,8 @@ define([
     gameStorage.activePlayer = new Player();
 
     api = {
-        init: function (graphics_, observable_) {
+        init: function (graphics_) {
             graphics = graphics_;
-            observable = observable_;
             init();
             return api;
         },
