@@ -1,11 +1,12 @@
 var GenericService = require('./generic.service').class;
 var constants = require('../constants/constants');
 var inviteStatuses = require('../constants/invite-statuses.json');
-var funcUtils = require('../utils/function-utils');
+var funcUtils = _req('src/back/utils/function-utils');
 var uuid = require('uuid');
 var _ = require('lodash');
 var Promise = require('q');
 var logger = _req('src/js/logger').create('CreateGameService');
+var gameStatuses = require('../constants/game-statuses');
 
 function CreateGameService() {
 }
@@ -28,7 +29,7 @@ CreateGameService.prototype.onInvite = function (message) {
             } else {
                 logger.warn("Invite - client does not exist!");
             }
-        });
+        }).catch(funcUtils.error(logger));
     }
 };
 
@@ -45,7 +46,7 @@ CreateGameService.prototype.onReject = function (message) {
         } else {
             inst.controller.rejectPlayerBeLate(answer.fromClient, answer.toClient);
         }
-    });
+    }).catch(funcUtils.error(logger));
 };
 
 CreateGameService.prototype.onSuccess = function (message) {
@@ -63,7 +64,17 @@ CreateGameService.prototype.onSuccess = function (message) {
         } else {
             inst.controller.successPlayerBeLate(answer.fromClient, answer.toClient);
         }
-    });
+    }).catch(funcUtils.error(logger));
+};
+
+CreateGameService.prototype.onCancelGame = function(message) {
+    var clientId;
+    var connectionId;
+    if (message.data && message.data.clients && message.data.clients.length) {
+        clientId = message.data.clients[0];
+        connectionId = message.client.getId();
+        this.clientsDBManager.getClientsPair(clientId, connectionId).then(this.cancelGame.bind(this)).catch(funcUtils.error(logger));
+    }
 };
 
 CreateGameService.prototype.newGame = function(clientA, clientB, invite) {
@@ -72,7 +83,26 @@ CreateGameService.prototype.newGame = function(clientA, clientB, invite) {
         invite.game = gameId;
         inst.createGameDBManager.save(invite);
         return inst.gameDBManager.get(gameId);
-    });
+    }).catch(funcUtils.error(logger));
+};
+
+CreateGameService.prototype.cancelGame = function(clients) {
+    var inst = this;
+    return this.gameDBManager.getGame(clients[0]._id, clients[1]._id).then(function(game) {
+        var gameCopy;
+        if (game) {
+            if (game.status === gameStatuses.closed) {
+                logger.warn('CancelGame: Game found for %s and %s clients ONLY in status \'closed\'', clients[0]._id, clients[1]._id);
+            } else {
+                game.status = gameStatuses.closed;
+                gameCopy = _.cloneDeep(game);
+                inst.gameDBManager.save(game);
+            }
+            inst.controller.cancelGame(clients, gameCopy);
+        } else {
+            logger.error('No game found for %s and %s clients', clients[0]._id, clients[1]._id);
+        }
+    }).catch(funcUtils.error(logger));
 };
 
 CreateGameService.prototype.giveAnAnswerToClient = function(message) {
@@ -97,7 +127,7 @@ CreateGameService.prototype.giveAnAnswerToClient = function(message) {
                     fromClient: fromClient,
                     toClient: toClient
                 }
-            });
+            }).catch(funcUtils.error(logger));
     } else {
         logger.error('Incorrect data while give answer to client!');
         return Promise();
@@ -113,9 +143,10 @@ CreateGameService.prototype.postConstructor = function (ioc) {
     this.gameService = ioc[constants.GAME_SERVICE];
     this.controller = ioc[constants.CREATE_GAME_CONTROLLER];
 
-    this.controller.onInvitePlayer(funcUtils.wrapListener(this, this.onInvite));
-    this.controller.onRejectPlayer(funcUtils.wrapListener(this, this.onReject));
-    this.controller.onSuccessPlayer(funcUtils.wrapListener(this, this.onSuccess));
+    this.controller.onInvitePlayer(this.onInvite.bind(this));
+    this.controller.onRejectPlayer(this.onReject.bind(this));
+    this.controller.onSuccessPlayer(this.onSuccess.bind(this));
+    this.controller.onCancelGame(this.onCancelGame.bind(this));
 
     this.clientsDBManager = ioc[constants.CLIENTS_DB_MANAGER];
     this.createGameDBManager = ioc[constants.CREATE_GAME_DB_MANAGER];

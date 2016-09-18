@@ -1,5 +1,6 @@
 define([
     'angular',
+    'module.observable',
     'd3',
     'module.game.business',
     'module.game.graphics',
@@ -8,15 +9,16 @@ define([
     'components/constants/events.constant',
     'components/gamePane/gamePane.module',
     'components/gamePane/controllers/gamePane.controller'
-], function (angular, d3, business, graphics, Player, History, events) {
+], function (angular, Observable, d3, business, graphics, Player, History, events) {
     'use strict';
 
     angular.module('gamePane.module').directive('gamePane', gamePaneDirective);
 
     function gamePaneDirective() {
+        var observable = Observable.instance;
 
         function link(scope, elem, attr) {
-            scope.$root.$emit(events.GAME_PANE_RENDER);
+            observable.emit(events.GAME_PANE_RENDER);
         }
 
         return {

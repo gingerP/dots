@@ -1,20 +1,10 @@
 define([
-    'module.storage',
     'business/module.game.player',
     'business/module.game.player.history'
-], function (storage, Player, History) {
+], function (Player, History) {
     'use strict';
 
     return {
-        getOpponent: function () {
-            var result;
-            var game = storage.getGame();
-            var opponent = storage.getOpponent();
-            if (game && opponent && (opponent._id === game.from || opponent._id === game.to)) {
-                result = opponent;
-            }
-            return result;
-        },
         generateVertexes: function(xSize, ySize, radius) {
             var data = [];
             for (var w = 0; w < xSize; w++) {

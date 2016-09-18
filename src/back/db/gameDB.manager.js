@@ -40,9 +40,11 @@ GameDBManager.prototype.getGame = function (clientAId, clientBId, status) {
                 to: clientAIdDB
             }
 
-        ],
-        status: status
+        ]
     };
+    if (status) {
+        criteria.status = status
+    }
     return this.getByCriteria(criteria);
 };
 

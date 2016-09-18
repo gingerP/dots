@@ -33,16 +33,6 @@ var logger = _req('src/js/logger').create('GameService');
     GameService.prototype = Object.create(GenericService.prototype);
     GameService.prototype.constructor = GameService;
 
-    GameService.prototype.onCancelGame = function(message) {
-        var clientId;
-        var connectionId;
-        if (message.data && message.data.clients && message.data.clients.length) {
-            clientId = message.data.clients[0];
-            connectionId = message.client.getId();
-            this.clientsDBManager.getClientsPair(clientId, connectionId).then(this.cancelGame.bind(this));
-        }
-    };
-
     GameService.prototype.onNewClient = function (message) {
         var inst = this;
         var now = Date.now();
@@ -55,7 +45,7 @@ var logger = _req('src/js/logger').create('GameService');
         };
         this.clientsDBManager.save(client).then(function (data) {
             inst.clientsDBManager.getByCriteria({_id: data}).then(message.callback);
-        });
+        }).catch(funcUtils.error(logger));
     };
 
     GameService.prototype.onReconnect = function (message) {
@@ -70,27 +60,12 @@ var logger = _req('src/js/logger').create('GameService');
                 return inst.clientsDBManager.saveByCriteria(client, {_id: client._id});
             }).then(function () {
                 message.callback(clientObj);
-            });
+            }).catch(funcUtils.error(logger));
         } else {
             return new Promise(function(resolve) {
                 resolve({});
             })
         }
-    };
-
-    GameService.prototype.cancelGame = function(clients) {
-        var inst = this;
-        return this.gameDBManager.getGame(clients[0]._id, clients[1]._id, gameStatuses.active).then(function(game) {
-            var gameCopy;
-            if (game) {
-                game.status = gameStatuses.closed;
-                gameCopy = _.cloneDeep(game);
-                inst.gameDBManager.save(game);
-                inst.gameController.cancelGame(clients, gameCopy);
-            } else {
-                logger.error('No game found for %s and %s clients', clients[0]._id, clients[1]._id);
-            }
-        });
     };
 
     GameService.prototype.newGame = function(clientAId, clientBId) {
@@ -105,7 +80,6 @@ var logger = _req('src/js/logger').create('GameService');
         this.gameController = ioc[constants.GAME_CONTROLLER];
         this.gameController.onNewClient(this.onNewClient.bind(this));
         this.gameController.onReconnect(this.onReconnect.bind(this));
-        this.gameController.onCancelGame(this.onCancelGame.bind(this));
         this.clientsDBManager = ioc[constants.CLIENTS_DB_MANAGER];
         this.gameDBManager = ioc[constants.GAME_DB_MANAGER];
     };

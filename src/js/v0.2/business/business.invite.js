@@ -12,54 +12,54 @@ define([
     }
 
     function isInviteAvailable() {
-        return !gameStorage.opponent;
+        return !gameStorage.hasOpponent();
     }
 
     api = {
         listen: {
             ask: function(listener) {
-                inviteService.listen.invitePlayer(function(data) {
-                    if (!gameStorage.opponent) {
+                inviteService.listen.ask(function(data) {
+                    if (!gameStorage.hasOpponent()) {
                         listener(data);
                     }
                 });
             },
             success: function(listener) {
-                inviteService.listen.inviteSuccessPlayer(function(data) {
-                    if (!gameStorage.opponent) {
+                inviteService.listen.success(function(data) {
+                    if (!gameStorage.hasOpponent()) {
                         listener(data);
                     }
                 });
             },
             reject: function(listener) {
-                inviteService.listen.inviteRejectPlayer(function(data) {
-                    if (!gameStorage.opponent) {
+                inviteService.listen.reject(function(data) {
+                    if (!gameStorage.hasOpponent()) {
                         listener(data);
                     }
                 });
             },
-            cancelGame: function(listener) {
-                inviteService.listen.cancelGame(function(data) {
-                    if (gameStorage.opponent) {
+            cancel: function(listener) {
+                inviteService.listen.cancel(function(data) {
+                    if (gameStorage.hasOpponent()) {
                         listener(data);
                     }
                 });
             }
         },
         ask: function(clientId) {
-            if (!gameStorage.opponent) {
-                return inviteService.inviteAsk(clientId);
+            if (!gameStorage.hasOpponent()) {
+                return inviteService.ask(clientId);
             }
             return notAvailable();
         },
         success: function(clientId) {
-            return inviteService.inviteSuccess(clientId);
+            return inviteService.success(clientId);
         },
         reject: function(clientId) {
-            return inviteService.inviteReject(clientId);
+            return inviteService.reject(clientId);
         },
-        cancelGame: function(clientId) {
-            return inviteService.cancelGame(clientId);
+        cancel: function(clientId) {
+            return inviteService.cancel(clientId);
         }
     };
 

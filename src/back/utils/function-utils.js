@@ -13,5 +13,11 @@ module.exports = {
         return function() {
             wss.addListener(event, handler);
         }
+    },
+    error: function(logger) {
+        return function(error) {
+            var message = typeof(error) === 'string' ? error : (error ? error.message : 'No message');
+            logger.error(message);
+        }
     }
 };

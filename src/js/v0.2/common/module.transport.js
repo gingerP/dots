@@ -1,15 +1,14 @@
 define([
-    'observable',
+    'module.observable',
     'socket',
     'q',
-    'module.storage',
     'business/game.storage'
-], function (Observable, io, q, storage, gameStorage) {
+], function (Observable, io, q, gameStorage) {
     'use strict';
 
     var api;
     var connection;
-    var observable = new Observable();
+    var observable = new Observable.class();
     var socket = io();
     var servicePoints = [];
     var connectionTimes = 0;
@@ -47,18 +46,18 @@ define([
 
     function updateClient(connectionTimes) {
         if (connectionTimes === 1) {
-            myself = storage.getClient();
+            myself = gameStorage.getClient();
             connectionTimes += myself ? 1 : 0;
         }
         if (connectionTimes === 1) {
             api.send({}, 'new_client').then(function (data) {
                 myself = data;
-                storage.setClient(myself);
+                gameStorage.setServerClient(myself);
             });
         } else {
             api.send(myself, 'client_reconnect').then(function (data) {
                 myself = data;
-                storage.setClient(myself);
+                gameStorage.setServerClient(myself);
             });
         }
     }

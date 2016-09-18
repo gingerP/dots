@@ -26,7 +26,6 @@ require.config({
 		'module.graph': './module.graph',
 		'module.observable': './module.observable',
 		'module.backend.service': './common/module.backend.service',
-		'module.storage': './module.storage',
 		'beautify': '../ext/beautify',
 	},
 	shim: {

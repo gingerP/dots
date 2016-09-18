@@ -1,11 +1,11 @@
 define([
     'module.transport',
     'module.observable',
-    'module.storage'
+    'business/game.storage'
 ], function(Transport, Observable, storage) {
     'use strict';
 
-    var observable = new Observable();
+    var observable = new Observable.class();
     var api;
     var myself;
     var events = {

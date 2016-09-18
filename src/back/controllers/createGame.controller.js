@@ -1,6 +1,9 @@
+'use strict';
+
 var constants = require('../constants/constants');
 var events = require('../events');
 var GenericController = require('./generic.controller').class;
+var _ = require('lodash');
 
 function CreateGameController() {
 }
@@ -18,6 +21,10 @@ CreateGameController.prototype.onSuccessPlayer = function (handler) {
 
 CreateGameController.prototype.onRejectPlayer = function (handler) {
     this.wss.addListener(events.reject_invite_player, handler);
+};
+
+CreateGameController.prototype.onCancelGame = function(handler) {
+    this.wss.addListener(events.cancel_game, handler);
 };
 
 CreateGameController.prototype.invitePlayer = function (fromClient, toClient) {
@@ -50,6 +57,14 @@ CreateGameController.prototype.successPlayerBeLate = function (fromClient, toCli
     this.transmitter.send(toClient.connection_id, events.success_invite_player_to_late, {
         from: fromClient
     })
+};
+
+CreateGameController.prototype.cancelGame = function(clients, game) {
+    var connectionIds = _.map(clients, 'connection_id');
+    this.transmitter.send(connectionIds, events.cancel_game, {
+        clients: clients,
+        game: game
+    });
 };
 
 CreateGameController.prototype.getName = function () {

@@ -16,21 +16,24 @@ define([
 
     api = {
         listen: {
-            invitePlayer: serviceUtils.createListener(events.invite_player),
-            inviteSuccessPlayer: serviceUtils.createListener(events.success_invite_player),
-            inviteSuccessPlayerToLate: serviceUtils.createListener(events.success_invite_player_to_late),
-            inviteRejectPlayer: serviceUtils.createListener(events.reject_invite_player),
-            inviteRejectPlayerToLate: serviceUtils.createListener(events.reject_invite_player_to_late),
-            cancelGame: serviceUtils.createListener(events.cancel_game)
+            ask: serviceUtils.createListener(events.invite_player),
+            success: serviceUtils.createListener(events.success_invite_player),
+            successToLate: serviceUtils.createListener(events.success_invite_player_to_late),
+            reject: serviceUtils.createListener(events.reject_invite_player),
+            rejectToLate: serviceUtils.createListener(events.reject_invite_player_to_late),
+            cancel: serviceUtils.createListener(events.cancel_game)
         },
-        inviteAsk: function(clientId) {
+        ask: function(clientId) {
             return Transport.send(serviceUtils.createInvitePack(events.invite_player, clientId), events.invite_player);
         },
-        inviteSuccess: function(clientId) {
+        success: function(clientId) {
             return Transport.send(serviceUtils.createInvitePack(events.success_invite_player, clientId), events.success_invite_player);
         },
-        inviteReject: function(clientId) {
+        reject: function(clientId) {
             return Transport.send(serviceUtils.createInvitePack(events.reject_invite_player, clientId), events.reject_invite_player);
+        },
+        cancel: function(clientId) {
+            return Transport.send(serviceUtils.createInvitePack(events.cancel_game, clientId), events.cancel_game);
         }
     };
 

@@ -1,26 +1,25 @@
 define([
     'angular',
+    'observable',
     'lodash',
     'components/utils/scope.utils',
-    'utils/game-utils',
+    'business/game.storage',
     'components/constants/events.constant',
-    'module.storage',
     'module.game.business',
     'business/business.invite',
     'module.backend.service',
     'components/clientsList/factories/clientsListUtil.factory',
     'components/clientsList/clientsList.module'
-], function (angular, _, scopeUtils, gameUtils, events, storage, Business, inviteBusiness, backend) {
+], function (angular, _, observable, scopeUtils, gameStorage, events, Business, inviteBusiness, backend) {
     'use strict';
 
     angular.module('clientsList.module').controller('clientsListCtrl', ClientsListController);
 
     function ClientsListController($rootScope, $scope, clientsListUtilFactory) {
-        var vm = this,
-            myself;
+        var vm = this;
 
         vm.clientsList = [];
-        vm.opponent = gameUtils.getOpponent();
+        vm.opponent;
 
         function listenPlayers(pack) {
             vm.clientsList.push(pack);
@@ -33,7 +32,45 @@ define([
             }
         }
 
-        //Business.addListener(Business.listen.add_client, listenPlayers, true);
+        function updateClient() {
+            backend.emit.getClients().then(function (clients) {
+                var myself = gameStorage.getClient();
+                var opponent = gameStorage.getOpponent();
+                var exclusion = opponent ? [myself.id, opponent.id] : [myself.id];
+                clients = _.map(clients, clientsListUtilFactory.prepareClientForUI);
+                vm.clientsList = _.reject(clients, rejectClient(exclusion));
+                $scope.$apply();
+            });
+        }
+
+        function invite(message) {
+            if (message.from) {
+                observable.emit(events.INVITE, message.from);
+                clientsListUtilFactory.setInvite(message.from, vm.clientsList);
+                $scope.$apply();
+            }
+        }
+
+        function createGame(message) {
+            if (message.from && message.to && message.game) {
+                clientsListUtilFactory.setSuccess(message.opponent, vm.clientsList);
+                $scope.$apply();
+            }
+        }
+
+        function cancelGame(message) {
+            if (message.game && message.opponent) {
+                clientsListUtilFactory.setCancelGame(message.opponent, vm.clientsList);
+                $scope.$apply();
+            }
+        }
+
+        function inviteReject(message) {
+            if (message.to) {
+                clientsListUtilFactory.setReject(message.to, vm.clientsList);
+                $scope.$apply();
+            }
+        }
 
         vm.invite = function invite(client) {
             inviteBusiness.ask(client._id).then(function () {
@@ -53,47 +90,12 @@ define([
             inviteBusiness.reject(toClient._id);
         };
 
-        backend.emit.getMyself().then(function (client) {
-            myself = client;
-        }).then(function () {
-            return backend.emit.getClients();
-        }).then(function (clients) {
-            var exclusion = vm.opponent ? [myself._id, vm.opponent._id] : [myself._id];
-            clients = _.map(clients, clientsListUtilFactory.prepareClientForUI);
-            vm.clientsList = _.reject(clients, rejectClient(exclusion));
-            $scope.$apply();
-        });
+        $scope.$on('$destroy', observable.on(events.UPDATE_CLIENT, updateClient));
+        $scope.$on('$destroy', observable.on(events.INVITE, invite));
+        $scope.$on('$destroy', observable.on(events.CREATE_GAME, createGame));
+        $scope.$on('$destroy', observable.on(events.CANCEL_GAME, cancelGame));
+        $scope.$on('$destroy', observable.on(events.INVITE_REJECT, inviteReject));
 
-
-        scopeUtils.onRoot($scope, events.INVITE, function (message) {
-            if (message.from) {
-                $rootScope.$emit(events.INVITE, message.from);
-                clientsListUtilFactory.setInvite(message.from, vm.clientsList);
-                $scope.$apply();
-            }
-        });
-
-        scopeUtils.onRoot($scope, events.CREATE_GAME, function (message) {
-            var myself = storage.getClient();
-            if (message.from && message.to && message.game) {
-                clientsListUtilFactory.setSuccess(message.opponent, vm.clientsList);
-                $scope.$apply();
-            }
-        });
-
-        scopeUtils.onRoot($scope, events.CANCEL_GAME, function (message) {
-            var myself = storage.getClient();
-            if (message.game && message.opponent) {
-                clientsListUtilFactory.setCancelGame(message.opponent, vm.clientsList);
-                $scope.$apply();
-            }
-        });
-
-        scopeUtils.onRoot($scope, events.INVITE_REJECT, function (message) {
-            if (message.to) {
-                clientsListUtilFactory.setReject(message.to, vm.clientsList);
-                $scope.$apply();
-            }
-        });
+        updateClient();
     }
 });

@@ -1,15 +1,17 @@
 define([
     'angular',
+    'module.observable',
     'module.backend.service',
     '../invites.list.module',
     '../../constants/events.constant'
-], function(angular, backend) {
+], function(angular, Observable, backend) {
     'use strict';
 
     angular.module('invites.list.module').controller('invitesListCtrl', invitesListCtrl);
 
     function invitesListCtrl($rootScope, $scope, events) {
-        var vm = this;
+        var vm = this,
+            observable = Observable.instance;
 
         vm.invitesList = [];
         vm.isInvitesListVisible = true;
@@ -29,7 +31,7 @@ define([
         backend.listen.invitePlayer(function(message) {
             if (message.from) {
                 vm.invitesList.push(message.from);
-                $rootScope.$emit(events.INVITES_VISIBILITY, true);
+                observable.emit(events.INVITES_VISIBILITY, true);
                 $scope.$apply();
             }
         });
