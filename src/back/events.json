@@ -1,4 +1,5 @@
 {
+    "is_game_closed": "is_game_closed",
     "invite_player": "invite_player",
     "reject_invite_player": "reject_invite_player",
     "reject_invite_player_to_late": "reject_invite_player_to_late",

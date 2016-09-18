@@ -49,6 +49,9 @@ define([
 
             getClients: function getClients() {
                 return Transport.send({}, 'get_clients_list');
+            },
+            isGameClosed: function(gameId) {
+                return Transport.send({id: gameId}, 'is_game_closed');
             }
         },
         getId: function() {

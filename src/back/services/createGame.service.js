@@ -89,7 +89,7 @@ CreateGameService.prototype.newGame = function(clientA, clientB, invite) {
 CreateGameService.prototype.cancelGame = function(clients) {
     var inst = this;
     return this.gameDBManager.getGame(clients[0]._id, clients[1]._id).then(function(game) {
-        var gameCopy;
+        var gameCopy = {};
         if (game) {
             if (game.status === gameStatuses.closed) {
                 logger.warn('CancelGame: Game found for %s and %s clients ONLY in status \'closed\'', clients[0]._id, clients[1]._id);

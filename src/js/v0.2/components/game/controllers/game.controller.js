@@ -9,7 +9,7 @@ define([
     'module.backend.service',
     'utils/game-utils',
     'components/game/game.module'
-], function(angular, Observable, inviteBusiness, business, graphics, storage, events, backend, gameUtils) {
+], function(angular, Observable, inviteBusiness, business, graphics, gameStorage, events, backend, gameUtils) {
     'use strict';
 
     angular.module('game.module').controller('gameCtrl', gameCtrl);
@@ -18,7 +18,7 @@ define([
         var observable = Observable.instance;
 
         function getOpponent(clientA, clientB) {
-            var myself = storage.getClient();
+            var myself = gameStorage.getClient();
             return clientA._id === myself._id ? clientB : clientA;
         }
 
@@ -31,8 +31,8 @@ define([
         inviteBusiness.listen.success(function(message) {
             if (message.to) {
                 message.opponent = getOpponent(message.to, message.from);
-                storage.setOpponent(message.opponent);
-                storage.setGame(message.game);
+                gameStorage.setOpponent(message.opponent);
+                gameStorage.setGame(message.game);
                 observable.emit(events.CREATE_GAME, message);
             }
         });
@@ -44,11 +44,15 @@ define([
         });
 
         inviteBusiness.listen.cancel(function(message) {
-            var currentGame = storage.getGame();
-            var opponent = storage.getOpponent();
-            if (message.game._id && currentGame._id && currentGame._id === message.game._id) {
-                storage.clearGame();
-                storage.clearOpponent();
+            var currentGame = gameStorage.getGame();
+            var opponent = gameStorage.getOpponent();
+            var client = gameStorage.getClient();
+            if (currentGame._id && currentGame._id === message.game._id) {
+                if (!message.game && message.game._id) {
+                    console.warn('Game does not found!');
+                }
+                gameStorage.clearGame();
+                gameStorage.clearOpponent();
                 message.opponent = opponent;
                 observable.emit(events.CANCEL_GAME, message);
             }

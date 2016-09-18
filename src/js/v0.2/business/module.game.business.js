@@ -187,6 +187,16 @@ define([
         Backend.on(Backend.event.invite, function invitePlayer(client) {
             observable.propertyChange(api.listen.invite_player, client);
         });*/
+        isCurrentGameClosed();
+    }
+
+    function isCurrentGameClosed() {
+        var game = gameStorage.getGame();
+        if (game) {
+            Backend.isGameClosed(game._id).then(function(isGameClosed) {
+
+            });
+        }
     }
 
     gameStorage.activePlayer = new Player();
