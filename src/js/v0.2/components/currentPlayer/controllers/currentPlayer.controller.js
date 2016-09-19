@@ -21,9 +21,12 @@ define([
         vm.myself;
         vm.opponent = gameStorage.getOpponent();
         vm.isMenuOpened = false;
+        vm.isMyselfActive = true;
+        vm.isOpponentActive = false;
 
         vm.nextPlayer = function nextPlayer() {
-
+            vm.isMyselfActive = !vm.isMyselfActive;
+            vm.isOpponentActive = !vm.isOpponentActive;
         };
 
         vm.triggerOpenMenu = function () {

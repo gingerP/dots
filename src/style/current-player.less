@@ -7,6 +7,7 @@
   left: 0;
   position: absolute;
   margin: auto;
+  height: @toolbar-height;
 
   .myself-player,
   .opponent-player,
@@ -45,9 +46,19 @@
   }
 
   .player {
-    height: @toolbar-height;
-    line-height: @toolbar-height;
+    height: @toolbar-height - 10;
+    line-height: @toolbar-height - 10;
     text-align: center;
+    margin: 5px 0;
+    padding: 0 10px;
+    border-radius: 2px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    background-color: #fff;
+  }
+
+  .inactive-player {
+    background-color: #efefef;
+    color: #2e2e2e;
   }
 
   .menu-open {

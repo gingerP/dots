@@ -26,7 +26,7 @@ GameDataController.prototype.onGetEvents = function() {
     });
 };
 
-GameDataController.prototype.onIsGameClosed = function() {
+GameDataController.prototype.onIsGameClosed = function(handler) {
     this.wss.addListener(events.is_game_closed, handler);
 };
 

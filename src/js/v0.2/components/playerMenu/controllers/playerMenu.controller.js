@@ -18,8 +18,9 @@ define([
         vm.opponent = gameStorage.getOpponent();
 
         vm.cancelGame = function() {
-            if (vm.opponent) {
-                inviteBusiness.cancel(vm.opponent._id);
+            var game = gameStorage.getGame();
+            if (vm.opponent && game) {
+                inviteBusiness.cancel(vm.opponent._id, game._id);
             }
         };
 

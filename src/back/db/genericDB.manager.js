@@ -1,6 +1,6 @@
 var constants = _req('src/back/constants/constants');
 var logger = _req('src/js/logger').create('DB');
-var appRoot = require('app-root-path');
+var funcUtils = _req('src/back/utils/function-utils');
 var cfg = _req('prop').db;
 var utils = _req('src/js/utils');
 var bongo = require('mongodb');
@@ -230,7 +230,7 @@ GenericDBManager.prototype.save = function(doc, mappings) {
             inst.propertyChange('save', [data, doc, mappings]);
             resolve(data);
         }, null, mappings);
-    });
+    }).catch(funcUtils.error(logger));
 };
 GenericDBManager.prototype.saveByCriteria = function(doc, criteria, mappings) {
     var inst = this;
@@ -239,7 +239,7 @@ GenericDBManager.prototype.saveByCriteria = function(doc, criteria, mappings) {
             inst.propertyChange('saveByCriteria', [data, doc, criteria, mappings]);
             resolve(data);
         }, criteria, mappings);
-    });
+    }).catch(funcUtils.error(logger));
 };
 GenericDBManager.prototype.get = function(id, mappings) {
     var inst = this;
@@ -249,7 +249,7 @@ GenericDBManager.prototype.get = function(id, mappings) {
             inst.propertyChange('get', [entities, id, mappings]);
             resolve(entities);
         }, mappings);
-    });
+    }).catch(funcUtils.error(logger));
 };
 GenericDBManager.prototype.getByCriteria = function(criteria, mappings) {
     var inst = this;
@@ -258,7 +258,7 @@ GenericDBManager.prototype.getByCriteria = function(criteria, mappings) {
             inst.propertyChange('getByCriteria', [entities, criteria, mappings]);
             resolve(entities);
         }, mappings);
-    });
+    }).catch(funcUtils.error(logger));
 };
 GenericDBManager.prototype.remove = function(id) {
     var inst = this;
@@ -268,7 +268,7 @@ GenericDBManager.prototype.remove = function(id) {
             inst.propertyChange('remove', [data, id]);
             resolve(data);
         });
-    });
+    }).catch(funcUtils.error(logger));
 };
 GenericDBManager.prototype.list = function(mappings) {
     var inst = this;
@@ -277,7 +277,7 @@ GenericDBManager.prototype.list = function(mappings) {
             inst.propertyChange('list', [{}/*filters*/, mappings]);
             resolve(entities);
         }, mappings);
-    })
+    }).catch(funcUtils.error(logger));
 };
 GenericDBManager.prototype._getDBUrl = function() {
     var url = 'mongodb://'

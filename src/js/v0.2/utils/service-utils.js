@@ -13,10 +13,11 @@ define([
                 extend: extend || {}
             }
         },
-        createInvitePack: function(type, client) {
+        createInvitePack: function(type, client, extend) {
             return api.createGenericPack(
                 type,
-                client
+                client,
+                extend
             )
         },
         createListener: function createListener(event) {

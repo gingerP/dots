@@ -1,12 +1,14 @@
 <div class="current-player">
-    <div class="myself-player player">
-        <div class="player player-style">
+    <div class="myself-player player"
+        ng-class="{'inactive-player': !currentPlayerCtrl.isMyselfActive}">
+        <div class="player-style">
             {{currentPlayerCtrl.myself.name}}
         </div>
     </div>
     <a href="javascript:void(0)" type="button" class="player-next" ng-click="currentPlayerCtrl.nextPlayer()">Next</a>
-    <div ng-show="currentPlayerCtrl.opponent" class="opponent-player opponent-block player">
-        <div class="player player-style">
+    <div ng-show="currentPlayerCtrl.opponent" class="opponent-player opponent-block player"
+         ng-class="{'inactive-player': !currentPlayerCtrl.isOpponentActive}">
+        <div class="player-style">
             {{currentPlayerCtrl.opponent.name}}
         </div>
     </div>

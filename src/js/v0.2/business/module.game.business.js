@@ -193,7 +193,7 @@ define([
     function isCurrentGameClosed() {
         var game = gameStorage.getGame();
         if (game) {
-            Backend.isGameClosed(game._id).then(function(isGameClosed) {
+            Backend.emit.isGameClosed(game._id).then(function(isGameClosed) {
 
             });
         }

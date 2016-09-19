@@ -58,8 +58,8 @@ define([
         reject: function(clientId) {
             return inviteService.reject(clientId);
         },
-        cancel: function(clientId) {
-            return inviteService.cancel(clientId);
+        cancel: function(clientId, gameId) {
+            return inviteService.cancel(clientId, gameId);
         }
     };
 

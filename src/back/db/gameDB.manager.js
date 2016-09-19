@@ -1,21 +1,21 @@
 var GenericDBManager = require('./genericDB.manager').class;
 var constants = require('../constants/constants');
 
-function GameDBManager() {
+function GameSupportDBManager() {
 }
 
-GameDBManager.prototype = Object.create(GenericDBManager.prototype);
-GameDBManager.prototype.constructor = GameDBManager;
+GameSupportDBManager.prototype = Object.create(GenericDBManager.prototype);
+GameSupportDBManager.prototype.constructor = GameSupportDBManager;
 
-GameDBManager.prototype.getCollectionName = function () {
+GameSupportDBManager.prototype.getCollectionName = function () {
     return this.collectionName;
 };
 
-GameDBManager.prototype.getName = function () {
+GameSupportDBManager.prototype.getName = function () {
     return constants.GAME_DB_MANAGER;
 };
 
-GameDBManager.prototype.createGame = function (fromClientId, toClientId, status) {
+GameSupportDBManager.prototype.createGame = function (fromClientId, toClientId, status) {
     var data = {
         from: fromClientId,
         to: toClientId,
@@ -25,7 +25,7 @@ GameDBManager.prototype.createGame = function (fromClientId, toClientId, status)
     return this.save(data);
 };
 
-GameDBManager.prototype.getGame = function (clientAId, clientBId, status) {
+GameSupportDBManager.prototype.getGame = function (clientAId, clientBId, status) {
     var clientAIdDB = this._getObjectId(clientAId);
     var clientBIdDB = this._getObjectId(clientBId);
 
@@ -48,14 +48,36 @@ GameDBManager.prototype.getGame = function (clientAId, clientBId, status) {
     return this.getByCriteria(criteria);
 };
 
-GameDBManager.prototype.deleteInvite = function () {
+GameSupportDBManager.prototype.getGameByClientsByGameId = function(clientAId, clientBId, gameId) {
+    var clientAIdDB = this._getObjectId(clientAId);
+    var clientBIdDB = this._getObjectId(clientBId);
+    var gameIdDB = this._getObjectId(gameId);
+
+    var criteria = {
+        _id: gameIdDB,
+        $or: [
+            {
+                from: clientAIdDB,
+                to: clientBIdDB
+            },
+            {
+                from: clientBIdDB,
+                to: clientAIdDB
+            }
+
+        ]
+    };
+    return this.getByCriteria(criteria);
+};
+
+GameSupportDBManager.prototype.deleteInvite = function () {
 
 };
 
-GameDBManager.prototype.postConstructor = function () {
+GameSupportDBManager.prototype.postConstructor = function () {
     this.collectionName = constants.DB_COLLECTION_GAMES;
 };
 
 module.exports = {
-    class: GameDBManager
+    class: GameSupportDBManager
 };

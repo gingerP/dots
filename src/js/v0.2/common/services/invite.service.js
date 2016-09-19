@@ -32,8 +32,8 @@ define([
         reject: function(clientId) {
             return Transport.send(serviceUtils.createInvitePack(events.reject_invite_player, clientId), events.reject_invite_player);
         },
-        cancel: function(clientId) {
-            return Transport.send(serviceUtils.createInvitePack(events.cancel_game, clientId), events.cancel_game);
+        cancel: function(clientId, gameId) {
+            return Transport.send(serviceUtils.createInvitePack(events.cancel_game, clientId, {gameId: gameId}), events.cancel_game);
         }
     };
 
