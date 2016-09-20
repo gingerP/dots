@@ -1,14 +1,14 @@
 define([
-    'business/game.storage'
-], function(gameStorage) {
+    'business/game.storage',
+    'lodash'
+], function(gameStorage, _) {
     'use strict';
 
     var api;
 
     function hasPlayersDots() {
-        var ids = (arguments.length === 1 ? [arguments[0]] : Array.apply(null, arguments));
-        return [gameStorage.opponent, gameStorage.activePlayer].some(function (player) {
-            return ids.every(function (id) {
+        return gameStorage.getGamePlayers().some(function (player) {
+            return _.every(arguments, function (id) {
                 return player.hasDot(id);
             });
         })
@@ -16,7 +16,7 @@ define([
 
     api = {
         isGameStarted: function isGameStarted() {
-            return !!gameStorage.opponent;
+            return gameStorage.hasOpponent();
         },
 
         isDotFree: function isDotFree(data) {
@@ -33,17 +33,18 @@ define([
         },
 
         isDotsBelongsToOnePlayer: function isDotsBelongsToOnePlayer(data1, data2) {
-            return [gameStorage.opponent, gameStorage.activePlayer].some(function (player) {
+            return gameStorage.getGamePlayers().some(function (player) {
                 return player.hasDot(data1) && player.hasDot(data2);
             });
         },
 
         isDotsBelongsToActivePlayer: function isDotsBelongsToActivePlayer(data1, data2) {
-            return gameStorage.activePlayer.hasDot(data1) && gameStorage.activePlayer.hasDot(data2);
+            var client = gameStorage.getGameClient();
+            return client.hasDot(data1) && client.hasDot(data2);
         },
 
         isActivePlayerSelectDot: function isActivePlayerSelectDot() {
-            return gameStorage.activePlayer.history.hasDots();
+            return gameStorage.getGameClient().history.hasDots();
         },
 
         isActivePlayerLeadRoundTrappedDots: function isActivePlayerLeadRoundTrappedDots() {

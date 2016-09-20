@@ -25,6 +25,7 @@ define([
         vm.isOpponentActive = false;
 
         vm.nextPlayer = function nextPlayer() {
+            Business.
             vm.isMyselfActive = !vm.isMyselfActive;
             vm.isOpponentActive = !vm.isOpponentActive;
         };

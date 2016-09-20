@@ -1,12 +1,14 @@
 define([
     'd3',
+    'q',
+    'components/constants/events.constant',
     'module.observable',
     'module.backend.service',
     'business/module.game.player',
     'business/business.invite',
     'business/game.rules',
     'business/game.storage'
-], function (d3, Observable, Backend, Player, businessInvite, rules, gameStorage) {
+], function (d3, q, Events, Observable, Backend, Player, businessInvite, rules, gameStorage) {
     'use strict';
 
     function getId() {
@@ -50,6 +52,7 @@ define([
 
     function select(data) {
         return new Promise(function (resolve, reject) {
+            var activePlayer = gameStorage.getActiveGamePlayer();
             if (!canSelectDot(data)) {
                 reject();
             } else {
@@ -82,23 +85,30 @@ define([
     }
 
     function getActivePlayerColor() {
-        return activePlayer ? activePlayer.getColor() : '';
+        var player = gameStorage.getActiveGamePlayer();
+        return player ? player.getColor() : '';
     }
 
     function makePlayerActive(player) {
+        var activePlayer = gameStorage.getActiveGamePlayer();
         var previousHistoryRecordId = activePlayer? activePlayer.history.getId(): null;
+        var players = gameStorage.getGamePlayers();
         if (players.indexOf(player) > -1) {
             activePlayer = player;
             makePlayersEnemyExept(activePlayer);
             clearActivePlayerState();
-            observable.propertyChange(api.listen.change_active_player, player);
+            observable.on(Events.MAKE_PLAYER_ACTIVE, player);
             activePlayer.history.newRecord(previousHistoryRecordId);
         }
         return api;
     }
 
     function makeNextPlayerActive() {
+        var activePlayer;
+        var players;
         if (api.canChangeActivePlayer()) {
+            activePlayer = gameStorage.getActiveGamePlayer();
+            players = gameStorage.getGamePlayers();
             var index = players.indexOf(activePlayer);
             if (index === players.length - 1) {
                 makePlayerActive(players[0]);
@@ -106,7 +116,7 @@ define([
                 makePlayerActive(players[index + 1]);
             }
         }
-        return api;
+        return q();
     }
 
     function makePlayersEnemyExept(activePlayer) {

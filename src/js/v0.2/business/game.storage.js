@@ -11,6 +11,7 @@ define([
         client: null,
         opponent: null
     };
+    var activeGamePlayer;
     var keys = {
         CLIENT: 'client',
         OPPONENT: 'opponent',
@@ -109,6 +110,26 @@ define([
         storage.remove(keys.OPPONENT)
     }
 
+    function getGamePlayers() {
+        var result = [];
+        if (gamers.client) {
+            result.push(gamers.client)
+        }
+        if (gamers.opponent) {
+            result.push(gamers.opponent)
+        }
+        return result;
+    }
+
+    function getActiveGamePlayer() {
+        return activeGamePlayer;
+    }
+
+    function setActiveGamePlayer(gamePlayer) {
+        activeGamePlayer = gamePlayer;
+        return api;
+    }
+
     api = {
         set: set,
         get: get,
@@ -125,6 +146,10 @@ define([
         getOpponent: gamerGet(keys.OPPONENT),
         clearOpponent: clearOpponent,
         hasOpponent: hasOpponent,
+
+        getGamePlayers: getGamePlayers,
+        getActiveGamePlayer: getActiveGamePlayer,
+        setActiveGamePlayer: setActiveGamePlayer,
 
         setGame: genericSet(keys.GAME),
         getGame: genericGet(keys.GAME),

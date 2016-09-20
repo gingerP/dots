@@ -5,16 +5,20 @@
             {{currentPlayerCtrl.myself.name}}
         </div>
     </div>
+
     <a href="javascript:void(0)" type="button" class="player-next" ng-click="currentPlayerCtrl.nextPlayer()">Next</a>
+
     <div ng-show="currentPlayerCtrl.opponent" class="opponent-player opponent-block player"
          ng-class="{'inactive-player': !currentPlayerCtrl.isOpponentActive}">
         <div class="player-style">
             {{currentPlayerCtrl.opponent.name}}
         </div>
     </div>
+
     <div ng-show="!currentPlayerCtrl.opponent" class="choose-opponent player">
         <a href="javascript:void(0)" type="button" ng-click="currentPlayerCtrl.triggerOpenMenu()">Choose opponent</a>
     </div>
+
     <button class="btn-override menu-open"
             ng-class="{'menu-open-up': currentPlayerCtrl.isMenuOpened}"
             ng-click="currentPlayerCtrl.triggerOpenMenu()">
