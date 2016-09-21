@@ -1,7 +1,7 @@
 define([
     'd3',
     'q',
-    'components/constants/events.constant',
+    'common/events',
     'module.observable',
     'module.backend.service',
     'business/module.game.player',
@@ -35,9 +35,12 @@ define([
     }
 
     function canChangeActivePlayer() {
-        return rules.rulesCanChangeActivePlayer.every(function (rule) {
-            return rule();
-        });
+        return q(function(resolve, reject) {
+            var canChange = rules.rulesCanChangeActivePlayer.every(function (rule) {
+                return rule();
+            });
+            canChange ? resolve() : reject();
+        })
     }
 
     //------------------------------------------------
@@ -97,7 +100,7 @@ define([
             activePlayer = player;
             makePlayersEnemyExept(activePlayer);
             clearActivePlayerState();
-            observable.on(Events.MAKE_PLAYER_ACTIVE, player);
+            observable.on(Events.MAKE_PLAYER_ACTIVE, gameStorage.getClientForGamer(player));
             activePlayer.history.newRecord(previousHistoryRecordId);
         }
         return api;
@@ -184,19 +187,20 @@ define([
     }
 
     function init() {
-       /* Backend.on(Backend.event.add_dot, function listenEnemyAddDot() {
-
-        });
-
-        Backend.on(Backend.event.add_client, function listenAddClient(client) {
-            if (addClient(client)) {
-                observable.propertyChange(api.listen.add_client, client);
+        observable.on(Events.CREATE_GAME, function(message) {
+            var beginner = message.from;
+            var beginnerGamer;
+            var myself = gameStorage.getGameClient();
+            var opponent = gameStorage.getGameOpponent();
+            if (myself.getId() === beginner._id) {
+                beginnerGamer = myself;
+            } else if (opponent.getId() === beginner._id) {
+                beginnerGamer = opponent;
+            }
+            if (beginnerGamer) {
+                makePlayerActive(beginnerGamer);
             }
         });
-
-        Backend.on(Backend.event.invite, function invitePlayer(client) {
-            observable.propertyChange(api.listen.invite_player, client);
-        });*/
         isCurrentGameClosed();
     }
 
@@ -220,9 +224,6 @@ define([
         canConnectDots: canConnectDots,
         canSelectDot: canSelectDot,
         canChangeActivePlayer: canChangeActivePlayer,
-        invitePlayer: function(player) {
-            /*return transportUtils.invitePlayer(player);*/
-        },
         select: select,
         addActivePlayers: addActivePlayers,
         getActivePlayerColor: getActivePlayerColor,
@@ -241,7 +242,6 @@ define([
         getClients: function() {
             return clients;
         },
-
         invite: businessInvite,
         listen: {
             invite_player: 'invite_player',

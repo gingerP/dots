@@ -3,12 +3,12 @@ define([
     'module.observable',
     'module.game.business',
     'module.backend.service',
-    'components/constants/events.constant',
+    'common/events',
     'components/utils/scope.utils',
     'utils/game-utils',
     'business/game.storage',
     'components/currentPlayer/currentPlayer.module'
-], function (angular, Observable, Business, backend, events, scopeUtils, gameUtils, gameStorage) {
+], function (angular, Observable, Business, backend, Events, scopeUtils, gameUtils, gameStorage) {
     'use strict';
 
     angular.module('currentPlayer.module').controller('currentPlayerCtrl', CurrentPlayerController);
@@ -18,21 +18,24 @@ define([
             scope = $scope,
             observable = Observable.instance;
 
-        vm.myself;
+        function updateActiveState() {
+            vm.isMyselfActive = !vm.isMyselfActive;
+            vm.isOpponentActive = !vm.isOpponentActive;
+            $scope.$apply();
+        }
+
         vm.opponent = gameStorage.getOpponent();
         vm.isMenuOpened = false;
-        vm.isMyselfActive = true;
+        vm.isMyselfActive = false;
         vm.isOpponentActive = false;
 
         vm.nextPlayer = function nextPlayer() {
-            Business.
-            vm.isMyselfActive = !vm.isMyselfActive;
-            vm.isOpponentActive = !vm.isOpponentActive;
+            Business.makeNextPlayerActive.bind(Business);
         };
 
         vm.triggerOpenMenu = function () {
             vm.isMenuOpened = !vm.isMenuOpened;
-            observable.emit(events.MENU_VISIBILITY, vm.isMenuOpened);
+            observable.emit(Events.MENU_VISIBILITY, vm.isMenuOpened);
         };
 
         backend.emit.getMyself().then(function (client) {
@@ -40,11 +43,11 @@ define([
             $scope.$apply();
         });
 
-        $scope.$on('$destroy', observable.on(events.CANCEL_GAME, function(message) {
+        observable.on(Events.CANCEL_GAME, function(message) {
             delete vm.opponent;
-        }));
+        });
 
-        $scope.$on('$destroy', observable.on(events.CREATE_GAME, function(message) {
+        observable.on(Events.CREATE_GAME, function(message) {
             var myself;
             var opponent;
             if (message.to && message.from && message.game) {
@@ -52,6 +55,16 @@ define([
                 vm.opponent = myself._id === message.to._id ? message.from : message.to;
                 $scope.$apply();
             }
-        }));
+        });
+
+        observable.on(Events.MAKE_PLAYER_ACTIVE, function(player) {
+            if (vm.opponent === player) {
+                vm.isMyselfActive = false;
+                vm.isOpponentActive = true;
+            } else if (gameStorage.getClient() === player) {
+                vm.isMyselfActive = true;
+                vm.isOpponentActive = false;
+            }
+        });
     }
 });

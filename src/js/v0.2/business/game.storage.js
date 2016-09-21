@@ -121,6 +121,19 @@ define([
         return result;
     }
 
+    function getPlayers() {
+        var result = [];
+        var client = get(keys.CLIENT);
+        var opponent = get(keys.OPPONENT);
+        if (client) {
+            result.push(client)
+        }
+        if (opponent) {
+            result.push(opponent)
+        }
+        return result;
+    }
+
     function getActiveGamePlayer() {
         return activeGamePlayer;
     }
@@ -128,6 +141,14 @@ define([
     function setActiveGamePlayer(gamePlayer) {
         activeGamePlayer = gamePlayer;
         return api;
+    }
+
+    function getClientForGamer(gamer) {
+        if (gamer === gamers.client) {
+            return get(keys.CLIENT);
+        } else if (gamer === gamers.OPPONENT) {
+            return get(keys.OPPONENT);
+        }
     }
 
     api = {
@@ -146,6 +167,9 @@ define([
         getOpponent: gamerGet(keys.OPPONENT),
         clearOpponent: clearOpponent,
         hasOpponent: hasOpponent,
+
+        getClientForGamer: getClientForGamer,
+        getPlayers: getPlayers,
 
         getGamePlayers: getGamePlayers,
         getActiveGamePlayer: getActiveGamePlayer,

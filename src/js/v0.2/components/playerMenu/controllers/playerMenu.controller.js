@@ -2,7 +2,7 @@ define([
     'angular',
     'module.observable',
     'business/game.storage',
-    'components/constants/events.constant',
+    'common/events',
     'business/business.invite',
     'components/playerMenu/playerMenu.module'
 ], function(angular, Observable, gameStorage, events, inviteBusiness) {

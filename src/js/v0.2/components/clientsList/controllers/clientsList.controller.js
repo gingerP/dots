@@ -4,7 +4,7 @@ define([
     'module.observable',
     'components/utils/scope.utils',
     'business/game.storage',
-    'components/constants/events.constant',
+    'common/events',
     'module.game.business',
     'business/business.invite',
     'module.backend.service',
@@ -74,11 +74,7 @@ define([
         }
 
         vm.invite = function invite(client) {
-            inviteBusiness.ask(client._id).then(function () {
-
-            }, function () {
-
-            })
+            inviteBusiness.ask(client._id);
         };
 
         vm.submitInvite = function (toClient) {

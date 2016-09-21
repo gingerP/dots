@@ -6,7 +6,7 @@ define([
     'module.game.graphics',
     'module.game.player',
     'module.game.player.history',
-    'components/constants/events.constant',
+    'common/events',
     'components/gamePane/gamePane.module',
     'components/gamePane/controllers/gamePane.controller'
 ], function (angular, Observable, d3, business, graphics, Player, History, events) {

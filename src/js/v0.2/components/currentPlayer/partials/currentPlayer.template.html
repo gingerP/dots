@@ -1,6 +1,6 @@
 <div class="current-player">
     <div class="myself-player player"
-        ng-class="{'inactive-player': !currentPlayerCtrl.isMyselfActive}">
+        ng-class="{'inactive-player': !currentPlayerCtrl.isMyselfActive && vm.opponent, 'active-player': currentPlayerCtrl.isMyselfActive && vm.opponent}">
         <div class="player-style">
             {{currentPlayerCtrl.myself.name}}
         </div>
@@ -9,7 +9,7 @@
     <a href="javascript:void(0)" type="button" class="player-next" ng-click="currentPlayerCtrl.nextPlayer()">Next</a>
 
     <div ng-show="currentPlayerCtrl.opponent" class="opponent-player opponent-block player"
-         ng-class="{'inactive-player': !currentPlayerCtrl.isOpponentActive}">
+         ng-class="{'inactive-player': !currentPlayerCtrl.isOpponentActive, 'active-player': currentPlayerCtrl.isOpponentActive}">
         <div class="player-style">
             {{currentPlayerCtrl.opponent.name}}
         </div>

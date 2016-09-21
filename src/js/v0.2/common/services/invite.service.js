@@ -29,6 +29,9 @@ define([
         success: function(clientId) {
             return Transport.send(serviceUtils.createInvitePack(events.success_invite_player, clientId), events.success_invite_player);
         },
+        successToLate: function(clientId) {
+            return Transport.send(serviceUtils.createInvitePack(events.success_invite_player_to_late, clientId), events.success_invite_player_to_late);
+        },
         reject: function(clientId) {
             return Transport.send(serviceUtils.createInvitePack(events.reject_invite_player, clientId), events.reject_invite_player);
         },

@@ -1,11 +1,14 @@
 define([
     'common/services/invite.service',
+    'module.observable',
     'business/game.storage',
+    'common/events',
     'q'
-], function(inviteService, gameStorage, q) {
+], function(inviteService, Observable, gameStorage, events, q) {
     'use strict';
 
     var api;
+    var observable = Observable.instance;
 
     function notAvailable() {
         return q.thenReject(false);
@@ -15,37 +18,58 @@ define([
         return !gameStorage.hasOpponent();
     }
 
-    api = {
-        listen: {
-            ask: function(listener) {
-                inviteService.listen.ask(function(data) {
-                    if (!gameStorage.hasOpponent()) {
-                        listener(data);
-                    }
-                });
-            },
-            success: function(listener) {
-                inviteService.listen.success(function(data) {
-                    if (!gameStorage.hasOpponent()) {
-                        listener(data);
-                    }
-                });
-            },
-            reject: function(listener) {
-                inviteService.listen.reject(function(data) {
-                    if (!gameStorage.hasOpponent()) {
-                        listener(data);
-                    }
-                });
-            },
-            cancel: function(listener) {
-                inviteService.listen.cancel(function(data) {
-                    if (gameStorage.hasOpponent()) {
-                        listener(data);
-                    }
-                });
+    function getOpponent(clientA, clientB) {
+        var myself = gameStorage.getClient();
+        return clientA._id === myself._id ? clientB : clientA;
+    }
+
+    inviteService.listen.ask(function(message) {
+        if (message.from) {
+            observable.emit(events.INVITE, message);
+        }
+    });
+
+    inviteService.listen.success(function(message) {
+        var opponent;
+        if (!gameStorage.hasOpponent()) {
+            if (message.to) {
+                message.opponent = getOpponent(message.to, message.from);
+                gameStorage.setOpponent(message.opponent);
+                gameStorage.setGame(message.game);
+                observable.emit(events.CREATE_GAME, message);
             }
-        },
+        } else {
+            opponent = getOpponent(message.to, message.from);
+            inviteService.successToLate(opponent._id);
+        }
+    });
+
+    inviteService.listen.reject(function(message) {
+        if (!gameStorage.hasOpponent()) {
+            if (message.to) {
+                observable.emit(events.INVITE_REJECT, message);
+            }
+        }
+    });
+
+    inviteService.listen.cancel(function(message) {
+        if (gameStorage.hasOpponent()) {
+            var currentGame = gameStorage.getGame();
+            var opponent = gameStorage.getOpponent();
+            var client = gameStorage.getClient();
+            if (currentGame._id && currentGame._id === message.game._id) {
+                if (!message.game && message.game._id) {
+                    console.warn('Game does not found!');
+                }
+                gameStorage.clearGame();
+                gameStorage.clearOpponent();
+                message.opponent = opponent;
+                observable.emit(events.CANCEL_GAME, message);
+            }
+        }
+    });
+
+    api = {
         ask: function(clientId) {
             if (!gameStorage.hasOpponent()) {
                 return inviteService.ask(clientId);

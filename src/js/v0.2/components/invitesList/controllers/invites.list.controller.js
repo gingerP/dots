@@ -2,8 +2,7 @@ define([
     'angular',
     'module.observable',
     'module.backend.service',
-    '../invites.list.module',
-    '../../constants/events.constant'
+    '../invites.list.module'
 ], function(angular, Observable, backend) {
     'use strict';
 
