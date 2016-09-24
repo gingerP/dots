@@ -39,12 +39,12 @@ define([
         },
 
         isDotsBelongsToActivePlayer: function isDotsBelongsToActivePlayer(data1, data2) {
-            var client = gameStorage.getGameClient();
+            var client = gameStorage.getActiveGamePlayer();
             return client.hasDot(data1) && client.hasDot(data2);
         },
 
         isActivePlayerSelectDot: function isActivePlayerSelectDot() {
-            return gameStorage.getGameClient().history.hasDots();
+            return gameStorage.getActiveGamePlayer().history.hasDots();
         },
 
         isActivePlayerLeadRoundTrappedDots: function isActivePlayerLeadRoundTrappedDots() {

@@ -2,6 +2,8 @@ var GenericService = require('./generic.service').class;
 var constants = require('../constants/constants');
 var funcUtils = require('../utils/function-utils');
 var gameStatuses = require('../constants/game-statuses');
+var Promise = require('q');
+var logger = _req('src/js/logger').create('GameDataService');
 
 function GameDataService() {
 }
@@ -25,6 +27,12 @@ GameDataService.prototype.onSuccess = function () {
 
 };
 
+GameDataService.prototype.onGetGameState = function (message) {
+    return this.gameDBManager.get(message.data.id).then(function(game) {
+
+    }).catch(funcUtils.error(logger));
+};
+
 GameDataService.prototype.onIsGameClosed = function (message) {
     this.gameDBManager.get(message.data.id).then(function(game) {
         if (game) {
@@ -32,7 +40,7 @@ GameDataService.prototype.onIsGameClosed = function (message) {
         } else {
             message.callback(false);
         }
-    });
+    }).catch(funcUtils.error(logger));
 };
 
 GameDataService.prototype.getName = function () {

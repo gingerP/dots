@@ -21,6 +21,10 @@ define([
     var logger;
     var observable = Observable.instance;
     var stepNumber = 0;
+    var GAME_MODE = {
+        LOCAL: 'LOCAL',
+        NETWORK: 'NETWORK'
+    };
 
     function canSelectDot(data) {
         return rules.rulesCanSelect.every(function (rule) {
@@ -46,11 +50,11 @@ define([
     //------------------------------------------------
 
     function isLocalMode() {
-        return gameStorage.mode === gameStorage.mode.local;
+        return gameStorage.getGameMode() === GAME_MODE.LOCAL;
     }
 
     function isNetworkMode() {
-        return gameStorage.mode === gameStorage.mode.network;
+        return gameStorage.getGameMode() === GAME_MODE.NETWORK;
     }
 
     function select(data) {
@@ -60,11 +64,9 @@ define([
                 reject();
             } else {
                 activePlayer.addDot(data);
-                updateActivePlayerState([data]);
-                observable.propertyChange(api.listen.add_dot, data);
+                //updateActivePlayerState([data]);
+                observable.emit(Events.ADD_DOT, data);
                 activePlayer.history.addDot(data);
-              //  transportUtils.addDot(data);
-                updateCapturedState();
                 resolve(function () {
                     //TODO
                     if (!isLocalMode()) {
@@ -83,7 +85,7 @@ define([
                 player.position = players.indexOf(player);
             }
         });
-        observable.propertyChange(api.listen.add_active_player, players_);
+        observable.emit(api.listen.add_active_player, players_);
         return api;
     }
 
@@ -98,9 +100,8 @@ define([
         var players = gameStorage.getGamePlayers();
         if (players.indexOf(player) > -1) {
             activePlayer = player;
-            makePlayersEnemyExept(activePlayer);
-            clearActivePlayerState();
-            observable.on(Events.MAKE_PLAYER_ACTIVE, gameStorage.getClientForGamer(player));
+            gameStorage.setActiveGamePlayer(activePlayer);
+            observable.emit(Events.MAKE_PLAYER_ACTIVE, player);
             activePlayer.history.newRecord(previousHistoryRecordId);
         }
         return api;
@@ -120,15 +121,6 @@ define([
             }
         }
         return q();
-    }
-
-    function makePlayersEnemyExept(activePlayer) {
-        enemyPlayers = [];
-        players.forEach(function(player) {
-            if (player != activePlayer) {
-                enemyPlayers.push(player);
-            }
-        });
     }
 
     function getEnemyPlayerDots() {
@@ -187,6 +179,9 @@ define([
     }
 
     function init() {
+        reloadGameMode();
+        reloadMyself();
+        reloadGame();
         observable.on(Events.CREATE_GAME, function(message) {
             var beginner = message.from;
             var beginnerGamer;
@@ -201,14 +196,27 @@ define([
                 makePlayerActive(beginnerGamer);
             }
         });
-        isCurrentGameClosed();
     }
 
-    function isCurrentGameClosed() {
+    function reloadGameMode() {
+        gameStorage.setGameMode(GAME_MODE.NETWORK);
+    }
+
+    function reloadMyself() {
+        observable.emit(Events.REFRESH_MYSELF);
+    }
+
+    function reloadGame() {
         var game = gameStorage.getGame();
         if (game) {
             Backend.emit.isGameClosed(game._id).then(function(isGameClosed) {
-
+                var activeGamer = gameStorage.getActiveGamePlayer();
+                if (!isGameClosed) {
+                    observable.emit(Events.REFRESH_GAME);
+                    makePlayerActive(activeGamer);
+                } else {
+                    observable.emit(Events.CANCEL_GAME);
+                }
             });
         }
     }

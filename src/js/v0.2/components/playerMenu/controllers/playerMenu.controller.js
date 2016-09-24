@@ -5,7 +5,7 @@ define([
     'common/events',
     'business/business.invite',
     'components/playerMenu/playerMenu.module'
-], function(angular, Observable, gameStorage, events, inviteBusiness) {
+], function(angular, Observable, gameStorage, Events, inviteBusiness) {
     'use strict';
 
     angular.module('player.menu.module').controller('playerMenuController', playerMenuController);
@@ -15,7 +15,7 @@ define([
             observable = Observable.instance;
 
         vm.isMenuClosed = true;
-        vm.opponent = gameStorage.getOpponent();
+        vm.opponent = gameStorage.getGameOpponent();
 
         vm.cancelGame = function() {
             var game = gameStorage.getGame();
@@ -24,18 +24,23 @@ define([
             }
         };
 
-        $scope.$on('$destroy', observable.on(events.MENU_VISIBILITY, function(isVisible) {
-            vm.isMenuClosed = !isVisible;
-        }));
+        observable.on(Events.REFRESH_GAME, function() {
+            vm.opponent = gameStorage.getGameOpponent();
+            $scope.$apply();
+        });
 
-        $scope.$on('$destroy', observable.on(events.CREATE_GAME, function(message) {
+        observable.on(Events.MENU_VISIBILITY, function(isVisible) {
+            vm.isMenuClosed = !isVisible;
+        });
+
+        observable.on(Events.CREATE_GAME, function(message) {
             vm.opponent = message.opponent;
             $scope.$apply();
-        }));
+        });
 
-        $scope.$on('$destroy', observable.on(events.CANCEL_GAME, function() {
+        observable.on(Events.CANCEL_GAME, function() {
             delete vm.opponent;
             $scope.$apply();
-        }));
+        });
     }
 });

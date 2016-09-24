@@ -18,19 +18,14 @@ define([
             scope = $scope,
             observable = Observable.instance;
 
-        function updateActiveState() {
-            vm.isMyselfActive = !vm.isMyselfActive;
-            vm.isOpponentActive = !vm.isOpponentActive;
-            $scope.$apply();
-        }
-
-        vm.opponent = gameStorage.getOpponent();
         vm.isMenuOpened = false;
-        vm.isMyselfActive = false;
+        vm.isMyselfActive = true;
         vm.isOpponentActive = false;
+        vm.myself = gameStorage.getGameClient();
+        vm.opponent = gameStorage.getGameOpponent();
 
         vm.nextPlayer = function nextPlayer() {
-            Business.makeNextPlayerActive.bind(Business);
+            Business.makeNextPlayerActive();
         };
 
         vm.triggerOpenMenu = function () {
@@ -38,9 +33,17 @@ define([
             observable.emit(Events.MENU_VISIBILITY, vm.isMenuOpened);
         };
 
-        backend.emit.getMyself().then(function (client) {
+/*        backend.emit.getMyself().then(function (client) {
             vm.myself = client;
             $scope.$apply();
+        });*/
+
+        observable.on(Events.REFRESH_MYSELF, function() {
+            vm.myself = gameStorage.getGameClient();
+        });
+
+        observable.on(Events.REFRESH_GAME, function() {
+            vm.opponent = gameStorage.getGameOpponent();
         });
 
         observable.on(Events.CANCEL_GAME, function(message) {
@@ -48,11 +51,8 @@ define([
         });
 
         observable.on(Events.CREATE_GAME, function(message) {
-            var myself;
-            var opponent;
             if (message.to && message.from && message.game) {
-                myself = gameStorage.getClient();
-                vm.opponent = myself._id === message.to._id ? message.from : message.to;
+                vm.opponent = gameStorage.getOpponent();
                 $scope.$apply();
             }
         });
@@ -61,10 +61,11 @@ define([
             if (vm.opponent === player) {
                 vm.isMyselfActive = false;
                 vm.isOpponentActive = true;
-            } else if (gameStorage.getClient() === player) {
+            } else if (gameStorage.getGameClient() === player) {
                 vm.isMyselfActive = true;
                 vm.isOpponentActive = false;
             }
+            $scope.$apply();
         });
     }
 });

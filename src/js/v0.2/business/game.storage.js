@@ -13,6 +13,8 @@ define([
     };
     var activeGamePlayer;
     var keys = {
+        NETWORK_MODE: 'network_mode',
+        ACTIVE_GAMER_ID: 'active_gamer_id',
         CLIENT: 'client',
         OPPONENT: 'opponent',
         GAME: 'game'
@@ -39,6 +41,10 @@ define([
 
     function get(key) {
         return storage.get(key);
+    }
+
+    function remove(key) {
+        return storage.remove(key);
     }
 
     function gamerSet(key) {
@@ -135,11 +141,27 @@ define([
     }
 
     function getActiveGamePlayer() {
+        var playerId = get(keys.ACTIVE_GAMER_ID);
+        if (playerId && !activeGamePlayer) {
+            if (gamers.client && playerId === gamers.client.getId()) {
+                activeGamePlayer = gamers.client;
+            }
+            if (gamers.opponent && playerId === gamers.opponent.getId()) {
+                activeGamePlayer = gamers.opponent;
+            }
+        }
         return activeGamePlayer;
     }
 
     function setActiveGamePlayer(gamePlayer) {
         activeGamePlayer = gamePlayer;
+        set(keys.ACTIVE_GAMER_ID, gamePlayer.id);
+        return api;
+    }
+
+    function deleteActiveGamePlayer() {
+        activeGamePlayer = undefined;
+        remove(keys.ACTIVE_GAMER_ID);
         return api;
     }
 
@@ -154,6 +176,9 @@ define([
     api = {
         set: set,
         get: get,
+
+        setGameMode: genericSet(keys.NETWORK_MODE),
+        getGameMode: genericGet(keys.NETWORK_MODE),
 
         setGameClient: setGameClient,
         getGameClient: getGameClient,
@@ -172,8 +197,10 @@ define([
         getPlayers: getPlayers,
 
         getGamePlayers: getGamePlayers,
+
         getActiveGamePlayer: getActiveGamePlayer,
         setActiveGamePlayer: setActiveGamePlayer,
+        deleteActiveGamePlayer: deleteActiveGamePlayer,
 
         setGame: genericSet(keys.GAME),
         getGame: genericGet(keys.GAME),

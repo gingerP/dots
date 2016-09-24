@@ -17,7 +17,8 @@ GameDataController.prototype.onGetMyself = function(handler) {
     this.wss.addListener(events.get_myself, handler);
 };
 
-GameDataController.prototype.onRejectPlayer = function(handler) {
+GameDataController.prototype.onGetGameState = function(handler) {
+    this.wss.addListener(events.get_game_state, handler);
 };
 
 GameDataController.prototype.onGetEvents = function() {

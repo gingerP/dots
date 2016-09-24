@@ -14,7 +14,8 @@ define([
         reject_invite_player_to_late: 'reject_invite_player_to_late',
         success_invite_player: 'success_invite_player',
         success_invite_player_to_late: 'success_invite_player_to_late',
-        cancel_game: 'cancel_game'
+        cancel_game: 'cancel_game',
+        getGameState: 'get_game_state'
     };
 
     function listen(type, listener) {
@@ -52,6 +53,9 @@ define([
             },
             isGameClosed: function(gameId) {
                 return Transport.send({id: gameId}, 'is_game_closed');
+            },
+            getGameState: function(gameId) {
+                return Transport.send({id: gameId}, events.getGameState);
             }
         },
         getId: function() {

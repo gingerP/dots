@@ -40,11 +40,11 @@ define([
     };
 
     PlayerHistory.prototype.hasDots = function() {
-        return this.record.hasDots();
+        return this.record ? this.record.hasDots() : false;
     };
 
     PlayerHistory.prototype.getId = function() {
-        return this.record.id;
+        return this.record ? this.record.id : null;
     };
 
     PlayerHistory.prototype.getCurrentRecord = function() {

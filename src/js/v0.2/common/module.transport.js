@@ -2,13 +2,14 @@ define([
     'module.observable',
     'socket',
     'q',
+    'common/events',
     'business/game.storage'
-], function (Observable, io, q, gameStorage) {
+], function (Observable, io, q, Events, gameStorage) {
     'use strict';
 
     var api;
     var connection;
-    var observable = new Observable.class();
+    var observable = Observable.instance;
     var socket = io();
     var servicePoints = [];
     var connectionTimes = 0;
@@ -53,11 +54,13 @@ define([
             api.send({}, 'new_client').then(function (data) {
                 myself = data;
                 gameStorage.setClient(myself);
+                observable.emit(Events.REFRESH_MYSELF);
             });
         } else {
             api.send(myself, 'client_reconnect').then(function (data) {
                 myself = data;
                 gameStorage.setClient(myself);
+                observable.emit(Events.REFRESH_MYSELF);
             });
         }
     }

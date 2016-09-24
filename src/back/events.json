@@ -11,5 +11,6 @@
     "client_reconnect": "client_reconnect",
     "new_connection": "new_connection",
     "get_myself": "get_myself",
-    "get_events": "get_events"
+    "get_events": "get_events",
+    "get_game_state": "get_game_state"
 }
