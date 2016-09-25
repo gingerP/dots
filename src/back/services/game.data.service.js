@@ -4,6 +4,7 @@ var funcUtils = require('../utils/function-utils');
 var gameStatuses = require('../constants/game-statuses');
 var Promise = require('q');
 var logger = _req('src/js/logger').create('GameDataService');
+var errorLog = funcUtils.error(logger);
 
 function GameDataService() {
 }
@@ -30,7 +31,7 @@ GameDataService.prototype.onSuccess = function () {
 GameDataService.prototype.onGetGameState = function (message) {
     return this.gameDBManager.get(message.data.id).then(function(game) {
 
-    }).catch(funcUtils.error(logger));
+    }).catch(errorLog);
 };
 
 GameDataService.prototype.onIsGameClosed = function (message) {
@@ -40,7 +41,7 @@ GameDataService.prototype.onIsGameClosed = function (message) {
         } else {
             message.callback(false);
         }
-    }).catch(funcUtils.error(logger));
+    }).catch(errorLog);
 };
 
 GameDataService.prototype.getName = function () {

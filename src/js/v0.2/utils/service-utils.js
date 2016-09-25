@@ -20,6 +20,12 @@ define([
                 extend
             )
         },
+        createGamePack: function(type, extend) {
+            return {
+                type: type,
+                extend: extend
+            }
+        },
         createListener: function createListener(event) {
             return function(listener) {
                 Transport.addListener(event, listener);

@@ -1,42 +1,50 @@
 define([
     'module.transport',
-    'utils/service-utils'
-], function(Transport, serviceUtils) {
+    'utils/service-utils',
+    'common/backend-events'
+], function(Transport, serviceUtils, BackendEvents) {
     'use strict';
 
     var api;
-    var events = {
-        invite_player: 'invite_player',
-        reject_invite_player: 'reject_invite_player',
-        reject_invite_player_to_late: 'reject_invite_player_to_late',
-        success_invite_player: 'success_invite_player',
-        success_invite_player_to_late: 'success_invite_player_to_late',
-        cancel_game: 'cancel_game'
-    };
 
     api = {
         listen: {
-            ask: serviceUtils.createListener(events.invite_player),
-            success: serviceUtils.createListener(events.success_invite_player),
-            successToLate: serviceUtils.createListener(events.success_invite_player_to_late),
-            reject: serviceUtils.createListener(events.reject_invite_player),
-            rejectToLate: serviceUtils.createListener(events.reject_invite_player_to_late),
-            cancel: serviceUtils.createListener(events.cancel_game)
+            ask: serviceUtils.createListener(BackendEvents.INVITE.ASK),
+            success: serviceUtils.createListener(BackendEvents.INVITE.SUCCESS),
+            successToLate: serviceUtils.createListener(BackendEvents.INVITE.SUCCESS_TO_LATE),
+            reject: serviceUtils.createListener(BackendEvents.INVITE.REJECT),
+            rejectToLate: serviceUtils.createListener(BackendEvents.INVITE.REJECT_TO_LATE),
+            cancel: serviceUtils.createListener(BackendEvents.INVITE.CANCEL_GAME)
         },
         ask: function(clientId) {
-            return Transport.send(serviceUtils.createInvitePack(events.invite_player, clientId), events.invite_player);
+            return Transport.send(
+                serviceUtils.createInvitePack(BackendEvents.INVITE.ASK, clientId),
+                BackendEvents.INVITE.ASK
+            );
         },
         success: function(clientId) {
-            return Transport.send(serviceUtils.createInvitePack(events.success_invite_player, clientId), events.success_invite_player);
+            return Transport.send(
+                serviceUtils.createInvitePack(BackendEvents.INVITE.SUCCESS, clientId),
+                BackendEvents.INVITE.SUCCESS
+            );
         },
         successToLate: function(clientId) {
-            return Transport.send(serviceUtils.createInvitePack(events.success_invite_player_to_late, clientId), events.success_invite_player_to_late);
+            return Transport.send(
+                serviceUtils.createInvitePack(BackendEvents.INVITE.SUCCESS_TO_LATE, clientId),
+                BackendEvents.INVITE.SUCCESS_TO_LATE
+            );
         },
         reject: function(clientId) {
-            return Transport.send(serviceUtils.createInvitePack(events.reject_invite_player, clientId), events.reject_invite_player);
+            return Transport.send(
+                serviceUtils.createInvitePack(BackendEvents.INVITE.REJECT, clientId),
+                BackendEvents.INVITE.REJECT
+            );
         },
         cancel: function(clientId, gameId) {
-            return Transport.send(serviceUtils.createInvitePack(events.cancel_game, clientId, {gameId: gameId}), events.cancel_game);
+            return Transport.send(
+                serviceUtils.createInvitePack(BackendEvents.INVITE.CANCEL_GAME, clientId, {gameId: gameId}),
+                BackendEvents.INVITE.CANCEL_GAME
+            );
         }
     };
 

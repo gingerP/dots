@@ -4,11 +4,12 @@ define([
     'common/events',
     'module.observable',
     'module.backend.service',
+    'common/services/game.service',
     'business/module.game.player',
     'business/business.invite',
     'business/game.rules',
     'business/game.storage'
-], function (d3, q, Events, Observable, Backend, Player, businessInvite, rules, gameStorage) {
+], function (d3, q, Events, Observable, Backend, GameBackend, Player, businessInvite, rules, gameStorage) {
     'use strict';
 
     function getId() {
@@ -57,19 +58,19 @@ define([
         return gameStorage.getGameMode() === GAME_MODE.NETWORK;
     }
 
-    function select(data) {
+    function select(dot) {
         return new Promise(function (resolve, reject) {
             var activePlayer = gameStorage.getActiveGamePlayer();
-            if (!canSelectDot(data)) {
+            if (!canSelectDot(dot)) {
                 reject();
             } else {
-                activePlayer.addDot(data);
-                //updateActivePlayerState([data]);
-                observable.emit(Events.ADD_DOT, data);
-                activePlayer.history.addDot(data);
+                activePlayer.addDot(dot);
+                observable.emit(Events.ADD_DOT, dot);
+                activePlayer.history.addDot(dot);
+                GameBackend.addDot(dot);
                 resolve(function () {
                     //TODO
-                    if (!isLocalMode()) {
+                    if (isLocalMode()) {
                         api.makeNextPlayerActive();
                     }
                 });
@@ -137,12 +138,6 @@ define([
             result = result.concat(player.getTrappedDots());
         });
         return result;
-    }
-
-    function clearActivePlayerState() {
-        activePlayerState = {};
-        activePlayerState.dots = [];
-        activePlayerState.connectedDots = [];
     }
 
     function updateActivePlayerState(selectedDots, connectedDots) {

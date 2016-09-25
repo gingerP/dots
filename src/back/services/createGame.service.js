@@ -7,6 +7,7 @@ var _ = require('lodash');
 var Promise = require('q');
 var logger = _req('src/js/logger').create('CreateGameService');
 var gameStatuses = require('../constants/game-statuses');
+var errorLog = funcUtils.error(logger);
 
 function CreateGameService() {
 }
@@ -29,7 +30,7 @@ CreateGameService.prototype.onInvite = function (message) {
             } else {
                 logger.warn("Invite - client does not exist!");
             }
-        }).catch(funcUtils.error(logger));
+        }).catch(errorLog);
     }
 };
 
@@ -46,7 +47,7 @@ CreateGameService.prototype.onReject = function (message) {
         } else {
             inst.controller.rejectPlayerBeLate(answer.fromClient, answer.toClient);
         }
-    }).catch(funcUtils.error(logger));
+    }).catch(errorLog);
 };
 
 CreateGameService.prototype.onSuccess = function (message) {
@@ -64,7 +65,7 @@ CreateGameService.prototype.onSuccess = function (message) {
         } else {
             inst.controller.successPlayerBeLate(answer.fromClient, answer.toClient);
         }
-    }).catch(funcUtils.error(logger));
+    }).catch(errorLog);
 };
 
 CreateGameService.prototype.onCancelGame = function(message) {
@@ -78,7 +79,7 @@ CreateGameService.prototype.onCancelGame = function(message) {
             .then(function(clients) {
                 return inst.cancelGame(clients, message.data.extend.gameId);
             })
-            .catch(funcUtils.error(logger));
+            .catch(errorLog);
     }
 };
 
@@ -88,7 +89,7 @@ CreateGameService.prototype.newGame = function(clientA, clientB, invite) {
         invite.game = gameId;
         inst.createGameDBManager.save(invite);
         return inst.gameDBManager.get(gameId);
-    }).catch(funcUtils.error(logger));
+    }).catch(errorLog);
 };
 
 CreateGameService.prototype.cancelGameById = function(id) {
@@ -106,7 +107,7 @@ CreateGameService.prototype.cancelGameById = function(id) {
         } else {
             logger.warn('No game found for id %s and %s clients', id);
         }
-    }).catch(funcUtils.error(logger));
+    }).catch(errorLog);
 };
 
 CreateGameService.prototype.cancelGame = function(clients, gameId) {
@@ -126,7 +127,7 @@ CreateGameService.prototype.cancelGame = function(clients, gameId) {
         } else {
             logger.warn('No game found for %s and %s clients', clients[0]._id, clients[1]._id);
         }
-    }).catch(funcUtils.error(logger));
+    }).catch(errorLog);
 };
 
 CreateGameService.prototype.giveAnAnswerToClient = function(message) {
@@ -151,7 +152,7 @@ CreateGameService.prototype.giveAnAnswerToClient = function(message) {
                     fromClient: fromClient,
                     toClient: toClient
                 }
-            }).catch(funcUtils.error(logger));
+            }).catch(errorLog);
     } else {
         logger.error('Incorrect data while give answer to client!');
         return Promise();

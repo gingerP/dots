@@ -1,6 +1,8 @@
+'use strict';
+
 var constants = require('../constants/constants');
 
-GenericController = function() {};
+function GenericController() {}
 
 GenericController.prototype.setService = function(service) {
     this.service = service;

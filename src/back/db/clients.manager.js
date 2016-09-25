@@ -1,6 +1,9 @@
+'use strict';
+
 var GenericDBManager = require('./genericDB.manager').class;
 var constants = require('../constants/constants');
 var funcUtils = require('../utils/function-utils');
+var logger = _req('src/js/logger').create('ClientsDBManager');
 
 function ClientsDBManager() {}
 
@@ -16,11 +19,7 @@ ClientsDBManager.prototype.getClient = function(id) {
 };
 
 ClientsDBManager.prototype.getClientByConnectionId = function(connectionId) {
-    if (connectionId) {
-        return this.getByCriteria({connection_id: connectionId});
-    } else {
-        return funcUtils.emptyPromise({});
-    }
+    return this.getByCriteria({connection_id: connectionId}).catch(funcUtils.error(logger));
 };
 
 
