@@ -29,8 +29,23 @@ GameDataService.prototype.onSuccess = function () {
 };
 
 GameDataService.prototype.onGetGameState = function (message) {
-    return this.gameDBManager.get(message.data.id).then(function(game) {
-
+    var inst = this;
+    var gameId = message.data.id;
+    var gameData;
+    var game;
+    return Promise.all([
+        this.gameDBManager.get(gameId),
+        this.gameDataDBManager.getGameDataForGame(gameId)
+    ]).then(function(data) {
+        game = data[0];
+        gameData = data[1];
+        return inst.clientsDBManager.get([game.to, game.from]);
+    }).then(function(clients) {
+        message.callback({
+            game: game,
+            gameData: gameData,
+            clients: clients
+        });
     }).catch(errorLog);
 };
 
@@ -56,8 +71,10 @@ GameDataService.prototype.postConstructor = function (ioc) {
     this.controller.onGetClientsList(this.onGetClients.bind(this));
     this.controller.onGetMyself(this.onGetMySelf.bind(this));
     this.controller.onIsGameClosed(this.onIsGameClosed.bind(this));
+    this.controller.onGetGameState(this.onGetGameState.bind(this));
     this.clientsDBManager = ioc[constants.CLIENTS_DB_MANAGER];
     this.gameDBManager = ioc[constants.GAME_DB_MANAGER];
+    this.gameDataDBManager = ioc[constants.GAME_DATA_DB_MANAGER];
 };
 
 module.exports = {

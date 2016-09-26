@@ -8,8 +8,9 @@ define([
     'business/module.game.player',
     'business/business.invite',
     'business/game.rules',
-    'business/game.storage'
-], function (d3, q, Events, Observable, Backend, GameBackend, Player, businessInvite, rules, gameStorage) {
+    'business/game.storage',
+    'common/services/game-data.service'
+], function (d3, q, Events, Observable, Backend, GameBackend, Player, businessInvite, rules, gameStorage, gameDataService) {
     'use strict';
 
     function getId() {
@@ -204,10 +205,11 @@ define([
     function reloadGame() {
         var game = gameStorage.getGame();
         if (game) {
-            Backend.emit.isGameClosed(game._id).then(function(isGameClosed) {
+            gameDataService.getGameState(game._id).then(function(gameState) {
                 var activeGamer = gameStorage.getActiveGamePlayer();
-                if (!isGameClosed) {
-                    observable.emit(Events.REFRESH_GAME);
+                if (gameState.game.status === 'active') {
+                    observable.emit(Events.REFRESH_GAME, gameState);
+                    observable.emit(Events.REFRESH_SCORE, gameState);
                     makePlayerActive(activeGamer);
                 } else {
                     observable.emit(Events.CANCEL_GAME);

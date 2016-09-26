@@ -47,6 +47,12 @@ GameDataDBManager.prototype.addDot = function(dot, clientId, gameId) {
     });
 };
 
+GameDataDBManager.prototype.getGameDataForGame = function(gameId) {
+    return this.listByCriteria({
+        game: this._getObjectId(gameId)
+    });
+};
+
 GameDataDBManager.prototype.postConstructor = function() {
 };
 

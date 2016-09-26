@@ -1,3 +1,4 @@
+var _ = require('lodash');
 var constants = _req('src/back/constants/constants');
 var logger = _req('src/js/logger').create('DB');
 var funcUtils = _req('src/back/utils/function-utils');
@@ -32,6 +33,7 @@ var validate = {
 };
 validate.dbConfig(cfg);
 var Observable = _req('bin/Observable').class;
+var errorLog = funcUtils.error(logger);
 
 GenericDBManager = function() {};
 
@@ -181,11 +183,11 @@ GenericDBManager.prototype._delete = function(criteria, callback) {
         });
     })
 };
-GenericDBManager.prototype._list = function(callback, mappings) {
+GenericDBManager.prototype._list = function(criteria, callback, mappings) {
     var inst = this;
     validate.collectionName(inst.collectionName);
     this.exec(function(db) {
-        var cursor = db.collection(inst.collectionName).find({});
+        var cursor = db.collection(inst.collectionName).find(criteria);
         var index = 0;
         var res = [];
         cursor.count({}, function(error, count) {
@@ -209,6 +211,7 @@ GenericDBManager.prototype._list = function(callback, mappings) {
         });
     })
 };
+
 GenericDBManager.prototype._mergeTo = function(dest, src, mappings) {
     if (mappings && mappings.length) {
         mappings.forEach(function(mappingItem) {
@@ -226,7 +229,7 @@ GenericDBManager.prototype.save = function(doc, mappings) {
             inst.propertyChange('save', [data, doc, mappings]);
             resolve(data);
         }, null, mappings);
-    }).catch(funcUtils.error(logger));
+    }).catch(errorLog);
 };
 GenericDBManager.prototype.saveByCriteria = function(doc, criteria, mappings) {
     var inst = this;
@@ -235,17 +238,32 @@ GenericDBManager.prototype.saveByCriteria = function(doc, criteria, mappings) {
             inst.propertyChange('saveByCriteria', [data, doc, criteria, mappings]);
             resolve(data);
         }, criteria, mappings);
-    }).catch(funcUtils.error(logger));
+    }).catch(errorLog);
 };
-GenericDBManager.prototype.get = function(id, mappings) {
+GenericDBManager.prototype.get = function(ids, mappings) {
     var inst = this;
     return new Promise(function(resolve, reject) {
-        var criteria = {_id: inst._getObjectId(id)};
-        inst._getDoc(criteria, function(entities) {
-            inst.propertyChange('get', [entities, id, mappings]);
-            resolve(entities);
-        }, mappings);
-    }).catch(funcUtils.error(logger));
+        var criteria;
+        if (Array.isArray(ids)) {
+            criteria = {
+                _id: {
+                    $in: _.map(ids, inst._getObjectId.bind(inst))
+                }
+            };
+            inst._list(criteria, function(entities) {
+                inst.propertyChange('list', [entities, ids, mappings]);
+                resolve(entities);
+            }, mappings);
+        } else {
+            criteria = {
+                _id: inst._getObjectId(ids)
+            };
+            inst._getDoc(criteria, function(entities) {
+                inst.propertyChange('get', [entities, ids, mappings]);
+                resolve(entities);
+            }, mappings);
+        }
+    }).catch(errorLog);
 };
 GenericDBManager.prototype.getByCriteria = function(criteria, mappings) {
     var inst = this;
@@ -254,7 +272,7 @@ GenericDBManager.prototype.getByCriteria = function(criteria, mappings) {
             inst.propertyChange('getByCriteria', [entities, criteria, mappings]);
             resolve(entities);
         }, mappings);
-    }).catch(funcUtils.error(logger));
+    }).catch(errorLog);
 };
 GenericDBManager.prototype.remove = function(id) {
     var inst = this;
@@ -264,16 +282,26 @@ GenericDBManager.prototype.remove = function(id) {
             inst.propertyChange('remove', [data, id]);
             resolve(data);
         });
-    }).catch(funcUtils.error(logger));
+    }).catch(errorLog);
 };
 GenericDBManager.prototype.list = function(mappings) {
     var inst = this;
     return new Promise(function(resolve, reject) {
-        inst._list(function(entities) {
+        inst._list({}, function(entities) {
             inst.propertyChange('list', [{}/*filters*/, mappings]);
             resolve(entities);
         }, mappings);
-    }).catch(funcUtils.error(logger));
+    }).catch(errorLog);
+};
+
+GenericDBManager.prototype.listByCriteria = function(criteria, mappings) {
+    var inst = this;
+    return new Promise(function(resolve, reject) {
+        inst._list(criteria, function(entities) {
+            inst.propertyChange('list', [criteria, mappings]);
+            resolve(entities);
+        }, mappings);
+    }).catch(errorLog);
 };
 GenericDBManager.prototype._getDBUrl = function() {
     var url = 'mongodb://'

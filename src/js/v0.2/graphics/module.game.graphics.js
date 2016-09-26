@@ -1,12 +1,17 @@
 define([
     'd3',
-    'jquery'
-], function (d3, $) {
+    'jquery',
+    'lodash',
+    'module.observable',
+    'common/events',
+    'graphics/utils/graphics-utils'
+], function (d3, $, _, Observable, Events, GraphicsUtils) {
     'use strict';
 
     var api;
     var gamePane;
     var business;
+    var observable = Observable.instance;
 
     var tableGroup;
     var pathsGroup;
@@ -83,14 +88,6 @@ define([
             });
         }
         return result;
-    }
-
-    function prepareCirclesData(data) {
-        return data.map(function (dataItem) {
-            dataItem.x_ = dataItem.xInd * STEP + OFFSET;
-            dataItem.y_ = dataItem.yInd * STEP + OFFSET;
-            return dataItem;
-        });
     }
 
     function renderCircle() {
@@ -176,8 +173,8 @@ define([
     //Wall
 
     function renderWall(path_) {
-        var path = convertWallPath(path_);
-        var pathForRender = getNotExistingPath(path);
+        var path = GraphicsUtils.convertWallPath(path_);
+        var pathForRender = GraphicsUtils.getNotExistingPath(path);
         if (pathForRender.length) {
             lines = lines.concat(pathForRender.map(function (item) {
                 item.id = getLineId(item.start, item.finish);
@@ -192,50 +189,12 @@ define([
         return api;
     }
 
-    function getLineId(startCircle, finCircle) {
-        return 'line_' +
-            startCircle.x_ + '_' +
-            startCircle.y_ + '_' +
-            finCircle.x_ + '_' +
-            finCircle.y_;
-    }
-
-    function getNotExistingPath(path) {
-        var result = [];
-        path.forEach(function (item) {
-            if (!isLineExist(item.start, item.finish)) {
-                result.push(item);
-            }
-        });
-        return result;
-    }
-
     function getCirclePosition(circle) {
         var d3js = d3.select(circle);
         return {
             x: d3js.attr('cx'),
             y: d3js.attr('cy')
         }
-    }
-
-    function isLineExist(startCircle, finCircle) {
-        var id = getLineId(startCircle, finCircle);
-        return lines.some(function (line) {
-            return line.id === id;
-        });
-    }
-
-    function convertWallPath(path) {
-        var result = [];
-        path.forEach(function (pathItem, index) {
-            if (path[index + 1]) {
-                result.push({
-                    start: pathItem,
-                    finish: path[index + 1]
-                });
-            }
-        });
-        return result;
     }
 
     function initEvents(elements) {
@@ -276,35 +235,11 @@ define([
         })
     }
 
-    function createTableData() {
-        var result = [];
-        var x = 0;
-        var y = 0;
-        var height = STEP * (yNum - 1);
-        var width = STEP * (xNum - 1);
-        for (; x < xNum; x++) {
-            //vertical line
-            result.push({
-                x1: x * STEP + OFFSET,
-                y1: OFFSET / 2,
-                x2: x * STEP + OFFSET,
-                y2: OFFSET * 1.5 + height
-            });
-        }
-        for (; y < yNum; y++) {
-            //horizontal line
-            result.push({
-                x1: OFFSET / 2,
-                y1: y * STEP + OFFSET,
-                x2: OFFSET * 1.5 + width,
-                y2: y * STEP + OFFSET
-            });
-        }
-        return result;
-    }
+
 
     function renderTable() {
-        tableGroup.selectAll('line').data(createTableData()).enter()
+        var gridData = GraphicsUtils.createPaneGridData(xNum, yNum, STEP, OFFSET);
+        tableGroup.selectAll('line').data(gridData).enter()
             .append('line')
             .attr('x1', getter('x1'))
             .attr('y1', getter('y1'))
@@ -318,6 +253,18 @@ define([
 
     }
 
+    function renderPlayerDots() {
+
+    }
+
+    observable.on(Events.REFRESH_SCORE, function(gameState) {
+        var clients = gameState.clients;
+        _.forEach(gameState.gameData, function(score) {
+            var client = _.find(clients, {_id: score.client});
+            renderPlayerDots(client, score.dots);
+        });
+    });
+
     api = {
         init: function (gamePaneSelector, xNum_, yNum_, data) {
             var elements;
@@ -327,7 +274,7 @@ define([
             tableGroup = gamePane.append('g');
             pathsGroup = gamePane.append('g');
             dotsGroup = gamePane.append('g');
-            elements = api.renderCircles(prepareCirclesData(data));
+            elements = api.renderCircles(GraphicsUtils.prepareCirclesData(data, STEP, OFFSET));
             initEvents(getElementsForMouseEvents(elements));
             renderTable();
             return api;

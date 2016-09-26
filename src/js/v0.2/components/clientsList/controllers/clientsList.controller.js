@@ -8,9 +8,10 @@ define([
     'module.game.business',
     'business/business.invite',
     'module.backend.service',
+    'common/services/game-data.service',
     'components/clientsList/factories/clientsListUtil.factory',
     'components/clientsList/clientsList.module'
-], function (angular, _, Observable, scopeUtils, gameStorage, events, Business, inviteBusiness, backend) {
+], function (angular, _, Observable, scopeUtils, gameStorage, events, Business, inviteBusiness, backend, gameDataService) {
     'use strict';
 
     angular.module('clientsList.module').controller('clientsListCtrl', ClientsListController);
@@ -34,7 +35,7 @@ define([
         }
 
         function updateClient() {
-            backend.emit.getClients().then(function (clients) {
+            gameDataService.getClients().then(function (clients) {
                 var myself = gameStorage.getClient();
                 var opponent = gameStorage.getOpponent();
                 var exclusion = opponent ? [myself._id, opponent._id] : [myself._id];

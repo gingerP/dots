@@ -1,20 +1,22 @@
-define([], function() {
+define([], function () {
     'use strict';
 
     var instance;
-    var Observable = function(){};
 
-    Observable.prototype.on = function(property, listener, async) {
+    function Observable() {
+    }
+
+    Observable.prototype.on = function (property, listener, async) {
         var inst = this;
         this.listeners = this.listeners || {};
         this.listeners[property] = this.listeners[property] || [];
         if (listener != null && ['object', 'function'].indexOf(typeof(listener)) > -1) {
             this.listeners[property].push({
-                async: typeof(async) === 'boolean'? async: false,
+                async: typeof(async) === 'boolean' ? async : false,
                 listener: listener
             });
         }
-        return function() {
+        return function () {
             var index = inst.listeners[property] ? inst.listeners[property].indexOf(listener) : -1;
             if (index > -1) {
                 inst.listeners[property].splice(index, 1);
@@ -22,12 +24,12 @@ define([], function() {
         }
     };
 
-    Observable.prototype.emit = function(property, data) {
+    Observable.prototype.emit = function (property, data) {
         var methodName;
         var inst = this;
-        data = Array.isArray(data)? data: [data];
+        data = Array.isArray(data) ? data : [data];
         if (this.listeners && this.listeners[property] && this.listeners[property].length) {
-            this.listeners[property].forEach(function(listener) {
+            this.listeners[property].forEach(function (listener) {
                 var func;
                 var context;
                 if (typeof(listener.listener) === 'object') {
@@ -43,7 +45,7 @@ define([], function() {
                     context = null;
                 }
                 if (listener.async) {
-                    setTimeout(function() {
+                    setTimeout(function () {
                         inst.__runListener(func, context, data, property);
                     }, 0);
                 } else {
@@ -53,7 +55,7 @@ define([], function() {
         }
     };
 
-    Observable.prototype.__runListener = function(func, context, data, property) {
+    Observable.prototype.__runListener = function (func, context, data, property) {
         if (typeof(func) == 'function') {
             func.apply(context, data);
         }
