@@ -68,20 +68,19 @@ GenericDBManager.prototype.update = function() {
 };
 GenericDBManager.prototype._getDoc = function(criteria, callback, mappings) {
     var inst = this;
-    var collName = this.getCollectionName();
     if (typeof(criteria) == 'number' || typeof(criteria) == 'string') {
         criteria = {_id: new this._getObjectId(criteria)};
     }
-    validate.collectionName(collName);
+    validate.collectionName(inst.collectionName);
     validate.criteria(criteria);
     this.exec(function(db) {
         db.collection(inst.collectionName).find(criteria, function(error, cursor) {
             cursor.next(function(error, doc) {
                 if (error) {
-                    logger.debug('An ERROR has occurred while extracted document from "%s".', inst.getCollectionName());
+                    logger.debug('An ERROR has occurred while extracted document from "%s".', inst.collectionName);
                     callback({});
                 } else {
-                    logger.debug('Document {_id: "%s"} was successfully extracted from "%s".', doc? doc._id: null, inst.getCollectionName());
+                    logger.debug('Document {_id: "%s"} was successfully extracted from "%s".', doc? doc._id: null, inst.collectionName);
                     if (mappings) {
                         callback(utils.extractFields(doc, mappings));
                     } else {
@@ -121,10 +120,10 @@ GenericDBManager.prototype._update = function(criteria, doc, callback, mappings,
                 raw: true
             }, function (error, result) {
                 if (error) {
-                    logger.error('An ERROR has occurred while updating document in "%s".', inst.getCollectionName());
+                    logger.error('An ERROR has occurred while updating document in "%s".', inst.collectionName);
                     throw new Error(error);
                 } else if (typeof(callback) == 'function') {
-                    logger.debug('Document was successfully updated in "%s".', inst.getCollectionName());
+                    logger.debug('Document was successfully updated in "%s".', inst.collectionName);
                     callback(result.upsertedId ? result.upsertedId._id : null);
                 }
             });
@@ -132,10 +131,10 @@ GenericDBManager.prototype._update = function(criteria, doc, callback, mappings,
             db.collection(inst.collectionName).find(criteria, function(error, cursor) {
                 cursor.next(function (error, cursorDoc) {
                     if (error) {
-                        logger.error('An ERROR has occurred while getting document from "%s" to update.', inst.getCollectionName());
+                        logger.error('An ERROR has occurred while getting document from "%s" to update.', inst.collectionName);
                         callback({});
                     } else {
-                        logger.debug('Document {_id: "%s"} was successfully extracted from "%s".', doc ? doc._id : null, inst.getCollectionName());
+                        logger.debug('Document {_id: "%s"} was successfully extracted from "%s".', doc ? doc._id : null, inst.collectionName);
                         inst._mergeTo(cursorDoc, doc, mappings);
                         inst._update({_id: cursorDoc._id}, cursorDoc, function() {
                             callback(true);
@@ -149,17 +148,16 @@ GenericDBManager.prototype._update = function(criteria, doc, callback, mappings,
 };
 GenericDBManager.prototype._insert = function(doc, callback) {
     var inst = this;
-    var collName = this.getCollectionName();
-    validate.collectionName(collName);
+    validate.collectionName(this.collectionName);
     this.exec(function(db) {
-        db.collection(collName).insertOne(doc, function(error, result) {
+        db.collection(inst.collectionName).insertOne(doc, function(error, result) {
             var id;
             if (error) {
-                logger.error('An ERROR has occurred while inserting document in "%s": \n%s.', inst.getCollectionName(), error.message);
+                logger.error('An ERROR has occurred while inserting document in "%s": \n%s.', inst.collectionName, error.message);
                 throw new Error(error);
             } else if (typeof(callback) == 'function') {
                 id = doc._id || result.insertedId;
-                logger.debug('Document was successfully inserted into "%s".', inst.getCollectionName());
+                logger.debug('Document was successfully inserted into "%s".', inst.collectionName);
                 callback(id);
             }
         });
@@ -167,18 +165,17 @@ GenericDBManager.prototype._insert = function(doc, callback) {
 };
 GenericDBManager.prototype._delete = function(criteria, callback) {
     var inst = this;
-    var collName = this.getCollectionName();
     if (typeof(criteria) == 'number' || typeof(criteria) == 'string') {
         criteria = {_id: new this._getObjectId(criteria)};
     }
-    validate.collectionName(collName);
+    validate.collectionName(this.collectionName);
     this.exec(function(db) {
-        db.collection(collName).removeOne(criteria, function(error, result) {
+        db.collection(inst.collectionName).removeOne(criteria, function(error, result) {
             if (error) {
-                logger.error('An ERROR has occurred while deleting document in "%s".', inst.getCollectionName());
+                logger.error('An ERROR has occurred while deleting document in "%s".', inst.collectionName);
                 throw new Exception(error);
             } else if (typeof(callback) == 'function') {
-                logger.debug('Document was successfully deleted in "%s".', inst.getCollectionName());
+                logger.debug('Document was successfully deleted in "%s".', inst.collectionName);
                 callback(result);
             }
         });
@@ -186,10 +183,9 @@ GenericDBManager.prototype._delete = function(criteria, callback) {
 };
 GenericDBManager.prototype._list = function(callback, mappings) {
     var inst = this;
-    var collName = this.getCollectionName();
-    validate.collectionName(collName);
+    validate.collectionName(inst.collectionName);
     this.exec(function(db) {
-        var cursor = db.collection(collName).find({});
+        var cursor = db.collection(inst.collectionName).find({});
         var index = 0;
         var res = [];
         cursor.count({}, function(error, count) {
@@ -202,12 +198,12 @@ GenericDBManager.prototype._list = function(callback, mappings) {
                         res.push(doc);
                     }
                     if (index == count && typeof(callback) == 'function') {
-                        logger.debug('List(num: %s) of documents was successfully extracted from "%s".', index, inst.getCollectionName());
+                        logger.debug('List(num: %s) of documents was successfully extracted from "%s".', index, inst.collectionName);
                         callback(res);
                     }
                 });
             } else if (typeof(callback) == 'function') {
-                logger.debug('List(num: %s) of documents was successfully extracted from "%s".', index, inst.getCollectionName());
+                logger.debug('List(num: %s) of documents was successfully extracted from "%s".', index, inst.collectionName);
                 callback(res);
             }
         });

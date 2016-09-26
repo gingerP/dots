@@ -5,14 +5,12 @@ var constants = require('../constants/constants');
 var funcUtils = require('../utils/function-utils');
 var logger = _req('src/js/logger').create('LoopsDBManager');
 var errorLog = funcUtils.error(logger);
-function LoopsDBManager() {}
+function LoopsDBManager() {
+    this.collectionName = constants.DB_COLLECTION_LOOPS;
+}
 
 LoopsDBManager.prototype = Object.create(GenericDBManager.prototype);
 LoopsDBManager.prototype.constructor = LoopsDBManager;
-
-LoopsDBManager.prototype.getCollectionName = function() {
-    return constants.DB_COLLECTION_LOOPS;
-};
 
 LoopsDBManager.prototype.getName = function() {
     return constants.LOOPS_DB_MANAGER;

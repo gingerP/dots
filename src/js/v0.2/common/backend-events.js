@@ -1,15 +1,15 @@
 define([], function () {
     return {
         INVITE: {
-            ASK: 'INVITE_PLAYER',
-            REJECT: 'REJECT_INVITE_PLAYER',
-            REJECT_TO_LATE: 'REJECT_INVITE_PLAYER_TO_LATE',
-            SUCCESS: 'SUCCESS_INVITE_PLAYER',
-            SUCCESS_TO_LATE: 'SUCCESS_INVITE_PLAYER_TO_LATE',
-            CANCEL_GAME: 'CANCEL_GAME'
+            ASK: 'invite_player',
+            REJECT: 'reject_invite_player',
+            REJECT_TO_LATE: 'reject_invite_player_to_late',
+            SUCCESS: 'success_invite_player',
+            SUCCESS_TO_LATE: 'success_invite_player_to_late',
+            CANCEL_GAME: 'cancel_game'
         },
         GAME: {
-            ADD_DOT: 'ADD_DOT'
+            ADD_DOT: 'add_dot'
         }
     };
 });

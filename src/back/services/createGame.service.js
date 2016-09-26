@@ -88,6 +88,8 @@ CreateGameService.prototype.newGame = function(clientA, clientB, invite) {
     return this.gameSupportService.newGame(clientA._id, clientB._id).then(function(gameId) {
         invite.game = gameId;
         inst.createGameDBManager.save(invite);
+        inst.gameDataDBManager.createNew(gameId, clientA._id);
+        inst.gameDataDBManager.createNew(gameId, clientB._id);
         return inst.gameDBManager.get(gameId);
     }).catch(errorLog);
 };
@@ -176,6 +178,7 @@ CreateGameService.prototype.postConstructor = function (ioc) {
     this.clientsDBManager = ioc[constants.CLIENTS_DB_MANAGER];
     this.createGameDBManager = ioc[constants.CREATE_GAME_DB_MANAGER];
     this.gameDBManager = ioc[constants.GAME_DB_MANAGER];
+    this.gameDataDBManager = ioc[constants.GAME_DATA_DB_MANAGER];
 };
 
 module.exports = {

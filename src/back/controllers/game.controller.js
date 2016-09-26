@@ -14,6 +14,13 @@ GameController.prototype.onAddDot = function(handler) {
     this.wss.addListener(events.add_dot, handler);
 };
 
+GameController.prototype.addDot = function(toClient, dot, gameData) {
+    this.transmitter.send(toClient.connection_id, events.add_dot, {
+        dot: dot,
+        gameData: gameData
+    });
+};
+
 GameController.prototype.invitePlayer = function() {
 
 };

@@ -5,7 +5,9 @@ var constants = require('../constants/constants');
 var funcUtils = require('../utils/function-utils');
 var logger = _req('src/js/logger').create('ClientsDBManager');
 
-function ClientsDBManager() {}
+function ClientsDBManager() {
+    this.collectionName = constants.DB_COLLECTION_CLIENTS;
+}
 
 ClientsDBManager.prototype = Object.create(GenericDBManager.prototype);
 ClientsDBManager.prototype.constructor = ClientsDBManager;
@@ -23,10 +25,6 @@ ClientsDBManager.prototype.getClientByConnectionId = function(connectionId) {
 };
 
 
-ClientsDBManager.prototype.getCollectionName = function() {
-    return this.collectionName;
-};
-
 ClientsDBManager.prototype.getName = function() {
     return constants.CLIENTS_DB_MANAGER;
 };
@@ -40,7 +38,6 @@ ClientsDBManager.prototype.getClientsPair = function(clientId, connectionId) {
 };
 
 ClientsDBManager.prototype.postConstructor = function() {
-  this.collectionName = constants.DB_COLLECTION_CLIENTS;
 };
 
 module.exports = {

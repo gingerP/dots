@@ -65,10 +65,15 @@
         return _.uniqWith(vertexes, _.isEqual);
     }
 
+    function getNewLoops(newLoops, oldLoops) {
+
+    }
+
     module.exports = {
         getMinMaxCorners: getMinMaxCorners,
         findFirstUnselectedUnvisitedPosition: findFirstUnselectedUnvisitedPosition,
         getUnselectedUnvisitedVertexesCount: getUnselectedUnvisitedVertexesCount,
-        makeUniqVertexesList: makeUniqVertexesList
+        makeUniqVertexesList: makeUniqVertexesList,
+        getNewLoops: getNewLoops
     };
 })();

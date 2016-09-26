@@ -10,7 +10,7 @@ var gameStatuses = require('../constants/game-statuses');
 var logger = _req('src/js/logger').create('GameService');
 var Promise = require('q');
 var errorLog = funcUtils.error(logger);
-var graphLoop = _req('src/back/libs/graph/graph-loops-flood-fill');
+var gameServiceHelper = _req('src/back/services/helpers/game.service.helpers');
 
 function mergeClients(to, from) {
     var id = to._id;
@@ -29,8 +29,14 @@ function getRandomColor() {
     return colors[randomIndex];
 }
 
-function isGameAndClientValid(game, client) {
-    return Boolean(game) && Boolean(client) && (client._id.equals(game.from) || client._id.equals(game.to));
+function isGameAndClientValid(data) {
+    return Boolean(data[1]) && Boolean(data[0]) && (data[0]._id.equals(data[1].from) || data[0]._id.equals(data[1].to));
+}
+
+function isDotValid(dot, clientDots) {
+    return !_.some(clientDots, function(clientDot) {
+        return clientDot.x === dot.x && clientDot.y === dot.y;
+    });
 }
 
 function GameService() {
@@ -40,25 +46,51 @@ GameService.prototype = Object.create(GenericService.prototype);
 GameService.prototype.constructor = GameService;
 
 GameService.prototype.onAddDot = function (message) {
+    console.time('GameService onAddDot');
     var inst = this;
     var gameId = message.data.extend.gameId;
     var clientConnectionId = message.client.getId();
     var dot = {
-        x: message.data.extend.xInd,
-        y: message.data.extend.yInd
+        x: message.data.extend.x,
+        y: message.data.extend.y
     };
+    var game;
+    var client;
+    var opponentId;
 
     Promise.all([
         this.clientsDBManager.getClientByConnectionId(clientConnectionId),
         this.gameDBManager.get(gameId)
-    ]).then(function (data) {
-        var client = data[0];
-        var game = data[1];
-        if (isGameAndClientValid(game, client)) {
-            inst.gameHistoryDBManager.addRecord(dot, client._id, game._id);
-            inst.loopsDBManager.getLoops(gameId, client._id).then();
+    ]).then(function(data) {
+        game = data[1];
+        client = data[0];
+        return isGameAndClientValid(data);
+    }).then(function(isValid) {
+        if (isValid) {
+            opponentId = game.to.equals(client._id) ? game.from : game.to;
+            return Promise.all([
+                inst.gameDataDBManager.getGameData(gameId, client._id),
+                inst.gameDataDBManager.getGameData(gameId, opponentId),
+                inst.clientsDBManager.get(opponentId)
+            ]);
+        } else {
+            throw 'Invalid gameId or clientId';
+        }
+    }).then(function(gameData) {
+        var clientGameData = gameData[0];
+        var opponentGameData = gameData[1];
+        var opponent = gameData[2];
+        var clientDots = clientGameData.dots;
+        var scores;
 
-
+        if (isDotValid(dot, clientDots)) {
+            scores = gameServiceHelper.getGamersScores(dot, clientGameData, opponentGameData);
+            //id, gameId, clientId, dots, trappedDots, loops
+            inst.gameDataDBManager.save(scores.client);
+            inst.gameDataDBManager.save(scores.opponent);
+            message.callback(scores);
+            inst.gameController.addDot(opponent, dot, scores);
+            console.timeEnd('GameService onAddDot');
         }
     }).catch(errorLog);
 };
@@ -71,7 +103,7 @@ GameService.prototype.postConstructor = function (ioc) {
     this.gameController = ioc[constants.GAME_CONTROLLER];
     this.clientsDBManager = ioc[constants.CLIENTS_DB_MANAGER];
     this.gameDBManager = ioc[constants.GAME_DB_MANAGER];
-    this.gameHistoryDBManager = ioc[constants.GAME_HISTORY_DB_MANAGER];
+    this.gameDataDBManager = ioc[constants.GAME_DATA_DB_MANAGER];
     this.gameController.onAddDot(this.onAddDot.bind(this));
     this.loopsDBManager = ioc[constants.LOOPS_DB_MANAGER];
 };

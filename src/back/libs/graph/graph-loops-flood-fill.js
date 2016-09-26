@@ -13,6 +13,7 @@ function getLoops(array) {
     var size = prepared.borders.size;
     var firstPosition = commonUtils.findFirstUnselectedUnvisitedPosition(prepared.vertexes);
     var isUnbroken;
+    var loops = [];
     if (firstPosition) {
         var unpassVertexesCount = commonUtils.getUnselectedUnvisitedVertexesCount(prepared.vertexes);
         var futureLines = [getFutureLine(firstPosition.x, firstPosition.y, prepared.vertexes)];
@@ -20,14 +21,15 @@ function getLoops(array) {
         var loopIndex = 0;
         var whileLimitIndex = 0;
         var passedLine;
-        var loops = [];
         var passed;
         var selected;
+        var trappedDots;
         while (unpassVertexesCount > 0) {
             isUnbroken = true;
             lineIndex = 0;
             passed = 0;
             selected = {};
+            trappedDots = [];
             if (whileLimitIndex) {
                 firstPosition = commonUtils.findFirstUnselectedUnvisitedPosition(prepared.vertexes);
                 if (firstPosition) {
@@ -41,17 +43,20 @@ function getLoops(array) {
                 passed += passedLine.passed;
                 isUnbroken = isUnbroken && !passedLine.isSpill;
                 unpassVertexesCount -= passedLine.passed;
+                trappedDots = trappedDots.concat(passedLine.passedDots);
                 lineIndex = futureLines.length - 1;
             }
             if (Object.keys(selected).length && isUnbroken) {
                 loops.push({
-                    selected: selected,
-                    passed: passed
+                    loop: convertUtils.convertVertexAsObjectToArray(selected),
+                    passed: passed,
+                    trappedDots: trappedDots
                 });
             }
             whileLimitIndex++;
         }
     }
+    return loops;
 }
 
 function prepareInbound(array) {
@@ -79,6 +84,7 @@ function passLine(futureLineIndex, futureLines, selected, vertexes) {
     var newFutureLines;
     var isSpill = false;
     var vertex = vertexes[line.pos.x][index];
+    var passedDots = [];
     while (vertex && index >= 0 && !vertex.isSelected && !vertex.isInFutureLines) {
         vertex.isVisited = true;
         vertex.isInFutureLines = true;
@@ -88,6 +94,7 @@ function passLine(futureLineIndex, futureLines, selected, vertexes) {
             selected,
             vertexes
         );
+        passedDots.push({x: line.pos.x, y: index});
         futureLines.push.apply(futureLines, newFutureLines);
         index += line.direction;
         vertex = vertexes[line.pos.x][index];
@@ -98,6 +105,7 @@ function passLine(futureLineIndex, futureLines, selected, vertexes) {
         isSpill = true;
     }
     return {
+        passedDots: passedDots,
         passed: passed,
         isSpill: isSpill
     };

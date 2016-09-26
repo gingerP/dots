@@ -2,14 +2,11 @@ var GenericDBManager = require('./genericDB.manager').class;
 var constants = require('../constants/constants');
 
 function GameSupportDBManager() {
+    this.collectionName = constants.DB_COLLECTION_GAMES;
 }
 
 GameSupportDBManager.prototype = Object.create(GenericDBManager.prototype);
 GameSupportDBManager.prototype.constructor = GameSupportDBManager;
-
-GameSupportDBManager.prototype.getCollectionName = function () {
-    return this.collectionName;
-};
 
 GameSupportDBManager.prototype.getName = function () {
     return constants.GAME_DB_MANAGER;
@@ -75,7 +72,6 @@ GameSupportDBManager.prototype.deleteInvite = function () {
 };
 
 GameSupportDBManager.prototype.postConstructor = function () {
-    this.collectionName = constants.DB_COLLECTION_GAMES;
 };
 
 module.exports = {

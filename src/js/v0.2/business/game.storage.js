@@ -28,7 +28,7 @@ define([
             namespace: 'dots',
             // storages. Specify all Basil supported storages and priority order
             // default: `['local', 'cookie', 'session', 'memory']`
-            storages: ['session', 'cookie'],
+            storages: ['local', 'cookie'],
             // expireDays. Default number of days before cookies expiration
             // default: 365
             expireDays: 31

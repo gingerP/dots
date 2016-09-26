@@ -18,6 +18,7 @@
   "CLIENTS_DB_MANAGER": "clients.db.manager",
   "CREATE_GAME_DB_MANAGER": "create.game.db.manager",
   "GAME_DB_MANAGER": "game.db.manager",
+  "GAME_DATA_DB_MANAGER": "game.data.db.manager",
   "COMMON_TRANSMITTER": "common.transmitter",
 
   "DB_COLLECTION_LOOPS": "loops",
@@ -25,5 +26,6 @@
   "DB_COLLECTION_CLIENTS": "clients",
   "DB_COLLECTION_CREATE_GAME": "create_game",
   "DB_COLLECTION_GAMES": "games",
+  "DB_COLLECTION_GAME_DATA": "game_data",
   "WSS": "web.socket.server"
 }

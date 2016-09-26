@@ -41,10 +41,20 @@
         });
     }
 
+    function convertVertexAsObjectToArray(object) {
+        var result = [];
+        var key;
+        for(key in object) {
+            result.push(object[key]);
+        }
+        return result;
+    }
+
     module.exports = {
         convertInbound: convertInbound,
         convertLoopToOutbound: convertLoopToOutbound,
-        createVertexItem: createVertexItem
+        createVertexItem: createVertexItem,
+        convertVertexAsObjectToArray: convertVertexAsObjectToArray
     };
 
 })();
