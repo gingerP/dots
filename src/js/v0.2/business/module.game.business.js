@@ -209,7 +209,6 @@ define([
                 var activeGamer = gameStorage.getActiveGamePlayer();
                 if (gameState.game.status === 'active') {
                     observable.emit(Events.REFRESH_GAME, gameState);
-                    observable.emit(Events.REFRESH_SCORE, gameState);
                     makePlayerActive(activeGamer);
                 } else {
                     observable.emit(Events.CANCEL_GAME);

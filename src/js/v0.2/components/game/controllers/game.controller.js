@@ -21,7 +21,7 @@ define([
             var ySize = 40;
             var radius = 2;
             business.init(graphics);
-            graphics.init('#game-pane', xSize, ySize, gameUtils.generateVertexes(xSize, ySize, radius)).setBusiness(business);
+            graphics.init('#game-pane', xSize, ySize, gameUtils.generateVertexes(xSize, ySize, radius));
         });
     }
 });

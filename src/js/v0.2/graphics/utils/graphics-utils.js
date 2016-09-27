@@ -1,4 +1,6 @@
-define([], function() {
+define([
+    'lodash'
+], function(_) {
    'use strict';
     
     var api;
@@ -76,12 +78,19 @@ define([], function() {
         });
     }
 
+    function generateSelectorStringFromDots(dots, prefix) {
+        return _.map(dots, function(dot) {
+            return (prefix || '') + '#circle_' + dot.x + '_' + dot.y;
+        }).join(',');
+    }
+
     api = {
         createPaneGridData: createPaneGridData,
         convertWallPath: convertWallPath,
         getNotExistingPath: getNotExistingPath,
         getLineId: getLineId,
-        prepareCirclesData: prepareCirclesData
+        prepareCirclesData: prepareCirclesData,
+        generateSelectorStringFromDots: generateSelectorStringFromDots
     };
     
     return api;

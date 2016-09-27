@@ -13,6 +13,8 @@ define([
     var business;
     var observable = Observable.instance;
 
+    var circles;
+
     var tableGroup;
     var pathsGroup;
     var dotsGroup;
@@ -160,15 +162,25 @@ define([
         });
     }
 
-    function markPressedCircle(circle, color) {
-        d3.select(circle)
-            .select('circle[d_type=' + MAIN_CIRCLE_D_TYPE + ']')
+    function markPressedCircles(selector, color) {
+        circles.select(selector)
             .attr('r', function (data) {
                 //TODO dot size
                 return scales.markPressed(data.radius);
             })
             .attr('fill', color);
     }
+
+    function markPressedCircle(circle, color) {
+        d3.select(circle)
+            .select('circle[d_type=' + MAIN_CIRCLE_D_TYPE + ']')
+            .attr('r', function (data) {
+                return scales.markPressed(data.radius);
+            })
+            .attr('fill', color);
+    }
+
+    //function
 
     //Wall
 
@@ -253,11 +265,29 @@ define([
 
     }
 
-    function renderPlayerDots() {
+    function renderPlayerDots(client, dots) {
+        var selector = GraphicsUtils.generateSelectorStringFromDots(dots, 'circle[d_type=' + MAIN_CIRCLE_D_TYPE + ']');
+        markPressedCircles(selector, client.color);
+    }
+
+    function clearPane() {
 
     }
 
-    observable.on(Events.REFRESH_SCORE, function(gameState) {
+    function init(gamePaneSelector, xNum_, yNum_, data) {
+        xNum = xNum_;
+        yNum = yNum_;
+        gamePane = d3.select(gamePaneSelector);
+        tableGroup = gamePane.append('g');
+        pathsGroup = gamePane.append('g');
+        dotsGroup = gamePane.append('g');
+        circles = api.renderCircles(GraphicsUtils.prepareCirclesData(data, STEP, OFFSET));
+        initEvents(getElementsForMouseEvents(circles));
+        renderTable();
+        return api;
+    }
+
+    observable.on(Events.REFRESH_GAME, function(gameState) {
         var clients = gameState.clients;
         _.forEach(gameState.gameData, function(score) {
             var client = _.find(clients, {_id: score.client});
@@ -265,25 +295,13 @@ define([
         });
     });
 
+    observable.on(Events.CANCEL_GAME, function() {
+        clearPane();
+    });
+
     api = {
-        init: function (gamePaneSelector, xNum_, yNum_, data) {
-            var elements;
-            xNum = xNum_;
-            yNum = yNum_;
-            gamePane = d3.select(gamePaneSelector);
-            tableGroup = gamePane.append('g');
-            pathsGroup = gamePane.append('g');
-            dotsGroup = gamePane.append('g');
-            elements = api.renderCircles(GraphicsUtils.prepareCirclesData(data, STEP, OFFSET));
-            initEvents(getElementsForMouseEvents(elements));
-            renderTable();
-            return api;
-        },
+        init: init,
         setSize: setSize,
-        setBusiness: function (module) {
-            business = module;
-            return api;
-        },
         renderWall: renderWall,
         renderLoop: renderLoop,
         renderCircle: renderCircle,
