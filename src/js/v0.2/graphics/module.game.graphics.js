@@ -32,7 +32,9 @@ define([
     var SELECTION_CIRCLE_RADIUS = 6;
     var SELECTION_CIRCLE_D_TYPE = 'SELECTION_D_TYPE';
 
-    var MAIN_CIRCLE_RADIUS = 2;
+    var DOT_RADIUS = 2;
+    var DOT_RADIUS_SELECTED = 3;
+    var DOT_RADIUS_HOVER_IN = 4;
     var MAIN_CIRCLE_D_TYPE = 'MAIN_CIRCLE_D_TYPE';
 
     var TABLE_STROKE_WIDTH = 1;
@@ -48,6 +50,21 @@ define([
         linearDown: d3.scale.linear().domain([0, 2]).range([0, 2]),
         linearUp: d3.scale.linear().domain([0, 2]).range([0, 4]),
         markPressed: d3.scale.linear().domain([0, 2]).range([0, 3])
+    };
+
+    var dotSize = {
+        selected: function() {
+            return DOT_RADIUS_SELECTED;
+        },
+        unSelected: function() {
+            return DOT_RADIUS;
+        },
+        hoverIn: function() {
+            return DOT_RADIUS_HOVER_IN
+        },
+        hoverOut: function(data) {
+            return data.isSelected ? DOT_RADIUS_SELECTED : DOT_RADIUS;
+        }
     };
 
     function renderPath(path, color) {
@@ -80,7 +97,7 @@ define([
                 $.extend(true, mainCircle, dataItem, {
                     x_: dataItem.xInd * STEP + OFFSET,
                     y_: dataItem.yInd * STEP + OFFSET,
-                    r_: MAIN_CIRCLE_RADIUS,
+                    r_: DOT_RADIUS,
                     dType_: MAIN_CIRCLE_D_TYPE,
                     fill_: TABLE_STROKE_COLOR,
                     fillOpacity_: 1,
@@ -103,7 +120,7 @@ define([
             .append('g');
         //Main circle
         mouseHoverElements.append('circle')
-            .attr('r', MAIN_CIRCLE_RADIUS)
+            .attr('r', DOT_RADIUS)
             .attr('cx', getter('x_'))
             .attr('cy', getter('y_'))
             .attr('id', getter('id'))
@@ -150,32 +167,42 @@ define([
 
     //Dots
 
-    function hoverInCircle(circle) {
-        d3.select(circle).select('circle[d_type=' + MAIN_CIRCLE_D_TYPE + ']').attr('r', function (data) {
-            return scales.linearUp(data.radius);
-        });
+    function hoverInDot(circle) {
+        d3.select(circle)
+            .select('circle[d_type=' + MAIN_CIRCLE_D_TYPE + ']')
+            .attr('r', dotSize.hoverIn);
     }
 
-    function hoverOutCircle(circle) {
-        d3.select(circle).select('circle[d_type=' + MAIN_CIRCLE_D_TYPE + ']').attr('r', function (data) {
-            return scales.linearDown(data.radius);
-        });
+    function hoverOutDot(circle) {
+        d3.select(circle)
+            .select('circle[d_type=' + MAIN_CIRCLE_D_TYPE + ']')
+            .attr('r', dotSize.hoverOut);
     }
 
-    function markPressedCircles(selector, color) {
+    function selectDots(selector, color) {
         circles.select(selector)
             .attr('r', function (data) {
-                //TODO dot size
-                return scales.markPressed(data.radius);
+                data.isSelected = true;
+                return dotSize.selected();
             })
             .attr('fill', color);
     }
 
-    function markPressedCircle(circle, color) {
+    function unSelectDots() {
+        circles.select('circle[d_type=' + MAIN_CIRCLE_D_TYPE + ']')
+            .attr('r', function (data) {
+                data.isSelected = false;
+                return dotSize.unSelected();
+            })
+            .attr('fill', TABLE_STROKE_COLOR);
+    }
+
+    function selectDot(circle, color) {
         d3.select(circle)
             .select('circle[d_type=' + MAIN_CIRCLE_D_TYPE + ']')
-            .attr('r', function (data) {
-                return scales.markPressed(data.radius);
+            .attr('r', function(data) {
+                data.isSelected = true;
+                return dotSize.selected();
             })
             .attr('fill', color);
     }
@@ -220,11 +247,11 @@ define([
                 wallPath.push(data);
             }
             //if (business.canSelectDot(data)) {
-            hoverInCircle(this);
+            hoverInDot(this);
 //            }
         }).on('mouseleave', function (data) {
             //if (business.canSelectDot(data)) {
-            hoverOutCircle(this);
+            hoverOutDot(this);
             //}
         }).on('mousedown', function (data) {
             selectedCircle = data;
@@ -240,7 +267,7 @@ define([
             var circle = this;
             if (business.canSelectDot(data)) {
                 business.select(data).then(function (callback) {
-                    markPressedCircle(circle, business.getActivePlayerColor());
+                    selectDot(circle, business.getActivePlayerColor());
                     callback();
                 });
             }
@@ -267,11 +294,11 @@ define([
 
     function renderPlayerDots(client, dots) {
         var selector = GraphicsUtils.generateSelectorStringFromDots(dots, 'circle[d_type=' + MAIN_CIRCLE_D_TYPE + ']');
-        markPressedCircles(selector, client.color);
+        selectDots(selector, client.color);
     }
 
     function clearPane() {
-
+        unSelectDots();
     }
 
     function init(gamePaneSelector, xNum_, yNum_, data) {

@@ -39,6 +39,11 @@ GameDataService.prototype.onGetGameState = function (message) {
     ]).then(function(data) {
         game = data[0];
         gameData = data[1];
+        if (!game) {
+            game = null;
+            gameData = null;
+            return null;
+        }
         return inst.clientsDBManager.get([game.to, game.from]);
     }).then(function(clients) {
         message.callback({

@@ -207,10 +207,11 @@ define([
         if (game) {
             gameDataService.getGameState(game._id).then(function(gameState) {
                 var activeGamer = gameStorage.getActiveGamePlayer();
-                if (gameState.game.status === 'active') {
+                if (gameState.game && gameState.game.status === 'active') {
                     observable.emit(Events.REFRESH_GAME, gameState);
                     makePlayerActive(activeGamer);
                 } else {
+                    gameStorage.clearOpponent();
                     observable.emit(Events.CANCEL_GAME);
                 }
             });
