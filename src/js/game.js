@@ -34,9 +34,22 @@ require.config({
 	waitSeconds: 15
 });
 require([
+	'module.observable',
+	'common/events',
+	'module.game.business',
+	'module.game.graphics',
+	'utils/game-utils',
 	'./components/components.module'
-], function() {
-
+], function(Observable, Events, Business, Graphics, GameUtils) {
+	var observable = Observable.instance;
+	observable.on(Events.GAME_PANE_RENDER, function() {
+		var X_SIZE = 40;
+		var Y_SIZE = 40;
+		var radius = 2;
+		var vertexes = GameUtils.generateVertexes(X_SIZE, Y_SIZE, radius);
+		Business.init();
+		Graphics.init('#game-pane', Business, X_SIZE, Y_SIZE, vertexes);
+	});
 });
 
 function convertData(data) {

@@ -75,9 +75,11 @@ CreateGameService.prototype.onCancelGame = function(message) {
     if (message.data && message.data.clients && message.data.clients.length) {
         clientId = message.data.clients[0];
         connectionId = message.client.getId();
-        this.clientsDBManager.getClientsPair(clientId, connectionId)
-            .then(function(clients) {
-                return inst.cancelGame(clients, message.data.extend.gameId);
+        this.clientsDBManager.getClientByConnectionId(connectionId)
+            .then(function(client) {
+                if (client) {
+                    return inst.cancelGame(clients, message.data.extend.gameId);
+                }
             })
             .catch(errorLog);
     }

@@ -10,7 +10,7 @@ define([
 
     var api;
     var gamePane;
-    var business;
+    var Business;
     var observable = Observable.instance;
 
     var circles;
@@ -265,9 +265,9 @@ define([
             }
         }).on('click', function (data) {
             var circle = this;
-            if (business.canSelectDot(data)) {
-                business.select(data).then(function (callback) {
-                    selectDot(circle, business.getActivePlayerColor());
+            if (Business.canSelectDot(data)) {
+                Business.select(data).then(function (callback) {
+                    selectDot(circle, Business.getActivePlayerColor());
                     callback();
                 });
             }
@@ -293,17 +293,21 @@ define([
     }
 
     function renderPlayerDots(client, dots) {
-        var selector = GraphicsUtils.generateSelectorStringFromDots(dots, 'circle[d_type=' + MAIN_CIRCLE_D_TYPE + ']');
-        selectDots(selector, client.color);
+        var selector;
+        if (dots && dots.length) {
+            selector = GraphicsUtils.generateSelectorStringFromDots(dots, 'circle[d_type=' + MAIN_CIRCLE_D_TYPE + ']');
+            selectDots(selector, client.color);
+        }
     }
 
     function clearPane() {
         unSelectDots();
     }
 
-    function init(gamePaneSelector, xNum_, yNum_, data) {
+    function init(gamePaneSelector, BusinessModule, xNum_, yNum_, data) {
         xNum = xNum_;
         yNum = yNum_;
+        Business = BusinessModule;
         gamePane = d3.select(gamePaneSelector);
         tableGroup = gamePane.append('g');
         pathsGroup = gamePane.append('g');
