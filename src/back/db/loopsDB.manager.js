@@ -3,7 +3,7 @@
 var GenericDBManager = require('./genericDB.manager').class;
 var constants = require('../constants/constants');
 var funcUtils = require('../utils/function-utils');
-var logger = _req('src/js/logger').create('LoopsDBManager');
+var logger = req('src/js/logger').create('LoopsDBManager');
 var errorLog = funcUtils.error(logger);
 function LoopsDBManager() {
     this.collectionName = constants.DB_COLLECTION_LOOPS;
@@ -24,10 +24,10 @@ LoopsDBManager.prototype.saveLoops = function(loops, gameId, clientId) {
     }).catch(errorLog);
 };
 
-LoopsDBManager.prototype.getLoops = function(gameId, clientId) {
+LoopsDBManager.prototype.getLoops = function(gameId) {
     return this.getByCriteria({
-        game: this._getObjectId(gameId),
-        client: this._getObjectId(gameId)
+        game: this.getObjectId(gameId),
+        client: this.getObjectId(gameId)
     }).catch(errorLog);
 };
 

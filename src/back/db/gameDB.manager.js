@@ -23,8 +23,8 @@ GameSupportDBManager.prototype.createGame = function (fromClientId, toClientId, 
 };
 
 GameSupportDBManager.prototype.getGame = function (clientAId, clientBId, status) {
-    var clientAIdDB = this._getObjectId(clientAId);
-    var clientBIdDB = this._getObjectId(clientBId);
+    var clientAIdDB = this.getObjectId(clientAId);
+    var clientBIdDB = this.getObjectId(clientBId);
 
     var criteria = {
         $or: [
@@ -40,15 +40,15 @@ GameSupportDBManager.prototype.getGame = function (clientAId, clientBId, status)
         ]
     };
     if (status) {
-        criteria.status = status
+        criteria.status = status;
     }
     return this.getByCriteria(criteria);
 };
 
 GameSupportDBManager.prototype.getGameByClientsByGameId = function(clientAId, clientBId, gameId) {
-    var clientAIdDB = this._getObjectId(clientAId);
-    var clientBIdDB = this._getObjectId(clientBId);
-    var gameIdDB = this._getObjectId(gameId);
+    var clientAIdDB = this.getObjectId(clientAId);
+    var clientBIdDB = this.getObjectId(clientBId);
+    var gameIdDB = this.getObjectId(gameId);
 
     var criteria = {
         _id: gameIdDB,

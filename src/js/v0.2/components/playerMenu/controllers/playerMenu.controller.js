@@ -20,7 +20,7 @@ define([
         vm.cancelGame = function() {
             var game = gameStorage.getGame();
             if (vm.opponent && game) {
-                inviteBusiness.cancel(vm.opponent._id, game._id);
+                inviteBusiness.cancel(vm.opponent.id, game._id);
             }
         };
 

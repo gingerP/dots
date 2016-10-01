@@ -53,10 +53,11 @@ define([
     });
 
     inviteService.listen.cancel(function(message) {
+        var currentGame;
+        var opponent;
         if (gameStorage.hasOpponent()) {
-            var currentGame = gameStorage.getGame();
-            var opponent = gameStorage.getOpponent();
-            var client = gameStorage.getClient();
+            currentGame = gameStorage.getGame();
+            opponent = gameStorage.getOpponent();
             if (currentGame._id && currentGame._id === message.game._id) {
                 if (!message.game && message.game._id) {
                     console.warn('Game does not found!');

@@ -1,11 +1,12 @@
+'use strict';
+
 var GenericService = require('./generic.service').class;
 var constants = require('../constants/constants');
 var inviteStatuses = require('../constants/invite-statuses.json');
-var funcUtils = _req('src/back/utils/function-utils');
-var uuid = require('uuid');
+var funcUtils = req('src/back/utils/function-utils');
 var _ = require('lodash');
 var Promise = require('q');
-var logger = _req('src/js/logger').create('CreateGameService');
+var logger = req('src/js/logger').create('CreateGameService');
 var gameStatuses = require('../constants/game-statuses');
 var errorLog = funcUtils.error(logger);
 
@@ -20,17 +21,17 @@ CreateGameService.prototype.onInvite = function (message) {
     var inst = this;
     if (message.data.clients && message.data.clients.length) {
         clientId = message.data.clients[0];
-        this.clientsDBManager.getClientsPair(clientId, message.client.getId()).then(function (clients) {
-            var to = clients[0];
-            var from = clients[1];
-            var isActive = true;
-            if (!_.isEmpty(to) && !_.isEmpty(from)) {
-                inst.createGameDBManager.createInvite(from, to, inviteStatuses.active);
-                inst.controller.invitePlayer(from, to);
-            } else {
-                logger.warn("Invite - client does not exist!");
-            }
-        }).catch(errorLog);
+        this.clientsDBManager.getClientsPair(clientId, message.client.getId())
+            .then(function (clients) {
+                var to = clients[0];
+                var from = clients[1];
+                if (!_.isEmpty(to) && !_.isEmpty(from)) {
+                    inst.createGameDBManager.createInvite(from, to, inviteStatuses.active);
+                    inst.controller.invitePlayer(from, to);
+                } else {
+                    logger.warn('Invite - client does not exist!');
+                }
+            }).catch(errorLog);
     }
 };
 
@@ -59,7 +60,7 @@ CreateGameService.prototype.onSuccess = function (message) {
         if (answer.isInviteExist) {
             answer.invite.status = inviteStatuses.successful;
             inst.createGameDBManager.save(answer.invite);
-            inst.newGame(answer.fromClient, answer.toClient, answer.invite).then(function(game) {
+            inst.newGame(answer.fromClient, answer.toClient, answer.invite).then(function (game) {
                 inst.controller.successPlayer(answer.fromClient, answer.toClient, game);
             });
         } else {
@@ -68,26 +69,23 @@ CreateGameService.prototype.onSuccess = function (message) {
     }).catch(errorLog);
 };
 
-CreateGameService.prototype.onCancelGame = function(message) {
-    var clientId;
-    var connectionId;
+CreateGameService.prototype.onCancelGame = function (message) {
     var inst = this;
     if (message.data && message.data.clients && message.data.clients.length) {
-        clientId = message.data.clients[0];
-        connectionId = message.client.getId();
+        let connectionId = message.client.getId();
         this.clientsDBManager.getClientByConnectionId(connectionId)
-            .then(function(client) {
+            .then(function (client) {
                 if (client) {
-                    return inst.cancelGame(clients, message.data.extend.gameId);
+                    inst.cancelGame([client], message.data.extend.gameId);
                 }
             })
             .catch(errorLog);
     }
 };
 
-CreateGameService.prototype.newGame = function(clientA, clientB, invite) {
+CreateGameService.prototype.newGame = function (clientA, clientB, invite) {
     var inst = this;
-    return this.gameSupportService.newGame(clientA._id, clientB._id).then(function(gameId) {
+    return this.gameSupportService.newGame(clientA._id, clientB._id).then(function (gameId) {
         invite.game = gameId;
         inst.createGameDBManager.save(invite);
         inst.gameDataDBManager.createNew(gameId, clientA._id);
@@ -96,16 +94,14 @@ CreateGameService.prototype.newGame = function(clientA, clientB, invite) {
     }).catch(errorLog);
 };
 
-CreateGameService.prototype.cancelGameById = function(id) {
+CreateGameService.prototype.cancelGameById = function (id) {
     var inst = this;
-    return this.gameDBManager.get(id).then(function(game) {
-        var gameCopy = game;
+    return this.gameDBManager.get(id).then(function (game) {
         if (game) {
             if (game.status === gameStatuses.closed) {
                 logger.warn('CancelGameById: Game found in status \'closed\'');
             } else {
                 game.status = gameStatuses.closed;
-                gameCopy = _.cloneDeep(game);
                 inst.gameDBManager.save(game);
             }
         } else {
@@ -114,13 +110,16 @@ CreateGameService.prototype.cancelGameById = function(id) {
     }).catch(errorLog);
 };
 
-CreateGameService.prototype.cancelGame = function(clients, gameId) {
+CreateGameService.prototype.cancelGame = function (clients, gameId) {
     var inst = this;
-    return this.gameDBManager.getGameByClientsByGameId(clients[0]._id, clients[1]._id, gameId).then(function(game) {
+    return this.gameDBManager.getGameByClientsByGameId(clients[0]._id, clients[1]._id, gameId).then(function (game) {
         var gameCopy;
         if (game) {
             if (game.status === gameStatuses.closed) {
-                logger.warn('CancelGame: Game found for %s and %s clients ONLY in status \'closed\'', clients[0]._id, clients[1]._id);
+                logger.warn('CancelGame: Game found for %s and %s clients ONLY in status \'closed\'',
+                    clients[0]._id,
+                    clients[1]._id
+                );
                 gameCopy = game;
             } else {
                 game.status = gameStatuses.closed;
@@ -134,7 +133,7 @@ CreateGameService.prototype.cancelGame = function(clients, gameId) {
     }).catch(errorLog);
 };
 
-CreateGameService.prototype.giveAnAnswerToClient = function(message) {
+CreateGameService.prototype.giveAnAnswerToClient = function (message) {
     var inst = this;
     var clientId;
     var connectionId;
@@ -149,18 +148,17 @@ CreateGameService.prototype.giveAnAnswerToClient = function(message) {
                 toClient = clients[1];
                 return inst.createGameDBManager.getInvite(fromClient._id, toClient._id, inviteStatuses.active);
             })
-            .then(function(invite) {
+            .then(function (invite) {
                 return {
                     isInviteExist: Boolean(invite),
                     invite: invite,
                     fromClient: fromClient,
                     toClient: toClient
-                }
+                };
             }).catch(errorLog);
-    } else {
-        logger.error('Incorrect data while give answer to client!');
-        return Promise();
     }
+    logger.error('Incorrect data while give answer to client!');
+    return Promise();
 };
 
 CreateGameService.prototype.getName = function () {

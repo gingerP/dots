@@ -4,7 +4,7 @@
     var fs = require('fs');
     var _ = require('lodash');
     var floodFill = require('../../../../../src/back/libs/graph/graph-loops-flood-fill');
-    var logger = _req('src/js/logger').create('graph-loops-flood-fill-spec');
+    var logger = req('src/js/logger').create('graph-loops-flood-fill-spec');
 
 
     var testDataDir = 'test-data';

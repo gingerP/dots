@@ -23,7 +23,7 @@ CreateGameController.prototype.onRejectPlayer = function (handler) {
     this.wss.addListener(events.reject_invite_player, handler);
 };
 
-CreateGameController.prototype.onCancelGame = function(handler) {
+CreateGameController.prototype.onCancelGame = function (handler) {
     this.wss.addListener(events.cancel_game, handler);
 };
 
@@ -50,16 +50,16 @@ CreateGameController.prototype.successPlayer = function (fromClient, toClient, g
         to: toClient,
         from: fromClient,
         game: gameId
-    })
+    });
 };
 
 CreateGameController.prototype.successPlayerBeLate = function (fromClient, toClient) {
     this.transmitter.send(toClient.connection_id, events.success_invite_player_to_late, {
         from: fromClient
-    })
+    });
 };
 
-CreateGameController.prototype.cancelGame = function(clients, game) {
+CreateGameController.prototype.cancelGame = function (clients, game) {
     var connectionIds = _.map(clients, 'connection_id');
     this.transmitter.send(connectionIds, events.cancel_game, {
         clients: clients,

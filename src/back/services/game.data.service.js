@@ -3,7 +3,7 @@ var constants = require('../constants/constants');
 var funcUtils = require('../utils/function-utils');
 var gameStatuses = require('../constants/game-statuses');
 var Promise = require('q');
-var logger = _req('src/js/logger').create('GameDataService');
+var logger = req('src/js/logger').create('GameDataService');
 var errorLog = funcUtils.error(logger);
 
 function GameDataService() {
@@ -29,10 +29,11 @@ GameDataService.prototype.onSuccess = function () {
 };
 
 GameDataService.prototype.onGetGameState = function (message) {
-    var inst = this;
-    var gameId = message.data.id;
-    var gameData;
-    var game;
+    let inst = this;
+    //noinspection Eslint,Eslint
+    let gameData;
+    let game;
+    const gameId = message.data.id;
     return Promise.all([
         this.gameDBManager.get(gameId),
         this.gameDataDBManager.getGameDataForGame(gameId)
@@ -69,7 +70,6 @@ GameDataService.prototype.getName = function () {
 };
 
 GameDataService.prototype.postConstructor = function (ioc) {
-    var inst = this;
     this.gameSupportService = ioc[constants.GAME_SUPPORT_SERVICE];
     this.gameDataController = ioc[constants.GAME_DATA_CONTROLLER];
     this.controller = ioc[constants.GAME_DATA_CONTROLLER];

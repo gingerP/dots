@@ -1,7 +1,7 @@
 var _ = require('lodash');
 var Service = require('./Service');
 var Client = require('./Client');
-var logger = _req('src/js/logger').create('Business');
+var logger = req('src/js/logger').create('Business');
 
 var Business = (function() {
     'use strict';

@@ -7,8 +7,10 @@ define([
     return {
         generateVertexes: function(xSize, ySize, radius) {
             var data = [];
-            for (var w = 0; w < xSize; w++) {
-                for (var h = 0; h < ySize; h++) {
+            var w;
+            var h;
+            for (w = 0; w < xSize; w++) {
+                for (h = 0; h < ySize; h++) {
                     data.push({
                         xInd: w,
                         yInd: h,

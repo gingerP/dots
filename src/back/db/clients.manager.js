@@ -3,7 +3,7 @@
 var GenericDBManager = require('./genericDB.manager').class;
 var constants = require('../constants/constants');
 var funcUtils = require('../utils/function-utils');
-var logger = _req('src/js/logger').create('ClientsDBManager');
+var logger = req('src/js/logger').create('ClientsDBManager');
 
 function ClientsDBManager() {
     this.collectionName = constants.DB_COLLECTION_CLIENTS;

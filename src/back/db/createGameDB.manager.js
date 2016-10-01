@@ -24,11 +24,11 @@ CreateGameDBManager.prototype.createInvite = function (fromClient, toClient, sta
 
 CreateGameDBManager.prototype.getInvite = function (fromClientId, toClientId, inviteStatus) {
     var criteria = {
-        from : this._getObjectId(fromClientId),
-        to: this._getObjectId(toClientId),
+        from: this.getObjectId(fromClientId),
+        to: this.getObjectId(toClientId),
         status: inviteStatus
     };
-    return this.getByCriteria(criteria).then(function(invite) {
+    return this.getByCriteria(criteria).then(function (invite) {
         return invite;
     });
 };

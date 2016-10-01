@@ -1,7 +1,7 @@
 var server;
 var Observable = require('./Observable').class;
 var WebSocketServer = require('socket.io');
-var logger = _req('src/js/logger').create('WSServer');
+var logger = req('src/js/logger').create('WSServer');
 var listenerToOut = 'out::';
 var listenerToIn = 'in::';
 

@@ -1,8 +1,8 @@
 global._req = require('app-root-path').require;
 var path = require('path');
 var fs = require("fs");
-var utils = _req('src/js/utils');
-var logger = _req('src/js/logger').create('WebServer');
+var utils = req('src/js/utils');
+var logger = req('src/js/logger').create('WebServer');
 
 WebServer = function() {
     this.app = require('express')();

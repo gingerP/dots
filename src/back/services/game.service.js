@@ -2,32 +2,12 @@
 
 var GenericService = require('./generic.service').class;
 var constants = require('../constants/constants');
-var animals = require('../animals');
-var colors = require('../colors');
 var _ = require('lodash');
-var funcUtils = _req('src/back/utils/function-utils');
-var gameStatuses = require('../constants/game-statuses');
-var logger = _req('src/js/logger').create('GameService');
+var funcUtils = req('src/back/utils/function-utils');
+var logger = req('src/js/logger').create('GameService');
 var Promise = require('q');
 var errorLog = funcUtils.error(logger);
-var gameServiceHelper = _req('src/back/services/helpers/game.service.helpers');
-
-function mergeClients(to, from) {
-    var id = to._id;
-    to = _.assignIn(to, from);
-    to._id = id;
-    return to;
-}
-
-function getRandomAnimal() {
-    var randomIndex = Math.round((Math.random() * animals.length - 1));
-    return animals[randomIndex];
-}
-
-function getRandomColor() {
-    var randomIndex = Math.round((Math.random() * colors.length - 1));
-    return colors[randomIndex];
-}
+var gameServiceHelper = req('src/back/services/helpers/game.service.helpers');
 
 function isGameAndClientValid(data) {
     return Boolean(data[1]) && Boolean(data[0]) && (data[0]._id.equals(data[1].from) || data[0]._id.equals(data[1].to));
@@ -46,7 +26,6 @@ GameService.prototype = Object.create(GenericService.prototype);
 GameService.prototype.constructor = GameService;
 
 GameService.prototype.onAddDot = function (message) {
-    console.time('GameService onAddDot');
     var inst = this;
     var gameId = message.data.extend.gameId;
     var clientConnectionId = message.client.getId();
@@ -57,7 +36,6 @@ GameService.prototype.onAddDot = function (message) {
     var game;
     var client;
     var opponentId;
-
     Promise.all([
         this.clientsDBManager.getClientByConnectionId(clientConnectionId),
         this.gameDBManager.get(gameId)
@@ -73,9 +51,8 @@ GameService.prototype.onAddDot = function (message) {
                 inst.gameDataDBManager.getGameData(gameId, opponentId),
                 inst.clientsDBManager.get(opponentId)
             ]);
-        } else {
-            throw 'Invalid gameId or clientId';
         }
+        throw new Error('Invalid gameId or clientId');
     }).then(function(gameData) {
         var clientGameData = gameData[0];
         var opponentGameData = gameData[1];

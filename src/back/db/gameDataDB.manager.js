@@ -10,50 +10,49 @@ function GameDataDBManager() {
 GameDataDBManager.prototype = Object.create(GenericDBManager.prototype);
 GameDataDBManager.prototype.constructor = GameDataDBManager;
 
-GameDataDBManager.prototype.getName = function() {
+GameDataDBManager.prototype.getName = function () {
     return constants.GAME_DATA_DB_MANAGER;
 };
 
 
-GameDataDBManager.prototype.createNew = function(gameId, clientId, dots, trappedDots, loops) {
+GameDataDBManager.prototype.createNew = function (gameId, clientId, dots, trappedDots, loops) {
     return this.save({
-        game: this._getObjectId(gameId),
-        client: this._getObjectId(clientId),
+        game: this.getObjectId(gameId),
+        client: this.getObjectId(clientId),
         dots: dots || [],
         trappedDots: trappedDots || [],
         loops: loops || []
     });
 };
 
-GameDataDBManager.prototype.saveGameData = function(id, dots, trappedDots, loops) {
-
+GameDataDBManager.prototype.saveGameData = function (/*id, dots, trappedDots, loops*/) {
 };
 
-GameDataDBManager.prototype.getGameData = function(gameId, clientId) {
+GameDataDBManager.prototype.getGameData = function (gameId, clientId) {
     return this.getByCriteria({
-        game: this._getObjectId(gameId),
-        client: this._getObjectId(clientId)
+        game: this.getObjectId(gameId),
+        client: this.getObjectId(clientId)
     });
 };
 
-GameDataDBManager.prototype.addDot = function(dot, clientId, gameId) {
+GameDataDBManager.prototype.addDot = function (dot, clientId, gameId) {
     return this.getByCriteria({
-        client: this._getObjectId(clientId),
-        game: this._getObjectId(gameId)
-    }).then(function(gameData) {
+        client: this.getObjectId(clientId),
+        game: this.getObjectId(gameId)
+    }).then(function (gameData) {
         if (gameData) {
 
         }
     });
 };
 
-GameDataDBManager.prototype.getGameDataForGame = function(gameId) {
+GameDataDBManager.prototype.getGameDataForGame = function (gameId) {
     return this.listByCriteria({
-        game: this._getObjectId(gameId)
+        game: this.getObjectId(gameId)
     });
 };
 
-GameDataDBManager.prototype.postConstructor = function() {
+GameDataDBManager.prototype.postConstructor = function () {
 };
 
 module.exports = {

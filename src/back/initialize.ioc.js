@@ -3,7 +3,7 @@ var _ = require('lodash');
 var fs = require('fs');
 var ROOT_PATH = './src/back';
 var FILE_PREFIX = './controllers';
-var logger = _req('src/js/logger').create('IOC');
+var logger = req('src/js/logger').create('IOC');
 
 function initializeIOCType(directory, filePostfix) {
     var result = {};
@@ -15,7 +15,7 @@ function initializeIOCType(directory, filePostfix) {
         var Func;
         if (filePath.endsWith(filePostfix)) {
             fileName = filePath.replace(/\.js$/, '');
-            Class = _req('src/back/' + directory + '/' + fileName).class;
+            Class = req('src/back/' + directory + '/' + fileName).class;
             instance = new Class();
             result[instance.getName()] = instance;
             logger.info('\'%s\' was successfully initialized!', fileName);

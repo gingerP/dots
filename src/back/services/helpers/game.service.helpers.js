@@ -1,5 +1,5 @@
-var graphLoop = _req('src/back/libs/graph/graph-loops-flood-fill');
-var commonLoopsUtils = _req('src/back/libs/graph/utils/common-utils');
+var graphLoop = req('src/back/libs/graph/graph-loops-flood-fill');
+var commonLoopsUtils = req('src/back/libs/graph/utils/common-utils');
 var _ = require('lodash');
 
 function newGameData(dots) {
@@ -7,15 +7,16 @@ function newGameData(dots) {
         dots: dots || [],
         trappedDots: [],
         loops: []
-    }
+    };
 }
 
-function getGameDataDeltas(dot, dotClientGameData, opponentGameData) {
-    var clientDeltaGameData = newDeltaGameData();
-    var opponentDeltaGameData = newDeltaGameData();
-    var dots = _.cloneDeep(dotClientGameData.dots);
+function getGameDataDeltas(dot, dotClientGameData) {
+    var clientDeltaGameData = newGameData();
+    var opponentDeltaGameData = newGameData();
+    var dots = _.cloneDeep(dotClientGameData.dots || []);
+    var newLoops;
     dots.push(dot);
-    var newLoops = graphLoop.getLoops(dots);
+    newLoops = graphLoop.getLoops(dots);
 
     clientDeltaGameData.loops = commonLoopsUtils.getNewLoops(newLoops, clientDeltaGameData.loops);
     clientDeltaGameData.dots = [dot];
@@ -23,13 +24,14 @@ function getGameDataDeltas(dot, dotClientGameData, opponentGameData) {
     return {
         client: clientDeltaGameData,
         opponent: opponentDeltaGameData
-    }
+    };
 }
 
 function getGamersScores(dot, dotClientGameData, opponentGameData) {
     var newClientGameData = newGameData([dot]);
+    var newLoopsData;
     newClientGameData.dots = newClientGameData.dots.concat(dotClientGameData.dots);
-    var newLoopsData = graphLoop.getLoops(newClientGameData.dots);
+    newLoopsData = graphLoop.getLoops(newClientGameData.dots);
     dotClientGameData.dots.push(dot);
     if (newLoopsData && newLoopsData.length && (!opponentGameData.dots || !opponentGameData.dots.length)) {
         _.forEach(newLoopsData, function (loopData) {
@@ -50,11 +52,8 @@ function getGamersScores(dot, dotClientGameData, opponentGameData) {
     return {
         client: dotClientGameData,
         opponent: opponentGameData
-    }
+    };
 }
-
-
-
 
 module.exports = {
     getGameDataDeltas: getGameDataDeltas,

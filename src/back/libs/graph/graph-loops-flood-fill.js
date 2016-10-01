@@ -1,29 +1,23 @@
 'use strict';
 
-var commonUtils = require('./utils/common-utils');
-var convertUtils = require('./utils/convert-utils');
-var loopCheckerUtils = require('./utils/loop-checker-utils');
-var vertexUtils = require('./utils/vertex-utils');
-var logger = _req('src/js/logger').create('graph-loops-flood-fill');
-var WHILE_LIMIT = Infinity;
+const commonUtils = require('./utils/common-utils');
+const convertUtils = require('./utils/convert-utils');
+const vertexUtils = require('./utils/vertex-utils');
 
 function getLoops(array) {
     var prepared = prepareInbound(array);
-    var selectedSize = array.length;
-    var size = prepared.borders.size;
     var firstPosition = commonUtils.findFirstUnselectedUnvisitedPosition(prepared.vertexes);
     var isUnbroken;
     var loops = [];
     if (firstPosition) {
-        var unpassVertexesCount = commonUtils.getUnselectedUnvisitedVertexesCount(prepared.vertexes);
-        var futureLines = [getFutureLine(firstPosition.x, firstPosition.y, prepared.vertexes)];
-        var lineIndex = 0;
-        var loopIndex = 0;
-        var whileLimitIndex = 0;
-        var passedLine;
-        var passed;
-        var selected;
-        var trappedDots;
+        let unpassVertexesCount = commonUtils.getUnselectedUnvisitedVertexesCount(prepared.vertexes);
+        let futureLines = [getFutureLine(firstPosition.x, firstPosition.y, prepared.vertexes)];
+        let lineIndex = 0;
+        let whileLimitIndex = 0;
+        let passedLine;
+        let passed;
+        let selected;
+        let trappedDots;
         while (unpassVertexesCount > 0) {
             isUnbroken = true;
             lineIndex = 0;
@@ -72,19 +66,19 @@ function prepareInbound(array) {
     return {
         borders: borders,
         vertexes: result
-    }
+    };
 }
 
 function passLine(futureLineIndex, futureLines, selected, vertexes) {
     var line = futureLines[futureLineIndex];
-    futureLines[futureLineIndex] = null;
-    futureLines.length--;
     var passed = 0;
     var index = line.pos.y;
     var newFutureLines;
     var isSpill = false;
     var vertex = vertexes[line.pos.x][index];
     var passedDots = [];
+    futureLines[futureLineIndex] = null;
+    futureLines.length--;
     while (vertex && index >= 0 && !vertex.isSelected && !vertex.isInFutureLines) {
         vertex.isVisited = true;
         vertex.isInFutureLines = true;
