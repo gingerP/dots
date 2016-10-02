@@ -71,19 +71,19 @@ define([
     function genericSet(key) {
         return function (value) {
             set(key, value);
-        }
+        };
     }
 
     function genericGet(key) {
         return function () {
             return get(key);
-        }
+        };
     }
 
     function genericClear(key) {
         return function () {
             storage.remove(key);
-        }
+        };
     }
 
     function hasOpponent() {
@@ -100,7 +100,7 @@ define([
 
     function clearClient() {
         delete gamers.client;
-        storage.remove(keys.CLIENT)
+        storage.remove(keys.CLIENT);
     }
 
     function setGameOpponent(opponentObj) {
@@ -113,16 +113,16 @@ define([
 
     function clearOpponent() {
         delete gamers.opponent;
-        storage.remove(keys.OPPONENT)
+        storage.remove(keys.OPPONENT);
     }
 
     function getGamePlayers() {
         var result = [];
         if (gamers.client) {
-            result.push(gamers.client)
+            result.push(gamers.client);
         }
         if (gamers.opponent) {
-            result.push(gamers.opponent)
+            result.push(gamers.opponent);
         }
         return result;
     }
@@ -132,10 +132,10 @@ define([
         var client = get(keys.CLIENT);
         var opponent = get(keys.OPPONENT);
         if (client) {
-            result.push(client)
+            result.push(client);
         }
         if (opponent) {
-            result.push(opponent)
+            result.push(opponent);
         }
         return result;
     }
@@ -173,6 +173,20 @@ define([
         }
     }
 
+    function hasGame() {
+        return Boolean(get(keys.GAME));
+    }
+
+    function getGamePlayerById(playerId) {
+        if (gamers.client && gamers.client.getId() === playerId) {
+            return gamers.client;
+        }
+        if (gamers.opponent && gamers.opponent.getId() === playerId) {
+            return gamers.opponent;
+        }
+        return null;
+    }
+
     api = {
         set: set,
         get: get,
@@ -202,9 +216,12 @@ define([
         setActiveGamePlayer: setActiveGamePlayer,
         deleteActiveGamePlayer: deleteActiveGamePlayer,
 
+        getGamePlayerById: getGamePlayerById,
+
         setGame: genericSet(keys.GAME),
         getGame: genericGet(keys.GAME),
-        clearGame: genericClear(keys.GAME)
+        clearGame: genericClear(keys.GAME),
+        hasGame: hasGame
     };
 
     api.setClient(get(keys.CLIENT));

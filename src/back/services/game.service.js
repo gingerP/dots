@@ -67,7 +67,6 @@ GameService.prototype.onAddDot = function (message) {
             inst.gameDataDBManager.save(scores.opponent);
             message.callback(scores);
             inst.gameController.addDot(opponent, dot, scores);
-            console.timeEnd('GameService onAddDot');
         }
     }).catch(errorLog);
 };

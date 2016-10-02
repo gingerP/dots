@@ -11,7 +11,7 @@ define([
     function addDot(dot) {
         var game = gameStorage.getGame();
         if (game) {
-            return Transport.send(
+            Transport.send(
                 serviceUtils.createGamePack(BackendEvents.GAME.ADD_DOT, {
                     x: dot.xInd,
                     y: dot.yInd,

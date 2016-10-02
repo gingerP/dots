@@ -9,8 +9,9 @@ define([
     'business/business.invite',
     'business/game.rules',
     'business/game.storage',
-    'common/services/game-data.service'
-], function (d3, q, Events, Observable, Backend, GameBackend, Player, businessInvite, rules, gameStorage, gameDataService) {
+    'common/services/game-data.service',
+    'common/services/game.service'
+], function (d3, q, Events, Observable, Backend, GameBackend, Player, businessInvite, rules, GameStorage, GameDataService, GameService) {
     'use strict';
 
     function getId() {
@@ -46,27 +47,27 @@ define([
                 return rule();
             });
             canChange ? resolve() : reject();
-        })
+        });
     }
 
     //------------------------------------------------
 
     function isLocalMode() {
-        return gameStorage.getGameMode() === GAME_MODE.LOCAL;
+        return GameStorage.getGameMode() === GAME_MODE.LOCAL;
     }
 
     function isNetworkMode() {
-        return gameStorage.getGameMode() === GAME_MODE.NETWORK;
+        return GameStorage.getGameMode() === GAME_MODE.NETWORK;
     }
 
     function select(dot) {
         return new Promise(function (resolve, reject) {
-            var activePlayer = gameStorage.getActiveGamePlayer();
+            var activePlayer = GameStorage.getActiveGamePlayer();
             if (!canSelectDot(dot)) {
                 reject();
             } else {
                 activePlayer.addDot(dot);
-                observable.emit(Events.ADD_DOT, dot);
+                observable.emit(Events.ADD_DOT, {clientId: activePlayer.getId(), dot: dot});
                 activePlayer.history.addDot(dot);
                 GameBackend.addDot(dot);
                 resolve(function () {
@@ -76,7 +77,7 @@ define([
                     }
                 });
             }
-        })
+        });
     }
 
     function addActivePlayers() {
@@ -92,18 +93,18 @@ define([
     }
 
     function getActivePlayerColor() {
-        var player = gameStorage.getActiveGamePlayer();
+        var player = GameStorage.getActiveGamePlayer();
         return player ? player.getColor() : '';
     }
 
     function makePlayerActive(player) {
-        var activePlayer = gameStorage.getActiveGamePlayer();
+        var activePlayer = GameStorage.getActiveGamePlayer();
         var previousHistoryRecordId = activePlayer? activePlayer.history.getId(): null;
-        var players = gameStorage.getGamePlayers();
+        var players = GameStorage.getGamePlayers();
         if (players.indexOf(player) > -1) {
             activePlayer = player;
-            gameStorage.setActiveGamePlayer(activePlayer);
-            observable.emit(Events.MAKE_PLAYER_ACTIVE, player);
+            GameStorage.setActiveGamePlayer(activePlayer);
+            observable.emit(Events.MAKE_PLAYER_ACTIVE, player.getId());
             activePlayer.history.newRecord(previousHistoryRecordId);
         }
         return api;
@@ -113,8 +114,8 @@ define([
         var activePlayer;
         var players;
         if (api.canChangeActivePlayer()) {
-            activePlayer = gameStorage.getActiveGamePlayer();
-            players = gameStorage.getGamePlayers();
+            activePlayer = GameStorage.getActiveGamePlayer();
+            players = GameStorage.getGamePlayers();
             var index = players.indexOf(activePlayer);
             if (index === players.length - 1) {
                 makePlayerActive(players[0]);
@@ -181,8 +182,8 @@ define([
         observable.on(Events.CREATE_GAME, function(message) {
             var beginner = message.from;
             var beginnerGamer;
-            var myself = gameStorage.getGameClient();
-            var opponent = gameStorage.getGameOpponent();
+            var myself = GameStorage.getGameClient();
+            var opponent = GameStorage.getGameOpponent();
             if (myself.getId() === beginner._id) {
                 beginnerGamer = myself;
             } else if (opponent.getId() === beginner._id) {
@@ -192,10 +193,21 @@ define([
                 makePlayerActive(beginnerGamer);
             }
         });
+        /*
+            dot: dot,
+            gameDataList: gameData
+         */
+        GameService.listen.addDot(function(message) {
+            var opponent = GameStorage.getGameOpponent();
+            observable.emit(Events.ADD_DOT, {
+                dot: message.dot,
+                clientId: opponent.getId()
+            });
+        });
     }
 
     function reloadGameMode() {
-        gameStorage.setGameMode(GAME_MODE.NETWORK);
+        GameStorage.setGameMode(GAME_MODE.NETWORK);
     }
 
     function reloadMyself() {
@@ -203,22 +215,22 @@ define([
     }
 
     function reloadGame() {
-        var game = gameStorage.getGame();
+        var game = GameStorage.getGame();
         if (game) {
-            gameDataService.getGameState(game._id).then(function(gameState) {
-                var activeGamer = gameStorage.getActiveGamePlayer();
+            GameDataService.getGameState(game._id).then(function(gameState) {
+                var activeGamer = GameStorage.getActiveGamePlayer();
                 if (gameState.game && gameState.game.status === 'active') {
                     observable.emit(Events.REFRESH_GAME, gameState);
                     makePlayerActive(activeGamer);
                 } else {
-                    gameStorage.clearOpponent();
+                    GameStorage.clearOpponent();
                     observable.emit(Events.CANCEL_GAME);
                 }
             });
         }
     }
 
-    gameStorage.activePlayer = new Player();
+    //GameStorage.activePlayer = new Player();
 
     api = {
         init: function (graphics_) {

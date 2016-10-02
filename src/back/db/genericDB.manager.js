@@ -260,7 +260,7 @@ GenericDBManager.prototype.get = function (ids, mappings) {
         if (Array.isArray(ids)) {
             criteria = {
                 _id: {
-                    $in: _.map(ids, inst._getObjectId.bind(inst))
+                    $in: _.map(ids, inst.getObjectId.bind(inst))
                 }
             };
             inst._list(criteria, function (entities) {
@@ -325,7 +325,7 @@ GenericDBManager.prototype._getDBUrl = function () {
         + cfg.dbName;
 };
 
-GenericDBManager.prototype._getObjectId = function (id) {
+GenericDBManager.prototype.getObjectId = function (id) {
     if (id instanceof bongo.ObjectID) {
         return id;
     }

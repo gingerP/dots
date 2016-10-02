@@ -4,8 +4,9 @@ define([
     'lodash',
     'module.observable',
     'common/events',
+    'business/game.storage',
     'graphics/utils/graphics-utils'
-], function (d3, $, _, Observable, Events, GraphicsUtils) {
+], function (d3, $, _, Observable, Events, GameStorage, GraphicsUtils) {
     'use strict';
 
     var api;
@@ -207,6 +208,13 @@ define([
             .attr('fill', color);
     }
 
+    function getDotByPosition(position) {
+        var opponent = game
+        var selector = GraphicsUtils.generateSelectorStringFromDots(position);
+        var color
+        selectDot(selector);
+    }
+
     //function
 
     //Wall
@@ -233,7 +241,7 @@ define([
         return {
             x: d3js.attr('cx'),
             y: d3js.attr('cy')
-        }
+        };
     }
 
     function initEvents(elements) {
@@ -271,10 +279,8 @@ define([
                     callback();
                 });
             }
-        })
+        });
     }
-
-
 
     function renderTable() {
         var gridData = GraphicsUtils.createPaneGridData(xNum, yNum, STEP, OFFSET);
@@ -285,7 +291,7 @@ define([
             .attr('x2', getter('x2'))
             .attr('y2', getter('y2'))
             .attr('stroke', TABLE_STROKE_COLOR)
-            .attr('stroke-width', TABLE_STROKE_WIDTH)
+            .attr('stroke-width', TABLE_STROKE_WIDTH);
     }
 
     function setSize(width, height, radius) {
@@ -293,11 +299,10 @@ define([
     }
 
     function renderPlayerDots(client, dots) {
-        var selector;
-        if (dots && dots.length) {
-            selector = GraphicsUtils.generateSelectorStringFromDots(dots, 'circle[d_type=' + MAIN_CIRCLE_D_TYPE + ']');
-            selectDots(selector, client.color);
-        }
+        var preparedDots = _.isArray(dots) ? dots : [dots];
+        var prefix = 'circle[d_type=' + MAIN_CIRCLE_D_TYPE + ']';
+        var selector = GraphicsUtils.generateSelectorStringFromDots(preparedDots, prefix);
+        selectDots(selector, client.color);
     }
 
     function clearPane() {
@@ -322,12 +327,23 @@ define([
         var clients = gameState.clients;
         _.forEach(gameState.gameData, function(score) {
             var client = _.find(clients, {_id: score.client});
-            renderPlayerDots(client, score.dots);
+            if (score.dots.length) {
+                renderPlayerDots(client, score.dots);
+            }
         });
     });
 
     observable.on(Events.CANCEL_GAME, function() {
         clearPane();
+    });
+
+    observable.on(Events.ADD_DOT, function(message) {
+        if (message.dot && message.clientId) {
+            let player = GameStorage.getGamePlayerById(message.clientId);
+            if (player) {
+                renderPlayerDots(player, message.dot);
+            }
+        }
     });
 
     api = {

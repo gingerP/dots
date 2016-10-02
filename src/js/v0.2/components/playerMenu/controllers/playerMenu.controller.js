@@ -18,10 +18,7 @@ define([
         vm.opponent = gameStorage.getGameOpponent();
 
         vm.cancelGame = function() {
-            var game = gameStorage.getGame();
-            if (vm.opponent && game) {
-                inviteBusiness.cancel(vm.opponent.id, game._id);
-            }
+            inviteBusiness.cancelGame();
         };
 
         observable.on(Events.REFRESH_GAME, function() {

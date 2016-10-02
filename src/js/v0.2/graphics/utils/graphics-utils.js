@@ -79,7 +79,8 @@ define([
     }
 
     function generateSelectorStringFromDots(dots, prefix) {
-        return _.map(dots, function(dot) {
+        var dotsPrepared = _.isArray(dots) ? dots : [dots];
+        return _.map(dotsPrepared, function(dot) {
             return (prefix || '') + '#circle_' + dot.x + '_' + dot.y;
         }).join(',');
     }

@@ -9,6 +9,7 @@ var Promise = require('q');
 var logger = req('src/js/logger').create('CreateGameService');
 var gameStatuses = require('../constants/game-statuses');
 var errorLog = funcUtils.error(logger);
+const Errors = req('src/back/modules/Errors');
 
 function CreateGameService() {
 }
@@ -71,15 +72,29 @@ CreateGameService.prototype.onSuccess = function (message) {
 
 CreateGameService.prototype.onCancelGame = function (message) {
     var inst = this;
-    if (message.data && message.data.clients && message.data.clients.length) {
+    var gameId = _.get(message, 'data.extend.gameId');
+    if (gameId) {
         let connectionId = message.client.getId();
-        this.clientsDBManager.getClientByConnectionId(connectionId)
-            .then(function (client) {
-                if (client) {
-                    inst.cancelGame([client], message.data.extend.gameId);
-                }
-            })
-            .catch(errorLog);
+        Promise.all([
+            this.gameDBManager.get(gameId),
+            this.clientsDBManager.getClientByConnectionId(connectionId)
+        ]).then(function (data) {
+            var game = data[0];
+            var client = data[1];
+            if (game.from.equals(client._id) || game.to.equals(client._id)) {
+                let opponentId = game.from.equals(client._id) ? game.to : game.from;
+                message.callback(true);
+                inst.clientsDBManager.get(opponentId).then(function (opponent) {
+                    inst.cancelGame([opponent, client], game);
+                });
+            } else {
+                message.callback(Errors.noAccess);
+                errorLog(Errors.noAccess);
+            }
+        })
+        .catch(errorLog);
+    } else {
+        logger.error('onCancelGame: gameId empty!');
     }
 };
 
@@ -110,27 +125,21 @@ CreateGameService.prototype.cancelGameById = function (id) {
     }).catch(errorLog);
 };
 
-CreateGameService.prototype.cancelGame = function (clients, gameId) {
+CreateGameService.prototype.cancelGame = function (clients, game) {
     var inst = this;
-    return this.gameDBManager.getGameByClientsByGameId(clients[0]._id, clients[1]._id, gameId).then(function (game) {
-        var gameCopy;
-        if (game) {
-            if (game.status === gameStatuses.closed) {
-                logger.warn('CancelGame: Game found for %s and %s clients ONLY in status \'closed\'',
-                    clients[0]._id,
-                    clients[1]._id
-                );
-                gameCopy = game;
-            } else {
-                game.status = gameStatuses.closed;
-                gameCopy = _.cloneDeep(game);
-                inst.gameDBManager.save(game);
-            }
-            inst.controller.cancelGame(clients, gameCopy);
-        } else {
-            logger.warn('No game found for %s and %s clients', clients[0]._id, clients[1]._id);
-        }
-    }).catch(errorLog);
+    var gameCopy;
+    if (game.status === gameStatuses.closed) {
+        logger.warn('CancelGame: Game found for %s and %s clients ONLY in status \'closed\'',
+            clients[0]._id,
+            clients[1]._id
+        );
+        gameCopy = game;
+    } else {
+        game.status = gameStatuses.closed;
+        gameCopy = _.cloneDeep(game);
+        inst.gameDBManager.save(game);
+    }
+    inst.controller.cancelGame(clients, gameCopy);
 };
 
 CreateGameService.prototype.giveAnAnswerToClient = function (message) {

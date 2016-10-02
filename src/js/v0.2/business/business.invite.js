@@ -23,6 +23,13 @@ define([
         return clientA._id === myself._id ? clientB : clientA;
     }
 
+    function cancelGame() {
+        var game = gameStorage.getGame();
+        if (game && gameStorage.hasOpponent()) {
+            inviteService.cancelGame(game._id);
+        }
+    }
+
     inviteService.listen.ask(function(message) {
         if (message.from) {
             observable.emit(events.INVITE, message);
@@ -83,9 +90,7 @@ define([
         reject: function(clientId) {
             return inviteService.reject(clientId);
         },
-        cancel: function(clientId, gameId) {
-            return inviteService.cancel(clientId, gameId);
-        }
+        cancelGame: cancelGame
     };
 
     return api;

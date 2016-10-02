@@ -16,8 +16,16 @@ module.exports = {
     },
     error: function (logger) {
         return function (error) {
-            var message = typeof(error) === 'string' ? error : (error ? error.message : 'No message');
+            var message;
+            if (error.error) {
+                message = error.error.code + ': ' + error.error.message;
+            } else {
+                message = typeof(error) === 'string' ? error : (error ? error.message : 'No message');
+            }
             logger.error(message);
+            if (error.stack) {
+                logger.error(error.stack);
+            }
         };
     }
 };

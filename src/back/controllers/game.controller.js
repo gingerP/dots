@@ -1,6 +1,6 @@
 'use strict';
 
-var events = require('../events');
+var Events = require('../events');
 var constants = require('../constants/constants');
 var GenericController = require('./generic.controller').class;
 
@@ -11,13 +11,13 @@ GameController.prototype = Object.create(GenericController.prototype);
 GameController.prototype.constructor = GameController;
 
 GameController.prototype.onAddDot = function (handler) {
-    this.wss.addListener(events.add_dot, handler);
+    this.wss.addListener(Events.add_dot, handler);
 };
 
 GameController.prototype.addDot = function (toClient, dot, gameData) {
-    this.transmitter.send(toClient.connection_id, events.add_dot, {
+    this.transmitter.send(toClient.connection_id, Events.add_dot, {
         dot: dot,
-        gameData: gameData
+        gameDataList: gameData
     });
 };
 

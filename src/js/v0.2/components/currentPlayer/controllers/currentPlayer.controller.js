@@ -13,9 +13,8 @@ define([
 
     angular.module('currentPlayer.module').controller('currentPlayerCtrl', CurrentPlayerController);
 
-    function CurrentPlayerController($scope, $rootScope) {
+    function CurrentPlayerController($scope) {
         var vm = this,
-            scope = $scope,
             observable = Observable.instance;
 
         vm.isMenuOpened = false;
@@ -57,11 +56,11 @@ define([
             }
         });
 
-        observable.on(Events.MAKE_PLAYER_ACTIVE, function(player) {
-            if (vm.opponent === player) {
+        observable.on(Events.MAKE_PLAYER_ACTIVE, function(playerId) {
+            if (vm.opponent.getId() === playerId) {
                 vm.isMyselfActive = false;
                 vm.isOpponentActive = true;
-            } else if (gameStorage.getGameClient() === player) {
+            } else if (vm.myself.getId() === playerId) {
                 vm.isMyselfActive = true;
                 vm.isOpponentActive = false;
             }
