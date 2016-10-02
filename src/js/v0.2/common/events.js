@@ -9,6 +9,7 @@ define([], function () {
         ADD_DOT: 'ADD_DOT',
         conquer_dots: 'conquer_dots',
 
+        GAME_STEP: 'GAME_STEP',
         MAKE_PLAYER_ACTIVE: 'MAKE_PLAYER_ACTIVE',
 
         REFRESH_GAME: 'REFRESH_GAME',

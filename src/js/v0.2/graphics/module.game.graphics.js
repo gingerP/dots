@@ -294,15 +294,19 @@ define([
             .attr('stroke-width', TABLE_STROKE_WIDTH);
     }
 
-    function setSize(width, height, radius) {
-
-    }
-
-    function renderPlayerDots(client, dots) {
+    function renderDots(color, dots) {
         var preparedDots = _.isArray(dots) ? dots : [dots];
         var prefix = 'circle[d_type=' + MAIN_CIRCLE_D_TYPE + ']';
         var selector = GraphicsUtils.generateSelectorStringFromDots(preparedDots, prefix);
-        selectDots(selector, client.color);
+        selectDots(selector, color);
+    }
+
+    function renderLoops(/*color, loops*/) {
+
+    }
+
+    function renderTrappedDots(/*color, dots*/) {
+
     }
 
     function clearPane() {
@@ -323,36 +327,28 @@ define([
         return api;
     }
 
-    observable.on(Events.REFRESH_GAME, function(gameState) {
-        var clients = gameState.clients;
-        _.forEach(gameState.gameData, function(score) {
-            var client = _.find(clients, {_id: score.client});
-            if (score.dots.length) {
-                renderPlayerDots(client, score.dots);
+    function renderPlayerState(player, dots, loops, trappedDots) {
+        if (player) {
+            if (dots && dots.length) {
+                renderDots(player.color, dots);
             }
-        });
-    });
-
-    observable.on(Events.CANCEL_GAME, function() {
-        clearPane();
-    });
-
-    observable.on(Events.ADD_DOT, function(message) {
-        if (message.dot && message.clientId) {
-            let player = GameStorage.getGamePlayerById(message.clientId);
-            if (player) {
-                renderPlayerDots(player, message.dot);
+            if (loops && loops.length) {
+                renderLoops(player.color, dots);
+            }
+            if (trappedDots && trappedDots.length) {
+                renderTrappedDots(player.color, trappedDots);
             }
         }
-    });
+    }
 
     api = {
         init: init,
-        setSize: setSize,
+        renderPlayerState: renderPlayerState,
         renderWall: renderWall,
         renderLoop: renderLoop,
         renderCircle: renderCircle,
-        renderCircles: renderCircles
+        renderCircles: renderCircles,
+        clearPane: clearPane
     };
     return api;
 });

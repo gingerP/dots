@@ -61,6 +61,6 @@ define([
             setReject: setReject,
             setCancelGame: setCancelGame,
             prepareClientForUI: prepareClientForUI
-        }
+        };
     }
 });

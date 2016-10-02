@@ -11,10 +11,13 @@ define([
             return _.every(arguments, function (id) {
                 return player.hasDot(id);
             });
-        })
+        });
     }
 
     api = {
+        isActivePlayerIsMyself: function isActivePlayerIsMyself() {
+            return gameStorage.getActiveGamePlayer() === gameStorage.getGameClient();
+        },
         isGameStarted: function isGameStarted() {
             return gameStorage.hasOpponent();
         },
@@ -74,6 +77,7 @@ define([
     api.rulesCanSelect = [
         api.isGameStarted,
         api.isDotFree,
+        api.isActivePlayerIsMyself,
         function() {
             return !api.isActivePlayerSelectDot.apply(api, arguments);
         }

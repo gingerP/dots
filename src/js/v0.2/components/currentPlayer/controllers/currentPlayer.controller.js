@@ -57,6 +57,9 @@ define([
         });
 
         observable.on(Events.MAKE_PLAYER_ACTIVE, function(playerId) {
+            vm.myself = gameStorage.getGameClient();
+            vm.opponent = gameStorage.getGameOpponent();
+
             if (vm.opponent.getId() === playerId) {
                 vm.isMyselfActive = false;
                 vm.isOpponentActive = true;

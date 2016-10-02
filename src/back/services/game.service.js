@@ -62,11 +62,12 @@ GameService.prototype.onAddDot = function (message) {
 
         if (isDotValid(dot, clientDots)) {
             scores = gameServiceHelper.getGamersScores(dot, clientGameData, opponentGameData);
-            //id, gameId, clientId, dots, trappedDots, loops
+            game.activePlayer = opponent._id;
             inst.gameDataDBManager.save(scores.client);
             inst.gameDataDBManager.save(scores.opponent);
+            inst.gameDBManager.save(game);
             message.callback(scores);
-            inst.gameController.addDot(opponent, dot, scores);
+            inst.gameController.addDot(opponent, client, dot, scores);
         }
     }).catch(errorLog);
 };

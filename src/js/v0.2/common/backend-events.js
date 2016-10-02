@@ -13,7 +13,8 @@ define([], function () {
             CANCEL_GAME: 'cancel_game'
         },
         GAME: {
-            ADD_DOT: 'add_dot'
+            ADD_DOT: 'add_dot',
+            CURRENT_STEP: 'current_step'
         },
         DATA: {
             GET_GAME_STATE: 'get_game_state',

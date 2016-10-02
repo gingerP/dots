@@ -52,24 +52,25 @@ GameSupportService.prototype.onReconnect = function (message) {
     var inst = this;
     var clientObj;
     if (message.data) {
-        inst.clientsDBManager.getByCriteria({connection_id: message.data.connection_id}).then(function (client) {
-            client = client || {};
-            message.data.connection_id = message.client.getId();
-            client = mergeClients(client, message.data);
-            clientObj = _.cloneDeep(client);
-            return inst.clientsDBManager.saveByCriteria(client, {_id: client._id});
-        }).then(function () {
-            message.callback(clientObj);
-        }).catch(errorLog);
-    } else {
-        return new Promise(function (resolve) {
-            resolve({});
-        });
+        return inst.clientsDBManager
+            .getByCriteria({connection_id: message.data.connection_id})
+            .then(function (client) {
+                var preparedClient = client || {};
+                message.data.connection_id = message.client.getId();
+                preparedClient = mergeClients(preparedClient, message.data);
+                clientObj = _.cloneDeep(preparedClient);
+                return inst.clientsDBManager.saveByCriteria(preparedClient, {_id: preparedClient._id});
+            }).then(function () {
+                message.callback(clientObj);
+            }).catch(errorLog);
     }
+    return new Promise(function (resolve) {
+        resolve({});
+    });
 };
 
-GameSupportService.prototype.newGame = function (clientAId, clientBId) {
-    return this.gameDBManager.createGame(clientAId, clientBId, gameStatuses.active);
+GameSupportService.prototype.newGame = function (clientAId, clientBId, activePlayerId) {
+    return this.gameDBManager.createGame(clientAId, clientBId, activePlayerId, gameStatuses.active);
 };
 
 GameSupportService.prototype.getName = function () {

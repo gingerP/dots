@@ -13,5 +13,6 @@
     "get_myself": "get_myself",
     "get_events": "get_events",
     "get_game_state": "get_game_state",
-    "add_dot": "add_dot"
+    "add_dot": "add_dot",
+    "game_step": "game_step"
 }

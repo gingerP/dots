@@ -61,7 +61,7 @@ CreateGameService.prototype.onSuccess = function (message) {
         if (answer.isInviteExist) {
             answer.invite.status = inviteStatuses.successful;
             inst.createGameDBManager.save(answer.invite);
-            inst.newGame(answer.fromClient, answer.toClient, answer.invite).then(function (game) {
+            inst.newGame(answer.fromClient, answer.toClient, answer.fromClient, answer.invite).then(function (game) {
                 inst.controller.successPlayer(answer.fromClient, answer.toClient, game);
             });
         } else {
@@ -98,9 +98,9 @@ CreateGameService.prototype.onCancelGame = function (message) {
     }
 };
 
-CreateGameService.prototype.newGame = function (clientA, clientB, invite) {
+CreateGameService.prototype.newGame = function (clientA, clientB, activePlayer, invite) {
     var inst = this;
-    return this.gameSupportService.newGame(clientA._id, clientB._id).then(function (gameId) {
+    return this.gameSupportService.newGame(clientA._id, clientB._id, activePlayer._id).then(function (gameId) {
         invite.game = gameId;
         inst.createGameDBManager.save(invite);
         inst.gameDataDBManager.createNew(gameId, clientA._id);

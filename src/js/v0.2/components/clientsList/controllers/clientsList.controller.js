@@ -60,11 +60,10 @@ define([
             }
         }
 
-        function cancelGame(message) {
-            if (message.game && message.opponent) {
-                clientsListUtilFactory.setCancelGame(message.opponent, vm.clientsList);
-                $scope.$apply();
-            }
+        function cancelGame() {
+            var opponent = gameStorage.getOpponent();
+            clientsListUtilFactory.setCancelGame(opponent, vm.clientsList);
+            $scope.$apply();
         }
 
         function inviteReject(message) {

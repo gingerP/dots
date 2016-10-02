@@ -12,10 +12,11 @@ GameSupportDBManager.prototype.getName = function () {
     return constants.GAME_DB_MANAGER;
 };
 
-GameSupportDBManager.prototype.createGame = function (fromClientId, toClientId, status) {
+GameSupportDBManager.prototype.createGame = function (fromClientId, toClientId, activePlayerId, status) {
     var data = {
         from: fromClientId,
         to: toClientId,
+        activePlayer: activePlayerId,
         status: status,
         timestamp: Date.now()
     };
