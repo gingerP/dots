@@ -14,7 +14,7 @@ define([], function () {
         },
         GAME: {
             ADD_DOT: 'add_dot',
-            CURRENT_STEP: 'current_step'
+            GAME_STEP: 'game_step'
         },
         DATA: {
             GET_GAME_STATE: 'get_game_state',

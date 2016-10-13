@@ -53,7 +53,7 @@ define([
 
     /***********************************************************************/
 
-    var HistoryRecord = function() {
+    function HistoryRecord () {
         this.id = RECORD_ID_PREFIX + '_' + commonUtils.getRandomString() + '_' + Date.now();
         this.startTimeStamp = Date.now();
         this.finishTimeStamp;
@@ -61,7 +61,7 @@ define([
         this.trappedDots = [];
         this.lines = [];
         this.isAlien = false;
-    };
+    }
 
     HistoryRecord.prototype.addDot = function(data) {
         var dot = {};

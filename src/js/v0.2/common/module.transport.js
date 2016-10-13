@@ -24,7 +24,7 @@ define([
         });
         socket.on('connect', function () {
             connectionTimes++;
-            updateClient(connectionTimes);
+            updateClient();
         });
         socket.on('dots', function listenMessage(message) {
             if (message.extend) {
@@ -45,7 +45,7 @@ define([
         });
     }
 
-    function updateClient(connectionTimes) {
+    function updateClient() {
         if (connectionTimes === 1) {
             myself = gameStorage.getClient();
             connectionTimes += myself ? 1 : 0;

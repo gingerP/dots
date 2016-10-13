@@ -1,7 +1,7 @@
 define([
     'module.transport',
     'common/backend-events'
-], function(Transport, BackendEvents) {
+], function (Transport, BackendEvents) {
     'use strict';
 
     var api;
@@ -11,10 +11,10 @@ define([
         getClients: function getClients() {
             return Transport.send({}, BackendEvents.DATA.GET_CLIENTS_LIST);
         },
-        isGameClosed: function(gameId) {
+        isGameClosed: function (gameId) {
             return Transport.send({id: gameId}, BackendEvents.DATA.IS_GAME_CLOSED);
         },
-        getGameState: function(gameId) {
+        getGameState: function (gameId) {
             return Transport.send({id: gameId}, BackendEvents.DATA.GET_GAME_STATE);
         }
     };

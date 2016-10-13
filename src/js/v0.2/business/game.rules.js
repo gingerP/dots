@@ -78,7 +78,7 @@ define([
         api.isGameStarted,
         api.isDotFree,
         api.isActivePlayerIsMyself,
-        function() {
+        function () {
             return !api.isActivePlayerSelectDot.apply(api, arguments);
         }
     ];

@@ -11,7 +11,8 @@ define([
     'common/services/game-data.service',
     'components/clientsList/factories/clientsListUtil.factory',
     'components/clientsList/clientsList.module'
-], function (angular, _, Observable, scopeUtils, gameStorage, events, Business, inviteBusiness, backend, gameDataService) {
+], function (angular, _, Observable, scopeUtils, GameStorage, Events, Business, inviteBusiness, backend,
+             gameDataService) {
     'use strict';
 
     angular.module('clientsList.module').controller('clientsListCtrl', ClientsListController);
@@ -31,23 +32,27 @@ define([
         function rejectClient(exclusionsIdsList) {
             return function(client) {
                 return exclusionsIdsList.indexOf(client._id) > -1;
-            }
+            };
         }
 
         function updateClient() {
+            reloadClients();
+        }
+
+        function reloadClients() {
             gameDataService.getClients().then(function (clients) {
-                var myself = gameStorage.getClient();
-                var opponent = gameStorage.getOpponent();
+                var prepareClients = _.map(clients, clientsListUtilFactory.prepareClientForUI);
+                var myself = GameStorage.getClient();
+                var opponent = GameStorage.getOpponent();
                 var exclusion = opponent ? [myself._id, opponent._id] : [myself._id];
-                clients = _.map(clients, clientsListUtilFactory.prepareClientForUI);
-                vm.clientsList = _.reject(clients, rejectClient(exclusion));
+                vm.clientsList = _.reject(prepareClients, rejectClient(exclusion));
                 $scope.$apply();
             });
         }
 
         function invite(message) {
             if (message.from) {
-                observable.emit(events.INVITE, message.from);
+                observable.emit(Events.INVITE, message.from);
                 clientsListUtilFactory.setInvite(message.from, vm.clientsList);
                 $scope.$apply();
             }
@@ -61,7 +66,7 @@ define([
         }
 
         function cancelGame() {
-            var opponent = gameStorage.getOpponent();
+            var opponent = GameStorage.getOpponent();
             clientsListUtilFactory.setCancelGame(opponent, vm.clientsList);
             $scope.$apply();
         }
@@ -73,7 +78,7 @@ define([
             }
         }
 
-        vm.invite = function invite(client) {
+        vm.invite = function (client) {
             inviteBusiness.ask(client._id);
         };
 
@@ -87,11 +92,11 @@ define([
             inviteBusiness.reject(toClient._id);
         };
 
-        $scope.$on('$destroy', observable.on(events.UPDATE_CLIENT, updateClient));
-        $scope.$on('$destroy', observable.on(events.INVITE, invite));
-        $scope.$on('$destroy', observable.on(events.CREATE_GAME, createGame));
-        $scope.$on('$destroy', observable.on(events.CANCEL_GAME, cancelGame));
-        $scope.$on('$destroy', observable.on(events.INVITE_REJECT, inviteReject));
+        $scope.$on('$destroy', observable.on(Events.REFRESH_MYSELF, updateClient));
+        $scope.$on('$destroy', observable.on(Events.INVITE, invite));
+        $scope.$on('$destroy', observable.on(Events.CREATE_GAME, createGame));
+        $scope.$on('$destroy', observable.on(Events.CANCEL_GAME, cancelGame));
+        $scope.$on('$destroy', observable.on(Events.INVITE_REJECT, inviteReject));
 
         updateClient();
     }
