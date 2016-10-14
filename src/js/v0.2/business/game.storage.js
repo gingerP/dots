@@ -1,8 +1,7 @@
 define([
     'storage',
-    'business/module.game.player',
-    'business/module.game.player.history'
-], function (Storage, Player, PlayerHistory) {
+    'business/module.game.player'
+], function (Storage, Player) {
     'use strict';
 
     var api;
@@ -52,7 +51,7 @@ define([
             if (obj) {
                 set(key, obj);
                 if (!gamers[key]) {
-                    gamers[key] = new Player().init(obj._id, obj.name, obj.color, '', new PlayerHistory());
+                    gamers[key] = new Player().init(obj._id, obj.name, obj.color, '');
                 } else {
                     gamers[key].id = obj._id;
                     gamers[key].name = obj.name;

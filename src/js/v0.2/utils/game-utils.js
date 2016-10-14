@@ -1,7 +1,6 @@
 define([
-    'business/module.game.player',
-    'business/module.game.player.history'
-], function (Player, History) {
+    'business/module.game.player'
+], function (Player) {
     'use strict';
 
     return {
@@ -22,7 +21,7 @@ define([
             return data;
         },
         createNewPlayer: function createNewPlayer(id, name, color, style) {
-            return new Player().init(id, name, color, style, new History());
+            return new Player().init(id, name, color, style);
         }
     }
 });

@@ -1,15 +1,11 @@
 define([
     'angular',
     'module.observable',
-    'd3',
-    'module.game.business',
     'module.game.graphics',
-    'module.game.player',
-    'module.game.player.history',
     'common/events',
     'components/gamePane/gamePane.module',
     'components/gamePane/controllers/gamePane.controller'
-], function (angular, Observable, d3, business, graphics, Player, History, events) {
+], function (angular, Observable, graphics, events) {
     'use strict';
 
     angular.module('gamePane.module').directive('gamePane', gamePaneDirective);

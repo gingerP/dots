@@ -47,7 +47,7 @@ define([
         },
 
         isActivePlayerSelectDot: function isActivePlayerSelectDot() {
-            return gameStorage.getActiveGamePlayer().history.hasDots();
+            return gameStorage.getActiveGamePlayer().hasDots();
         },
 
         isActivePlayerLeadRoundTrappedDots: function isActivePlayerLeadRoundTrappedDots() {
@@ -79,7 +79,7 @@ define([
         api.isDotFree,
         api.isActivePlayerIsMyself,
         function () {
-            return !api.isActivePlayerSelectDot.apply(api, arguments);
+            return !api.isActivePlayerSelectDot();
         }
     ];
 

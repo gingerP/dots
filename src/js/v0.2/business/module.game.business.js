@@ -60,7 +60,6 @@ define([
             } else {
                 activePlayer.addDot(dot);
                 observable.emit(Events.ADD_DOT, {gamePlayerId: activePlayer.getId(), dot: dot});
-                activePlayer.history.addDot(dot);
                 GameService.addDot(dot);
                 Graphics.renderPlayerState(activePlayer, dot);
             }
@@ -69,13 +68,11 @@ define([
 
     function makePlayerActive(player) {
         var activePlayer = GameStorage.getActiveGamePlayer();
-        var previousHistoryRecordId = activePlayer ? activePlayer.history.getId() : null;
         var players = GameStorage.getGamePlayers();
         if (players.indexOf(player) > -1) {
             activePlayer = player;
             GameStorage.setActiveGamePlayer(activePlayer);
             observable.emit(Events.MAKE_PLAYER_ACTIVE, player.getId());
-            activePlayer.history.newRecord(previousHistoryRecordId);
         }
         return api;
     }

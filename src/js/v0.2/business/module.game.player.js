@@ -1,7 +1,7 @@
 define([], function() {
-    var Player = function() {};
+    function Player () {}
 
-    Player.prototype.init = function(id, name, color, style, history) {
+    Player.prototype.init = function(id, name, color, style) {
         this.dots = [];
         this.trappedDots = [];
         this.losingDots = [];
@@ -10,7 +10,6 @@ define([], function() {
         this.name = name;
         this.color = color;
         this.style = style;
-        this.history = history;
         this.isActive = false;
         return this;
     };
@@ -65,6 +64,12 @@ define([], function() {
     Player.prototype.hasDot = function(id) {
         return this.dots.indexOf(id) > -1;
     };
+
+    Player.prototype.hasDot = function(id) {
+        return this.dots.indexOf(id) > -1;
+    };
+
+    Player.prototype.
 
     Player.prototype.removeDot = function(id) {
 
