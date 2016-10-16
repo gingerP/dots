@@ -41,11 +41,11 @@ define([
 
         function reloadClients() {
             gameDataService.getClients().then(function (clients) {
-                var prepareClients = _.map(clients, clientsListUtilFactory.prepareClientForUI);
+                var preparedClients = _.map(clients, clientsListUtilFactory.prepareClientForUI);
                 var myself = GameStorage.getClient();
                 var opponent = GameStorage.getOpponent();
                 var exclusion = opponent ? [myself._id, opponent._id] : [myself._id];
-                vm.clientsList = _.reject(prepareClients, rejectClient(exclusion));
+                vm.clientsList = _.reject(preparedClients, rejectClient(exclusion));
                 $scope.$apply();
             });
         }
@@ -67,8 +67,10 @@ define([
 
         function cancelGame() {
             var opponent = GameStorage.getOpponent();
-            clientsListUtilFactory.setCancelGame(opponent, vm.clientsList);
-            $scope.$apply();
+            if (opponent) {
+                clientsListUtilFactory.setCancelGame(opponent, vm.clientsList);
+                $scope.$apply();
+            }
         }
 
         function inviteReject(message) {
@@ -76,6 +78,12 @@ define([
                 clientsListUtilFactory.setReject(message.to, vm.clientsList);
                 $scope.$apply();
             }
+        }
+
+        function newClient(client) {
+            var preparedClient = clientsListUtilFactory.prepareClientForUI(client);
+            vm.clientsList.splice(0, 0, preparedClient);
+            $scope.$apply();
         }
 
         vm.invite = function (client) {
@@ -92,11 +100,12 @@ define([
             inviteBusiness.reject(toClient._id);
         };
 
-        $scope.$on('$destroy', observable.on(Events.REFRESH_MYSELF, updateClient));
-        $scope.$on('$destroy', observable.on(Events.INVITE, invite));
-        $scope.$on('$destroy', observable.on(Events.CREATE_GAME, createGame));
-        $scope.$on('$destroy', observable.on(Events.CANCEL_GAME, cancelGame));
-        $scope.$on('$destroy', observable.on(Events.INVITE_REJECT, inviteReject));
+        observable.on(Events.NEW_CLIENT, newClient);
+        observable.on(Events.REFRESH_MYSELF, updateClient);
+        observable.on(Events.INVITE, invite);
+        observable.on(Events.CREATE_GAME, createGame);
+        observable.on(Events.CANCEL_GAME, cancelGame);
+        observable.on(Events.INVITE_REJECT, inviteReject);
 
         updateClient();
     }

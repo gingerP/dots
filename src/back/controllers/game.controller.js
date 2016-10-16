@@ -14,20 +14,7 @@ GameController.prototype.onAddDot = function (handler) {
     this.wss.addListener(Events.add_dot, handler);
 };
 
-GameController.prototype.addDot = function (toClient, fromClient, dot, gameData) {
-    this.transmitter.send(
-        [toClient.connection_id, fromClient.connection_id],
-        Events.add_dot,
-        {
-            dot: dot,
-            fromClient: fromClient,
-            toClient: fromClient,
-            gameDataList: gameData
-        }
-    );
-};
-
-GameController.prototype.updateCurrentStep = function (
+GameController.prototype.nextStep = function (
     dot,
     previousPlayer,
     previousPlayerGameData,

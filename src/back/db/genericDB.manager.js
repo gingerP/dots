@@ -6,6 +6,8 @@ var cfg = req('prop').db;
 var utils = req('src/js/utils');
 var bongo = require('mongodb');
 var assert = require('assert');
+var errorLog = funcUtils.error(logger);
+
 var messages = {
     dbCfg: 'Db config invalid',
     dbUser: 'Db user name invalid',
@@ -30,7 +32,6 @@ var validate = {
     }
 };
 var Observable = req('bin/Observable').class;
-var errorLog = funcUtils.error(logger);
 validate.dbConfig(cfg);
 
 function GenericDBManager() {
@@ -48,21 +49,22 @@ GenericDBManager.prototype.setCollectionName = function (collectionName) {
 GenericDBManager.prototype.getCollectionName = function () {
     return this.collectionName;
 };
-GenericDBManager.prototype.exec = function (callback) {
+GenericDBManager.prototype.exec = function () {
     var inst = this;
     if (!this.connection) {
         try {
-            bongo.connect(this._getDBUrl(), function (error, db) {
-                assert.equal(null, error);
-                inst.connection = db;
-                callback(inst.connection, error);
-            });
+            return new Promise(function(resolve) {
+                bongo.connect(inst._getDBUrl(), function (error, db) {
+                    assert.equal(null, error);
+                    inst.connection = db;
+                    resolve(inst.connection);
+                });
+            }).catch(errorLog);
         } catch (e) {
             logger.error(e.message);
         }
-    } else {
-        callback(this.connection);
     }
+    return Promise.resolve(inst.connection).catch(errorLog);
 };
 GenericDBManager.prototype.update = function () {
 
@@ -75,16 +77,17 @@ GenericDBManager.prototype._getDoc = function (criteria, callback, mappings) {
     }
     validate.collectionName(inst.collectionName);
     validate.criteria(preparedCriteria);
-    this.exec(function (db) {
+    this.exec().then(function (db) {
         db.collection(inst.collectionName).find(preparedCriteria, function (error, cursor) {
             cursor.next(function (cursorError, doc) {
                 if (cursorError) {
                     logger.debug('An ERROR has occurred while extracted document from "%s".', inst.collectionName);
                     callback({});
                 } else {
-                    logger.debug('Document {_id: "%s"} was successfully extracted from "%s".',
+                    logger.debug('Document {_id: "%s"} was successfully extracted from "%s" by criteria: %s',
                         doc ? doc._id : null,
-                        inst.collectionName);
+                        inst.collectionName,
+                        JSON.stringify(preparedCriteria));
                     if (mappings) {
                         callback(utils.extractFields(doc, mappings));
                     } else {
@@ -115,7 +118,7 @@ GenericDBManager.prototype._update = function (criteria, doc, callback, mappings
     var preparedUpsert = utils.hasContent(upsert) ? !!upsert : true;
     validate.collectionName(this.collectionName);
     inst._correctCriteria(criteria);
-    this.exec(function (db) {
+    this.exec().then(function (db) {
         var id = doc._id;
         delete doc._id;
         if (!mappings) {
@@ -137,14 +140,14 @@ GenericDBManager.prototype._update = function (criteria, doc, callback, mappings
                     if (cursorError) {
                         logger.error('An ERROR has occurred while getting document from "%s" to update.',
                             inst.collectionName);
-                        callback({});
+                        callback(null);
                     } else {
                         logger.debug('Document {_id: "%s"} was successfully extracted from "%s".',
                             doc ? doc._id : null,
                             inst.collectionName);
                         inst._mergeTo(cursorDoc, doc, mappings);
                         inst._update({_id: cursorDoc._id}, cursorDoc, function () {
-                            callback(true);
+                            callback(cursorDoc._id);
                         });
                     }
                     return false;
@@ -156,7 +159,7 @@ GenericDBManager.prototype._update = function (criteria, doc, callback, mappings
 GenericDBManager.prototype._insert = function (doc, callback) {
     var inst = this;
     validate.collectionName(this.collectionName);
-    this.exec(function (db) {
+    this.exec().then(function (db) {
         db.collection(inst.collectionName).insertOne(doc, function (error, result) {
             var id;
             if (error) {
@@ -179,7 +182,7 @@ GenericDBManager.prototype._delete = function (criteria, callback) {
         preparedCriteria = {_id: new this.getObjectId(criteria)};
     }
     validate.collectionName(this.collectionName);
-    this.exec(function (db) {
+    this.exec().then(function (db) {
         db.collection(inst.collectionName).removeOne(preparedCriteria, function (error, result) {
             if (error) {
                 logger.error('An ERROR has occurred while deleting document in "%s".', inst.collectionName);
@@ -194,7 +197,7 @@ GenericDBManager.prototype._delete = function (criteria, callback) {
 GenericDBManager.prototype._list = function (criteria, callback, mappings) {
     var inst = this;
     validate.collectionName(inst.collectionName);
-    this.exec(function (db) {
+    this.exec().then(function (db) {
         var cursor = db.collection(inst.collectionName).find(criteria);
         var index = 0;
         var res = [];

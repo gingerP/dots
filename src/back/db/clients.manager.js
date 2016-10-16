@@ -12,24 +12,30 @@ function ClientsDBManager() {
 ClientsDBManager.prototype = Object.create(GenericDBManager.prototype);
 ClientsDBManager.prototype.constructor = ClientsDBManager;
 
-ClientsDBManager.prototype.getClient = function(id) {
+ClientsDBManager.prototype.getClient = function (id) {
     if (id) {
         return this.get(id);
-    } else {
-        return funcUtils.emptyPromise({});
     }
+    return funcUtils.emptyPromise({});
 };
 
-ClientsDBManager.prototype.getClientByConnectionId = function(connectionId) {
+ClientsDBManager.prototype.getClientByConnectionId = function (connectionId) {
     return this.getByCriteria({connection_id: connectionId}).catch(funcUtils.error(logger));
 };
 
+ClientsDBManager.prototype.getClientsExcept = function (client) {
+    return this.listByCriteria({
+        _id: {
+            $ne: this.getObjectId(client._id)
+        }
+    });
+};
 
-ClientsDBManager.prototype.getName = function() {
+ClientsDBManager.prototype.getName = function () {
     return constants.CLIENTS_DB_MANAGER;
 };
 
-ClientsDBManager.prototype.getClientsPair = function(clientId, connectionId) {
+ClientsDBManager.prototype.getClientsPair = function (clientId, connectionId) {
     var inst = this;
     return Promise.all([
         inst.getClient(clientId),                            //To
@@ -37,7 +43,7 @@ ClientsDBManager.prototype.getClientsPair = function(clientId, connectionId) {
     ]);
 };
 
-ClientsDBManager.prototype.postConstructor = function() {
+ClientsDBManager.prototype.postConstructor = function () {
 };
 
 module.exports = {

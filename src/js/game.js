@@ -18,11 +18,7 @@ require.config({
 		'engine.io': '../ext/engine.io',
 		'module.game.business': './business/module.game.business',
 		'module.game.graphics': './graphics/module.game.graphics',
-		'module.game.player': './business/module.game.player',
-		'module.game.toolbar': './module.game.toolbar',
-		'module.game.players.list': './business/module.game.players.list',
 		'module.transport': './common/module.transport',
-		'module.game.player.history': './business/module.game.player.history',
 		'module.graph': './module.graph',
 		'module.observable': './module.observable',
 		'module.backend.service': './common/module.backend.service',
@@ -55,8 +51,8 @@ require([
 function convertData(data) {
 	var result = [];
 	data.forEach(function(dataItem) {
-		result[dataItem.xInd] = result[dataItem.xInd] || [];
-		result[dataItem.xInd][dataItem.yInd] = dataItem;
+		result[dataItem.x] = result[dataItem.x] || [];
+		result[dataItem.x][dataItem.y] = dataItem;
 	});
 	return result;
 }

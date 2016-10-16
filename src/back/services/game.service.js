@@ -59,15 +59,18 @@ GameService.prototype.onAddDot = function (message) {
         var opponent = gameData[2];
         var clientDots = clientGameData.dots;
         var scores;
+        var gameCopy;
 
         if (isDotValid(dot, clientDots)) {
             scores = gameServiceHelper.getGamersScores(dot, clientGameData, opponentGameData);
             game.activePlayer = opponent._id;
+            gameCopy = _.cloneDeep(game);
+
             inst.gameDataDBManager.save(scores.client);
             inst.gameDataDBManager.save(scores.opponent);
             inst.gameDBManager.save(game);
             message.callback(scores);
-            inst.gameController.addDot(opponent, client, dot, scores);
+            inst.gameController.nextStep(dot, client, scores.client, opponent, scores.opponent, gameCopy);
         }
     }).catch(errorLog);
 };

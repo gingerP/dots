@@ -1,6 +1,6 @@
 define([
     'storage',
-    'business/module.game.player'
+    'business/domains/Player'
 ], function (Storage, Player) {
     'use strict';
 
@@ -153,13 +153,12 @@ define([
     }
 
     function setActiveGamePlayer(gamePlayer) {
-        activeGamePlayer = gamePlayer;
         set(keys.ACTIVE_GAMER_ID, gamePlayer.id);
         return api;
     }
 
     function deleteActiveGamePlayer() {
-        activeGamePlayer = undefined;
+        activeGamePlayer = null;
         remove(keys.ACTIVE_GAMER_ID);
         return api;
     }
@@ -170,10 +169,17 @@ define([
         } else if (gamer === gamers.OPPONENT) {
             return get(keys.OPPONENT);
         }
+        return null;
     }
 
     function hasGame() {
         return Boolean(get(keys.GAME));
+    }
+
+    function clearGame() {
+        deleteActiveGamePlayer();
+        clearOpponent();
+        remove(keys.GAME);
     }
 
     function getGamePlayerById(playerId) {
@@ -219,7 +225,7 @@ define([
 
         setGame: genericSet(keys.GAME),
         getGame: genericGet(keys.GAME),
-        clearGame: genericClear(keys.GAME),
+        clearGame: clearGame,
         hasGame: hasGame
     };
 

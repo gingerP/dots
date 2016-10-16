@@ -71,9 +71,9 @@ define([
     }
 
     function prepareCirclesData(data, step, offset) {
-        return data.map(function (dataItem) {
-            dataItem.x_ = dataItem.xInd * step + offset;
-            dataItem.y_ = dataItem.yInd * step + offset;
+        return _.map(data, function (dataItem) {
+            dataItem.x_ = dataItem.x * step + offset;
+            dataItem.y_ = dataItem.y * step + offset;
             return dataItem;
         });
     }

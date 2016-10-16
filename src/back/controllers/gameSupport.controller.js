@@ -1,6 +1,7 @@
 'use strict';
 
-var events = require('../events');
+var _ = require('lodash');
+var Events = require('../events');
 var constants = require('../constants/constants');
 var GenericController = require('./generic.controller').class;
 
@@ -10,28 +11,16 @@ function GameSupportController() {
 GameSupportController.prototype = Object.create(GenericController.prototype);
 GameSupportController.prototype.constructor = GameSupportController;
 
-GameSupportController.prototype.onInvitePlayer = function () {
-
-};
-
-GameSupportController.prototype.onRejectPlayer = function () {
-
-};
-
 GameSupportController.prototype.onNewClient = function (handler) {
-    this.wss.addListener(events.new_client, handler);
+    this.wss.addListener(Events.new_client, handler);
 };
 
 GameSupportController.prototype.onReconnect = function (handler) {
-    this.wss.addListener(events.client_reconnect, handler);
+    this.wss.addListener(Events.client_reconnect, handler);
 };
 
-GameSupportController.prototype.invitePlayer = function () {
-
-};
-
-GameSupportController.prototype.rejectPlayer = function () {
-
+GameSupportController.prototype.notifyAboutNewClient = function(newClient, clients) {
+    this.transmitter.send(_.map(clients, 'connection_id'), Events.new_client, newClient);
 };
 
 GameSupportController.prototype.postConstructor = function (ioc) {

@@ -10,9 +10,9 @@ define([], function() {
 
         convertDataForGraphModule: function convertDataForGraphModule(data) {
             return {
-                x: data.xInd,
-                y: data.yInd
-            }
+                x: data.x,
+                y: data.y
+            };
         },
 
         convertGraphDataToDataArray: function convertGraphDataToDataArray(data) {

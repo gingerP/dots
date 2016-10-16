@@ -3,15 +3,18 @@ define([
     'q',
     'common/events',
     'module.observable',
-    'business/module.game.player',
     'business/business.invite',
     'business/game.rules',
+    'utils/game-utils',
     'business/game.storage',
     'common/services/game-data.service',
     'common/services/game.service',
+    'common/services/invite.service',
     'module.game.graphics'
-], function (_, q, Events, Observable, Player, businessInvite, rules, GameStorage, GameDataService,
-             GameService, Graphics) {
+], function (_, q, Events, Observable, businessInvite, rules,
+             GameUtils, GameStorage,
+             GameDataService, GameService, InviteService,
+             Graphics) {
     'use strict';
 
     var api;
@@ -58,20 +61,23 @@ define([
             if (!canSelectDot(dot)) {
                 reject();
             } else {
-                activePlayer.addDot(dot);
+                activePlayer.selectDot(dot);
                 observable.emit(Events.ADD_DOT, {gamePlayerId: activePlayer.getId(), dot: dot});
                 GameService.addDot(dot);
-                Graphics.renderPlayerState(activePlayer, dot);
+                Graphics.updatePlayerState(activePlayer, dot);
             }
         });
     }
 
     function makePlayerActive(player) {
-        var activePlayer = GameStorage.getActiveGamePlayer();
         var players = GameStorage.getGamePlayers();
         if (players.indexOf(player) > -1) {
-            activePlayer = player;
-            GameStorage.setActiveGamePlayer(activePlayer);
+            player.newStep();
+            GameStorage.setActiveGamePlayer(player);
+            _.forEach(players, function (gamePlayer) {
+                gamePlayer.updateActive(false);
+            });
+            player.updateActive(true);
             observable.emit(Events.MAKE_PLAYER_ACTIVE, player.getId());
         }
         return api;
@@ -117,6 +123,8 @@ define([
                     cancelGame();
                 }
             });
+        } else {
+            cancelGame();
         }
     }
 
@@ -124,18 +132,24 @@ define([
         var activeGamer = GameStorage.getActiveGamePlayer();
         observable.emit(Events.REFRESH_GAME, gameState);
         makePlayerActive(activeGamer);
-        _.forEach(gameState.gameData, function(score) {
+        _.forEach(gameState.gameData, function (score) {
             var client = _.find(gameState.clients, {_id: score.client});
             if (score.dots.length) {
-                Graphics.renderPlayerState(client, score.dots);
+                GameUtils.updatePlayerState(client._id, score);
+                Graphics.updatePlayerState(client, score.dots);
             }
         });
     }
 
-    function cancelGame() {
-        GameStorage.clearOpponent();
+    function cancelGame(forceServiceRequest) {
+        var game = GameStorage.getGame();
+        var opponent = GameStorage.getOpponent();
+        GameStorage.clearGame();
         Graphics.clearPane();
         observable.emit(Events.CANCEL_GAME);
+        if (forceServiceRequest && game && opponent) {
+            InviteService.cancelGame(game._id);
+        }
     }
 
     function init() {
@@ -143,31 +157,34 @@ define([
         reloadMyself();
         reloadGame();
 
-        observable.on(Events.CREATE_GAME, function (message) {
-            var beginner = message.from;
-            var beginnerGamer;
-            var myself = GameStorage.getGameClient();
-            var opponent = GameStorage.getGameOpponent();
-            if (myself.getId() === beginner._id) {
-                beginnerGamer = myself;
-            } else if (opponent.getId() === beginner._id) {
-                beginnerGamer = opponent;
-            }
-            if (beginnerGamer) {
-                makePlayerActive(beginnerGamer);
+        InviteService.listen.cancel(function (message) {
+            var currentGame;
+            if (GameStorage.hasOpponent()) {
+                currentGame = GameStorage.getGame();
+                if (currentGame._id && currentGame._id === message.game._id) {
+                    if (!message.game && message.game._id) {
+                        console.warn('Game does not found!');
+                    }
+                    cancelGame();
+                }
             }
         });
+
 
         GameService.listen.gameStep(function (message) {
             var gamePlayer = GameStorage.getGamePlayerById(message.currentPlayerId);
             var previousGamePlayer = GameStorage.getGamePlayerById(message.previousPlayerId);
             GameStorage.setGame(message.game);
             makePlayerActive(gamePlayer);
-            Graphics.renderPlayerState(previousGamePlayer, message.dot);
+            Graphics.updatePlayerState(previousGamePlayer, message.dot);
             observable.emit(Events.GAME_STEP, {
                 dot: message.dot,
                 previousGamePlayerId: message.previousPlayerId
             });
+        });
+
+        GameDataService.listen.newClient(function (message) {
+            observable.emit(Events.NEW_CLIENT, message);
         });
     }
 
@@ -203,8 +220,10 @@ define([
             add_client: 'add_client',
             add_dot: 'add_dot',
             conquer_dots: 'conquer_dots'
+        },
+        cancelGame: function () {
+            cancelGame(true);
         }
     };
-    /*ModuleGraph.sb(api);*/
     return api;
 });

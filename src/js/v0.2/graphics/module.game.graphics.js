@@ -1,12 +1,12 @@
 define([
     'd3',
-    'jquery',
     'lodash',
     'module.observable',
     'common/events',
     'business/game.storage',
-    'graphics/utils/graphics-utils'
-], function (d3, $, _, Observable, Events, GameStorage, GraphicsUtils) {
+    'graphics/utils/graphics-utils',
+    'utils/common-utils'
+], function (d3, _, Observable, Events, GameStorage, GraphicsUtils, CommonUtils) {
     'use strict';
 
     var api;
@@ -44,7 +44,7 @@ define([
     function getter(key) {
         return function (data) {
             return data[key];
-        }
+        };
     }
 
     var scales = {
@@ -61,7 +61,7 @@ define([
             return DOT_RADIUS;
         },
         hoverIn: function() {
-            return DOT_RADIUS_HOVER_IN
+            return DOT_RADIUS_HOVER_IN;
         },
         hoverOut: function(data) {
             return data.isSelected ? DOT_RADIUS_SELECTED : DOT_RADIUS;
@@ -82,27 +82,31 @@ define([
 
     function prepareCirclesData_(data) {
         var result = [];
-        if (Array.isArray(data) && data.length) {
+        if (data && data.length) {
             data.forEach(function (dataItem) {
                 var selectionCircle = {};
                 var mainCircle = {};
-                $.extend(true, selectionCircle, dataItem, {
-                    x_: dataItem.xInd * STEP + OFFSET,
-                    y_: dataItem.yInd * STEP + OFFSET,
-                    r_: SELECTION_CIRCLE_RADIUS,
-                    dType_: SELECTION_CIRCLE_D_TYPE,
-                    fill_: '',
-                    fillOpacity_: 0,
-                    id_: dataItem.id + '_selection'
+                _.assignIn(selectionCircle, dataItem, {
+                    gr: {
+                        x_: dataItem.x * STEP + OFFSET,
+                        y_: dataItem.y * STEP + OFFSET,
+                        r_: SELECTION_CIRCLE_RADIUS,
+                        dType_: SELECTION_CIRCLE_D_TYPE,
+                        fill_: '',
+                        fillOpacity_: 0,
+                        id_: dataItem.id + '_selection'
+                    }
                 });
-                $.extend(true, mainCircle, dataItem, {
-                    x_: dataItem.xInd * STEP + OFFSET,
-                    y_: dataItem.yInd * STEP + OFFSET,
-                    r_: DOT_RADIUS,
-                    dType_: MAIN_CIRCLE_D_TYPE,
-                    fill_: TABLE_STROKE_COLOR,
-                    fillOpacity_: 1,
-                    id_: dataItem.id
+                _.assignIn(mainCircle, dataItem, {
+                    gr: {
+                        x_: dataItem.x * STEP + OFFSET,
+                        y_: dataItem.y * STEP + OFFSET,
+                        r_: DOT_RADIUS,
+                        dType_: MAIN_CIRCLE_D_TYPE,
+                        fill_: TABLE_STROKE_COLOR,
+                        fillOpacity_: 1,
+                        id_: dataItem.id
+                    }
                 });
                 result.push(selectionCircle, mainCircle);
             });
@@ -310,7 +314,9 @@ define([
     }
 
     function clearPane() {
-        unSelectDots();
+        if (circles) {
+            unSelectDots();
+        }
     }
 
     function init(gamePaneSelector, BusinessModule, xNum_, yNum_, data) {
@@ -327,23 +333,27 @@ define([
         return api;
     }
 
-    function renderPlayerState(player, dots, loops, trappedDots) {
+    function updatePlayerState(player, dots, loops, trappedDots) {
+        var preparedDots, preparedLoops, preparedTrappedDots;
         if (player) {
-            if (dots && dots.length) {
-                renderDots(player.color, dots);
+            preparedDots = CommonUtils.createArray(dots);
+            preparedLoops = CommonUtils.createArray(loops);
+            preparedTrappedDots = CommonUtils.createArray(trappedDots);
+            if (preparedDots && preparedDots.length) {
+                renderDots(player.color, preparedDots);
             }
-            if (loops && loops.length) {
-                renderLoops(player.color, dots);
+            if (preparedLoops && preparedLoops.length) {
+                renderLoops(player.color, preparedLoops);
             }
-            if (trappedDots && trappedDots.length) {
-                renderTrappedDots(player.color, trappedDots);
+            if (preparedTrappedDots && preparedTrappedDots.length) {
+                renderTrappedDots(player.color, preparedTrappedDots);
             }
         }
     }
 
     api = {
         init: init,
-        renderPlayerState: renderPlayerState,
+        updatePlayerState: updatePlayerState,
         renderWall: renderWall,
         renderLoop: renderLoop,
         renderCircle: renderCircle,

@@ -2,9 +2,10 @@ define([
     'common/services/invite.service',
     'module.observable',
     'business/game.storage',
+    'business/module.game.business',
     'common/events',
     'q'
-], function(inviteService, Observable, gameStorage, events, q) {
+], function(inviteService, Observable, GameStorage, GameBusiness, events, q) {
     'use strict';
 
     var api;
@@ -15,18 +16,28 @@ define([
     }
 
     function isInviteAvailable() {
-        return !gameStorage.hasOpponent();
+        return !GameStorage.hasOpponent();
     }
 
     function getOpponent(clientA, clientB) {
-        var myself = gameStorage.getClient();
+        var myself = GameStorage.getClient();
         return clientA._id === myself._id ? clientB : clientA;
     }
 
-    function cancelGame() {
-        var game = gameStorage.getGame();
-        if (game && gameStorage.hasOpponent()) {
-            inviteService.cancelGame(game._id);
+    function createGame(message) {
+        var beginner, beginnerGamer, myself, opponent = GameStorage.getGameOpponent();
+        GameStorage.setOpponent(message.opponent);
+        GameStorage.setGame(message.game);
+        beginner = message.from;
+        myself = GameStorage.getGameClient();
+        opponent = GameStorage.getGameOpponent();
+        if (myself.getId() === beginner._id) {
+            beginnerGamer = myself;
+        } else if (opponent.getId() === beginner._id) {
+            beginnerGamer = opponent;
+        }
+        if (beginnerGamer) {
+            GameBusiness.makePlayerActive(beginnerGamer);
         }
     }
 
@@ -38,11 +49,10 @@ define([
 
     inviteService.listen.success(function(message) {
         var opponent;
-        if (!gameStorage.hasOpponent()) {
+        if (!GameStorage.hasOpponent()) {
             if (message.to) {
                 message.opponent = getOpponent(message.to, message.from);
-                gameStorage.setOpponent(message.opponent);
-                gameStorage.setGame(message.game);
+                createGame(message);
                 observable.emit(events.CREATE_GAME, message);
             }
         } else {
@@ -52,34 +62,16 @@ define([
     });
 
     inviteService.listen.reject(function(message) {
-        if (!gameStorage.hasOpponent()) {
+        if (!GameStorage.hasOpponent()) {
             if (message.to) {
                 observable.emit(events.INVITE_REJECT, message);
             }
         }
     });
 
-    inviteService.listen.cancel(function(message) {
-        var currentGame;
-        var opponent;
-        if (gameStorage.hasOpponent()) {
-            currentGame = gameStorage.getGame();
-            opponent = gameStorage.getOpponent();
-            if (currentGame._id && currentGame._id === message.game._id) {
-                if (!message.game && message.game._id) {
-                    console.warn('Game does not found!');
-                }
-                gameStorage.clearGame();
-                gameStorage.clearOpponent();
-                message.opponent = opponent;
-                observable.emit(events.CANCEL_GAME, message);
-            }
-        }
-    });
-
     api = {
         ask: function(clientId) {
-            if (!gameStorage.hasOpponent()) {
+            if (!GameStorage.hasOpponent()) {
                 return inviteService.ask(clientId);
             }
             return notAvailable();
@@ -89,8 +81,7 @@ define([
         },
         reject: function(clientId) {
             return inviteService.reject(clientId);
-        },
-        cancelGame: cancelGame
+        }
     };
 
     return api;

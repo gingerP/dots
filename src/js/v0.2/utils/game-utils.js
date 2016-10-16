@@ -1,6 +1,7 @@
 define([
-    'business/module.game.player'
-], function (Player) {
+    'business/domains/Player',
+    'business/game.storage'
+], function (Player, GameStorage) {
     'use strict';
 
     return {
@@ -11,8 +12,8 @@ define([
             for (w = 0; w < xSize; w++) {
                 for (h = 0; h < ySize; h++) {
                     data.push({
-                        xInd: w,
-                        yInd: h,
+                        x: w,
+                        y: h,
                         radius: radius,
                         id: 'circle_' + w + '_' + h
                     });
@@ -22,6 +23,14 @@ define([
         },
         createNewPlayer: function createNewPlayer(id, name, color, style) {
             return new Player().init(id, name, color, style);
+        },
+        updatePlayerState: function updatePlayerState(playerId, state) {
+            var player = GameStorage.getGamePlayerById(playerId);
+            if (player) {
+                player.addDots(state.dots).addLoops(state.loops).addTrappedDots(state.trappedDots);
+                player.updateActive(state.isActive);
+                player.newStep();
+            }
         }
-    }
+    };
 });

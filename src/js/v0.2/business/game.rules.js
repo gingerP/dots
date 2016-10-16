@@ -27,8 +27,8 @@ define([
         },
 
         isDotsNeighbors: function isDotsNeighbors(data1, data2) {
-            return Math.abs(data1.xInd - data2.xInd) <= 1
-                && Math.abs(data1.yInd - data2.yInd) <= 1;
+            return Math.abs(data1.x - data2.x) <= 1
+                && Math.abs(data1.y - data2.y) <= 1;
         },
 
         isDotsSelected: function isDotsSelected(data1, data2) {
@@ -47,7 +47,7 @@ define([
         },
 
         isActivePlayerSelectDot: function isActivePlayerSelectDot() {
-            return gameStorage.getActiveGamePlayer().hasDots();
+            return gameStorage.getActiveGamePlayer().hasStepDot();
         },
 
         isActivePlayerLeadRoundTrappedDots: function isActivePlayerLeadRoundTrappedDots() {
@@ -78,7 +78,7 @@ define([
         api.isGameStarted,
         api.isDotFree,
         api.isActivePlayerIsMyself,
-        function () {
+        function isActivePlayerDidNotSelectDot() {
             return !api.isActivePlayerSelectDot();
         }
     ];

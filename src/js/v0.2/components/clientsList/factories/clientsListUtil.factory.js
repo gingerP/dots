@@ -51,8 +51,9 @@ define([
         }
 
         function prepareClientForUI(client) {
-            client.mode = modes.common;
-            return client;
+            var preparedClient = _.cloneDeep(client);
+            preparedClient.mode = modes.common;
+            return preparedClient;
         }
 
         return {

@@ -43,30 +43,62 @@ GameSupportService.prototype.onNewClient = function (message) {
         name: getRandomAnimal(),
         color: getRandomColor()
     };
-    this.clientsDBManager.save(client).then(function (data) {
-        inst.clientsDBManager.getByCriteria({_id: data}).then(message.callback);
-    }).catch(errorLog);
+    this.clientsDBManager
+        .save(client)
+        .then(function (data) {
+            return inst.clientsDBManager.getByCriteria({_id: data});
+        })
+        .then(this.notifyAboutNewClient.bind(this))
+        .then(message.callback)
+        .catch(errorLog);
 };
 
 GameSupportService.prototype.onReconnect = function (message) {
     var inst = this;
-    var clientObj;
+    var preparedClient;
     if (message.data) {
         return inst.clientsDBManager
-            .getByCriteria({connection_id: message.data.connection_id})
+            .get(message.data._id)
             .then(function (client) {
-                var preparedClient = client || {};
-                message.data.connection_id = message.client.getId();
-                preparedClient = mergeClients(preparedClient, message.data);
-                clientObj = _.cloneDeep(preparedClient);
-                return inst.clientsDBManager.saveByCriteria(preparedClient, {_id: preparedClient._id});
-            }).then(function () {
-                message.callback(clientObj);
-            }).catch(errorLog);
+                if (client) {
+                    preparedClient = client;
+                    preparedClient.connection_id = message.client.getId();
+                    return inst.clientsDBManager
+                        .saveByCriteria(preparedClient, {_id: preparedClient._id})
+                        .then(function() {
+                            return inst.clientsDBManager.get(preparedClient._id)
+                        });
+                }
+
+                logger.warn('Client with id "%s" didn\'t exist. Save as new.', message.data._id);
+                preparedClient = message.data;
+                preparedClient.connection_id = message.client.getId();
+                delete preparedClient._id;
+                return inst.clientsDBManager
+                    .save(preparedClient)
+                    .then(function() {
+                        return inst.clientsDBManager.getClientByConnectionId(preparedClient.connection_id);
+                    });
+            })
+            .then(message.callback)
+            .catch(errorLog);
     }
     return new Promise(function (resolve) {
         resolve({});
     });
+};
+
+GameSupportService.prototype.notifyAboutNewClient = function (newClient) {
+    var inst = this;
+    this.clientsDBManager
+        .getClientsExcept(newClient)
+        .then(function (clients) {
+            if (clients && clients.length) {
+                inst.gameSupportController.notifyAboutNewClient(newClient, clients);
+            }
+        })
+        .catch(errorLog);
+    return newClient;
 };
 
 GameSupportService.prototype.newGame = function (clientAId, clientBId, activePlayerId) {

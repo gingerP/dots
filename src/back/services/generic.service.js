@@ -11,7 +11,7 @@ GenericService.prototype.save = function(doc, mappings) {
     return new Promise(function(resolve, reject) {
         inst.manager.save(doc, mappings).then(function(value) {
             resolve(value);
-        })
+        });
     });
 };
 GenericService.prototype.get = function(id, mappings) {

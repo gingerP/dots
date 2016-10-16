@@ -13,8 +13,8 @@ define([
         if (game) {
             Transport.send(
                 serviceUtils.createGamePack(BackendEvents.GAME.ADD_DOT, {
-                    x: dot.xInd,
-                    y: dot.yInd,
+                    x: dot.x,
+                    y: dot.y,
                     gameId: game._id
                 }),
                 BackendEvents.GAME.ADD_DOT
@@ -25,7 +25,7 @@ define([
     api = {
         listen: {
             addDot: serviceUtils.createListener(BackendEvents.GAME.ADD_DOT),
-            gameStep: serviceUtils.createListener(BackendEvents.GAME.CURRENT_STEP)
+            gameStep: serviceUtils.createListener(BackendEvents.GAME.GAME_STEP)
         },
         addDot: addDot
     };

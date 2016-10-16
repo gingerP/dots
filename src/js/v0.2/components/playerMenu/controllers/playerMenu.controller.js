@@ -3,9 +3,9 @@ define([
     'module.observable',
     'business/game.storage',
     'common/events',
-    'business/business.invite',
+    'business/module.game.business',
     'components/playerMenu/playerMenu.module'
-], function(angular, Observable, gameStorage, Events, inviteBusiness) {
+], function(angular, Observable, gameStorage, Events, GameBusiness) {
     'use strict';
 
     angular.module('player.menu.module').controller('playerMenuController', playerMenuController);
@@ -18,7 +18,7 @@ define([
         vm.opponent = gameStorage.getGameOpponent();
 
         vm.cancelGame = function() {
-            inviteBusiness.cancelGame();
+            GameBusiness.cancelGame();
         };
 
         observable.on(Events.REFRESH_GAME, function() {
@@ -37,7 +37,7 @@ define([
 
         observable.on(Events.CANCEL_GAME, function() {
             delete vm.opponent;
-            $scope.$apply();
+            //$scope.$apply();
         });
     }
 });
