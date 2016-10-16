@@ -18,7 +18,6 @@ define([
         OPPONENT: 'opponent',
         GAME: 'game'
     };
-    var isOpponentExist = false;
 
     function initStorage() {
         return new Storage({
@@ -79,7 +78,7 @@ define([
         };
     }
 
-    function genericClear(key) {
+    function genericClear(key) { //eslint-disable-line
         return function () {
             storage.remove(key);
         };

@@ -8,10 +8,8 @@ define([
     'use strict';
 
     var api;
-    var connection;
     var observable = Observable.instance;
     var socket = io();
-    var servicePoints = [];
     var connectionTimes = 0;
     var myself;
 

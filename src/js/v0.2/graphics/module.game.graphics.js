@@ -1,18 +1,16 @@
 define([
     'd3',
     'lodash',
-    'module.observable',
     'common/events',
     'business/game.storage',
     'graphics/utils/graphics-utils',
     'utils/common-utils'
-], function (d3, _, Observable, Events, GameStorage, GraphicsUtils, CommonUtils) {
+], function (d3, _, Events, GameStorage, GraphicsUtils, CommonUtils) {
     'use strict';
 
     var api;
     var gamePane;
     var Business;
-    var observable = Observable.instance;
 
     var circles;
 
@@ -20,8 +18,7 @@ define([
     var pathsGroup;
     var dotsGroup;
 
-    var groups;
-    var lines = [];
+    /*var lines = []; */
 
     var xNum;
     var yNum;
@@ -41,18 +38,6 @@ define([
     var TABLE_STROKE_WIDTH = 1;
     var TABLE_STROKE_COLOR = '#AAEEFF';
 
-    function getter(key) {
-        return function (data) {
-            return data[key];
-        };
-    }
-
-    var scales = {
-        linearDown: d3.scale.linear().domain([0, 2]).range([0, 2]),
-        linearUp: d3.scale.linear().domain([0, 2]).range([0, 4]),
-        markPressed: d3.scale.linear().domain([0, 2]).range([0, 3])
-    };
-
     var dotSize = {
         selected: function() {
             return DOT_RADIUS_SELECTED;
@@ -68,7 +53,13 @@ define([
         }
     };
 
-    function renderPath(path, color) {
+    function getter(key) {
+        return function (data) {
+            return data[key];
+        };
+    }
+
+    function renderPath(path, color) { //eslint-disable-line
         path.forEach(function (item) {
             pathsGroup.append('line')
                 .attr('x1', item.start.x_)
@@ -78,44 +69,6 @@ define([
                 .attr('stroke', color)
                 .attr('stroke-width', STROKE_WIDTH);
         });
-    }
-
-    function prepareCirclesData_(data) {
-        var result = [];
-        if (data && data.length) {
-            data.forEach(function (dataItem) {
-                var selectionCircle = {};
-                var mainCircle = {};
-                _.assignIn(selectionCircle, dataItem, {
-                    gr: {
-                        x_: dataItem.x * STEP + OFFSET,
-                        y_: dataItem.y * STEP + OFFSET,
-                        r_: SELECTION_CIRCLE_RADIUS,
-                        dType_: SELECTION_CIRCLE_D_TYPE,
-                        fill_: '',
-                        fillOpacity_: 0,
-                        id_: dataItem.id + '_selection'
-                    }
-                });
-                _.assignIn(mainCircle, dataItem, {
-                    gr: {
-                        x_: dataItem.x * STEP + OFFSET,
-                        y_: dataItem.y * STEP + OFFSET,
-                        r_: DOT_RADIUS,
-                        dType_: MAIN_CIRCLE_D_TYPE,
-                        fill_: TABLE_STROKE_COLOR,
-                        fillOpacity_: 1,
-                        id_: dataItem.id
-                    }
-                });
-                result.push(selectionCircle, mainCircle);
-            });
-        }
-        return result;
-    }
-
-    function renderCircle() {
-
     }
 
     function renderCircles(data) {
@@ -138,8 +91,8 @@ define([
             .attr('r', SELECTION_CIRCLE_RADIUS)
             .attr('cx', getter('x_'))
             .attr('cy', getter('y_'))
-            .attr('id', function (data) {
-                return data.id + '_selection';
+            .attr('id', function (circleData) {
+                return circleData.id + '_selection';
             })
             .attr('d_type', SELECTION_CIRCLE_D_TYPE)
             .attr('fill', '')
@@ -212,19 +165,8 @@ define([
             .attr('fill', color);
     }
 
-    function getDotByPosition(position) {
-        var opponent = game
-        var selector = GraphicsUtils.generateSelectorStringFromDots(position);
-        var color
-        selectDot(selector);
-    }
-
-    //function
-
-    //Wall
-
-    function renderWall(path_) {
-        var path = GraphicsUtils.convertWallPath(path_);
+    function renderWall(/*path_*/) {
+        /*var path = GraphicsUtils.convertWallPath(path_);
         var pathForRender = GraphicsUtils.getNotExistingPath(path);
         if (pathForRender.length) {
             lines = lines.concat(pathForRender.map(function (item) {
@@ -232,7 +174,7 @@ define([
                 return item;
             }));
             renderPath(pathForRender, business.getActivePlayerColor());
-        }
+        }*/
     }
 
     function renderLoop(loop) {
@@ -240,7 +182,7 @@ define([
         return api;
     }
 
-    function getCirclePosition(circle) {
+    function getCirclePosition(circle) { //eslint-disable-line
         var d3js = d3.select(circle);
         return {
             x: d3js.attr('cx'),
@@ -254,21 +196,20 @@ define([
 
         elements.on('mouseenter', function (data) {
             //TODO needs to refactor
-            var last = wallPath[wallPath.length - 1];
-            if (selectedCircle && data !== selectedCircle && wallPath.indexOf(data) < 0 && business.canConnectDots(data, last)) {
+            if (selectedCircle && data !== selectedCircle && wallPath.indexOf(data) < 0 ) {
                 wallPath.push(data);
             }
             //if (business.canSelectDot(data)) {
             hoverInDot(this);
 //            }
-        }).on('mouseleave', function (data) {
+        }).on('mouseleave', function () {
             //if (business.canSelectDot(data)) {
             hoverOutDot(this);
             //}
         }).on('mousedown', function (data) {
             selectedCircle = data;
             wallPath = [data];
-        }).on('mouseup', function (data) {
+        }).on('mouseup', function () {
             selectedCircle = null;
             wallPath = [];
         }).on('mousemove', function (data) {
@@ -356,7 +297,6 @@ define([
         updatePlayerState: updatePlayerState,
         renderWall: renderWall,
         renderLoop: renderLoop,
-        renderCircle: renderCircle,
         renderCircles: renderCircles,
         clearPane: clearPane
     };

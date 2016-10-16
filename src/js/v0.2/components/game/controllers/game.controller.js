@@ -1,12 +1,12 @@
 define([
     'angular',
     'components/game/game.module'
-], function(angular) {
+], function (angular) {
     'use strict';
 
     angular.module('game.module').controller('gameCtrl', gameCtrl);
 
-    function gameCtrl($rootScope) {
+    function gameCtrl() {
 
     }
 });

@@ -1,16 +1,7 @@
-if (typeof(define) != 'function') {
-    function define(deps, module) {
-        module.exports = module();
-    }
-}
-
 define([], function () {
     'use strict';
 
     var api;
-    var moduleGameBusiness;
-    var cache;
-    var DATA_UID_PREFIX = 'graph_id';
 
     function getLoopsV2(dataArray, checkers) {
         var borders = getBorders_(dataArray);
@@ -37,7 +28,7 @@ define([], function () {
                     step: data, arr: loops.map(function (loop) {
                         return loop.map(function (d) {
                             return {x: d.x + minX, y: d.y + minY};
-                        })
+                        });
                     })
                 });
             }
@@ -60,7 +51,7 @@ define([], function () {
         neighbors = getNeighborsV2_(
             pos,
             workData,
-            path[path.length - 2] ? [path[path.length - 2]] : undefined
+            path[path.length - 2] ? [path[path.length - 2]] : null
         );
         if (neighbors.length) {
             neighbors.forEach(function (neighbor) {
@@ -70,9 +61,9 @@ define([], function () {
                 } else {
                     workNeighbor.isVisited = true;
                     if (findLoops(neighbor, path, loops, workData)) {
-         //               isDeadlock = isDeadlock && true;
+                        //               isDeadlock = isDeadlock && true;
                     } else {
-           //             isDeadlock = false;
+                        //             isDeadlock = false;
                         //path.push(pos);
                     }
                 }
@@ -123,13 +114,6 @@ define([], function () {
             //loop.splice(0, 0, startItem);
         }
         return loop;
-    }
-
-    function getRelPos_(data, borders) {
-        return {
-            x: data.x - (borders.max.x - borders.min.x),
-            y: data.y - (borders.max.y - borders.min.y)
-        };
     }
 
     function getNeighborsV2_(pos, workData, excludes) {
@@ -223,13 +207,12 @@ define([], function () {
     function isVertexInsideLoop_(loop, vertex) {
         var left = 0;
         var right = 0;
-        var pack;
 
         function add(item) {
             if (item.x > vertex.x) {
                 right++;
             } else if (item.x < vertex.x) {
-                left++
+                left++;
             }
         }
 
@@ -238,7 +221,6 @@ define([], function () {
             var prev;
             var isIncrease = false;
             if (current.y === vertex.y) {
-                pack = {};
                 next = loop[index + 1] ? loop[index + 1] : loop[0];
                 prev = loop[index - 1] ? loop[index - 1] : loop[loop.length - 1];
                 if (prev.y < current.y && next.y > current.y
@@ -271,7 +253,7 @@ define([], function () {
 
     // Checkers
 
-    function isCorrectNumbersOfVertexes(loop, vertexes) {
+    function isCorrectNumbersOfVertexes(loop) {
         return loop.length > 3;
     }
 
@@ -302,9 +284,6 @@ define([], function () {
             isCorrectNumbersOfVertexes: isCorrectNumbersOfVertexes,
             isLoopSurroundsVertexes: isLoopSurroundsVertexes,
             isStartAndFinishNeighbor: isStartAndFinishNeighbor
-        },
-        sb: function (module) {
-            moduleGameBusiness = module;
         }
     };
     return api;

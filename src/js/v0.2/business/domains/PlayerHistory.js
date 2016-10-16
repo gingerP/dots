@@ -3,8 +3,6 @@ define([
 ], function(HistoryRecord) {
     'use strict';
 
-    var RECORD_ID_PREFIX = 'history_record';
-
     function PlayerHistory() {
         this.historyRecords = [];
     }

@@ -39,10 +39,8 @@ GameDataDBManager.prototype.addDot = function (dot, clientId, gameId) {
     return this.getByCriteria({
         client: this.getObjectId(clientId),
         game: this.getObjectId(gameId)
-    }).then(function (gameData) {
-        if (gameData) {
-
-        }
+    }).then(function (/*gameData*/) {
+        /*if (gameData) {}*/
     });
 };
 

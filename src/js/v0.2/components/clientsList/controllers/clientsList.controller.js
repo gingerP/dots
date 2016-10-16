@@ -22,12 +22,6 @@ define([
             observable = Observable.instance;
 
         vm.clientsList = [];
-        vm.opponent;
-
-        function listenPlayers(pack) {
-            vm.clientsList.push(pack);
-            $scope.$apply();
-        }
 
         function rejectClient(exclusionsIdsList) {
             return function(client) {

@@ -45,7 +45,7 @@ define([
             vm.opponent = gameStorage.getGameOpponent();
         });
 
-        observable.on(Events.CANCEL_GAME, function(message) {
+        observable.on(Events.CANCEL_GAME, function() {
             delete vm.opponent;
         });
 

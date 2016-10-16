@@ -14,8 +14,8 @@ module.exports = {
 		return logger;
 	},
 	create: function(category, level) {
-		var logger = log4js.getLogger(category || '');
-		logger.setLevel(level || DEFAULT_LEVEL);
-		return logger;
+		var loggerInstance = log4js.getLogger(category || '');
+		loggerInstance.setLevel(level || DEFAULT_LEVEL);
+		return loggerInstance;
 	}
 };

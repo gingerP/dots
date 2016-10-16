@@ -9,7 +9,6 @@ define([
     function HistoryRecord () {
         this.id = RECORD_ID_PREFIX + '_' + commonUtils.getRandomString() + '_' + Date.now();
         this.startTimeStamp = Date.now();
-        this.finishTimeStamp;
         this.dots = [];
         this.trappedDots = [];
         this.lines = [];
@@ -33,10 +32,6 @@ define([
         return this;
     };
 
-    /**
-     * argumets, example: [[data1, data2], [data2, data3], [data3, data1]]
-     * @returns {HistoryRecord}
-     */
     HistoryRecord.prototype.addLines = function() {
         var inst = this;
         _.forEach(arguments, function(pair) {

@@ -25,6 +25,9 @@
     "mongodb": "2.2.1"
   },
   "devDependencies": {
-    "eslint": "^3.7.0"
+    "eslint": "^3.7.0",
+    "grunt-eslint": "19.0.0",
+    "grunt": "1.0.1",
+    "load-grunt-tasks": "3.5.2"
   }
 }

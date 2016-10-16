@@ -1,13 +1,12 @@
 define([
     'angular',
-    'module.game.business',
     '../toolbar.module'
-], function(angular, Business) {
+], function(angular) {
     'use strict';
 
     angular.module('toolbar.module').controller('toolbarCtrl', ToolbarController);
 
-    function ToolbarController($scope) {
+    function ToolbarController(/*$scope*/) {
 /*        var vm = this,
             scope = $scope;
         vm.clientsList = [{id: 111111111111111111}];

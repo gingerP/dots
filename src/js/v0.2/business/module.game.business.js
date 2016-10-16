@@ -41,19 +41,15 @@ define([
             var canChange = rules.rulesCanChangeActivePlayer.every(function (rule) {
                 return rule();
             });
-            canChange ? resolve() : reject();
+            if (canChange) {
+                resolve();
+            } else {
+                reject();
+            }
         });
     }
 
     //------------------------------------------------
-
-    function isLocalMode() {
-        return GameStorage.getGameMode() === GAME_MODE.LOCAL;
-    }
-
-    function isNetworkMode() {
-        return GameStorage.getGameMode() === GAME_MODE.NETWORK;
-    }
 
     function select(dot) {
         return new Promise(function (resolve, reject) {
@@ -199,18 +195,9 @@ define([
         select: select,
         makePlayerActive: makePlayerActive,
         makeNextPlayerActive: makeNextPlayerActive,
-        getPlayers: function () {
-            return players;
-        },
-        getActivePlayer: function () {
-            return activePlayer;
-        },
         addListener: function (property, listener) {
             observable.addListener(property, listener);
             return api;
-        },
-        getClients: function () {
-            return clients;
         },
         invite: businessInvite,
         listen: {

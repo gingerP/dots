@@ -4,18 +4,10 @@ var GenericService = require('./generic.service').class;
 var constants = require('../constants/constants');
 var animals = require('../animals');
 var colors = require('../colors');
-var _ = require('lodash');
 var funcUtils = require('../utils/function-utils');
 var gameStatuses = require('../constants/game-statuses');
 var logger = req('src/js/logger').create('GameSupportService');
 var errorLog = funcUtils.error(logger);
-
-function mergeClients(to, from) {
-    var id = to._id;
-    var toPrepared = _.assignIn(to, from);
-    toPrepared._id = id;
-    return to;
-}
 
 function getRandomAnimal() {
     var randomIndex = Math.round((Math.random() * animals.length - 1));

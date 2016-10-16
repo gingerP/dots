@@ -1,5 +1,5 @@
 define([
     'angularJs'
 ], function() {
-    return angular;
+    return angular; //eslint-disable-line
 });

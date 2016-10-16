@@ -9,7 +9,7 @@ define([
     'components/accordion/components/accordion.component',
     'components/playerMenu/components/playerMenu.component',
     'components/gamePane/components/gamePane.component'
-], function(angular) {
+], function (angular) {
     'use strict';
 
     angular.module('game.module').component('game', {

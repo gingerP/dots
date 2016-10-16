@@ -13,7 +13,7 @@ define([
     function gamePaneDirective() {
         var observable = Observable.instance;
 
-        function link(scope, elem, attr) {
+        function link() {
             observable.emit(events.GAME_PANE_RENDER);
         }
 

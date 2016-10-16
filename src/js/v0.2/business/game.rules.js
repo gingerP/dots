@@ -55,10 +55,6 @@ define([
         }
     };
 
-    /**
-     * args - data1, data2
-     * @type {Array}
-     */
     api.rulesCanConnect = [
         api.isDotsNeighbors,
         api.isDotsSelected,
@@ -70,10 +66,6 @@ define([
         api.isActivePlayerLeadRoundTrappedDots
     ];
 
-    /**
-     * args - data
-     * @type {Array}
-     */
     api.rulesCanSelect = [
         api.isGameStarted,
         api.isDotFree,

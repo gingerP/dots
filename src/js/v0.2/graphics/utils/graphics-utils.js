@@ -1,8 +1,8 @@
 define([
     'lodash'
-], function(_) {
-   'use strict';
-    
+], function (_) {
+    'use strict';
+
     var api;
 
     function createPaneGridData(xNum, yNum, step, offset) {
@@ -80,7 +80,7 @@ define([
 
     function generateSelectorStringFromDots(dots, prefix) {
         var dotsPrepared = _.isArray(dots) ? dots : [dots];
-        return _.map(dotsPrepared, function(dot) {
+        return _.map(dotsPrepared, function (dot) {
             return (prefix || '') + '#circle_' + dot.x + '_' + dot.y;
         }).join(',');
     }
@@ -93,6 +93,6 @@ define([
         prepareCirclesData: prepareCirclesData,
         generateSelectorStringFromDots: generateSelectorStringFromDots
     };
-    
+
     return api;
 });

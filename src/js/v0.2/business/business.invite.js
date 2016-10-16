@@ -15,10 +15,6 @@ define([
         return q.thenReject(false);
     }
 
-    function isInviteAvailable() {
-        return !GameStorage.hasOpponent();
-    }
-
     function getOpponent(clientA, clientB) {
         var myself = GameStorage.getClient();
         return clientA._id === myself._id ? clientB : clientA;

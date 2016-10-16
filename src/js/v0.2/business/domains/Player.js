@@ -22,7 +22,8 @@ define([
     };
 
     Player.prototype.updateActive = function (isActive) {
-        return this.isActive;
+        this.isActive = isActive;
+        return this;
     };
 
     Player.prototype.addDots = function (dots) {
@@ -81,14 +82,6 @@ define([
     Player.prototype.newStep = function () {
         this.step = new Step();
         return this;
-    };
-
-    Player.prototype.removeDot = function (id) {
-
-    };
-
-    Player.prototype.removeTrappedDot = function (id) {
-
     };
 
     Player.prototype.getColor = function () {
