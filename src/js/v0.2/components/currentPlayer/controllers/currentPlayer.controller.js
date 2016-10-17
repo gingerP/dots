@@ -22,6 +22,9 @@ define([
         vm.isOpponentActive = false;
         vm.myself = gameStorage.getGameClient();
         vm.opponent = gameStorage.getGameOpponent();
+        vm.colorOptions = {
+          enableEditor: false
+        };
 
         vm.nextPlayer = function nextPlayer() {
             Business.makeNextPlayerActive();

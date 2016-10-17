@@ -2,8 +2,9 @@ define([
     'angular',
     'components/currentPlayer/currentPlayer.module',
     'components/currentPlayer/controllers/currentPlayer.controller',
-    'components/notification/components/notification.component'
-], function(angular) {
+    'components/notification/components/notification.component',
+    'components/playerColor/components/playerColor.component'
+], function (angular) {
     'use strict';
 
     angular.module('currentPlayer.module').component('currentPlayer', {
@@ -12,5 +13,5 @@ define([
         controllerAs: 'currentPlayerCtrl',
         templateUrl: '/static/js/v0.2/components/currentPlayer/partials/currentPlayer.template.html'
     });
-
 });
+

@@ -9,10 +9,24 @@
   margin: auto;
   height: @toolbar-height;
 
+  .player-placeholder {
+    &-right,
+    &-left {
+      position: absolute;
+    }
+    &-right {
+      right: 0;
+    }
+    &-left {
+      left: 0;
+    }
+  }
+
   .myself-player,
   .opponent-player,
   .choose-opponent {
-    position: absolute;
+    position: relative;
+    float: left;
   }
 
   .myself-player {
