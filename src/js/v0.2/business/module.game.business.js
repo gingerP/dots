@@ -70,11 +70,8 @@ define([
         if (players.indexOf(player) > -1) {
             player.newStep();
             GameStorage.setActiveGamePlayer(player);
-            _.forEach(players, function (gamePlayer) {
-                gamePlayer.updateActive(false);
-            });
-            player.updateActive(true);
             observable.emit(Events.MAKE_PLAYER_ACTIVE, player.getId());
+            console.info(player.getId());
         }
         return api;
     }
@@ -108,11 +105,6 @@ define([
         var game = GameStorage.getGame();
         if (game) {
             GameDataService.getGameState(game._id).then(function (gameState) {
-                var activeGamer;
-                if (gameState.game && gameState.game.activePlayer) {
-                    activeGamer = GameStorage.getGamePlayerById(gameState.game.activePlayer);
-                    makePlayerActive(activeGamer);
-                }
                 if (gameState.game && gameState.game.status === 'active') {
                     refreshGame(gameState);
                 } else {
@@ -125,9 +117,10 @@ define([
     }
 
     function refreshGame(gameState) {
-        var activeGamer = GameStorage.getActiveGamePlayer();
-        observable.emit(Events.REFRESH_GAME, gameState);
+        var activeGamer = GameStorage.getGamePlayerById(gameState.game.activePlayer);
+        console.info(activeGamer.getId());
         makePlayerActive(activeGamer);
+        observable.emit(Events.REFRESH_GAME, gameState);
         _.forEach(gameState.gameData, function (score) {
             var client = _.find(gameState.clients, {_id: score.client});
             if (score.dots.length) {

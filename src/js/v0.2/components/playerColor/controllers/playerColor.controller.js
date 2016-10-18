@@ -13,11 +13,7 @@ define([
 
         vm.options = _.extend(playerColorConfigFactory.getDefaultOptions(), vm.options);
 
-        $scope.$watch('playerColorCtrl.color', function (newColor) {
-            if (_.isUndefined(newColor) || newColor === null) {
-                vm.color = vm.options.defaultColor;
-            }
-        });
+        $scope.$watch('playerColorCtrl.color', vm.onColorChange);
 
     }
 });

@@ -1,7 +1,7 @@
 <div class="current-player">
     <div class="player-placeholder-left">
         <div class="myself-player player"
-            ng-class="{'inactive-player': !currentPlayerCtrl.isMyselfActive && currentPlayerCtrl.opponent,
+             ng-class="{'inactive-player': !currentPlayerCtrl.isMyselfActive && currentPlayerCtrl.opponent,
              'active-player': currentPlayerCtrl.isMyselfActive && currentPlayerCtrl.opponent}">
             <div class="player-style" ng-bind="currentPlayerCtrl.myself.name"></div>
         </div>
@@ -13,24 +13,26 @@
 
     <div class="player-placeholder-right">
         <div ng-show="currentPlayerCtrl.opponent" class="opponent-player opponent-block player"
-             ng-class="{'inactive-player': !currentPlayerCtrl.isOpponentActive, 'active-player': currentPlayerCtrl.isOpponentActive}">
+             ng-class="{'inactive-player': !currentPlayerCtrl.isOpponentActive,
+             'active-player': currentPlayerCtrl.isOpponentActive}">
             <div class="player-style" ng-bind="currentPlayerCtrl.opponent.name"></div>
         </div>
         <player-color
                 ng-show="currentPlayerCtrl.opponent"
                 color="currentPlayerCtrl.opponent.color" options="currentPlayerCtrl.colorOptions">
         </player-color>
-    </div>
-
 
         <div ng-show="!currentPlayerCtrl.opponent" class="choose-opponent player">
-        <a href="javascript:void(0)" type="button" ng-click="currentPlayerCtrl.triggerOpenMenu()">Choose opponent</a>
+            <a href="javascript:void(0)" type="button" ng-click="currentPlayerCtrl.triggerOpenMenu()">Choose
+                opponent</a>
+        </div>
+
+        <button class="btn-override menu-open"
+                ng-class="{'menu-open-up': currentPlayerCtrl.isMenuOpened}"
+                ng-click="currentPlayerCtrl.triggerOpenMenu()">
+        </button>
     </div>
 
-    <button class="btn-override menu-open"
-            ng-class="{'menu-open-up': currentPlayerCtrl.isMenuOpened}"
-            ng-click="currentPlayerCtrl.triggerOpenMenu()">
-    </button>
     <div>
         <notification></notification>
     </div>

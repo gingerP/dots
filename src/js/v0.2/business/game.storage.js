@@ -1,7 +1,8 @@
 define([
     'storage',
-    'business/domains/Player'
-], function (Storage, Player) {
+    'business/domains/Player',
+    'lodash'
+], function (Storage, Player, _) {
     'use strict';
 
     var api;
@@ -10,7 +11,6 @@ define([
         client: null,
         opponent: null
     };
-    var activeGamePlayer;
     var keys = {
         NETWORK_MODE: 'network_mode',
         ACTIVE_GAMER_ID: 'active_gamer_id',
@@ -139,25 +139,19 @@ define([
     }
 
     function getActiveGamePlayer() {
-        var playerId = get(keys.ACTIVE_GAMER_ID);
-        if (playerId && !activeGamePlayer) {
-            if (gamers.client && playerId === gamers.client.getId()) {
-                activeGamePlayer = gamers.client;
-            }
-            if (gamers.opponent && playerId === gamers.opponent.getId()) {
-                activeGamePlayer = gamers.opponent;
-            }
-        }
-        return activeGamePlayer;
+        return _.find(gamers, {isActive: true});
     }
 
     function setActiveGamePlayer(gamePlayer) {
         set(keys.ACTIVE_GAMER_ID, gamePlayer.id);
+        _.forEach(gamers, function (player) {
+            player.updateActive(false);
+        });
+        gamePlayer.updateActive(true);
         return api;
     }
 
     function deleteActiveGamePlayer() {
-        activeGamePlayer = null;
         remove(keys.ACTIVE_GAMER_ID);
         return api;
     }

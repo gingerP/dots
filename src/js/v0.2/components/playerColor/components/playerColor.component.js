@@ -7,8 +7,9 @@ define([
 
     angular.module('playerColor.module').component('playerColor', {
         bindings: {
-            color: '=',
-            options: '=?'
+            color: '<',
+            options: '=?',
+            onColorChange: '&?'
         },
         controller: 'playerColorCtrl',
         controllerAs: 'playerColorCtrl',

@@ -28,7 +28,6 @@ define([
             var player = GameStorage.getGamePlayerById(playerId);
             if (player) {
                 player.addDots(state.dots).addLoops(state.loops).addTrappedDots(state.trappedDots);
-                player.updateActive(state.isActive);
                 player.newStep();
             }
         }
