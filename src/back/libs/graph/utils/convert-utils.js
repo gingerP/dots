@@ -42,7 +42,7 @@ function convertVertexAsObjectToArray(object) {
     var result = [];
     var key;
     for (key in object) { // eslint-disable-line guard-for-in
-        result.push(object[key]);
+        result.push(object[key].pos);
     }
     return result;
 }

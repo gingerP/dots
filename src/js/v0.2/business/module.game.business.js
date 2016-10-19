@@ -165,7 +165,7 @@ define([
             var previousGamePlayer = GameStorage.getGamePlayerById(message.previousPlayerId);
             GameStorage.setGame(message.game);
             makePlayerActive(gamePlayer);
-            Graphics.updatePlayerState(previousGamePlayer, message.dot);
+            Graphics.updatePlayerState(previousGamePlayer, message.dot, message.previousPlayerGameData.loops);
             observable.emit(Events.GAME_STEP, {
                 dot: message.dot,
                 previousGamePlayerId: message.previousPlayerId

@@ -1,4 +1,5 @@
 var graphLoop = req('src/back/libs/graph/graph-loops-flood-fill');
+var graph = req('src/back/libs/graph/graph');
 var commonLoopsUtils = req('src/back/libs/graph/utils/common-utils');
 var _ = require('lodash');
 
@@ -31,9 +32,9 @@ function getGamersScores(dot, dotClientGameData, opponentGameData) {
     var newClientGameData = newGameData([dot]);
     var newLoopsData;
     newClientGameData.dots = newClientGameData.dots.concat(dotClientGameData.dots);
-    newLoopsData = graphLoop.getLoops(newClientGameData.dots);
+    newLoopsData = graph.getLoops(newClientGameData.dots);
     dotClientGameData.dots.push(dot);
-    if (newLoopsData && newLoopsData.length && (!opponentGameData.dots || !opponentGameData.dots.length)) {
+    if (newLoopsData && newLoopsData.length && (opponentGameData.dots && opponentGameData.dots.length)) {
         _.forEach(newLoopsData, function (loopData) {
             newClientGameData.loops.push(loopData.loop);
             _.forEach(loopData.trappedDots, function (trappedDot) {

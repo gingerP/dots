@@ -3,5 +3,5 @@
 var floodLoops = require('./graph-loops-flood-fill');
 
 module.exports = {
-    loops: floodLoops
+    getLoops: floodLoops.getLoops.bind(floodLoops)
 };

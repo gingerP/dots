@@ -246,7 +246,7 @@ define([
         selectDots(selector, color);
     }
 
-    function renderLoops(/*color, loops*/) {
+    function renderLoops(color, loops) {
 
     }
 

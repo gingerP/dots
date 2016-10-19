@@ -78,6 +78,7 @@ function applySelectedNeighborsFrom_8_Direction(pos, selected, vertexes) {
                 && vertexes[x][y]
                 && vertexes[x][y].isSelected) {
                 selected[x + '.' + y] = vertexes[x][y];
+                selected[x + '.' + y].pos = [x, y];
             }
         }
         index--;
@@ -93,6 +94,7 @@ function checkExclude(excludes, data) {
     }
     return result;
 }
+
 
 
 module.exports = {
