@@ -4,8 +4,9 @@ define([
     'common/events',
     'business/game.storage',
     'graphics/utils/graphics-utils',
+    'graphics/utils/convert-utils',
     'utils/common-utils'
-], function (d3, _, Events, GameStorage, GraphicsUtils, CommonUtils) {
+], function (d3, _, Events, GameStorage, GraphicsUtils, ConvertUtils, CommonUtils) {
     'use strict';
 
     var api;
@@ -18,7 +19,7 @@ define([
     var pathsGroup;
     var dotsGroup;
 
-    /*var lines = []; */
+    var lines = [];
 
     var xNum;
     var yNum;
@@ -165,20 +166,8 @@ define([
             .attr('fill', color);
     }
 
-    function renderWall(/*path_*/) {
-        /*var path = GraphicsUtils.convertWallPath(path_);
-        var pathForRender = GraphicsUtils.getNotExistingPath(path);
-        if (pathForRender.length) {
-            lines = lines.concat(pathForRender.map(function (item) {
-                item.id = getLineId(item.start, item.finish);
-                return item;
-            }));
-            renderPath(pathForRender, business.getActivePlayerColor());
-        }*/
-    }
-
-    function renderLoop(loop) {
-        renderWall(loop.concat(loop[0]));
+    function renderLoop(/*loop*/) {
+        //renderWall(loop.concat(loop[0]));
         return api;
     }
 
@@ -214,7 +203,7 @@ define([
             wallPath = [];
         }).on('mousemove', function (data) {
             if (selectedCircle && data !== selectedCircle) {
-                renderWall(wallPath);
+                //renderWall(wallPath);
             }
         }).on('click', function (data) {
             var circle = this;
@@ -246,8 +235,17 @@ define([
         selectDots(selector, color);
     }
 
-    function renderLoops(color, loops) {
-
+    function renderLoops(loops, color) {
+        _.forEach(loops, function(loopLines) {
+            var pathForRender = GraphicsUtils.getNotExistingPath(loopLines);
+            if (pathForRender.length) {
+                lines = lines.concat(pathForRender.map(function (item) {
+                    item.id = GraphicsUtils.getLineId(item.start, item.finish);
+                    return item;
+                }));
+                renderPath(pathForRender, color);
+            }
+        });
     }
 
     function renderTrappedDots(/*color, dots*/) {
@@ -284,7 +282,7 @@ define([
                 renderDots(player.color, preparedDots);
             }
             if (preparedLoops && preparedLoops.length) {
-                renderLoops(player.color, preparedLoops);
+                renderLoops(player.color, ConvertUtils.convertLoopsLines(preparedLoops));
             }
             if (preparedTrappedDots && preparedTrappedDots.length) {
                 renderTrappedDots(player.color, preparedTrappedDots);
@@ -295,7 +293,6 @@ define([
     api = {
         init: init,
         updatePlayerState: updatePlayerState,
-        renderWall: renderWall,
         renderLoop: renderLoop,
         renderCircles: renderCircles,
         clearPane: clearPane

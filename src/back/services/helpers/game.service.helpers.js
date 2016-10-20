@@ -7,7 +7,8 @@ function newGameData(dots) {
     return {
         dots: dots || [],
         trappedDots: [],
-        loops: []
+        loops: [],
+        loopsLines: []
     };
 }
 
@@ -32,10 +33,14 @@ function getGamersScores(dot, dotClientGameData, opponentGameData) {
     var newClientGameData = newGameData([dot]);
     var newLoopsData;
     newClientGameData.dots = newClientGameData.dots.concat(dotClientGameData.dots);
-    newLoopsData = graph.getLoops(newClientGameData.dots);
+    newLoopsData = graph.getLoopsLinesUnsorted(newClientGameData.dots);
     dotClientGameData.dots.push(dot);
     if (newLoopsData && newLoopsData.length && (opponentGameData.dots && opponentGameData.dots.length)) {
         _.forEach(newLoopsData, function (loopData) {
+            newClientGameData.loops.push(loopData.loop);
+            if (loopData.trappedDots.length) {
+                newClientGameData.loopsLines.push(loopData.loopLines);
+            }
             newClientGameData.loops.push(loopData.loop);
             _.forEach(loopData.trappedDots, function (trappedDot) {
                 var index = _.findIndex(opponentGameData.dots, trappedDot);
@@ -48,6 +53,7 @@ function getGamersScores(dot, dotClientGameData, opponentGameData) {
         dotClientGameData.dots = newClientGameData.dots;
         dotClientGameData.trappedDots = newClientGameData.trappedDots;
         dotClientGameData.loops = newClientGameData.loops;
+        dotClientGameData.loopsLines = newClientGameData.loopsLines;
     }
 
     return {

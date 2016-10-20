@@ -125,7 +125,7 @@ define([
             var client = _.find(gameState.clients, {_id: score.client});
             if (score.dots.length) {
                 GameUtils.updatePlayerState(client._id, score);
-                Graphics.updatePlayerState(client, score.dots);
+                Graphics.updatePlayerState(client, score.dots, score.loopsLines);
             }
         });
     }
@@ -158,7 +158,6 @@ define([
                 }
             }
         });
-
 
         GameService.listen.gameStep(function (message) {
             var gamePlayer = GameStorage.getGamePlayerById(message.currentPlayerId);

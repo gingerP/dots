@@ -32,23 +32,10 @@ define([
         return result;
     }
 
-    function convertWallPath(path) {
-        var result = [];
-        path.forEach(function (pathItem, index) {
-            if (path[index + 1]) {
-                result.push({
-                    start: pathItem,
-                    finish: path[index + 1]
-                });
-            }
-        });
-        return result;
-    }
-
     function getNotExistingPath(path) {
         var result = [];
-        path.forEach(function (item) {
-            if (!isLineExist(item.start, item.finish)) {
+        _.forEach(path, function (item) {
+            if (!isLineExist(item.start, item.finish) && !isLineExist(item.finish, item.start)) {
                 result.push(item);
             }
         });
@@ -87,7 +74,6 @@ define([
 
     api = {
         createPaneGridData: createPaneGridData,
-        convertWallPath: convertWallPath,
         getNotExistingPath: getNotExistingPath,
         getLineId: getLineId,
         prepareCirclesData: prepareCirclesData,
