@@ -3,10 +3,11 @@ define([
     'lodash',
     'common/events',
     'business/game.storage',
-    'graphics/utils/graphics-utils',
+    'graphics/utils/common-graphics-utils',
     'graphics/utils/convert-utils',
+    'graphics/utils/path-utils',
     'utils/common-utils'
-], function (d3, _, Events, GameStorage, GraphicsUtils, ConvertUtils, CommonUtils) {
+], function (d3, _, Events, GameStorage, CommonGraphicsUtils, ConvertUtils, PathUtils, CommonUtils) {
     'use strict';
 
     var api;
@@ -217,7 +218,7 @@ define([
     }
 
     function renderTable() {
-        var gridData = GraphicsUtils.createPaneGridData(xNum, yNum, STEP, OFFSET);
+        var gridData = CommonGraphicsUtils.createPaneGridData(xNum, yNum, STEP, OFFSET);
         tableGroup.selectAll('line').data(gridData).enter()
             .append('line')
             .attr('x1', getter('x1'))
@@ -231,16 +232,16 @@ define([
     function renderDots(color, dots) {
         var preparedDots = _.isArray(dots) ? dots : [dots];
         var prefix = 'circle[d_type=' + MAIN_CIRCLE_D_TYPE + ']';
-        var selector = GraphicsUtils.generateSelectorStringFromDots(preparedDots, prefix);
+        var selector = CommonGraphicsUtils.generateSelectorStringFromDots(preparedDots, prefix);
         selectDots(selector, color);
     }
 
     function renderLoops(loops, color) {
         _.forEach(loops, function(loopLines) {
-            var pathForRender = GraphicsUtils.getNotExistingPath(loopLines);
+            var pathForRender = CommonGraphicsUtils.getNotExistingPath(loopLines);
             if (pathForRender.length) {
                 lines = lines.concat(pathForRender.map(function (item) {
-                    item.id = GraphicsUtils.getLineId(item.start, item.finish);
+                    item.id = CommonGraphicsUtils.getLineId(item.start, item.finish);
                     return item;
                 }));
                 renderPath(pathForRender, color);
@@ -266,7 +267,7 @@ define([
         tableGroup = gamePane.append('g');
         pathsGroup = gamePane.append('g');
         dotsGroup = gamePane.append('g');
-        circles = api.renderCircles(GraphicsUtils.prepareCirclesData(data, STEP, OFFSET));
+        circles = api.renderCircles(CommonGraphicsUtils.prepareCirclesData(data, STEP, OFFSET));
         initEvents(getElementsForMouseEvents(circles));
         renderTable();
         return api;
@@ -282,7 +283,7 @@ define([
                 renderDots(player.color, preparedDots);
             }
             if (preparedLoops && preparedLoops.length) {
-                renderLoops(player.color, ConvertUtils.convertLoopsLines(preparedLoops));
+                renderLoops(player.color, CommonGraphicsUtils.getFilteredAndConvertedLoops(preparedLoops));
             }
             if (preparedTrappedDots && preparedTrappedDots.length) {
                 renderTrappedDots(player.color, preparedTrappedDots);

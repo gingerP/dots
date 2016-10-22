@@ -7,10 +7,11 @@ var funcUtils = req('src/back/utils/function-utils');
 var logger = req('src/js/logger').create('GameService');
 var Promise = require('q');
 var errorLog = funcUtils.error(logger);
-var gameServiceHelper = req('src/back/services/helpers/game.service.helpers');
+var GameScoreUtils = req('src/back/services/helpers/game-scores-utils');
 
 function isGameAndClientValid(data) {
-    return Boolean(data[1]) && Boolean(data[0]) && (data[0]._id.equals(data[1].from) || data[0]._id.equals(data[1].to));
+    return Boolean(data[1]) && Boolean(data[0]) &&
+        (data[0]._id.equals(data[1].from) || data[0]._id.equals(data[1].to));
 }
 
 function isDotValid(dot, clientDots) {
@@ -62,7 +63,7 @@ GameService.prototype.onAddDot = function (message) {
         var gameCopy;
 
         if (isDotValid(dot, clientDots)) {
-            scores = gameServiceHelper.getGamersScores(dot, clientGameData, opponentGameData);
+            scores = GameScoreUtils.getGamersScores(dot, clientGameData, opponentGameData);
             game.activePlayer = opponent._id;
             gameCopy = _.cloneDeep(game);
 
@@ -70,7 +71,12 @@ GameService.prototype.onAddDot = function (message) {
             inst.gameDataDBManager.save(scores.opponent);
             inst.gameDBManager.save(game);
             message.callback(scores);
-            inst.gameController.nextStep(dot, client, scores.client, opponent, scores.opponent, gameCopy);
+            inst.gameController.nextStep(
+                dot,
+                client, scores.client,
+                opponent, scores.opponent,
+                gameCopy
+            );
         }
     }).catch(errorLog);
 };

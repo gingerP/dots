@@ -14,6 +14,6 @@ function getLoopsLinesUnsorted(vertexes) {
 
 
 module.exports = {
-    getLoops: floodLoops.getLoops,
+    getLoopsData: floodLoops.getLoops,
     getLoopsLinesUnsorted: getLoopsLinesUnsorted
 };

@@ -1,6 +1,8 @@
 define([
-    'lodash'
-], function (_) {
+    'lodash',
+    'graphics/utils/path-utils',
+    'graphics/utils/convert-utils'
+], function (_, PathUtils, ConvertUtils) {
     'use strict';
 
     var api;
@@ -72,12 +74,27 @@ define([
         }).join(',');
     }
 
+    function getFilteredAndConvertedLoops(loops) {
+        var result = [];
+        _.forEach(loops, function (loopData) {
+            if (loopData.trappedDots && loopData.trappedDots.length) {
+                result.push(
+                    ConvertUtils.convertLoopsLines(
+                        PathUtils.getUnSortedPath(loopData.dots)
+                    )
+                );
+            }
+        });
+        return result;
+    }
+
     api = {
         createPaneGridData: createPaneGridData,
         getNotExistingPath: getNotExistingPath,
         getLineId: getLineId,
         prepareCirclesData: prepareCirclesData,
-        generateSelectorStringFromDots: generateSelectorStringFromDots
+        generateSelectorStringFromDots: generateSelectorStringFromDots,
+        getFilteredAndConvertedLoops: getFilteredAndConvertedLoops
     };
 
     return api;
