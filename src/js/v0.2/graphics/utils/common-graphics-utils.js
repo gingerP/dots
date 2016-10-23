@@ -74,14 +74,15 @@ define([
         }).join(',');
     }
 
-    function getFilteredAndConvertedLoops(loops, shift) {
+    function getFilteredAndConvertedLoops(loops, shift, offset) {
         var result = [];
         _.forEach(loops, function (loopData) {
             if (loopData.trappedDots && loopData.trappedDots.length) {
                 result.push(
                     ConvertUtils.convertLoopsLines(
                         PathUtils.getUnSortedPath(loopData.dots),
-                        shift
+                        shift,
+                        offset
                     )
                 );
             }

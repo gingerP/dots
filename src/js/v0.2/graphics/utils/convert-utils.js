@@ -16,12 +16,12 @@ define([
         return result;
     }
 
-    function convertLoopsLines(lines, shift) {
+    function convertLoopsLines(lines, shift, offset) {
         return _.map(lines, function (line) {
-            line.start.x_ = line.start.x * shift;
-            line.start.y_ = line.start.y * shift;
-            line.finish.x_ = line.finish.x * shift;
-            line.finish.y_ = line.finish.y * shift;
+            line.start.x_ = line.start.x * shift + offset;
+            line.start.y_ = line.start.y * shift + offset;
+            line.finish.x_ = line.finish.x * shift + offset;
+            line.finish.y_ = line.finish.y * shift + offset;
             return line;
         });
     }

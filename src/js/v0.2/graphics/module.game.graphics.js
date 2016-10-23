@@ -41,16 +41,16 @@ define([
     var TABLE_STROKE_COLOR = '#AAEEFF';
 
     var dotSize = {
-        selected: function() {
+        selected: function () {
             return DOT_RADIUS_SELECTED;
         },
-        unSelected: function() {
+        unSelected: function () {
             return DOT_RADIUS;
         },
-        hoverIn: function() {
+        hoverIn: function () {
             return DOT_RADIUS_HOVER_IN;
         },
-        hoverOut: function(data) {
+        hoverOut: function (data) {
             return data.isSelected ? DOT_RADIUS_SELECTED : DOT_RADIUS;
         }
     };
@@ -101,20 +101,20 @@ define([
             .attr('fill-opacity', 0)
             .attr('data-id', getter('id'));
 
-/*        tableGroup.selectAll("text")
-            .data(data)
-            .enter()
-            .append("text")
-            .attr("x", getter('x_'))
-            .attr("y", function(data) {
-                return data.y_ + 8;
-            })
-            .text(function (d) {
-                return d.xInd + ", " + d.yInd;
-            })
-            .attr("font-family", "sans-serif")
-            .attr("font-size", "9px")
-            .attr("fill", "black");*/
+        /*        tableGroup.selectAll("text")
+         .data(data)
+         .enter()
+         .append("text")
+         .attr("x", getter('x_'))
+         .attr("y", function(data) {
+         return data.y_ + 8;
+         })
+         .text(function (d) {
+         return d.xInd + ", " + d.yInd;
+         })
+         .attr("font-family", "sans-serif")
+         .attr("font-size", "9px")
+         .attr("fill", "black");*/
 
 
         return mouseHoverElements;
@@ -160,7 +160,7 @@ define([
     function selectDot(circle, color) {
         d3.select(circle)
             .select('circle[d_type=' + MAIN_CIRCLE_D_TYPE + ']')
-            .attr('r', function(data) {
+            .attr('r', function (data) {
                 data.isSelected = true;
                 return dotSize.selected();
             })
@@ -186,7 +186,7 @@ define([
 
         elements.on('mouseenter', function (data) {
             //TODO needs to refactor
-            if (selectedCircle && data !== selectedCircle && wallPath.indexOf(data) < 0 ) {
+            if (selectedCircle && data !== selectedCircle && wallPath.indexOf(data) < 0) {
                 wallPath.push(data);
             }
             //if (business.canSelectDot(data)) {
@@ -237,7 +237,7 @@ define([
     }
 
     function renderLoops(loops, color) {
-        _.forEach(loops, function(loopLines) {
+        _.forEach(loops, function (loopLines) {
             var pathForRender = CommonGraphicsUtils.getNotExistingPath(loopLines, lines);
             if (pathForRender.length) {
                 lines = lines.concat(pathForRender.map(function (item) {
@@ -283,7 +283,7 @@ define([
                 renderDots(preparedDots, player.color);
             }
             if (preparedLoops && preparedLoops.length) {
-                renderLoops(CommonGraphicsUtils.getFilteredAndConvertedLoops(preparedLoops, STEP), player.color);
+                renderLoops(CommonGraphicsUtils.getFilteredAndConvertedLoops(preparedLoops, STEP, OFFSET), player.color);
             }
             if (preparedTrappedDots && preparedTrappedDots.length) {
                 renderTrappedDots(preparedTrappedDots, player.color);

@@ -18,6 +18,7 @@ GameController.prototype.nextStep = function (
     dot,
     previousPlayer,
     previousPlayerGameData,
+    previousPlayerGameDataDelta,
     currentPlayer,
     currentPlayerGameData,
     game) {
@@ -26,9 +27,10 @@ GameController.prototype.nextStep = function (
         Events.game_step,
         {
             dot: dot,
-            previousPlayerId: previousPlayer._id,
+            previousPlayerId: previousPlayerGameData.client,
             previousPlayerGameData: previousPlayerGameData,
-            currentPlayerId: currentPlayer._id,
+            previousPlayerGameDataDelta: previousPlayerGameDataDelta,
+            currentPlayerId: currentPlayerGameData.client,
             currentPlayerGameData: currentPlayerGameData,
             game: game
         }

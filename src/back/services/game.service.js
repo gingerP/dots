@@ -73,7 +73,7 @@ GameService.prototype.onAddDot = function (message) {
             message.callback(scores);
             inst.gameController.nextStep(
                 dot,
-                client, scores.client,
+                client, scores.client, scores.clientDelta,
                 opponent, scores.opponent,
                 gameCopy
             );
