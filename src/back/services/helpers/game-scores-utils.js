@@ -5,8 +5,8 @@ var _ = require('lodash');
 var CreationUtils = req('src/back/utils/creation-utils');
 
 function getGameDataDeltas(dot, dotClientGameData) {
-    var clientDeltaGameData = newGameData();
-    var opponentDeltaGameData = newGameData();
+    var clientDeltaGameData = CreationUtils.newGameData();
+    var opponentDeltaGameData = CreationUtils.newGameData();
     var dots = _.cloneDeep(dotClientGameData.dots || []);
     var newLoops;
     dots.push(dot);

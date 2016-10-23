@@ -283,7 +283,10 @@ define([
                 renderDots(preparedDots, player.color);
             }
             if (preparedLoops && preparedLoops.length) {
-                renderLoops(CommonGraphicsUtils.getFilteredAndConvertedLoops(preparedLoops, STEP, OFFSET), player.color);
+                renderLoops(
+                    CommonGraphicsUtils.getFilteredAndConvertedLoops(preparedLoops, STEP, OFFSET),
+                    player.color
+                );
             }
             if (preparedTrappedDots && preparedTrappedDots.length) {
                 renderTrappedDots(preparedTrappedDots, player.color);
