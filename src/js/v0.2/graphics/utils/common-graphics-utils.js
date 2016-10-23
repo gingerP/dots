@@ -34,10 +34,10 @@ define([
         return result;
     }
 
-    function getNotExistingPath(path) {
+    function getNotExistingPath(path, lines) {
         var result = [];
         _.forEach(path, function (item) {
-            if (!isLineExist(item.start, item.finish) && !isLineExist(item.finish, item.start)) {
+            if (!isLineExist(lines, item.start, item.finish) && !isLineExist(lines, item.finish, item.start)) {
                 result.push(item);
             }
         });
@@ -74,13 +74,14 @@ define([
         }).join(',');
     }
 
-    function getFilteredAndConvertedLoops(loops) {
+    function getFilteredAndConvertedLoops(loops, shift) {
         var result = [];
         _.forEach(loops, function (loopData) {
             if (loopData.trappedDots && loopData.trappedDots.length) {
                 result.push(
                     ConvertUtils.convertLoopsLines(
-                        PathUtils.getUnSortedPath(loopData.dots)
+                        PathUtils.getUnSortedPath(loopData.dots),
+                        shift
                     )
                 );
             }

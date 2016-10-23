@@ -2,6 +2,7 @@
 
 var GenericDBManager = require('./genericDB.manager').class;
 var constants = require('../constants/constants');
+var CreationUtils = req('src/back/utils/creation-utils');
 
 function GameDataDBManager() {
     this.collectionName = constants.DB_COLLECTION_GAME_DATA;
@@ -16,13 +17,14 @@ GameDataDBManager.prototype.getName = function () {
 
 
 GameDataDBManager.prototype.createNew = function (gameId, clientId, dots, trappedDots, loops) {
-    return this.save({
-        game: this.getObjectId(gameId),
-        client: this.getObjectId(clientId),
-        dots: dots || [],
-        trappedDots: trappedDots || [],
-        loops: loops || []
-    });
+    var newGameData = CreationUtils.newGameData(
+        this.getObjectId(gameId),
+        this.getObjectId(clientId),
+        dots,
+        [],
+        loops
+    );
+    return this.save(newGameData);
 };
 
 GameDataDBManager.prototype.saveGameData = function (/*id, dots, trappedDots, loops*/) {

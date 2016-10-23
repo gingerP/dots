@@ -1,5 +1,7 @@
 'use strict';
 
+var CreatingUtils = req('src/back/libs/graph/utils/creation-utils');
+
 function getNeighbors(pos, workData, excludes) {
     var result = [];
     var shifts = [
@@ -13,8 +15,8 @@ function getNeighbors(pos, workData, excludes) {
             if (workData[x]
                 && workData[x][y]
                 && !workData[x][y].isDeadlock
-                && checkExclude(excludes, {x: x, y: y})) {
-                result.push({x: x, y: y});
+                && checkExclude(excludes, CreatingUtils.newVertex(x, y))) {
+                result.push(CreatingUtils.newVertex(x, y));
             }
         }
     });
@@ -35,7 +37,7 @@ function getSelectedNeighborsFrom_4_Direction(pos, vertexes) {
             if (vertexes[x]
                 && vertexes[x][y]
                 && vertexes[x][y].isSelected) {
-                result.push({x: x, y: y});
+                result.push(CreatingUtils.newVertex(x, y));
             }
         }
     });
@@ -56,7 +58,7 @@ function getSelectedNeighborsFrom_8_Direction(pos, vertexes) {
             if (vertexes[x]
                 && vertexes[x][y]
                 && vertexes[x][y].isSelected) {
-                result.push({x: x, y: y});
+                result.push(CreatingUtils.newVertex(x, y));
             }
         }
     });
@@ -78,7 +80,7 @@ function applySelectedNeighborsFrom_8_Direction(pos, selected, vertexes) {
                 && vertexes[x][y]
                 && vertexes[x][y].isSelected) {
                 selected[x + '.' + y] = vertexes[x][y];
-                selected[x + '.' + y].pos = [x, y];
+                selected[x + '.' + y].pos = CreatingUtils.newVertex(x, y);
             }
         }
         index--;
@@ -94,8 +96,6 @@ function checkExclude(excludes, data) {
     }
     return result;
 }
-
-
 
 module.exports = {
     getNeighbors: getNeighbors,

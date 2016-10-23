@@ -123,9 +123,10 @@ define([
         observable.emit(Events.REFRESH_GAME, gameState);
         _.forEach(gameState.gameData, function (score) {
             var client = _.find(gameState.clients, {_id: score.client});
+            var dots = (score.dots || []).concat(score.losingDots || []);
             if (score.dots.length) {
                 GameUtils.updatePlayerState(client._id, score);
-                Graphics.updatePlayerState(client, score.dots, score.loopsLines);
+                Graphics.updatePlayerState(client, dots, score.loops);
             }
         });
     }

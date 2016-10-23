@@ -4,13 +4,23 @@ define([
     'use strict';
 
     function newLine(vertexA, vertexB) {
-        return [vertexA, vertexB];
+        return {
+            start: vertexA,
+            finish: vertexB
+        };
+    }
+
+    function newVertex(x, y) {
+        return {
+            x: x,
+            y: y
+        };
     }
 
     /***********************************************************/
 
     function getVertexHash(vertex) {
-        return vertex[0] + '.' + vertex[1];
+        return vertex.x + '.' + vertex.y;
     }
 
     function getLineHash(vertex1, vertex2) {
@@ -35,7 +45,7 @@ define([
         ];
         var result = [];
         _.forEach(shifts, function (shift) {
-            var position = [vertex[0] + shift[0], vertex[1] + shift[1]],
+            var position = newVertex(vertex.x + shift[0], vertex.y + shift[1]),
                 positionHash = getVertexHash(position);
             if (vertexesHashMap[positionHash]) {
                 result.push(position);
@@ -65,7 +75,10 @@ define([
         var vertexesHashMap = createVertexesHashesMap(vertexes);
         var linesHashes = [];
         for (let vertexIndex = 0; vertexIndex < vertexes.length; vertexIndex++) {
-            lines.push.apply(lines, getVertexLines(vertexes[vertexIndex], vertexesHashMap, linesHashes));
+            lines.push.apply(
+                lines,
+                getVertexLines(vertexes[vertexIndex], vertexesHashMap, linesHashes)
+            );
         }
         return lines;
     }

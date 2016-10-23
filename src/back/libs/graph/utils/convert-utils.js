@@ -1,5 +1,7 @@
 'use strict';
 
+var creationUtils = require('./creation-utils');
+
 function convertInbound(sizeX, sizeY, minX, minY, sourceData) {
     var workData = createDefaultArray(sizeX, sizeY);
     sourceData.forEach(function (data) {
@@ -31,10 +33,7 @@ function createDefaultArray(xSize, ySize) {
 
 function convertLoopToOutbound(loop, xShift, yShift) {
     return loop.map(function (loopItem) {
-        return {
-            x: loopItem.x + xShift,
-            y: loopItem.y + yShift
-        };
+        return creationUtils.newVertex(loopItem.x + xShift, loopItem.y + yShift);
     });
 }
 

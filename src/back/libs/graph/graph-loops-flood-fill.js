@@ -3,6 +3,7 @@
 const commonUtils = require('./utils/common-utils');
 const convertUtils = require('./utils/convert-utils');
 const vertexUtils = require('./utils/vertex-utils');
+const creationUtils = require('./utils/creation-utils');
 
 function getLoops(array) {
     var prepared = prepareInbound(array);
@@ -50,7 +51,7 @@ function getLoops(array) {
             whileLimitIndex++;
         }
     }
-    return loops;
+    return prepareOutBound(loops, prepared.shift);
 }
 
 function prepareInbound(array) {
@@ -65,8 +66,31 @@ function prepareInbound(array) {
         array);
     return {
         borders: borders,
-        vertexes: result
+        vertexes: result,
+        shift: {
+            x: minX,
+            y: minY
+        }
     };
+}
+
+function prepareOutBound(loops, shift) {
+    if (loops && loops.length) {
+        for (let loopIndex = 0; loopIndex < loops.length; loopIndex++) {
+            let loop = loops[loopIndex];
+            loop.loop = updateShifts(loop.loop, shift);
+            loop.trappedDots = updateShifts(loop.trappedDots, shift);
+        }
+    }
+    return loops;
+}
+
+function updateShifts(dots, shifts) {
+    return dots.map(function (dot) {
+        dot.x += shifts.x;
+        dot.y += shifts.y;
+        return dot;
+    });
 }
 
 function passLine(futureLineIndex, futureLines, selected, vertexes) {
@@ -84,11 +108,11 @@ function passLine(futureLineIndex, futureLines, selected, vertexes) {
         vertex.isInFutureLines = true;
         newFutureLines = getFutureLineForVertex(line.pos.x, index, vertexes);
         vertexUtils.applySelectedNeighborsFrom_8_Direction(
-            {x: line.pos.x, y: index},
+            creationUtils.newVertex(line.pos.x, index),
             selected,
             vertexes
         );
-        passedDots.push({x: line.pos.x, y: index});
+        passedDots.push(creationUtils.newVertex(line.pos.x, index));
         futureLines.push.apply(futureLines, newFutureLines);
         index += line.direction;
         vertex = vertexes[line.pos.x][index];
@@ -134,10 +158,7 @@ function getFutureLine(x, y, vertexes) {
     var line;
     if (!vertexes[x][y].isSelected && !vertexes[x][y].isInFutureLines) {
         line = {
-            pos: {
-                x: x,
-                y: y
-            },
+            pos: creationUtils.newVertex(x, y),
             direction: getDirection(x, y, vertexes)
         };
     }

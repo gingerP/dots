@@ -229,7 +229,7 @@ define([
             .attr('stroke-width', TABLE_STROKE_WIDTH);
     }
 
-    function renderDots(color, dots) {
+    function renderDots(dots, color) {
         var preparedDots = _.isArray(dots) ? dots : [dots];
         var prefix = 'circle[d_type=' + MAIN_CIRCLE_D_TYPE + ']';
         var selector = CommonGraphicsUtils.generateSelectorStringFromDots(preparedDots, prefix);
@@ -238,7 +238,7 @@ define([
 
     function renderLoops(loops, color) {
         _.forEach(loops, function(loopLines) {
-            var pathForRender = CommonGraphicsUtils.getNotExistingPath(loopLines);
+            var pathForRender = CommonGraphicsUtils.getNotExistingPath(loopLines, lines);
             if (pathForRender.length) {
                 lines = lines.concat(pathForRender.map(function (item) {
                     item.id = CommonGraphicsUtils.getLineId(item.start, item.finish);
@@ -249,7 +249,7 @@ define([
         });
     }
 
-    function renderTrappedDots(/*color, dots*/) {
+    function renderTrappedDots(/*dots, color*/) {
 
     }
 
@@ -280,13 +280,13 @@ define([
             preparedLoops = CommonUtils.createArray(loops);
             preparedTrappedDots = CommonUtils.createArray(trappedDots);
             if (preparedDots && preparedDots.length) {
-                renderDots(player.color, preparedDots);
+                renderDots(preparedDots, player.color);
             }
             if (preparedLoops && preparedLoops.length) {
-                renderLoops(player.color, CommonGraphicsUtils.getFilteredAndConvertedLoops(preparedLoops));
+                renderLoops(CommonGraphicsUtils.getFilteredAndConvertedLoops(preparedLoops, STEP), player.color);
             }
             if (preparedTrappedDots && preparedTrappedDots.length) {
-                renderTrappedDots(player.color, preparedTrappedDots);
+                renderTrappedDots(preparedTrappedDots, player.color);
             }
         }
     }

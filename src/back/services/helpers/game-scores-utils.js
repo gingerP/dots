@@ -2,19 +2,13 @@ var graphLoop = req('src/back/libs/graph/graph-loops-flood-fill');
 var graph = req('src/back/libs/graph/graph');
 var commonLoopsUtils = req('src/back/libs/graph/utils/common-utils');
 var _ = require('lodash');
+var CreationUtils = req('src/back/utils/creation-utils');
 
 function newGameData(dots) {
     return {
         dots: dots || [],
         losingDots: [],
         loops: []
-    };
-}
-
-function newLoopData(dots, trappedDots) {
-    return {
-        dots: dots || [],
-        trappedDots: trappedDots || []
     };
 }
 
@@ -45,7 +39,7 @@ function handleTrappedDots(trappedDots, opponentGameData, dot) {
 }
 
 function handleLoopData(opponentGameData, loopData) {
-    var preparedLoopData = newLoopData(loopData.loop);
+    var preparedLoopData = CreationUtils.newLoopData(loopData.loop);
     _.forEach(
         loopData.trappedDots,
         handleTrappedDots.bind(null, preparedLoopData.trappedDots, opponentGameData)
