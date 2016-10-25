@@ -1,14 +1,21 @@
-define([], function () {
+define([
+    'angular',
+    'components/utils/common.helpers.module'
+], function (angular) {
     'use strict';
 
-    return {
-        onRoot: function (scope, eventName, func) {
-            scope.$on('$destroy', scope.$root.$on(eventName, function (event, data) {
-                func(data);
-            }));
-        },
-        safeListen: function safeListen(scope, listener) {
-            scope.$on('$destroy', listener);
+    angular.module('common.helpers.module').factory('scopeUtils', scopeUtils);
+
+    function scopeUtils($rootScope) {
+
+        function apply(scope) {
+            if ($rootScope.$$phase !== '$apply' && $rootScope.$$phase !== '$digest') {
+                scope.$apply();
+            }
         }
-    };
+
+        return {
+            apply: apply
+        };
+    }
 });

@@ -136,7 +136,10 @@ define([
         var opponent = GameStorage.getOpponent();
         GameStorage.clearGame();
         Graphics.clearPane();
-        observable.emit(Events.CANCEL_GAME);
+        observable.emit(Events.CANCEL_GAME, {
+            opponent: opponent,
+            game: game
+        });
         if (forceServiceRequest && game && opponent) {
             InviteService.cancelGame(game._id);
         }

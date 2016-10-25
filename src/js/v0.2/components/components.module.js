@@ -10,7 +10,8 @@ define([
     'components/notification/notification.module',
     'components/playerMenu/components/playerMenu.component',
     'components/gamePane/components/gamePane.component',
-    'components/playerColor/components/playerColor.component'
+    'components/playerColor/components/playerColor.component',
+    'components/utils/common.helpers.module'
 ], function (angular) {
     'use strict';
 
@@ -25,7 +26,8 @@ define([
         'notification.module',
         'player.menu.module',
         'gamePane.module',
-        'playerColor.module'
+        'playerColor.module',
+        'common.helpers.module'
     ]);
     angular.element(document).ready(function () {
         angular.bootstrap(document, ['app']);

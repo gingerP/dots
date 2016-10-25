@@ -10,6 +10,8 @@ var errorLog = funcUtils.error(logger);
 var GameScoreUtils = req('src/back/services/helpers/game-scores-utils');
 
 function isGameAndClientValid(data) {
+    logger.warn('isGameAndClientValid game: %s, from: %s, to: %s, client: %s',
+        data[1].to, data[1].from, data[1].to, data[0]._id);
     return Boolean(data[1]) && Boolean(data[0]) &&
         (data[0]._id.equals(data[1].from) || data[0]._id.equals(data[1].to));
 }

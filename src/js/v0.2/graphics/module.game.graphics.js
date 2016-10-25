@@ -157,6 +157,10 @@ define([
             .attr('fill', TABLE_STROKE_COLOR);
     }
 
+    function removeLoopsLins() {
+        pathsGroup.selectAll('*').remove();
+    }
+
     function selectDot(circle, color) {
         d3.select(circle)
             .select('circle[d_type=' + MAIN_CIRCLE_D_TYPE + ']')
@@ -256,6 +260,7 @@ define([
     function clearPane() {
         if (circles) {
             unSelectDots();
+            removeLoopsLins();
         }
     }
 

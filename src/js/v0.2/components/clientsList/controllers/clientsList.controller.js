@@ -2,7 +2,6 @@ define([
     'angular',
     'lodash',
     'module.observable',
-    'components/utils/scope.utils',
     'business/game.storage',
     'common/events',
     'module.game.business',
@@ -10,14 +9,15 @@ define([
     'module.backend.service',
     'common/services/game-data.service',
     'components/clientsList/factories/clientsListUtil.factory',
-    'components/clientsList/clientsList.module'
-], function (angular, _, Observable, scopeUtils, GameStorage, Events, Business, inviteBusiness, backend,
+    'components/clientsList/clientsList.module',
+    'components/utils/scope.utils'
+], function (angular, _, Observable, GameStorage, Events, Business, inviteBusiness, backend,
              gameDataService) {
     'use strict';
 
     angular.module('clientsList.module').controller('clientsListCtrl', ClientsListController);
 
-    function ClientsListController($rootScope, $scope, clientsListUtilFactory) {
+    function ClientsListController(scopeUtils, $scope, clientsListUtilFactory) {
         var vm = this,
             observable = Observable.instance;
 
@@ -40,7 +40,7 @@ define([
                 var opponent = GameStorage.getOpponent();
                 var exclusion = opponent ? [myself._id, opponent._id] : [myself._id];
                 vm.clientsList = _.reject(preparedClients, rejectClient(exclusion));
-                $scope.$apply();
+                scopeUtils.apply($scope);
             });
         }
 
@@ -48,36 +48,35 @@ define([
             if (message.from) {
                 observable.emit(Events.INVITE, message.from);
                 clientsListUtilFactory.setInvite(message.from, vm.clientsList);
-                $scope.$apply();
+                scopeUtils.apply($scope);
             }
         }
 
         function createGame(message) {
             if (message.from && message.to && message.game) {
                 clientsListUtilFactory.setSuccess(message.opponent, vm.clientsList);
-                $scope.$apply();
+                scopeUtils.apply($scope);
             }
         }
 
-        function cancelGame() {
-            var opponent = GameStorage.getOpponent();
-            if (opponent) {
-                clientsListUtilFactory.setCancelGame(opponent, vm.clientsList);
-                $scope.$apply();
+        function onCancelGame(data) {
+            if (data.opponent) {
+                clientsListUtilFactory.setCancelGame(data.opponent, vm.clientsList);
+                scopeUtils.apply($scope);
             }
         }
 
         function inviteReject(message) {
             if (message.to) {
                 clientsListUtilFactory.setReject(message.to, vm.clientsList);
-                $scope.$apply();
+                scopeUtils.apply($scope);
             }
         }
 
         function newClient(client) {
             var preparedClient = clientsListUtilFactory.prepareClientForUI(client);
             vm.clientsList.splice(0, 0, preparedClient);
-            $scope.$apply();
+            scopeUtils.apply($scope);
         }
 
         vm.invite = function (client) {
@@ -98,7 +97,7 @@ define([
         observable.on(Events.REFRESH_MYSELF, updateClient);
         observable.on(Events.INVITE, invite);
         observable.on(Events.CREATE_GAME, createGame);
-        observable.on(Events.CANCEL_GAME, cancelGame);
+        observable.on(Events.CANCEL_GAME, onCancelGame);
         observable.on(Events.INVITE_REJECT, inviteReject);
 
         updateClient();
