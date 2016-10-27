@@ -7,7 +7,8 @@ grunt.initConfig({
             'src/back/**/*.js',
             'src/cfg/**/*.js',
             'src/js/v0.2/**/*.js',
-            'src/js/*.js'
+            'src/js/*.js',
+            'test/**/*.js'
         ]
     }
 });

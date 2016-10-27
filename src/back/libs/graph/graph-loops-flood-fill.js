@@ -107,6 +107,7 @@ function passLine(futureLineIndex, futureLines, selected, vertexes) {
         vertex.isVisited = true;
         vertex.isInFutureLines = true;
         newFutureLines = getFutureLineForVertex(line.pos.x, index, vertexes);
+        isSpill = vertexUtils.hasSpill(creationUtils.newVertex(line.pos.x, index), vertexes);
         vertexUtils.applySelectedNeighborsFrom_8_Direction(
             creationUtils.newVertex(line.pos.x, index),
             selected,
@@ -119,7 +120,7 @@ function passLine(futureLineIndex, futureLines, selected, vertexes) {
         passed++;
     }
 
-    if (!vertexes[line.pos.x][index] || !vertexes[line.pos.x][line.pos.y - 1]) {
+    if (!isSpill && !vertexes[line.pos.x][index] || !vertexes[line.pos.x][line.pos.y - 1]) {
         isSpill = true;
     }
     return {
@@ -135,7 +136,7 @@ function getFutureLineForVertex(x, y, vertexes) {
     var topLine;
     var bottomLine;
 
-    //top
+    //left
     if (x) {
         topLine = getFutureLine(x - 1, y, vertexes);
         if (topLine) {
@@ -143,7 +144,7 @@ function getFutureLineForVertex(x, y, vertexes) {
         }
     }
 
-    //bottom
+    //right
     if (x < xLimit - 1) {
         bottomLine = getFutureLine(x + 1, y, vertexes);
         if (bottomLine) {

@@ -1,6 +1,6 @@
 'use strict';
 
-var CreatingUtils = req('src/back/libs/graph/utils/creation-utils');
+var CreatingUtils = require('./creation-utils');
 
 function getNeighbors(pos, workData, excludes) {
     var result = [];
@@ -97,9 +97,28 @@ function checkExclude(excludes, data) {
     return result;
 }
 
+function hasSpill(pos, vertexes) {
+    var result = false;
+    var shifts = [
+        [-1, 0],
+        [0, -1], [0, 1],
+        [1, 0]
+    ];
+    var index = shifts.length - 1;
+    while(index > -1) {
+        let shift = shifts[index];
+        if (!vertexes[pos.x + shift[0]] || !vertexes[pos.x + shift[0]][pos.y + shift[1]]) {
+            return true;
+        }
+        index--;
+    }
+    return result;
+}
+
 module.exports = {
     getNeighbors: getNeighbors,
     getSelectedNeighborsFrom_4_Direction: getSelectedNeighborsFrom_4_Direction,
     getSelectedNeighborsFrom_8_Direction: getSelectedNeighborsFrom_8_Direction,
-    applySelectedNeighborsFrom_8_Direction: applySelectedNeighborsFrom_8_Direction
+    applySelectedNeighborsFrom_8_Direction: applySelectedNeighborsFrom_8_Direction,
+    hasSpill: hasSpill
 };
