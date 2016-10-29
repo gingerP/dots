@@ -9,8 +9,8 @@
     }
   },
   "db": {
-    "user": "parse",
-    "pass": "parse",
+    "user": "dots",
+    "pass": "dots",
     "driver": "mongodb",
     "host": "localhost",
     "port": "27017",
