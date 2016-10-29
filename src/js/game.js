@@ -1,7 +1,7 @@
 require.config({
     baseUrl: "/static/js/v0.2/",
     paths: {
-        angular: './angularAMD',
+        angular: '../node_modules/angular/angular.min',
         storage: '../ext/basil.min',
         'local.storage': '../node_modules/lockr/lockr.min',
         q: '../node_modules/q/q',
@@ -25,7 +25,10 @@ require.config({
         beautify: '../ext/beautify'
     },
     shim: {
-        moduleGameBusiness: 'module.game.business'
+        moduleGameBusiness: 'module.game.business',
+        angular: {
+            exports: 'angular'
+        }
     },
     waitSeconds: 15
 });
