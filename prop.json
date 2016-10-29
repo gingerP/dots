@@ -4,13 +4,13 @@
     "http": "8080",
     "https": "8443",
     "ssl": {
-      "active": true,
+      "active": false,
       "path": "/home/ubuntu/ssl"
     }
   },
   "db": {
-    "user": "dots",
-    "pass": "dots",
+    "user": "parse",
+    "pass": "parse",
     "driver": "mongodb",
     "host": "localhost",
     "port": "27017",
