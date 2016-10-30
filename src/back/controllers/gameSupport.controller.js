@@ -19,7 +19,15 @@ GameSupportController.prototype.onReconnect = function (handler) {
     this.wss.addListener(Events.client_reconnect, handler);
 };
 
-GameSupportController.prototype.notifyAboutNewClient = function(newClient, clients) {
+GameSupportController.prototype.onDisconnect = function (handler) {
+    this.wss.addListener(this.wss.events.REMOVE_CONNECTION, handler);
+};
+
+GameSupportController.prototype.notifyAboutDisconnect = function (clients, disconnectedClientId) {
+    this.transmitter.send(_.map(clients, 'connection_id'), Events.client_disconnect, disconnectedClientId);
+};
+
+GameSupportController.prototype.notifyAboutNewClient = function (newClient, clients) {
     this.transmitter.send(_.map(clients, 'connection_id'), Events.new_client, newClient);
 };
 

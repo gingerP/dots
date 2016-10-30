@@ -10,6 +10,10 @@ function WSServer(http) {
     this.connections = {};
     this.connectionWrappers = {};
     this.listeners = {};
+    this.events = {
+        NEW_CONNECTION: 'new_connection',
+        REMOVE_CONNECTION: 'remove_connection'
+    };
 }
 
 WSServer.prototype = Object.create(Observable.prototype);
@@ -81,7 +85,7 @@ WSServer.prototype.addConnection = function (topic, connection, id) {
         this.connections[topic].push(connection);
         this.connectionWrappers[topic].push(connectionWraper);
         this.addListener(topic + listenerToOut, connectionWraper);
-        this.propertyChange('new_connection', connectionWraper);
+        this.propertyChange(this.events.NEW_CONNECTION, connectionWraper);
     }
     return connectionWraper;
 };
@@ -97,7 +101,7 @@ WSServer.prototype.removeConnection = function (connection, reason) {
         wrapperIndex = this.connectionWrappers[topic].indexOf(connection);
         if (index > -1) {
             this.connections[topic].splice(index, 1);
-            this.propertyChange('remove_connection', [connection, reason]);
+            this.propertyChange(this.events.REMOVE_CONNECTION, [connection, reason]);
         }
         for (wrapperIndex = 0; wrapperIndex < this.connectionWrappers[topic].length; wrapperIndex++) {
             if (this.connectionWrappers[topic][wrapperIndex].equalConnection(connection)) {
@@ -131,7 +135,7 @@ WSServer.prototype.createConnectionWrapper = function (connection, topic, id) {
             });
         },
         equalConnection: function (con) {
-            return connection == con;
+            return connection === con;
         },
         registerListeners: function (key) {
             connection.on(key, function (message, callback) {

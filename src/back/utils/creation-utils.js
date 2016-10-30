@@ -17,7 +17,18 @@ function newGameData(gameId, clientId, dots, losingDots, loops) {
     };
 }
 
+function newClient(connectionId, name, color, created, updated) {
+    return {
+        connection_id: connectionId,
+        created: created || Date.now(),
+        updated: updated || Date.now(),
+        name: name,
+        color: color
+    };
+}
+
 module.exports = {
     newLoopData: newLoopData,
-    newGameData: newGameData
+    newGameData: newGameData,
+    newClient: newClient
 };

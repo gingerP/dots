@@ -4,6 +4,7 @@ var GenericDBManager = require('./genericDB.manager').class;
 var constants = require('../constants/constants');
 var funcUtils = require('../utils/function-utils');
 var logger = req('src/js/logger').create('ClientsDBManager');
+var errorLogger = funcUtils.error(logger);
 
 function ClientsDBManager() {
     this.collectionName = constants.DB_COLLECTION_CLIENTS;
@@ -20,7 +21,7 @@ ClientsDBManager.prototype.getClient = function (id) {
 };
 
 ClientsDBManager.prototype.getClientByConnectionId = function (connectionId) {
-    return this.getByCriteria({connection_id: connectionId}).catch(funcUtils.error(logger));
+    return this.getByCriteria({connection_id: connectionId}).catch(errorLogger);
 };
 
 ClientsDBManager.prototype.getClientsExcept = function (client) {
@@ -28,7 +29,15 @@ ClientsDBManager.prototype.getClientsExcept = function (client) {
         _id: {
             $ne: this.getObjectId(client._id)
         }
-    });
+    }).catch(errorLogger);
+};
+
+ClientsDBManager.prototype.getOnlineClients = function () {
+    return this.listByCriteria({
+        connection_id: {
+            $ne: null
+        }
+    }).catch(errorLogger);
 };
 
 ClientsDBManager.prototype.getName = function () {
