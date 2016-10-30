@@ -1,5 +1,6 @@
 var GenericDBManager = require('./genericDB.manager').class;
 var constants = require('../constants/constants');
+var gameStatuses = require('../constants/game-statuses');
 
 function GameSupportDBManager() {
     this.collectionName = constants.DB_COLLECTION_GAMES;
@@ -21,6 +22,22 @@ GameSupportDBManager.prototype.createGame = function (fromClientId, toClientId, 
         timestamp: Date.now()
     };
     return this.save(data);
+};
+
+GameSupportDBManager.prototype.getActiveGame = function (clientId) {
+    var preparedClientId = this.getObjectId(clientId);
+    var criteria = {
+        $or: [
+            {
+                from: preparedClientId
+            },
+            {
+                to: preparedClientId
+            }
+        ],
+        status: gameStatuses.active
+    };
+    return this.getByCriteria(criteria);
 };
 
 GameSupportDBManager.prototype.getGame = function (clientAId, clientBId, status) {

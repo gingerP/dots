@@ -1,6 +1,7 @@
 define([], function () {
     return {
         GENERAL: {
+            CLIENT_DISCONNECT: 'client_disconnect',
             CLIENT_RECONNECT: 'client_reconnect',
             NEW_CLIENT: 'new_client'
         },

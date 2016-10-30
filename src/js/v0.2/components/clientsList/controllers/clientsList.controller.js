@@ -44,7 +44,7 @@ define([
             });
         }
 
-        function invite(message) {
+        function onInvite(message) {
             if (message.from) {
                 observable.emit(Events.INVITE, message.from);
                 clientsListUtilFactory.setInvite(message.from, vm.clientsList);
@@ -52,7 +52,7 @@ define([
             }
         }
 
-        function createGame(message) {
+        function onCreateGame(message) {
             if (message.from && message.to && message.game) {
                 clientsListUtilFactory.setSuccess(message.opponent, vm.clientsList);
                 scopeUtils.apply($scope);
@@ -66,17 +66,26 @@ define([
             }
         }
 
-        function inviteReject(message) {
+        function onInviteReject(message) {
             if (message.to) {
                 clientsListUtilFactory.setReject(message.to, vm.clientsList);
                 scopeUtils.apply($scope);
             }
         }
 
-        function newClient(client) {
+        function onNewClient(client) {
             var preparedClient = clientsListUtilFactory.prepareClientForUI(client);
             vm.clientsList.splice(0, 0, preparedClient);
             scopeUtils.apply($scope);
+        }
+
+        function onClientDisconnect(clientId) {
+            var client = _.find(vm.clientsList, {_id: clientId});
+
+            if (client) {
+                delete client.connection_id;
+                scopeUtils.apply($scope);
+            }
         }
 
         vm.invite = function (client) {
@@ -93,12 +102,13 @@ define([
             inviteBusiness.reject(toClient._id);
         };
 
-        observable.on(Events.NEW_CLIENT, newClient);
+        observable.on(Events.CLIENT_DISCONNECT, onClientDisconnect);
+        observable.on(Events.NEW_CLIENT, onNewClient);
         observable.on(Events.REFRESH_MYSELF, updateClient);
-        observable.on(Events.INVITE, invite);
-        observable.on(Events.CREATE_GAME, createGame);
+        observable.on(Events.INVITE, onInvite);
+        observable.on(Events.CREATE_GAME, onCreateGame);
         observable.on(Events.CANCEL_GAME, onCancelGame);
-        observable.on(Events.INVITE_REJECT, inviteReject);
+        observable.on(Events.INVITE_REJECT, onInviteReject);
 
         updateClient();
     }

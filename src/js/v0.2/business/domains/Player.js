@@ -1,14 +1,15 @@
 define([
     'lodash',
     'business/domains/PlayerHistoryRecord',
-    'utils/common-utils'
-], function (_, Step, CommonUtils) {
+    'utils/common-utils',
+    'business/domains/NetworkStatus'
+], function (_, Step, CommonUtils, NetworkStatus) {
     'use strict';
 
     function Player() {
     }
 
-    Player.prototype.init = function (id, name, color, style) {
+    Player.prototype.init = function (id, name, color, style, networkStatus) {
         this.dots = [];
         this.trappedDots = [];
         this.losingDots = [];
@@ -18,6 +19,7 @@ define([
         this.color = color;
         this.style = style;
         this.isActive = false;
+        this.networkStatus = _.isUndefined(networkStatus) || NetworkStatus.ONLINE;
         return this;
     };
 

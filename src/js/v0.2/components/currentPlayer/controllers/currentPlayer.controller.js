@@ -44,7 +44,7 @@ define([
 
         function onCreateGame(message) {
             if (message.to && message.from && message.game) {
-                vm.opponent = GameStorage.getOpponent();
+                vm.opponent = GameStorage.getGameOpponent();
                 $scope.$apply();
             }
         }
@@ -55,6 +55,12 @@ define([
 
         function onRefreshGame() {
             vm.opponent = GameStorage.getGameOpponent();
+        }
+
+        function onClientDisconnect(clientId) {
+            if (vm.opponent && vm.opponent.getId() === clientId) {
+
+            }
         }
 
         vm.isMenuOpened = false;
@@ -79,6 +85,7 @@ define([
             delete vm.opponent;
         });
 
+        observable.on(Events.CLIENT_DISCONNECT, onClientDisconnect);
         observable.on(Events.CREATE_GAME, onCreateGame);
         observable.on(Events.REFRESH_MYSELF, onRefreshMyself);
         observable.on(Events.REFRESH_GAME, onRefreshGame);

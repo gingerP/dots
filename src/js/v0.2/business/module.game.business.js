@@ -2,6 +2,7 @@ define([
     'lodash',
     'q',
     'common/events',
+    'business/domains/NetworkStatus',
     'module.observable',
     'business/business.invite',
     'business/game.rules',
@@ -11,7 +12,7 @@ define([
     'common/services/game.service',
     'common/services/invite.service',
     'module.game.graphics'
-], function (_, q, Events, Observable, businessInvite, rules,
+], function (_, q, Events, NetworkStatus, Observable, businessInvite, rules,
              GameUtils, GameStorage,
              GameDataService, GameService, InviteService,
              Graphics) {
@@ -177,6 +178,24 @@ define([
 
         GameDataService.listen.newClient(function (message) {
             observable.emit(Events.NEW_CLIENT, message);
+        });
+
+        GameDataService.listen.disconnectClient(function (message) {
+            var opponent = GameStorage.getGameOpponent();
+
+            if (opponent && message === opponent.getId()) {
+                GameStorage.setOpponentConnectionId(NetworkStatus.OFFLINE);
+            }
+            observable.emit(Events.CLIENT_DISCONNECT, message);
+        });
+
+        GameDataService.listen.reconnectClient(function (message) {
+            var opponent = GameStorage.getGameOpponent();
+
+            if (opponent && message === opponent.getId()) {
+                GameStorage.setOpponentConnectionId(NetworkStatus.OFFLINE);
+            }
+            observable.emit(Events.CLIENT_DISCONNECT, message);
         });
     }
 

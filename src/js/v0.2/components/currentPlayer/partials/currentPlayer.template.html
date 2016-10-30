@@ -5,7 +5,9 @@
              'active-player': currentPlayerCtrl.isMyselfActive && currentPlayerCtrl.opponent}">
             <div class="player-style" ng-bind="currentPlayerCtrl.myself.name"></div>
         </div>
-        <player-color color="currentPlayerCtrl.myself.color" options="currentPlayerCtrl.colorOptions">
+        <player-color
+                color="currentPlayerCtrl.myself.color"
+                options="currentPlayerCtrl.colorOptions">
         </player-color>
     </div>
 

@@ -1,8 +1,9 @@
 define([
     'storage',
     'business/domains/Player',
-    'lodash'
-], function (Storage, Player, _) {
+    'lodash',
+    'business/domains/NetworkStatus'
+], function (Storage, Player, _, NetworkStatus) {
     'use strict';
 
     var api;
@@ -105,6 +106,17 @@ define([
         gamers.opponent = opponentObj;
     }
 
+    function setOpponentConnectionId(connectionId) {
+        var opponent;
+        if (gamers.opponent) {
+            opponent = api.getOpponent();
+            gamers.opponent.networkStatus = _.isUndefined(connectionId) ? NetworkStatus.OFFLINE : NetworkStatus.ONLINE;
+            opponent.connection_id = _.isUndefined(connectionId) ? null : connectionId;
+            api.setOpponent(opponent);
+        }
+        return api;
+    }
+
     function getGameOpponent() {
         return gamers.opponent;
     }
@@ -201,6 +213,7 @@ define([
         setGameOpponent: setGameOpponent,
         getGameOpponent: getGameOpponent,
         setOpponent: gamerSet(keys.OPPONENT),
+        setOpponentConnectionId: setOpponentConnectionId,
         getOpponent: gamerGet(keys.OPPONENT),
         clearOpponent: clearOpponent,
         hasOpponent: hasOpponent,

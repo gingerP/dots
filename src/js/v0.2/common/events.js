@@ -8,6 +8,7 @@ define([], function () {
         add_client: 'add_client',
         ADD_DOT: 'ADD_DOT',
         NEW_CLIENT: 'NEW_CLIENT',
+        CLIENT_DISCONNECT: 'CLIENT_DISCONNECT',
         conquer_dots: 'conquer_dots',
 
         GAME_STEP: 'GAME_STEP',

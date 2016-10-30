@@ -53,7 +53,7 @@ GenericDBManager.prototype.exec = function () {
     var inst = this;
     if (!this.connection) {
         try {
-            return new Promise(function(resolve) {
+            return new Promise(function (resolve) {
                 bongo.connect(inst._getDBUrl(), function (error, db) {
                     assert.equal(null, error);
                     inst.connection = db;
@@ -175,6 +175,7 @@ GenericDBManager.prototype._insert = function (doc, callback) {
         });
     });
 };
+
 GenericDBManager.prototype._delete = function (criteria, callback) {
     var inst = this;
     var preparedCriteria = criteria;
@@ -194,6 +195,27 @@ GenericDBManager.prototype._delete = function (criteria, callback) {
         });
     });
 };
+
+GenericDBManager.prototype._deleteMany = function (criteria, callback) {
+    var inst = this;
+    var preparedCriteria = criteria;
+    if (typeof(criteria) === 'number' || typeof(criteria) === 'string') {
+        preparedCriteria = {_id: new this.getObjectId(criteria)};
+    }
+    validate.collectionName(this.collectionName);
+    this.exec().then(function (db) {
+        db.collection(inst.collectionName).deleteMany(preparedCriteria, function (error, result) {
+            if (error) {
+                logger.error('An ERROR has occurred while deleting document in "%s".', inst.collectionName);
+                throw error;
+            } else if (typeof(callback) === 'function') {
+                logger.debug('Documents were successfully deleted in "%s".', inst.collectionName);
+                callback(result);
+            }
+        });
+    });
+};
+
 GenericDBManager.prototype._list = function (criteria, callback, mappings) {
     var inst = this;
     validate.collectionName(inst.collectionName);
@@ -247,6 +269,7 @@ GenericDBManager.prototype.save = function (doc, mappings) {
         }, null, mappings);
     }).catch(errorLog);
 };
+
 GenericDBManager.prototype.saveByCriteria = function (doc, criteria, mappings) {
     var inst = this;
     return new Promise(function (resolve) {
@@ -256,6 +279,7 @@ GenericDBManager.prototype.saveByCriteria = function (doc, criteria, mappings) {
         }, criteria, mappings);
     }).catch(errorLog);
 };
+
 GenericDBManager.prototype.get = function (ids, mappings) {
     var inst = this;
     return new Promise(function (resolve) {
@@ -281,6 +305,7 @@ GenericDBManager.prototype.get = function (ids, mappings) {
         }
     }).catch(errorLog);
 };
+
 GenericDBManager.prototype.getByCriteria = function (criteria, mappings) {
     var inst = this;
     return new Promise(function (resolve) {
@@ -290,16 +315,31 @@ GenericDBManager.prototype.getByCriteria = function (criteria, mappings) {
         }, mappings);
     }).catch(errorLog);
 };
+
 GenericDBManager.prototype.remove = function (id) {
     var inst = this;
     return new Promise(function (resolve) {
         var criteria = {_id: inst.getObjectId(id)};
-        inst._delete(criteria, function (data) {
-            inst.propertyChange('remove', [data, id]);
-            resolve(data);
-        });
+        if (_.isArray(id)) {
+            criteria = {
+                _id: {
+                    $in: inst.getObjectIdsList(id)
+                }
+            };
+            inst._deleteMany(criteria, function (data) {
+                inst.propertyChange('remove', [data, id]);
+                resolve(data);
+            });
+        } else {
+            criteria = {_id: inst.getObjectId(id)};
+            inst._delete(criteria, function (data) {
+                inst.propertyChange('remove', [data, id]);
+                resolve(data);
+            });
+        }
     }).catch(errorLog);
 };
+
 GenericDBManager.prototype.list = function (mappings) {
     var inst = this;
     return new Promise(function (resolve) {
@@ -333,6 +373,10 @@ GenericDBManager.prototype.getObjectId = function (id) {
         return id;
     }
     return new bongo.ObjectId(id);
+};
+
+GenericDBManager.prototype.getObjectIdsList = function (ids) {
+    return _.map(ids, this.getObjectId.bind(this));
 };
 
 GenericDBManager.prototype._correctCriteria = function (criteria) {
