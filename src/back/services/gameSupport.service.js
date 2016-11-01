@@ -29,12 +29,19 @@ GameSupportService.prototype.constructor = GameSupportService;
 GameSupportService.prototype.onNewClient = function (message) {
     var inst = this;
     var client = creationUtils.newClient(message.client.getId(), getRandomAnimal(), getRandomColor());
+
+    function getClient(clientId) {
+        return inst.clientsDBManager.get(clientId);
+    }
+
+    function notifyAboutNewClient(newClient) {
+        return this.notifyAboutNewClient(newClient);
+    }
+
     this.clientsDBManager
         .save(client)
-        .then(function (data) {
-            return inst.clientsDBManager.getByCriteria({_id: data});
-        })
-        .then(this.notifyAboutNewClient.bind(this))
+        .then(getClient)
+        .then(notifyAboutNewClient)
         .then(message.callback)
         .catch(errorLog);
 };
@@ -42,40 +49,47 @@ GameSupportService.prototype.onNewClient = function (message) {
 GameSupportService.prototype.onDisconnect = function (message) {
     var inst = this;
     var connectionId = message[0];
-    var disconnectedClient;
-    this.clientsDBManager
+    var disconnectedClientId;
+
+    function saveConnectionId(client) {
+        var disconnectedClient = client;
+        disconnectedClientId = client._id;
+        disconnectedClient.connection_id = null;
+        return inst.clientsDBManager.save(disconnectedClient);
+    }
+
+    function handleConnectionNotification() {
+        return inst.handleConnectionNotification(disconnectedClientId, connectionId);
+    }
+
+    return this.clientsDBManager
         .getClientByConnectionId(connectionId)
-        .then(function (client) {
-            disconnectedClient = client;
-            disconnectedClient.connection_id = null;
-            inst.clientsDBManager.save(disconnectedClient);
-            return inst.gameDBManager.getActiveGame(client._id);
-        })
-        .then(function(game) {
-            if (game) {
-                let opponentId = game.from.equal(disconnectedClient._id) ? game.to : game.from;
-                inst.notifyOpponentAboutDisconnect(disconnectedClient, opponentId);
-            } else {
-                inst.cachedNetworkStatusesDBManager.updateStatus(disconnectedClient._id);
-            }
-        });
+        .then(saveConnectionId)
+        .then(handleConnectionNotification);
 };
 
 GameSupportService.prototype.onReconnect = function (message) {
     var inst = this;
+    var reconnectedClientId = message.data._id;
+
+    function saveConnectionId(client) {
+        if (client) {
+            return inst.saveNewConnectionId(client, message.client.getId());
+        }
+        logger.warn('Client with id "%s" didn\'t exist. Save as new.', message.data._id);
+        return inst.saveNewClientConnectionId(message.data, message.client.getId());
+    }
+
+    function handleConnectionNotification() {
+      return inst.handleConnectionNotification(reconnectedClientId, message.client.getId());
+    }
+
     if (message.data) {
         return inst.clientsDBManager
-            .get(message.data._id)
-            .then(function (client) {
-                if (client) {
-                    //TODO notify about connection status
-                    return inst.saveNewConnectionId(client, message.client.getId())
-                        .then(function () {});
-                }
-                logger.warn('Client with id "%s" didn\'t exist. Save as new.', message.data._id);
-                return inst.saveNewClientConnectionId(message.data, message.client.getId());
-            })
+            .get(reconnectedClientId)
+            .then(saveConnectionId)
             .then(message.callback)
+            .then(handleConnectionNotification)
             .catch(errorLog);
     }
     return new Promise(function (resolve) {
@@ -83,46 +97,81 @@ GameSupportService.prototype.onReconnect = function (message) {
     });
 };
 
+GameSupportService.prototype.handleConnectionNotification = function (clientId, connectionId) {
+    var inst = this;
+
+    function runNotification(game) {
+        if (game) {
+            let opponentId = game.from.equal(clientId) ? game.to : game.from;
+            inst.notifyOpponentAboutNetworkStatusChange(clientId, opponentId, connectionId);
+        } else {
+            inst.cachedNetworkStatusesDBManager.updateStatus(clientId, connectionId);
+        }
+    }
+
+    return inst.gameDBManager
+        .getActiveGame(clientId)
+        .then(runNotification);
+};
+
 GameSupportService.prototype.saveNewConnectionId = function (client, connectionId) {
     var inst = this;
     client.connection_id = connectionId;
+
+    function getClient(clientId) {
+        return inst.clientsDBManager.get(clientId);
+    }
+
     return this.clientsDBManager
         .save(client, {_id: client._id})
-        .then(function () {
-            return inst.clientsDBManager.get(client._id);
-        });
+        .then(getClient);
 };
 
 GameSupportService.prototype.saveNewClientConnectionId = function (client, connectionId) {
     var inst = this;
     client.connection_id = connectionId;
     delete client._id;
+
+    function getClientByConnection() {
+        return inst.clientsDBManager.getClientByConnectionId(client.connection_id);
+    }
+
     return inst.clientsDBManager
         .save(client)
-        .then(function () {
-            return inst.clientsDBManager.getClientByConnectionId(client.connection_id);
-        });
+        .then(getClientByConnection);
 };
 
-GameSupportService.prototype.notifyOpponentAboutDisconnect = function (disconnectedClient, opponentId) {
-    var inst = this;
-    return this.clientsDBManager
-        .get(opponentId)
-        .then(function (opponent) {
-            inst.gameSupportController.notifyAboutDisconnect([opponent], disconnectedClient._id);
-        })
-        .catch(errorLog);
-};
+GameSupportService.prototype.notifyOpponentAboutNetworkStatusChange =
+    function (disconnectedClient, opponentId, connectionId) {
+        var inst = this;
 
+        function runNotification(opponent) {
+            inst.gameSupportController.notifyAboutNetworkStatusChange(
+                opponent,
+                connectionId ? null : disconnectedClient._id,
+                connectionId ? disconnectedClient._id : null
+            );
+        }
+
+        return this.clientsDBManager
+            .get(opponentId)
+            .then(runNotification)
+            .catch(errorLog);
+    };
+
+//TODO check if its need to notify right now
 GameSupportService.prototype.notifyAboutNewClient = function (newClient) {
     var inst = this;
+
+    function runNotification(clients) {
+        if (clients && clients.length) {
+            return inst.gameSupportController.notifyAboutNewClient(newClient, clients);
+        }
+        return {};
+    }
     this.clientsDBManager
         .getClientsExcept(newClient)
-        .then(function (clients) {
-            if (clients && clients.length) {
-                inst.gameSupportController.notifyAboutNewClient(newClient, clients);
-            }
-        })
+        .then(runNotification)
         .catch(errorLog);
     return newClient;
 };

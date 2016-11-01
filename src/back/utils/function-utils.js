@@ -1,4 +1,7 @@
 module.exports = {
+    makeArray: function () {
+
+    },
     wrapListener: function (context, handler) {
         return function () {
             handler.apply(context, arguments);
