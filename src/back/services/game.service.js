@@ -8,6 +8,7 @@ var logger = req('src/js/logger').create('GameService');
 var Promise = require('q');
 var errorLog = funcUtils.error(logger);
 var GameScoreUtils = req('src/back/services/helpers/game-scores-utils');
+var sessionUtils = req('src/back/utils/session-utils');
 
 function isGameAndClientValid(data) {
     logger.warn('isGameAndClientValid game: %s, from: %s, to: %s, client: %s',
@@ -31,7 +32,7 @@ GameService.prototype.constructor = GameService;
 GameService.prototype.onAddDot = function (message) {
     var inst = this;
     var gameId = message.data.extend.gameId;
-    var clientConnectionId = message.client.getId();
+    var clientId = sessionUtils.getClientId(message.client);
     var dot = {
         x: message.data.extend.x,
         y: message.data.extend.y
@@ -40,11 +41,11 @@ GameService.prototype.onAddDot = function (message) {
     var client;
     var opponentId;
     Promise.all([
-        this.clientsDBManager.getClientByConnectionId(clientConnectionId),
+        this.clientsDBManager.get(clientId),
         this.gameDBManager.get(gameId)
     ]).then(function(data) {
-        game = data[1];
         client = data[0];
+        game = data[1];
         return isGameAndClientValid(data);
     }).then(function(isValid) {
         if (isValid) {

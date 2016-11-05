@@ -117,36 +117,60 @@ WSServer.prototype.createConnectionWrapper = function (connection, topic, id) {
     var inst = this;
     var api;
     var topicEvent = 'on' + topic.slice(0, 1).toUpperCase() + topic.slice(1) + 'Change';
+    var extend;
+
+    function getTopic() {
+        return topic;
+    }
+
+    function getId() {
+        return id;
+    }
+
+    function sendData(data, type) {
+        return new Promise(function (resolve) {
+            connection.emit(type, data, function (messageData) {
+                resolve(messageData);
+            });
+            /*connection.send(type, data, function(data) {
+             resolve(data);
+             });*/
+        });
+    }
+
+    function setExtendData(data) {
+        extend = data;
+        return api;
+    }
+
+    function getExtendData() {
+        return extend;
+    }
+
+    function equalConnection(con) {
+        return connection === con;
+    }
+
+    function registerListeners(key) {
+        connection.on(key, function (message, callback) {
+            var data;
+            try {
+                data = inst.extractMessage(message);
+                inst.propertyChange(key, {client: api, data: data, callback: callback});
+            } catch (e) {
+                logger.error(e.stack);
+            }
+        });
+    }
+
     api = {
-        getTopic: function () {
-            return topic;
-        },
-        getId: function () {
-            return id;
-        },
-        sendData: function (data, type) {
-            return new Promise(function (resolve) {
-                connection.emit(type, data, function (data) {
-                    resolve(data);
-                });
-                /*connection.send(type, data, function(data) {
-                 resolve(data);
-                 });*/
-            });
-        },
-        equalConnection: function (con) {
-            return connection === con;
-        },
-        registerListeners: function (key) {
-            connection.on(key, function (message, callback) {
-                try {
-                    var data = inst.extractMessage(message);
-                    inst.propertyChange(key, {client: api, data: data, callback: callback});
-                } catch (e) {
-                    logger.error(e.stack);
-                }
-            });
-        }
+        getTopic: getTopic,
+        getId: getId,
+        sendData: sendData,
+        setExtendData: setExtendData,
+        getExtendData: getExtendData,
+        equalConnection: equalConnection,
+        registerListeners: registerListeners
     };
     api[topicEvent] = function (data) {
         connection.sendUTF(inst.prepareMessage(data, 'global_' + topic));
@@ -155,14 +179,16 @@ WSServer.prototype.createConnectionWrapper = function (connection, topic, id) {
 };
 
 WSServer.prototype.getWrappers = function (ids) {
+    var result = [];
+    var wrapperIndex;
+    var idList;
+    var topic;
     if (!ids) {
         return [];
     }
-    var result = [];
-    var wrapperIndex;
-    var idList = Array.isArray(ids) ? ids : [ids];
+    idList = Array.isArray(ids) ? ids : [ids];
 
-    for (var topic in this.connections) {
+    for (topic in this.connections) {
         for (wrapperIndex = 0; wrapperIndex < this.connectionWrappers[topic].length; wrapperIndex++) {
             if (ids.indexOf(this.connectionWrappers[topic][wrapperIndex].getId()) > -1) {
                 result.push(this.connectionWrappers[topic][wrapperIndex]);

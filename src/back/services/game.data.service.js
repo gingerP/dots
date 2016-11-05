@@ -7,6 +7,7 @@ var gameStatuses = require('../constants/game-statuses');
 var Promise = require('q');
 var logger = req('src/js/logger').create('GameDataService');
 var errorLog = funcUtils.error(logger);
+var sessionUtils = req('src/back/utils/session-utils');
 
 function GameDataService() {
 }
@@ -18,8 +19,9 @@ GameDataService.prototype.onGetClients = function (data) {
     this.clientsDBManager.list().then(data.callback);
 };
 
-GameDataService.prototype.onGetMySelf = function (data) {
-    this.clientsDBManager.getByCriteria({connection_id: data.client.getId()}).then(data.callback);
+GameDataService.prototype.onGetMySelf = function (message) {
+    var clientId = sessionUtils.getClientId(message.client);
+    this.clientsDBManager.get(clientId).then(message.callback);
 };
 
 GameDataService.prototype.onReject = function () {

@@ -6,6 +6,7 @@ var animals = require('../animals');
 var colors = require('../colors');
 var funcUtils = require('../utils/function-utils');
 var creationUtils = req('src/back/utils/creation-utils');
+var sessionUtils = req('src/back/utils/session-utils');
 var gameStatuses = require('../constants/game-statuses');
 var logger = req('src/js/logger').create('GameSupportService');
 var errorLog = funcUtils.error(logger);
@@ -38,9 +39,15 @@ GameSupportService.prototype.onNewClient = function (message) {
         return this.notifyAboutNewClient(newClient);
     }
 
+    function storeClient(newClient) {
+        sessionUtils.storeClientId(newClient._id, message.client);
+        return newClient;
+    }
+
     this.clientsDBManager
         .save(client)
         .then(getClient)
+        .then(storeClient)
         .then(notifyAboutNewClient)
         .then(message.callback)
         .catch(errorLog);
@@ -72,22 +79,21 @@ GameSupportService.prototype.onReconnect = function (message) {
     var inst = this;
     var reconnectedClientId = message.data._id;
 
-    function saveConnectionId(client) {
-        if (client) {
-            return inst.saveNewConnectionId(client, message.client.getId());
-        }
-        logger.warn('Client with id "%s" didn\'t exist. Save as new.', message.data._id);
-        return inst.saveNewClientConnectionId(message.data, message.client.getId());
-    }
-
     function handleConnectionNotification() {
       return inst.handleConnectionNotification(reconnectedClientId, message.client.getId());
+    }
+
+    function storeClient(newClient) {
+        if (newClient) {
+            sessionUtils.storeClientId(newClient._id, message.client);
+        }
+        return newClient;
     }
 
     if (message.data) {
         return inst.clientsDBManager
             .get(reconnectedClientId)
-            .then(saveConnectionId)
+            .then(storeClient)
             .then(message.callback)
             .then(handleConnectionNotification)
             .catch(errorLog);

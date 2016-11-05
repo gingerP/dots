@@ -4,6 +4,7 @@ var GenericService = require('./generic.service').class;
 var constants = require('../constants/constants');
 var inviteStatuses = require('../constants/invite-statuses.json');
 var funcUtils = req('src/back/utils/function-utils');
+var sessionUtils = req('src/back/utils/session-utils');
 var _ = require('lodash');
 var Promise = require('q');
 var logger = req('src/js/logger').create('CreateGameService');
@@ -22,7 +23,7 @@ CreateGameService.prototype.onInvite = function (message) {
     var inst = this;
     if (message.data.clients && message.data.clients.length) {
         clientId = message.data.clients[0];
-        this.clientsDBManager.getClientsPair(clientId, message.client.getId())
+        this.clientsDBManager.get([clientId, sessionUtils.getClientId(message.client)])
             .then(function (clients) {
                 var to = clients[0];
                 var from = clients[1];
@@ -74,10 +75,10 @@ CreateGameService.prototype.onCancelGame = function (message) {
     var inst = this;
     var gameId = _.get(message, 'data.extend.gameId');
     if (gameId) {
-        let connectionId = message.client.getId();
+        let clientId = sessionUtils.getClientId(message.client);
         Promise.all([
             this.gameDBManager.get(gameId),
-            this.clientsDBManager.getClientByConnectionId(connectionId)
+            this.clientsDBManager.get(clientId)
         ]).then(function (data) {
             var game = data[0];
             var client = data[1];
@@ -145,13 +146,13 @@ CreateGameService.prototype.cancelGame = function (clients, game) {
 CreateGameService.prototype.giveAnAnswerToClient = function (message) {
     var inst = this;
     var clientId;
-    var connectionId;
+    var toClientId;
     var fromClient;
     var toClient;
     if (message.data && message.data.clients.length) {
         clientId = message.data.clients[0];
-        connectionId = message.client.getId();
-        return this.clientsDBManager.getClientsPair(clientId, connectionId)
+        toClientId = sessionUtils.getClientId(message.client);
+        return this.clientsDBManager.get([clientId, toClientId])
             .then(function (clients) {
                 fromClient = clients[0];
                 toClient = clients[1];
