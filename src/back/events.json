@@ -10,6 +10,7 @@
     "new_client": "new_client",
     "client_reconnect": "client_reconnect",
     "client_disconnect": "client_disconnect",
+    "clients_status_change": "clients_status_change",
     "new_connection": "new_connection",
     "get_myself": "get_myself",
     "get_events": "get_events",

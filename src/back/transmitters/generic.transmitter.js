@@ -1,24 +1,42 @@
 var _ = require('lodash');
 var constants = require('../constants/constants');
+var CommonUtils = req('src/back/utils/common-utils');
+var SessionUtils = req('src/back/utils/session-utils');
 
-function GenericTransmitter() {}
+function GenericTransmitter() {
+}
 
-GenericTransmitter.prototype.send = function(clientsConnectionIds, type, message) {
+GenericTransmitter.prototype.send = function (clientsConnectionIds, type, message) {
     var to;
     if (clientsConnectionIds) {
         to = _.isArray(clientsConnectionIds) ? clientsConnectionIds : [clientsConnectionIds];
         to = this.wss.getWrappers(to);
-        _.forEach(to, function(client) {
+        _.forEach(to, function (client) {
             client.sendData(message, type);
         });
     }
 };
 
-GenericTransmitter.prototype.getName = function() {
+GenericTransmitter.prototype.sendAllExcept = function (exceptClientsIds, type, message) {
+    var preparedExcepts;
+    if (exceptClientsIds) {
+        preparedExcepts = CommonUtils.createArray(exceptClientsIds).map(function (id) {
+            return typeof id === 'string' ? id : id.valueOf();
+        });
+        this.wss.forEach(function (connection) {
+            var id = SessionUtils.getClientId(connection);
+            if (id && preparedExcepts.indexOf(id) > -1) {
+                connection.sendData(message, type);
+            }
+        });
+    }
+};
+
+GenericTransmitter.prototype.getName = function () {
     return constants.GENERIC_TRANSMITTER;
 };
 
-GenericTransmitter.prototype.postConstructor = function(ioc) {
+GenericTransmitter.prototype.postConstructor = function (ioc) {
     this.wss = ioc[constants.WSS];
 };
 

@@ -8,10 +8,7 @@ define([
     var api;
 
     api = {
-        listen: {
-            disconnectClient: ServiceUtils.createListener(BackendEvents.GENERAL.CLIENT_DISCONNECT),
-            newClient: ServiceUtils.createListener(BackendEvents.GENERAL.NEW_CLIENT)
-        },
+        listen: {},
         getClients: function getClients() {
             return Transport.send({}, BackendEvents.DATA.GET_CLIENTS_LIST);
         },

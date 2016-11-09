@@ -24,14 +24,30 @@ GameSupportController.prototype.onDisconnect = function (handler) {
     this.wss.addListener(this.wss.events.REMOVE_CONNECTION, handler);
 };
 
+GameSupportController.prototype.notifyClientsAboutNetworkStatusChange =
+    function (offlineClients, onlineClients) {
+        var preparedOfflineClients = CommonUtils.createArray(offlineClients);
+        var preparedOnlineClients = CommonUtils.createArray(onlineClients);
+        var summaryClients = preparedOfflineClients.concat(preparedOnlineClients);
+
+        this.transmitter.sendAllExcept(
+            summaryClients,
+            Events.clients_status_change,
+            {
+                disconnected: _.map(preparedOfflineClients, '_id'),
+                reconnected: preparedOnlineClients
+            }
+        );
+    };
+
 GameSupportController.prototype.notifyAboutNetworkStatusChange =
-    function (clientsToNotify, disconnectedClientsIds, reconnectedClientsIds) {
+    function (clientsIdsToNotify, disconnectedClientsIds, reconnectedClientsIds) {
         var data = {
             disconnected: CommonUtils.createArray(disconnectedClientsIds || []),
             reconnected: CommonUtils.createArray(reconnectedClientsIds || [])
         };
         this.transmitter.send(
-            _.map(CommonUtils.createArray(clientsToNotify), 'connection_id'),
+            _.map(CommonUtils.createArray(clientsIdsToNotify), 'connection_id'),
             Events.client_disconnect,
             data);
     };

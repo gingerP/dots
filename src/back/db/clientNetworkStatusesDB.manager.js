@@ -14,12 +14,12 @@ ClientNetworkStatusesDBManager.prototype = Object.create(GenericDBManager.protot
 ClientNetworkStatusesDBManager.prototype.constructor = ClientNetworkStatusesDBManager;
 
 ClientNetworkStatusesDBManager.prototype.updateStatus = function (clientId, connectionId) {
-    var preparedClienId = this.getObjectId(clientId);
+    var preparedClientId = this.getObjectId(clientId);
     return this.saveByCriteria({
-        client_id: preparedClienId,
+        client_id: preparedClientId,
         connection_id: connectionId
     }, {
-        client_id: preparedClienId
+        client_id: preparedClientId
     }).catch(errroLog);
 };
 

@@ -11,10 +11,11 @@ define([
     'common/services/game-data.service',
     'common/services/game.service',
     'common/services/invite.service',
+    'common/services/gameSupport.service',
     'module.game.graphics'
 ], function (_, q, Events, NetworkStatus, Observable, businessInvite, rules,
              GameUtils, GameStorage,
-             GameDataService, GameService, InviteService,
+             GameDataService, GameService, InviteService, GameSupportService,
              Graphics) {
     'use strict';
 
@@ -151,6 +152,21 @@ define([
         reloadMyself();
         reloadGame();
 
+        function checkAndNotifyAboutOpponentNetworkStatus(disconnected, reconnected) {
+            var opponent = GameStorage.getOpponent();
+            if (opponent) {
+                if (disconnected.length && disconnected.indexOf(opponent._id) > -1) {
+                    opponent.isOnline = false;
+                    GameStorage.setOpponent(opponent);
+                    observable.emit(Events.OPPONENT_OFFLINE);
+                } else if (reconnected.length && reconnected.indexOf(opponent._id) > -1) {
+                    opponent.isOnline = true;
+                    GameStorage.setOpponent(opponent);
+                    observable.emit(Events.OPPONENT_ONLINE);
+                }
+            }
+        }
+
         InviteService.listen.cancel(function (message) {
             var currentGame;
             if (GameStorage.hasOpponent()) {
@@ -176,26 +192,14 @@ define([
             });
         });
 
-        GameDataService.listen.newClient(function (message) {
-            observable.emit(Events.NEW_CLIENT, message);
-        });
-
-        GameDataService.listen.disconnectClient(function (message) {
-            var opponent = GameStorage.getGameOpponent();
-
-            if (opponent && message === opponent.getId()) {
-                GameStorage.setOpponentConnectionId(NetworkStatus.OFFLINE);
+        GameSupportService.listen.networkStatusChange(function (message) {
+            checkAndNotifyAboutOpponentNetworkStatus(message.disconnected, message.reconnected);
+            if (message.disconnected.length) {
+                observable.emit(Events.CLIENTS_DISCONNECT, message.disconnected);
             }
-            observable.emit(Events.CLIENT_DISCONNECT, message);
-        });
-
-        GameDataService.listen.reconnectClient(function (message) {
-            var opponent = GameStorage.getGameOpponent();
-
-            if (opponent && message === opponent.getId()) {
-                GameStorage.setOpponentConnectionId(NetworkStatus.OFFLINE);
+            if (message.reconnected.length) {
+                observable.emit(Events.CLIENTS_RECONNECT, message.reconnected);
             }
-            observable.emit(Events.CLIENT_DISCONNECT, message);
         });
     }
 

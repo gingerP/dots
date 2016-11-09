@@ -52,6 +52,7 @@ function getGamersScores(dot, activePlayerGameData, opponentGameData) {
     var newClientGameData = CreationUtils.newGameData(null, null, [dot]);
     var clientData = CreationUtils.newGameData(activePlayerGameData.game, activePlayerGameData.client, [dot]);
     var newLoopsData;
+    var clientScoreDelta;
     newClientGameData.dots = newClientGameData.dots.concat(activePlayerGameData.dots);
     newLoopsData = graph.getLoopsData(newClientGameData.dots);
     activePlayerGameData.dots.push(dot);
@@ -59,8 +60,10 @@ function getGamersScores(dot, activePlayerGameData, opponentGameData) {
         activePlayerGameData.loops = _.map(newLoopsData, handleLoopData.bind(null, opponentGameData));
         activePlayerGameData.dots = newClientGameData.dots;
     }
+    clientScoreDelta = getScoresDelta(clientData, activePlayerGameData, dot);
+    activePlayerGameData.loops = activePlayerGameData.loops.concat(clientScoreDelta.loops);
     return {
-        clientDelta: getScoresDelta(clientData, activePlayerGameData, dot),
+        clientDelta: clientData,
         client: activePlayerGameData,
         opponent: opponentGameData
     };

@@ -19,7 +19,7 @@ define([
         this.color = color;
         this.style = style;
         this.isActive = false;
-        this.networkStatus = _.isUndefined(networkStatus) || NetworkStatus.ONLINE;
+        this.isOnline = _.isUndefined(networkStatus) || NetworkStatus.ONLINE;
         return this;
     };
 

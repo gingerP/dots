@@ -18,7 +18,7 @@ function isGameAndClientValid(data) {
 }
 
 function isDotValid(dot, clientDots) {
-    return !_.some(clientDots, function(clientDot) {
+    return !_.some(clientDots, function (clientDot) {
         return clientDot.x === dot.x && clientDot.y === dot.y;
     });
 }
@@ -40,14 +40,14 @@ GameService.prototype.onAddDot = function (message) {
     var game;
     var client;
     var opponentId;
-    Promise.all([
-        this.clientsDBManager.get(clientId),
-        this.gameDBManager.get(gameId)
-    ]).then(function(data) {
+
+    function validateInboundData(data) {
         client = data[0];
         game = data[1];
         return isGameAndClientValid(data);
-    }).then(function(isValid) {
+    }
+
+    function handleValidation(isValid) {
         if (isValid) {
             opponentId = game.to.equals(client._id) ? game.from : game.to;
             return Promise.all([
@@ -57,7 +57,9 @@ GameService.prototype.onAddDot = function (message) {
             ]);
         }
         throw new Error('Invalid gameId or clientId');
-    }).then(function(gameData) {
+    }
+
+    function updateScores(gameData) {
         var clientGameData = gameData[0];
         var opponentGameData = gameData[1];
         var opponent = gameData[2];
@@ -69,9 +71,7 @@ GameService.prototype.onAddDot = function (message) {
             scores = GameScoreUtils.getGamersScores(dot, clientGameData, opponentGameData);
             game.activePlayer = opponent._id;
             gameCopy = _.cloneDeep(game);
-
-            inst.gameDataDBManager.save(scores.client);
-            inst.gameDataDBManager.save(scores.opponent);
+            inst.saveScores(scores);
             inst.gameDBManager.save(game);
             message.callback(scores);
             inst.gameController.nextStep(
@@ -81,7 +81,22 @@ GameService.prototype.onAddDot = function (message) {
                 gameCopy
             );
         }
-    }).catch(errorLog);
+    }
+
+    return Promise
+        .all([
+            this.clientsDBManager.get(clientId),
+            this.gameDBManager.get(gameId)
+        ])
+        .then(validateInboundData)
+        .then(handleValidation)
+        .then(updateScores)
+        .catch(errorLog);
+};
+
+GameService.prototype.saveScores = function (scores) {
+    this.gameDataDBManager.save(scores.client);
+    this.gameDataDBManager.save(scores.opponent);
 };
 
 GameService.prototype.getName = function () {

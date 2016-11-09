@@ -198,6 +198,15 @@ WSServer.prototype.getWrappers = function (ids) {
     return result;
 };
 
+WSServer.prototype.forEach = function (callback) {
+    if (typeof callback === 'function') {
+        for (let topic in this.connections) {//eslint-disable-line guard-for-in
+            callback(this.connections[topic]);
+        }
+    }
+    return false;
+};
+
 WSServer.prototype.prepareMessage = function (data, type, extend) {
     return JSON.stringify({
         type: type,

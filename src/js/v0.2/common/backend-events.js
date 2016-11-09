@@ -3,7 +3,8 @@ define([], function () {
         GENERAL: {
             CLIENT_DISCONNECT: 'client_disconnect',
             CLIENT_RECONNECT: 'client_reconnect',
-            NEW_CLIENT: 'new_client'
+            NEW_CLIENT: 'new_client',
+            CLIENT_NETWORK_STATUS_CHANGED: 'clients_status_change'
         },
         INVITE: {
             ASK: 'invite_player',

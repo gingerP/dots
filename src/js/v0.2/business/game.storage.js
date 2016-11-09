@@ -1,9 +1,8 @@
 define([
     'storage',
     'business/domains/Player',
-    'lodash',
-    'business/domains/NetworkStatus'
-], function (Storage, Player, _, NetworkStatus) {
+    'lodash'
+], function (Storage, Player, _) {
     'use strict';
 
     var api;
@@ -56,6 +55,7 @@ define([
                     gamers[key].id = obj._id;
                     gamers[key].name = obj.name;
                     gamers[key].color = obj.color;
+                    gamers[key].isOnline = obj.isOnline;
                 }
             }
         };
@@ -104,17 +104,6 @@ define([
 
     function setGameOpponent(opponentObj) {
         gamers.opponent = opponentObj;
-    }
-
-    function setOpponentConnectionId(connectionId) {
-        var opponent;
-        if (gamers.opponent) {
-            opponent = api.getOpponent();
-            gamers.opponent.networkStatus = _.isUndefined(connectionId) ? NetworkStatus.OFFLINE : NetworkStatus.ONLINE;
-            opponent.connection_id = _.isUndefined(connectionId) ? null : connectionId;
-            api.setOpponent(opponent);
-        }
-        return api;
     }
 
     function getGameOpponent() {
@@ -213,7 +202,6 @@ define([
         setGameOpponent: setGameOpponent,
         getGameOpponent: getGameOpponent,
         setOpponent: gamerSet(keys.OPPONENT),
-        setOpponentConnectionId: setOpponentConnectionId,
         getOpponent: gamerGet(keys.OPPONENT),
         clearOpponent: clearOpponent,
         hasOpponent: hasOpponent,

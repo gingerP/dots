@@ -57,12 +57,6 @@ define([
             vm.opponent = GameStorage.getGameOpponent();
         }
 
-        function onClientDisconnect(clientId) {
-            if (vm.opponent && vm.opponent.getId() === clientId) {
-
-            }
-        }
-
         vm.isMenuOpened = false;
         vm.isMyselfActive = true;
         vm.isOpponentActive = false;
@@ -85,7 +79,6 @@ define([
             delete vm.opponent;
         });
 
-        observable.on(Events.CLIENT_DISCONNECT, onClientDisconnect);
         observable.on(Events.CREATE_GAME, onCreateGame);
         observable.on(Events.REFRESH_MYSELF, onRefreshMyself);
         observable.on(Events.REFRESH_GAME, onRefreshGame);

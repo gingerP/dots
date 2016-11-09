@@ -8,8 +8,11 @@ define([], function () {
         add_client: 'add_client',
         ADD_DOT: 'ADD_DOT',
         NEW_CLIENT: 'NEW_CLIENT',
-        CLIENT_DISCONNECT: 'CLIENT_DISCONNECT',
+        CLIENTS_DISCONNECT: 'CLIENTS_DISCONNECT',
+        CLIENTS_RECONNECT: 'CLIENTS_RECONNECT',
         conquer_dots: 'conquer_dots',
+        OPPONENT_ONLINE: 'OPPONENT_ONLINE',
+        OPPONENT_OFFLINE: 'OPPONENT_OFFLINE',
 
         GAME_STEP: 'GAME_STEP',
         MAKE_PLAYER_ACTIVE: 'MAKE_PLAYER_ACTIVE',

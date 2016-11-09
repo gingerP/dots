@@ -10,6 +10,9 @@ var sessionUtils = req('src/back/utils/session-utils');
 var gameStatuses = require('../constants/game-statuses');
 var logger = req('src/js/logger').create('GameSupportService');
 var errorLog = funcUtils.error(logger);
+var _ = require('lodash');
+
+const CLIENT_NOT_EXIST = 'Reconnected Client does NOT exist';
 
 function getRandomAnimal() {
     var randomIndex = Math.round((Math.random() * animals.length - 1));
@@ -29,14 +32,15 @@ GameSupportService.prototype.constructor = GameSupportService;
 
 GameSupportService.prototype.onNewClient = function (message) {
     var inst = this;
-    var client = creationUtils.newClient(message.client.getId(), getRandomAnimal(), getRandomColor());
+    var client = creationUtils.newClient(message.client.getId(), getRandomAnimal(), getRandomColor(), null, null, true);
 
     function getClient(clientId) {
         return inst.clientsDBManager.get(clientId);
     }
 
     function notifyAboutNewClient(newClient) {
-        return this.notifyAboutNewClient(newClient);
+        var isOnline = true;
+        return inst.notifyAboutConnectionStatus(newClient, isOnline);
     }
 
     function storeClient(newClient) {
@@ -55,44 +59,39 @@ GameSupportService.prototype.onNewClient = function (message) {
 
 GameSupportService.prototype.onDisconnect = function (message) {
     var inst = this;
-    var connectionId = message[0];
-    var disconnectedClientId;
+    var clientId = sessionUtils.getClientId(message.client);
 
-    function saveConnectionId(client) {
-        var disconnectedClient = client;
-        disconnectedClientId = client._id;
-        disconnectedClient.connection_id = null;
-        return inst.clientsDBManager.save(disconnectedClient);
+    function handleConnectionNotification(disconnectedClient) {
+        var isOnline = false;
+        return inst.notifyAboutConnectionStatus(disconnectedClient, isOnline);
     }
 
-    function handleConnectionNotification() {
-        return inst.handleConnectionNotification(disconnectedClientId, connectionId);
-    }
-
-    return this.clientsDBManager
-        .getClientByConnectionId(connectionId)
-        .then(saveConnectionId)
-        .then(handleConnectionNotification);
+    return this.updateNetworkStatus(clientId, false)
+        .then(handleConnectionNotification)
+        .catch(errorLog);
 };
 
 GameSupportService.prototype.onReconnect = function (message) {
     var inst = this;
     var reconnectedClientId = message.data._id;
+    var reconnectedClient = message.data._id;
 
     function handleConnectionNotification() {
-      return inst.handleConnectionNotification(reconnectedClientId, message.client.getId());
+        var isOnline = true;
+        return inst.notifyAboutConnectionStatus(reconnectedClient, isOnline);
     }
 
     function storeClient(newClient) {
-        if (newClient) {
-            sessionUtils.storeClientId(newClient._id, message.client);
+        if (!newClient) {
+            throw new Error(CLIENT_NOT_EXIST);
         }
+        reconnectedClient = newClient;
+        sessionUtils.storeClientId(newClient._id, message.client);
         return newClient;
     }
 
     if (message.data) {
-        return inst.clientsDBManager
-            .get(reconnectedClientId)
+        return inst.updateNetworkStatus(reconnectedClientId)
             .then(storeClient)
             .then(message.callback)
             .then(handleConnectionNotification)
@@ -101,6 +100,13 @@ GameSupportService.prototype.onReconnect = function (message) {
     return new Promise(function (resolve) {
         resolve({});
     });
+};
+
+GameSupportService.prototype.notifyAboutConnectionStatus = function (client, isOnline) {
+    this.gameSupportController.notifyClientsAboutNetworkStatusChange(
+        isOnline ? null : client,
+        isOnline ? client : null
+    );
 };
 
 GameSupportService.prototype.handleConnectionNotification = function (clientId, connectionId) {
@@ -118,6 +124,26 @@ GameSupportService.prototype.handleConnectionNotification = function (clientId, 
     return inst.gameDBManager
         .getActiveGame(clientId)
         .then(runNotification);
+};
+
+GameSupportService.prototype.updateNetworkStatus = function (clientId, isOnline) {
+    var inst = this;
+
+    function save(client) {
+        var clientCopy;
+        if (!client) {
+            throw new Error(CLIENT_NOT_EXIST);
+        }
+        client.isOnline = isOnline;
+        clientCopy = _.cloneDeep(client);
+        inst.clientsDBManager.save(client);
+        return clientCopy;
+    }
+
+    return this.clientsDBManager
+        .get(clientId)
+        .then(save)
+        .catch(errorLog);
 };
 
 GameSupportService.prototype.saveNewConnectionId = function (client, connectionId) {
@@ -175,6 +201,7 @@ GameSupportService.prototype.notifyAboutNewClient = function (newClient) {
         }
         return {};
     }
+
     this.clientsDBManager
         .getClientsExcept(newClient)
         .then(runNotification)
