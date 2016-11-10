@@ -32,7 +32,7 @@ GameSupportService.prototype.constructor = GameSupportService;
 
 GameSupportService.prototype.onNewClient = function (message) {
     var inst = this;
-    var client = creationUtils.newClient(message.client.getId(), getRandomAnimal(), getRandomColor(), null, null, true);
+    var client = creationUtils.newClient(getRandomAnimal(), getRandomColor(), null, null, true);
 
     function getClient(clientId) {
         return inst.clientsDBManager.get(clientId);
@@ -40,7 +40,8 @@ GameSupportService.prototype.onNewClient = function (message) {
 
     function notifyAboutNewClient(newClient) {
         var isOnline = true;
-        return inst.notifyAboutConnectionStatus(newClient, isOnline);
+        inst.notifyAboutConnectionStatus(newClient, isOnline);
+        return newClient;
     }
 
     function storeClient(newClient) {

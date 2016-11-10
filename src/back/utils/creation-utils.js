@@ -17,9 +17,8 @@ function newGameData(gameId, clientId, dots, losingDots, loops) {
     };
 }
 
-function newClient(connectionId, name, color, created, updated, isOnline) {
+function newClient(name, color, created, updated, isOnline) {
     return {
-        connection_id: connectionId,
         created: created || Date.now(),
         updated: updated || Date.now(),
         isOnline: Boolean(isOnline),

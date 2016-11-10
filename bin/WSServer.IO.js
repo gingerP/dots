@@ -1,3 +1,4 @@
+'use strict';
 var server;
 var Observable = require('./Observable').class;
 var WebSocketServer = require('socket.io');
@@ -95,16 +96,19 @@ WSServer.prototype.getListeners = function (topic) {
 };
 
 WSServer.prototype.removeConnection = function (connection, reason) {
-    var index, wrapperIndex;
-    for (var topic in this.connections) {
+    var index, wrapperIndex, topic;
+
+    for (topic in this.connections) {
         index = this.connections[topic].indexOf(connection);
-        wrapperIndex = this.connectionWrappers[topic].indexOf(connection);
         if (index > -1) {
             this.connections[topic].splice(index, 1);
-            this.propertyChange(this.events.REMOVE_CONNECTION, [connection, reason]);
         }
         for (wrapperIndex = 0; wrapperIndex < this.connectionWrappers[topic].length; wrapperIndex++) {
             if (this.connectionWrappers[topic][wrapperIndex].equalConnection(connection)) {
+                this.propertyChange(
+                    this.events.REMOVE_CONNECTION,
+                    {client: this.connectionWrappers[topic][wrapperIndex], data: reason}
+                );
                 this.connectionWrappers[topic].splice(wrapperIndex, 1);
                 break;
             }
@@ -200,8 +204,10 @@ WSServer.prototype.getWrappers = function (ids) {
 
 WSServer.prototype.forEach = function (callback) {
     if (typeof callback === 'function') {
-        for (let topic in this.connections) {//eslint-disable-line guard-for-in
-            callback(this.connections[topic]);
+        for (let topic in this.connectionWrappers) {//eslint-disable-line guard-for-in
+            for (let index = 0; index < this.connectionWrappers[topic].length; index++) {//eslint-disable-line
+                callback(this.connectionWrappers[topic][index]);
+            }
         }
     }
     return false;

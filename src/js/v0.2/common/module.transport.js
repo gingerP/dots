@@ -44,11 +44,11 @@ define([
     }
 
     function updateClient() {
+        myself = gameStorage.getClient();
         if (connectionTimes === 1) {
-            myself = gameStorage.getClient();
             connectionTimes += myself ? 1 : 0;
         }
-        if (connectionTimes === 1) {
+        if (connectionTimes === 1 || !myself) {
             api.send({}, 'new_client').then(function (data) {
                 myself = data;
                 gameStorage.setClient(myself);
