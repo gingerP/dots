@@ -5,6 +5,7 @@ var Events = require('../events');
 var constants = require('../constants/constants');
 var GenericController = require('./generic.controller').class;
 var CommonUtils = req('src/back/utils/common-utils');
+var logger = req('src/js/logger').create('GameSupportController');
 
 function GameSupportController() {
 }
@@ -28,15 +29,17 @@ GameSupportController.prototype.notifyClientsAboutNetworkStatusChange =
     function (offlineClients, onlineClients) {
         var preparedOfflineClients = CommonUtils.createArray(offlineClients);
         var preparedOnlineClients = CommonUtils.createArray(onlineClients);
-        var summaryClients = preparedOfflineClients.concat(preparedOnlineClients);
+        var summaryClients = preparedOfflineClients.concat(_.map(preparedOnlineClients, '_id'));
+        var notifyDetails = {
+            disconnected: _.map(preparedOfflineClients, '_id'),
+            reconnected: preparedOnlineClients
+        };
 
+        logger.debug('Notify about network status: %s', JSON.stringify(notifyDetails));
         this.transmitter.sendAllExcept(
             summaryClients,
             Events.clients_status_change,
-            {
-                disconnected: _.map(preparedOfflineClients, '_id'),
-                reconnected: preparedOnlineClients
-            }
+            notifyDetails
         );
     };
 

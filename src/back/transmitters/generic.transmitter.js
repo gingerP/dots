@@ -19,17 +19,21 @@ GenericTransmitter.prototype.send = function (clientsConnectionIds, type, messag
 
 GenericTransmitter.prototype.sendAllExcept = function (exceptClientsIds, type, message) {
     var preparedExcepts;
-    if (exceptClientsIds) {
-        preparedExcepts = CommonUtils.createArray(exceptClientsIds).map(function (id) {
-            return typeof id === 'string' ? id : id.valueOf();
-        });
-        this.wss.forEach(function (connection) {
-            var id = SessionUtils.getClientId(connection);
-            if (id && preparedExcepts.indexOf(id) > -1) {
-                connection.sendData(message, type);
-            }
-        });
-    }
+    var inst = this;
+    new Promise(function (resolve) {
+        if (exceptClientsIds) {
+            preparedExcepts = CommonUtils.createArray(exceptClientsIds).map(function (id) {
+                return typeof id === 'string' ? id : id.toString();
+            });
+            inst.wss.forEach(function (connection) {
+                var id = SessionUtils.getClientId(connection);
+                if (id && preparedExcepts.indexOf(id) > -1) {
+                    connection.sendData(message, type);
+                }
+            });
+        }
+        resolve();
+    });
 };
 
 GenericTransmitter.prototype.getName = function () {
