@@ -17,14 +17,14 @@ define([
 
     angular.module('clientsList.module').controller('clientsListCtrl', ClientsListController);
 
-    function ClientsListController(scopeUtils, $scope, clientsListUtilFactory) {
+    function ClientsListController(scopeUtils, $scope, clientsListUtil) {
         var vm = this,
             observable = Observable.instance;
 
         vm.clientsList = [];
 
         function rejectClient(exclusionsIdsList) {
-            return function(client) {
+            return function (client) {
                 return exclusionsIdsList.indexOf(client._id) > -1;
             };
         }
@@ -35,7 +35,7 @@ define([
 
         function reloadClients() {
             gameDataService.getClients().then(function (clients) {
-                var preparedClients = _.map(clients, clientsListUtilFactory.prepareClientForUI);
+                var preparedClients = _.map(clients, clientsListUtil.prepareClientForUI);
                 var myself = GameStorage.getClient();
                 var opponent = GameStorage.getOpponent();
                 var exclusion = opponent ? [myself._id, opponent._id] : [myself._id];
@@ -47,43 +47,51 @@ define([
         function onInvite(message) {
             if (message.from) {
                 observable.emit(Events.INVITE, message.from);
-                clientsListUtilFactory.setInvite(message.from, vm.clientsList);
+                clientsListUtil.setInvite(message.from, vm.clientsList);
                 scopeUtils.apply($scope);
             }
         }
 
         function onCreateGame(message) {
             if (message.from && message.to && message.game) {
-                clientsListUtilFactory.setSuccess(message.opponent, vm.clientsList);
+                clientsListUtil.setSuccess(message.opponent, vm.clientsList);
                 scopeUtils.apply($scope);
             }
         }
 
         function onCancelGame(data) {
             if (data.opponent) {
-                clientsListUtilFactory.setCancelGame(data.opponent, vm.clientsList);
+                clientsListUtil.setCancelGame(data.opponent, vm.clientsList);
                 scopeUtils.apply($scope);
             }
         }
 
         function onInviteReject(message) {
             if (message.to) {
-                clientsListUtilFactory.setReject(message.to, vm.clientsList);
+                clientsListUtil.setReject(message.to, vm.clientsList);
                 scopeUtils.apply($scope);
             }
         }
 
         function onNewClient(client) {
-            var preparedClient = clientsListUtilFactory.prepareClientForUI(client);
+            var preparedClient = clientsListUtil.prepareClientForUI(client);
             vm.clientsList.splice(0, 0, preparedClient);
             scopeUtils.apply($scope);
         }
 
-        function onClientDisconnect(clientId) {
-            var client = _.find(vm.clientsList, {_id: clientId});
+        function onClientsReconnected(clients) {
+            var filteredClients = clientsListUtil.filterReconnectedClients(clients, vm.clientsList);
+            if (filteredClients.length) {
+                filteredClients = _.map(filteredClients, clientsListUtil.prepareClientForUI);
+                vm.clientsList.push.apply(vm.clientsList, filteredClients);
+                scopeUtils.apply($scope);
+            }
+        }
 
-            if (client) {
-                delete client.connection_id;
+        function onClientsDisconnected(clientIds) {
+            var oldCount = vm.clientsList.length;
+            vm.clientsList = clientsListUtil.removeDisconnectedClients(clientIds, vm.clientsList);
+            if (oldCount !== vm.clientsList.length) {
                 scopeUtils.apply($scope);
             }
         }
@@ -102,7 +110,8 @@ define([
             inviteBusiness.reject(toClient._id);
         };
 
-        observable.on(Events.CLIENT_DISCONNECT, onClientDisconnect);
+        observable.on(Events.CLIENTS_RECONNECT, onClientsReconnected);
+        observable.on(Events.CLIENTS_DISCONNECT, onClientsDisconnected);
         observable.on(Events.NEW_CLIENT, onNewClient);
         observable.on(Events.REFRESH_MYSELF, updateClient);
         observable.on(Events.INVITE, onInvite);

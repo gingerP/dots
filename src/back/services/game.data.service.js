@@ -16,7 +16,7 @@ GameDataService.prototype = Object.create(GenericService.prototype);
 GameDataService.prototype.constructor = GameDataService;
 
 GameDataService.prototype.onGetClients = function (data) {
-    this.clientsDBManager.list().then(data.callback);
+    this.clientsDBManager.getOnlineClients().then(data.callback);
 };
 
 GameDataService.prototype.onGetMySelf = function (message) {

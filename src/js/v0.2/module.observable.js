@@ -59,7 +59,7 @@ define([], function () {
 
     Observable.prototype.__runListener = function (func, context, data) {
         if (typeof(func) === 'function') {
-            func.apply(context, data);
+            func(data);
         }
     };
 

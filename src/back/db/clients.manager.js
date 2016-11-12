@@ -33,11 +33,7 @@ ClientsDBManager.prototype.getClientsExcept = function (client) {
 };
 
 ClientsDBManager.prototype.getOnlineClients = function () {
-    return this.listByCriteria({
-        connection_id: {
-            $ne: null
-        }
-    }).catch(errorLogger);
+    return this.listByCriteria({isOnline: true}).catch(errorLogger);
 };
 
 ClientsDBManager.prototype.getName = function () {

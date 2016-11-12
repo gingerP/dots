@@ -1,6 +1,6 @@
 <div class="clients-list">
     <div class="clients-placeholder">
-        <div ng-repeat="client in clientsListCtrl.clientsList" class="client">
+        <div ng-repeat="client in clientsListCtrl.clientsList | orderBy: '-name'" class="client">
             <span ng-bind="client.name"></span>
             <div ng-show="client.mode == 'common'" class="invite-btns-container">
                 <button class="btn-override btn-right btn-invite-ask btn-client" ng-click="clientsListCtrl.invite(client)">To Invite</button>

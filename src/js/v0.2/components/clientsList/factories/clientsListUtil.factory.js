@@ -1,17 +1,26 @@
 define([
     'angular',
     'lodash',
+    'business/game.storage',
     '../clientsList.module'
-], function(angular, _) {
+], function(angular, _, GameStorage) {
     'use strict';
 
-    angular.module('clientsList.module').factory('clientsListUtilFactory', clientsListUtilFactory);
+    angular.module('clientsList.module').factory('clientsListUtil', clientsListUtilFactory);
 
     function clientsListUtilFactory() {
         var modes = {
             common: 'common',
             invite: 'invite'
         };
+
+        function getClientsHashes(clients) {
+            return _.map(clients, '_id');
+        }
+
+        function getClientHash(client) {
+            return client._id;
+        }
 
         function setCancelGame(opponent, clients) {
             var isInList = _.find(clients, {_id: opponent._id});
@@ -56,12 +65,36 @@ define([
             return preparedClient;
         }
 
+        function filterReconnectedClients(reconnectedClients, existClients) {
+            var opponent = GameStorage.getOpponent();
+            var myself = GameStorage.getClient();
+            var existClientsHashes = getClientsHashes(existClients);
+            return _.filter(reconnectedClients, function (client) {
+                return existClientsHashes.indexOf(getClientHash(client)) < 0
+                    && (opponent && client._id !== opponent._id || client._id !== myself);
+            });
+        }
+
+        function removeDisconnectedClients(disconnectedClientsIds, existClients) {
+            var index = existClients.length - 1;
+
+            while (index >= 0) {
+                if (disconnectedClientsIds.indexOf(existClients[index]._id) >= 0) {
+                    existClients.splice(index, 1);
+                }
+                index--;
+            }
+            return existClients;
+        }
+
         return {
             setSuccess: setSuccess,
             setInvite: setInvite,
             setReject: setReject,
             setCancelGame: setCancelGame,
-            prepareClientForUI: prepareClientForUI
+            prepareClientForUI: prepareClientForUI,
+            filterReconnectedClients: filterReconnectedClients,
+            removeDisconnectedClients: removeDisconnectedClients
         };
     }
 });

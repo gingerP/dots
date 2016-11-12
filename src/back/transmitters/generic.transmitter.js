@@ -2,6 +2,7 @@ var _ = require('lodash');
 var constants = require('../constants/constants');
 var CommonUtils = req('src/back/utils/common-utils');
 var SessionUtils = req('src/back/utils/session-utils');
+var logger = req('src/js/logger').create('GenericTransmitter');
 
 function GenericTransmitter() {
 }
@@ -27,8 +28,9 @@ GenericTransmitter.prototype.sendAllExcept = function (exceptClientsIds, type, m
             });
             inst.wss.forEach(function (connection) {
                 var id = SessionUtils.getClientId(connection);
-                if (id && preparedExcepts.indexOf(id) > -1) {
+                if (id && preparedExcepts.indexOf(id.toString()) < 0) {
                     connection.sendData(message, type);
+                    logger.debug('sendAllExcept(to: %s)', connection.getId());
                 }
             });
         }

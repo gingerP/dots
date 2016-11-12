@@ -92,7 +92,7 @@ GameSupportService.prototype.onReconnect = function (message) {
     }
 
     if (message.data) {
-        return inst.updateNetworkStatus(reconnectedClientId)
+        return inst.updateNetworkStatus(reconnectedClientId, true)
             .then(storeClient)
             .then(message.callback)
             .then(handleConnectionNotification)
@@ -135,7 +135,7 @@ GameSupportService.prototype.updateNetworkStatus = function (clientId, isOnline)
         if (!client) {
             throw new Error(CLIENT_NOT_EXIST);
         }
-        client.isOnline = isOnline;
+        client.isOnline = Boolean(isOnline);
         clientCopy = _.cloneDeep(client);
         inst.clientsDBManager.save(client);
         return clientCopy;
