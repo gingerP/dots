@@ -28,25 +28,25 @@ CreateGameController.prototype.onCancelGame = function (handler) {
 };
 
 CreateGameController.prototype.invitePlayer = function (fromClient, toClient) {
-    this.transmitter.send(toClient.connection_id, events.invite_player, {
+    this.transmitter.send(toClient._id, events.invite_player, {
         from: fromClient
     });
 };
 
 CreateGameController.prototype.rejectPlayer = function (fromClient, toClient) {
-    this.transmitter.send(fromClient.connection_id, events.reject_invite_player, {
+    this.transmitter.send(fromClient._id, events.reject_invite_player, {
         to: toClient
     });
 };
 
 CreateGameController.prototype.rejectPlayerBeLate = function (fromClient, toClient) {
-    this.transmitter.send(fromClient.connection_id, events.reject_invite_player_to_late, {
+    this.transmitter.send(fromClient._id, events.reject_invite_player_to_late, {
         to: toClient
     });
 };
 
 CreateGameController.prototype.successPlayer = function (fromClient, toClient, gameId) {
-    this.transmitter.send([fromClient.connection_id, toClient.connection_id], events.success_invite_player, {
+    this.transmitter.send([fromClient._id, toClient._id], events.success_invite_player, {
         to: toClient,
         from: fromClient,
         game: gameId
@@ -54,14 +54,14 @@ CreateGameController.prototype.successPlayer = function (fromClient, toClient, g
 };
 
 CreateGameController.prototype.successPlayerBeLate = function (fromClient, toClient) {
-    this.transmitter.send(toClient.connection_id, events.success_invite_player_to_late, {
+    this.transmitter.send(toClient._id, events.success_invite_player_to_late, {
         from: fromClient
     });
 };
 
 CreateGameController.prototype.cancelGame = function (clients, game) {
-    var connectionIds = _.map(clients, 'connection_id');
-    this.transmitter.send(connectionIds, events.cancel_game, {
+    var ids = _.map(clients, '_id');
+    this.transmitter.send(ids, events.cancel_game, {
         clients: clients,
         game: game
     });

@@ -12,6 +12,13 @@ var gameStatuses = require('../constants/game-statuses');
 var errorLog = funcUtils.error(logger);
 const Errors = req('src/back/modules/Errors');
 
+function getClient(id, clients) {
+    var prepareId = _.isString(id) ? id : id.toString();
+    return _.find(clients, function(client) {
+        return client._id.toString() === prepareId;
+    });
+}
+
 function CreateGameService() {
 }
 
@@ -21,19 +28,25 @@ CreateGameService.prototype.constructor = CreateGameService;
 CreateGameService.prototype.onInvite = function (message) {
     var clientId;
     var inst = this;
+    var clientsIds;
+
+    function handleGamers(gamers) {
+        var to = getClient(clientsIds[0], gamers);
+        var from = getClient(clientsIds[1], gamers);
+        if (!_.isEmpty(to) && !_.isEmpty(from)) {
+            inst.createGameDBManager.createInvite(from, to, inviteStatuses.active);
+            inst.controller.invitePlayer(from, to);
+        } else {
+            logger.warn('Invite - client does not exist!');
+        }
+    }
+
     if (message.data.clients && message.data.clients.length) {
         clientId = message.data.clients[0];
-        this.clientsDBManager.get([clientId, sessionUtils.getClientId(message.client)])
-            .then(function (clients) {
-                var to = clients[0];
-                var from = clients[1];
-                if (!_.isEmpty(to) && !_.isEmpty(from)) {
-                    inst.createGameDBManager.createInvite(from, to, inviteStatuses.active);
-                    inst.controller.invitePlayer(from, to);
-                } else {
-                    logger.warn('Invite - client does not exist!');
-                }
-            }).catch(errorLog);
+        clientsIds = [clientId, sessionUtils.getClientId(message.client)];
+        this.clientsDBManager.get(clientsIds)
+            .then(handleGamers)
+            .catch(errorLog);
     }
 };
 
@@ -55,7 +68,8 @@ CreateGameService.prototype.onReject = function (message) {
 
 CreateGameService.prototype.onSuccess = function (message) {
     var inst = this;
-    inst.giveAnAnswerToClient(message).then(function (answer) {
+
+    function handleSuccessGame(answer) {
         if (!answer) {
             return;
         }
@@ -68,31 +82,38 @@ CreateGameService.prototype.onSuccess = function (message) {
         } else {
             inst.controller.successPlayerBeLate(answer.fromClient, answer.toClient);
         }
-    }).catch(errorLog);
+    }
+
+    return inst.giveAnAnswerToClient(message)
+        .then(handleSuccessGame)
+        .catch(errorLog);
 };
 
 CreateGameService.prototype.onCancelGame = function (message) {
     var inst = this;
     var gameId = _.get(message, 'data.extend.gameId');
+
+    function cancelGame(data) {
+        var game = data[0];
+        var client = data[1];
+        if (game.from.equals(client._id) || game.to.equals(client._id)) {
+            let opponentId = game.from.equals(client._id) ? game.to : game.from;
+            message.callback(true);
+            inst.clientsDBManager.get(opponentId).then(function (opponent) {
+                inst.cancelGame([opponent, client], game);
+            });
+        } else {
+            message.callback(Errors.noAccess);
+            errorLog(Errors.noAccess);
+        }
+    }
+
     if (gameId) {
         let clientId = sessionUtils.getClientId(message.client);
         Promise.all([
             this.gameDBManager.get(gameId),
             this.clientsDBManager.get(clientId)
-        ]).then(function (data) {
-            var game = data[0];
-            var client = data[1];
-            if (game.from.equals(client._id) || game.to.equals(client._id)) {
-                let opponentId = game.from.equals(client._id) ? game.to : game.from;
-                message.callback(true);
-                inst.clientsDBManager.get(opponentId).then(function (opponent) {
-                    inst.cancelGame([opponent, client], game);
-                });
-            } else {
-                message.callback(Errors.noAccess);
-                errorLog(Errors.noAccess);
-            }
-        })
+        ]).then(cancelGame)
         .catch(errorLog);
     } else {
         logger.error('onCancelGame: gameId empty!');
@@ -101,13 +122,19 @@ CreateGameService.prototype.onCancelGame = function (message) {
 
 CreateGameService.prototype.newGame = function (clientA, clientB, activePlayer, invite) {
     var inst = this;
-    return this.gameSupportService.newGame(clientA._id, clientB._id, activePlayer._id).then(function (gameId) {
+
+    function handleNewGame(gameId) {
         invite.game = gameId;
         inst.createGameDBManager.save(invite);
         inst.gameDataDBManager.createNew(gameId, clientA._id);
         inst.gameDataDBManager.createNew(gameId, clientB._id);
         return inst.gameDBManager.get(gameId);
-    }).catch(errorLog);
+    }
+
+    return this.gameSupportService
+        .newGame(clientA._id, clientB._id, activePlayer._id)
+        .then(handleNewGame)
+        .catch(errorLog);
 };
 
 CreateGameService.prototype.cancelGameById = function (id) {
@@ -149,23 +176,29 @@ CreateGameService.prototype.giveAnAnswerToClient = function (message) {
     var toClientId;
     var fromClient;
     var toClient;
+
+    function newAnswer(invite) {
+        return {
+            isInviteExist: Boolean(invite),
+            invite: invite,
+            fromClient: fromClient,
+            toClient: toClient
+        };
+    }
+
+    function getInvite(clients) {
+        fromClient = getClient(clientId, clients);
+        toClient = getClient(toClientId, clients);
+        return inst.createGameDBManager.getInvite(fromClient._id, toClient._id, inviteStatuses.active);
+    }
+
     if (message.data && message.data.clients.length) {
         clientId = message.data.clients[0];
         toClientId = sessionUtils.getClientId(message.client);
         return this.clientsDBManager.get([clientId, toClientId])
-            .then(function (clients) {
-                fromClient = clients[0];
-                toClient = clients[1];
-                return inst.createGameDBManager.getInvite(fromClient._id, toClient._id, inviteStatuses.active);
-            })
-            .then(function (invite) {
-                return {
-                    isInviteExist: Boolean(invite),
-                    invite: invite,
-                    fromClient: fromClient,
-                    toClient: toClient
-                };
-            }).catch(errorLog);
+            .then(getInvite)
+            .then(newAnswer)
+            .catch(errorLog);
     }
     logger.error('Incorrect data while give answer to client!');
     return Promise();

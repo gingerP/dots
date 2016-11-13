@@ -23,7 +23,7 @@ GameController.prototype.nextStep = function (
     currentPlayerGameData,
     game) {
     this.transmitter.send(
-        [previousPlayer.connection_id, currentPlayer.connection_id],
+        [previousPlayer._id, currentPlayer._id],
         Events.game_step,
         {
             dot: dot,

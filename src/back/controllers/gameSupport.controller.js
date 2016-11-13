@@ -50,13 +50,13 @@ GameSupportController.prototype.notifyAboutNetworkStatusChange =
             reconnected: CommonUtils.createArray(reconnectedClientsIds || [])
         };
         this.transmitter.send(
-            _.map(CommonUtils.createArray(clientsIdsToNotify), 'connection_id'),
+            _.map(CommonUtils.createArray(clientsIdsToNotify), '_id'),
             Events.client_disconnect,
             data);
     };
 
 GameSupportController.prototype.notifyAboutNewClient = function (newClient, clients) {
-    this.transmitter.send(_.map(clients, 'connection_id'), Events.new_client, newClient);
+    this.transmitter.send(_.map(clients, '_id'), Events.new_client, newClient);
 };
 
 GameSupportController.prototype.postConstructor = function (ioc) {

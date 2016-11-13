@@ -27,7 +27,6 @@ define([], function () {
     Observable.prototype.emit = function (property, data) {
         var methodName;
         var inst = this;
-        var preparedData = Array.isArray(data) ? data : [data];
         if (this.listeners && this.listeners[property] && this.listeners[property].length) {
             this.listeners[property].forEach(function (listener) {
                 var func;
@@ -48,10 +47,10 @@ define([], function () {
                 }
                 if (listener.async) {
                     setTimeout(function () {
-                        inst.__runListener(func, context, preparedData, property);
+                        inst.__runListener(func, context, data, property);
                     }, 0);
                 } else {
-                    inst.__runListener(func, context, preparedData, property);
+                    inst.__runListener(func, context, data, property);
                 }
             });
         }

@@ -14,6 +14,7 @@
     <a href="javascript:void(0)" type="button" class="player-next" ng-click="currentPlayerCtrl.nextPlayer()">Next</a>
 
     <div class="player-placeholder-right">
+        <span ng-show="currentPlayerCtrl.opponent && !currentPlayerCtrl.opponent.isOnline" class="opponent-offline-title">offline</span>
         <div ng-show="currentPlayerCtrl.opponent" class="opponent-player opponent-block player"
              ng-class="{'inactive-player': !currentPlayerCtrl.isOpponentActive,
              'active-player': currentPlayerCtrl.isOpponentActive}">

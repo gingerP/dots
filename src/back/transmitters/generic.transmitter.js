@@ -4,16 +4,29 @@ var CommonUtils = req('src/back/utils/common-utils');
 var SessionUtils = req('src/back/utils/session-utils');
 var logger = req('src/js/logger').create('GenericTransmitter');
 
+function prepareIds(clientIds) {
+    return _.map(CommonUtils.createArray(clientIds), function(id) {
+        return _.isString(id) ? id : id.toString();
+    });
+}
+
 function GenericTransmitter() {
 }
 
-GenericTransmitter.prototype.send = function (clientsConnectionIds, type, message) {
-    var to;
-    if (clientsConnectionIds) {
-        to = _.isArray(clientsConnectionIds) ? clientsConnectionIds : [clientsConnectionIds];
-        to = this.wss.getWrappers(to);
-        _.forEach(to, function (client) {
-            client.sendData(message, type);
+GenericTransmitter.prototype.send = function (clientsIds, type, message) {
+    var preparedClientsIds;
+    var inst = this;
+    if (clientsIds) {
+        new Promise(function (resolve) {
+            preparedClientsIds = prepareIds(clientsIds);
+            inst.wss.forEach(function (connection) {
+                var id = SessionUtils.getClientId(connection);
+                if (id && preparedClientsIds.indexOf(id.toString()) >= 0) {
+                    connection.sendData(message, type);
+                    logger.debug('send(to: %s)', connection.getId());
+                }
+            });
+            resolve();
         });
     }
 };
@@ -23,9 +36,7 @@ GenericTransmitter.prototype.sendAllExcept = function (exceptClientsIds, type, m
     var inst = this;
     new Promise(function (resolve) {
         if (exceptClientsIds) {
-            preparedExcepts = CommonUtils.createArray(exceptClientsIds).map(function (id) {
-                return typeof id === 'string' ? id : id.toString();
-            });
+            preparedExcepts = prepareIds(exceptClientsIds);
             inst.wss.forEach(function (connection) {
                 var id = SessionUtils.getClientId(connection);
                 if (id && preparedExcepts.indexOf(id.toString()) < 0) {
