@@ -1,7 +1,7 @@
 define([
     'angular',
     'module.observable',
-    'module.game.business',
+    'business/module.game.business',
     'module.backend.service',
     'common/events',
     'components/utils/scope.utils',

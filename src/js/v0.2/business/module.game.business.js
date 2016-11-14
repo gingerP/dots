@@ -12,7 +12,7 @@ define([
     'common/services/game.service',
     'common/services/invite.service',
     'common/services/gameSupport.service',
-    'module.game.graphics'
+    'graphics/module.game.graphics'
 ], function (_, q, Events, NetworkStatus, Observable, businessInvite, rules,
              GameUtils, GameStorage,
              GameDataService, GameService, InviteService, GameSupportService,

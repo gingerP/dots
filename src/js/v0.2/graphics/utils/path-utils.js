@@ -1,6 +1,6 @@
 define([
     'lodash'
-], function(_) {
+], function (_) {
     'use strict';
 
     function newLine(vertexA, vertexB) {
@@ -74,7 +74,8 @@ define([
         var lines = [];
         var vertexesHashMap = createVertexesHashesMap(vertexes);
         var linesHashes = [];
-        for (let vertexIndex = 0; vertexIndex < vertexes.length; vertexIndex++) {
+        var vertexIndex = 0;
+        for (vertexIndex = 0; vertexIndex < vertexes.length; vertexIndex++) {
             lines.push.apply(
                 lines,
                 getVertexLines(vertexes[vertexIndex], vertexesHashMap, linesHashes)

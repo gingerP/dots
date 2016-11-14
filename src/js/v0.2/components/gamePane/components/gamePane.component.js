@@ -1,7 +1,7 @@
 define([
     'angular',
     'module.observable',
-    'module.game.graphics',
+    'graphics/module.game.graphics',
     'common/events',
     'components/gamePane/gamePane.module',
     'components/gamePane/controllers/gamePane.controller'

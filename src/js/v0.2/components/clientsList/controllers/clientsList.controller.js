@@ -4,7 +4,7 @@ define([
     'module.observable',
     'business/game.storage',
     'common/events',
-    'module.game.business',
+    'business/module.game.business',
     'business/business.invite',
     'module.backend.service',
     'common/services/game-data.service',
