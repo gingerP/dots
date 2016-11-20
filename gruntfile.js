@@ -1,5 +1,5 @@
 var grunt = require('grunt'),
-    prodDirectory = './build';
+    PRODUCTION_SRC_DIRECTORY = 'build';
 
 function normalizeTemplateUrl(url) {
     return url.replace('./src', '/static');
@@ -17,7 +17,6 @@ function normalizeAppCacheModule(module, script) {
 }
 
 require('load-grunt-tasks')(grunt);
-grunt.loadNpmTasks('grunt-angular-templates');
 grunt.initConfig({
     eslint: {
         target: [
@@ -48,6 +47,7 @@ grunt.initConfig({
     less: {
         dev: {
             options: {
+                paths: ['src/style/'],
                 compress: true
             },
             files: {
@@ -56,14 +56,14 @@ grunt.initConfig({
         },
         prod: {
             options: {
+                paths: ['src/style/'],
                 compress: true
             },
             files: {
-                'build/style.css': 'src/style/style.less'
+                [PRODUCTION_SRC_DIRECTORY + '/style/style.css']: 'src/style/style.less'
             }
         }
     }
 });
 
 grunt.registerTask('html2js', ['ngtemplates']);
-grunt.registerTask('less', ['less']);

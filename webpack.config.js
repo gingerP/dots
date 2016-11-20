@@ -1,16 +1,23 @@
 var path = require('path');
 var webpack = require('webpack');
-var ngAnnotatePlugin = require('ng-annotate-webpack-plugin');
+var NgAnnotatePlugin = require('ng-annotate-webpack-plugin');
+var CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
     context: __dirname + '/src/js',
     entry: {
         app: './game'
     },
+    devServer: {
+        // This is required for older versions of webpack-dev-server
+        // if you use absolute 'to' paths. The path should be an
+        // absolute path to your build destination.
+        outputPath: path.join(__dirname, 'build')
+    },
     output: {
         filename: 'common.bundle.js',
-        path: __dirname + '/build',
-        publicPath: '/static/'
+        path: __dirname + '/build/js',
+        publicPath: '/static/js/'
     },
     resolve: {
         extensions: ['', '.js'],
@@ -31,26 +38,15 @@ module.exports = {
             path.resolve(__dirname, 'src/js/')
         ]
     },
-    module: {
-        loaders: [
-            {
-                test: /\.less$/,
-                loader: 'style!css!less',
-                query: {
-
-                }
-            }
-        ]
-    },
     plugins: [
-        new ngAnnotatePlugin({
+        new NgAnnotatePlugin({
             add: true
         }),
+        new CopyWebpackPlugin([
+            {from: '../images', to: '../images'}
+        ]),
         new webpack.optimize.UglifyJsPlugin({
             compress: {
-                output: {
-                    comments: false
-                },
                 warnings: false,
                 drop_console: true,
                 unsafe: true
