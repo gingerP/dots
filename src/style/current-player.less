@@ -1,4 +1,5 @@
 @import (reference) "./variables";
+@import (reference) "./mixins";
 
 .current-player {
   top: 0;
@@ -7,7 +8,7 @@
   left: 0;
   position: absolute;
   margin: auto;
-  height: @toolbar-height;
+  .responsiveToolbarHeight(0, 1);
 
   .player-placeholder {
     &-right,
@@ -27,6 +28,7 @@
   .choose-opponent {
     position: relative;
     float: left;
+    .responsiveFontSize(0, 1);
   }
 
   .myself-player {
@@ -39,8 +41,8 @@
   }
 
   .choose-opponent a{
-    height: @toolbar-height - 10;
-    line-height: @toolbar-height - 10;
+    .responsiveToolbarHeight(10px, 1);
+    .responsiveToolbarLineHeight(10px, 1);
     text-decoration: none;
     border-bottom: 1px @text-color-dark dashed;
     color: @text-color-dark;
@@ -63,8 +65,8 @@
   }
 
   .player {
-    height: @toolbar-height - 10;
-    line-height: @toolbar-height - 10;
+    .responsiveToolbarHeight(10px, 1);
+    .responsiveToolbarLineHeight(10px, 1);
     text-align: center;
     margin: 5px 0;
     padding: 0 10px;
@@ -108,14 +110,14 @@
   color: #ffffff;
 
   width: 120px;
-  height: @toolbar-height - 10;
+  .responsiveToolbarHeight(10px, 1);
   position: absolute;
   top: 0;
   right: 0;
   bottom: 0;
   left: 0;
   margin: 5px auto;
-  line-height: @toolbar-height - 10;
+  .responsiveToolbarLineHeight(10px, 1);
   text-align: center;
   text-decoration: none;
 }
