@@ -33,6 +33,7 @@
     "webpack": "1.13.3",
     "grunt-angular-templates": "1.1.0",
     "grunt-contrib-less": "1.4.0",
-    "copy-webpack-plugin": "4.0.1"
+    "copy-webpack-plugin": "4.0.1",
+    "ng-annotate-webpack-plugin": "0.1.3"
   }
 }
