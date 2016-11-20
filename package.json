@@ -30,6 +30,8 @@
     "grunt-eslint": "19.0.0",
     "grunt": "1.0.1",
     "load-grunt-tasks": "3.5.2",
-    "webpack": "1.13.3"
+    "webpack": "1.13.3",
+    "grunt-angular-templates": "1.1.0",
+    "grunt-contrib-less": "1.4.0"
   }
 }

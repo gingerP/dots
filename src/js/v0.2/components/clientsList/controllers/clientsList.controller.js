@@ -6,12 +6,11 @@ define([
     'common/events',
     'business/module.game.business',
     'business/business.invite',
-    'module.backend.service',
     'common/services/game-data.service',
     'components/clientsList/factories/clientsListUtil.factory',
     'components/clientsList/clientsList.module',
     'components/utils/scope.utils'
-], function (angular, _, Observable, GameStorage, Events, Business, inviteBusiness, backend,
+], function (angular, _, Observable, GameStorage, Events, Business, inviteBusiness,
              gameDataService) {
     'use strict';
 

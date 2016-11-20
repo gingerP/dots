@@ -11,9 +11,6 @@ require.config({
         observable: 'module.observable',
         socket: '../ext/socket.io-1.4.5',
         'engine.io': '../ext/engine.io',
-        'module.transport': './common/module.transport',
-        'module.graph': './module.graph',
-        'module.observable': './module.observable',
         'module.backend.service': './common/module.backend.service'
     },
     shim: {

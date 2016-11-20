@@ -4,7 +4,7 @@ var fs = require("fs");
 var utils = req('src/js/utils');
 var logger = req('src/js/logger').create('WebServer');
 
-WebServer = function() {
+WebServer = function () {
     this.app = require('express')();
     this.transport;
     this.props = {
@@ -19,12 +19,12 @@ WebServer = function() {
     };
 };
 
-WebServer.prototype.init = function(props) {
+WebServer.prototype.init = function (props) {
     this.props = utils.merge(this.props, props);
     return this;
 };
 
-WebServer.prototype.start = function() {
+WebServer.prototype.start = function () {
     if (this.props.network.ssl.active) {
         this._initHTTPS();
     } else {
@@ -33,7 +33,7 @@ WebServer.prototype.start = function() {
     return this;
 };
 
-WebServer.prototype._initHTTP = function() {
+WebServer.prototype._initHTTP = function () {
     var inst = this;
     inst.transport = require("http");
     inst.port = inst.props.network.http || 8080;
@@ -45,7 +45,7 @@ WebServer.prototype._initHTTP = function() {
     logger.info('HTTP server successfully created.');
 };
 
-WebServer.prototype._initHTTPS = function() {
+WebServer.prototype._initHTTPS = function () {
     var inst = this;
     inst.transport = require('https');
     inst.port = inst.props.network.https || 8443;
@@ -57,7 +57,7 @@ WebServer.prototype._initHTTPS = function() {
     logger.info('HTTPS server successfully created.');
 };
 
-WebServer.prototype._initEvents = function() {
+WebServer.prototype._initEvents = function () {
     var inst = this;
     this.server.on('error', onError);
     this.server.on('listening', onListening);
@@ -95,11 +95,11 @@ WebServer.prototype._initEvents = function() {
     }
 };
 
-WebServer.prototype._getCertFiles = function(pack) {
+WebServer.prototype._getCertFiles = function (pack) {
     return {
         key: fs.readFileSync(this.props.network.ssl.path + '/server.key'),
         cert: fs.readFileSync(this.props.network.ssl.path + '/server.crt')
-    }
+    };
 };
 
 module.exports = {

@@ -3,6 +3,7 @@ var handlers = [
     {
         path: ['/'],
         fn: function (req, res) {
+            console.log('Request: ' + req.path);
             res.sendFile(__dirname + '/src/views/index.html');
         }
     }

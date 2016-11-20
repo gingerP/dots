@@ -6,12 +6,12 @@ define([
     'components/playerScore/components/playerScore.component',
     'components/toolbar/components/toolbar.component',
     'components/accordion/components/accordion.component',
-    'components/invitesList/components/invites.list.component',
     'components/notification/notification.module',
     'components/playerMenu/components/playerMenu.component',
     'components/gamePane/components/gamePane.component',
     'components/playerColor/components/playerColor.component',
-    'components/utils/common.helpers.module'
+    'components/utils/common.helpers.module',
+    'components/app-cache'
 ], function (angular) {
     'use strict';
 
@@ -22,12 +22,12 @@ define([
         'playerScore.module',
         'toolbar.module',
         'accordion.module',
-        'invites.list.module',
         'notification.module',
         'player.menu.module',
         'gamePane.module',
         'playerColor.module',
-        'common.helpers.module'
+        'common.helpers.module',
+        'app-cache'
     ]);
     angular.element(document).ready(function () {
         angular.bootstrap(document, ['app']);

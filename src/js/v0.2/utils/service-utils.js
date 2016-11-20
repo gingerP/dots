@@ -1,5 +1,5 @@
 define([
-    'module.transport',
+    'common/module.transport',
     'lodash'
 ], function(Transport, _) {
     'use strict';

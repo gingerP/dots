@@ -1,5 +1,5 @@
 define([
-    'module.transport',
+    'common/module.transport',
     'common/backend-events'
 ], function(Transport, BackendEvents) {
     'use strict';

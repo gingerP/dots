@@ -1,5 +1,5 @@
 define([
-    'module.transport',
+    'common/module.transport',
     'utils/service-utils',
     'common/backend-events'
 ], function (Transport, ServiceUtils, BackendEvents) {

@@ -2,13 +2,12 @@ define([
     'angular',
     'module.observable',
     'business/module.game.business',
-    'module.backend.service',
     'common/events',
     'components/utils/scope.utils',
     'utils/game-utils',
     'business/game.storage',
     'components/currentPlayer/currentPlayer.module'
-], function (angular, Observable, Business, backend, Events, scopeUtils, gameUtils, GameStorage) {
+], function (angular, Observable, Business, Events, scopeUtils, gameUtils, GameStorage) {
     'use strict';
 
     angular.module('currentPlayer.module').controller('currentPlayerCtrl', CurrentPlayerController);
