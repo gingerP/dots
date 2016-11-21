@@ -11,7 +11,7 @@ var handlers = [
 
 module.exports = {
     init: function (app) {
-        app.use('/static', express.static(__dirname + '/src'));
+        app.use('/static', express.static(__dirname + '/build'));
         app.use('/static/js/node_modules', express.static(__dirname + '/node_modules'));
         handlers.forEach(function (handler) {
             app.get(handler.path,

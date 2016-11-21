@@ -5,7 +5,8 @@ define([
 ], function (_, PathUtils, ConvertUtils) {
     'use strict';
 
-    var api;
+    var api,
+        DEFAULT_MULTIPLIER = 16;
 
     function createPaneGridData(xNum, yNum, step, offset) {
         var result = [];
@@ -90,13 +91,25 @@ define([
         return result;
     }
 
+    function getUnitSize() {
+        var size = window.getComputedStyle(document.body).fontSize;
+        var result = DEFAULT_MULTIPLIER;
+
+        if (size.endsWith('px')) {
+            result = _.parseInt(size);
+        }
+
+        return result;
+    }
+
     api = {
         createPaneGridData: createPaneGridData,
         getNotExistingPath: getNotExistingPath,
         getLineId: getLineId,
         prepareCirclesData: prepareCirclesData,
         generateSelectorStringFromDots: generateSelectorStringFromDots,
-        getFilteredAndConvertedLoops: getFilteredAndConvertedLoops
+        getFilteredAndConvertedLoops: getFilteredAndConvertedLoops,
+        getUnitSize: getUnitSize
     };
 
     return api;

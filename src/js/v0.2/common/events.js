@@ -14,6 +14,7 @@ define([], function () {
         OPPONENT_ONLINE: 'OPPONENT_ONLINE',
         OPPONENT_OFFLINE: 'OPPONENT_OFFLINE',
 
+        GAME_MODE: 'GAME_MODE',
         GAME_STEP: 'GAME_STEP',
         MAKE_PLAYER_ACTIVE: 'MAKE_PLAYER_ACTIVE',
 

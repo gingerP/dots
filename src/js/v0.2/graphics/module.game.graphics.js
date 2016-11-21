@@ -29,7 +29,7 @@ define([
     var OFFSET = 20;
     var STROKE_WIDTH = 2;
 
-    var SELECTION_CIRCLE_RADIUS = 6;
+    var SELECTION_CIRCLE_RADIUS = 10;
     var SELECTION_CIRCLE_D_TYPE = 'SELECTION_D_TYPE';
 
     var DOT_RADIUS = 2;

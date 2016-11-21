@@ -1,4 +1,5 @@
 @import (reference) "./variables";
+@import (reference) "./mixins";
 
 player-menu {
   .player-menu {
@@ -7,7 +8,7 @@ player-menu {
     width: 100%;
     min-height: 300px;
     background-color: @color-dark;
-    .responsiveToolbarTop(0, 1);
+    top: @toolbar-height;
     left: 0;
 
     .player-menu-left-header {
@@ -17,6 +18,12 @@ player-menu {
     .player-menu-clients {
       width: 820px;
       margin: auto;
+    }
+
+    @media only screen and (max-width: 820px) {
+      .player-menu-clients {
+        width: 95%;
+      }
     }
 
     .opponent-player {

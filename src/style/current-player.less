@@ -8,7 +8,7 @@
   left: 0;
   position: absolute;
   margin: auto;
-  .responsiveToolbarHeight(0, 1);
+  height: @toolbar-height;
 
   .player-placeholder {
     &-right,
@@ -28,7 +28,7 @@
   .choose-opponent {
     position: relative;
     float: left;
-    .responsiveFontSize(0, 1);
+    font-size: @default-font-size;
   }
 
   .myself-player {
@@ -41,8 +41,8 @@
   }
 
   .choose-opponent a{
-    .responsiveToolbarHeight(10px, 1);
-    .responsiveToolbarLineHeight(10px, 1);
+    height: @toolbar-height - 10px;
+    line-height: @toolbar-height - 10px;
     text-decoration: none;
     border-bottom: 1px @text-color-dark dashed;
     color: @text-color-dark;
@@ -65,8 +65,8 @@
   }
 
   .player {
-    .responsiveToolbarHeight(10px, 1);
-    .responsiveToolbarLineHeight(10px, 1);
+    height: @toolbar-height - 10px;
+    line-height: @toolbar-height - 10px;
     text-align: center;
     margin: 5px 0;
     padding: 0 10px;
@@ -110,14 +110,14 @@
   color: #ffffff;
 
   width: 120px;
-  .responsiveToolbarHeight(10px, 1);
+  height: @toolbar-height - 10px;
+  line-height: @toolbar-height - 10px;
   position: absolute;
   top: 0;
   right: 0;
   bottom: 0;
   left: 0;
   margin: 5px auto;
-  .responsiveToolbarLineHeight(10px, 1);
   text-align: center;
   text-decoration: none;
 }

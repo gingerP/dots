@@ -1,0 +1,19 @@
+@import (reference) "./variables";
+
+.responsive-toolbar-height(@name: height; @delta: 0; @multiple: 1) {
+  @media only screen and (max-device-width: 721px) {
+      @{name}: (@toolbar-height  - @delta) * @multiple;
+  }
+  @media only screen and (min-device-width: 721px) {
+      @{name}: (@toolbar-height - @delta) * @multiple;
+  }
+}
+
+.responsive-font-size(@delta: 0, @multiple: 1) {
+  @media only screen and (max-device-width: 721px) {
+    font-size: (@default-font-size  - @delta) * @multiple;
+  }
+  @media only screen and (min-device-width: 721px) {
+    font-size: (@default-font-size - @delta) * @multiple;
+  }
+}

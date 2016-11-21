@@ -1,10 +1,12 @@
 @import (reference) './variables';
+@import (reference) './mixins';
 
 .player-color {
   float: left;
   margin: .3em;
   .color-preview {
-    .responsiveToolbarHeightWidth(10px, 1);
+    height: @toolbar-height - 10px;
+    width: @toolbar-height - 10px;
     background-color: #fff;
     border-radius: .2em;
     box-shadow: 0 1px 2px rgba(0,0,0,0.1);

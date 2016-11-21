@@ -1,10 +1,11 @@
 @import (reference) "./variables";
+@import (reference) "./mixins";
 
 .toolbar {
   background-color: @color-dark;
   position: fixed;
   width: 100%;
-  .responsiveToolbarHeight(0, 1);
+  .responsive-toolbar-height();
   top: 0;
 
   &-left {

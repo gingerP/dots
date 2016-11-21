@@ -97,6 +97,7 @@ define([
 
     function reloadGameMode() {
         GameStorage.setGameMode(GAME_MODE.NETWORK);
+        observable.emit(Events.GAME_MODE, GAME_MODE.NETWORK);
     }
 
     function reloadMyself() {

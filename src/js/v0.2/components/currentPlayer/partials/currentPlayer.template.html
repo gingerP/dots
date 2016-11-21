@@ -11,10 +11,12 @@
         </player-color>
     </div>
 
-    <a href="javascript:void(0)" type="button" class="player-next" ng-click="currentPlayerCtrl.nextPlayer()">Next</a>
+    <a ng-if="currentPlayerCtrl.GAME_MODE.LOCAL === currentPlayerCtrl.gameMode" href="javascript:void(0)" type="button"
+       class="player-next" ng-click="currentPlayerCtrl.nextPlayer()">Next</a>
 
     <div class="player-placeholder-right">
-        <span ng-show="currentPlayerCtrl.opponent && !currentPlayerCtrl.opponent.isOnline" class="opponent-offline-title">offline</span>
+        <span ng-show="currentPlayerCtrl.opponent && !currentPlayerCtrl.opponent.isOnline"
+              class="opponent-offline-title">offline</span>
         <div ng-show="currentPlayerCtrl.opponent" class="opponent-player opponent-block player"
              ng-class="{'inactive-player': !currentPlayerCtrl.isOpponentActive,
              'active-player': currentPlayerCtrl.isOpponentActive}">
@@ -25,10 +27,10 @@
                 color="currentPlayerCtrl.opponent.color" options="currentPlayerCtrl.colorOptions">
         </player-color>
 
-        <div ng-show="!currentPlayerCtrl.opponent" class="choose-opponent player">
-            <a href="javascript:void(0)" type="button" ng-click="currentPlayerCtrl.triggerOpenMenu()">Choose
-                opponent</a>
-        </div>
+        <a ng-show="!currentPlayerCtrl.opponent" href="javascript:void(0)" type="button" class="choose-opponent player"
+           ng-click="currentPlayerCtrl.triggerOpenMenu()">Choose
+            opponent
+        </a>
 
         <button class="btn-override menu-open"
                 ng-class="{'menu-open-up': currentPlayerCtrl.isMenuOpened}"

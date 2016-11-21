@@ -6,8 +6,9 @@ define([
     'components/utils/scope.utils',
     'utils/game-utils',
     'business/game.storage',
+    'business/domains/Constants',
     'components/currentPlayer/currentPlayer.module'
-], function (angular, Observable, Business, Events, scopeUtils, gameUtils, GameStorage) {
+], function (angular, Observable, Business, Events, scopeUtils, gameUtils, GameStorage, Constants) {
     'use strict';
 
     angular.module('currentPlayer.module').controller('currentPlayerCtrl', CurrentPlayerController);
@@ -16,10 +17,12 @@ define([
         var vm = this,
             observable = Observable.instance;
 
+
         function initialize() {
             var activeGamePlayer = GameStorage.getActiveGamePlayer();
             onRefreshMyself();
             onRefreshGame();
+            onGameModeChange();
             if (activeGamePlayer) {
                 onUpdateActivePlayer(activeGamePlayer.getId());
             }
@@ -36,7 +39,7 @@ define([
                 vm.isMyselfActive = true;
                 vm.isOpponentActive = false;
             }
-            if(!$rootScope.$$phase) {
+            if (!$rootScope.$$phase) {
                 $scope.$apply();
             }
         }
@@ -56,6 +59,11 @@ define([
             vm.opponent = GameStorage.getGameOpponent();
         }
 
+        function onGameModeChange() {
+            vm.gameMode = GameStorage.getGameMode();
+        }
+
+        vm.GAME_MODE = Constants.GAME_MODE;
         vm.isMenuOpened = false;
         vm.isMyselfActive = true;
         vm.isOpponentActive = false;
@@ -82,6 +90,7 @@ define([
         observable.on(Events.REFRESH_MYSELF, onRefreshMyself);
         observable.on(Events.REFRESH_GAME, onRefreshGame);
         observable.on(Events.MAKE_PLAYER_ACTIVE, onUpdateActivePlayer);
+        observable.on(Events.GAME_MODE, onGameModeChange);
 
         initialize();
     }
