@@ -4,7 +4,6 @@ define([
     'common/events',
     'business/domains/NetworkStatus',
     'module.observable',
-    'business/business.invite',
     'business/game.rules',
     'utils/game-utils',
     'business/game.storage',
@@ -13,7 +12,7 @@ define([
     'common/services/invite.service',
     'common/services/gameSupport.service',
     'graphics/module.game.graphics'
-], function (_, q, Events, NetworkStatus, Observable, businessInvite, rules,
+], function (_, q, Events, NetworkStatus, Observable, rules,
              GameUtils, GameStorage,
              GameDataService, GameService, InviteService, GameSupportService,
              Graphics) {
@@ -219,7 +218,6 @@ define([
             observable.addListener(property, listener);
             return api;
         },
-        invite: businessInvite,
         listen: {
             invite_player: 'invite_player',
             add_active_player: 'add_active_player',

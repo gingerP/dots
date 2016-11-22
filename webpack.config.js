@@ -51,6 +51,7 @@ module.exports = {
                 drop_console: true,
                 unsafe: true
             }
-        })],
+        })
+    ],
     devtool: 'source-map'
 };

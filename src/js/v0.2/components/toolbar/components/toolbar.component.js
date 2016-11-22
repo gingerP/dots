@@ -2,7 +2,7 @@ define([
     'angular',
     '../toolbar.module',
     '../controllers/toolbar.controller'
-], function(angular) {
+], function (angular) {
     'use strict';
 
     angular.module('toolbar.module').component('toolbar', {

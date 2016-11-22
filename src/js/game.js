@@ -1,20 +1,19 @@
 require.config({
-    baseUrl: '/static/js/v0.2/',
+    baseUrl: '/static/js/',
     paths: {
-        angular: '../node_modules/angular/angular.min',
-        storage: '../ext/basil.min',
-        q: '../node_modules/q/q',
-        lodash: '../node_modules/lodash/lodash.min',
+        angular: './node_modules/angular/angular.min',
+        storage: './ext/basil.min',
+        q: './node_modules/q/q',
+        lodash: './node_modules/lodash/lodash.min',
         i18n: './module.i18n',
-        d3: '../ext/d3.min',
-        jquery: '../ext/jquery-2.2.1.min',
+        d3: './ext/d3.min',
+        jquery: './ext/jquery-2.2.1.min',
         observable: 'module.observable',
-        socket: '../ext/socket.io-1.4.5',
-        'engine.io': '../ext/engine.io',
+        socket: './ext/socket.io-1.4.5',
+        'engine.io': './ext/engine.io',
         'module.backend.service': './common/module.backend.service'
     },
     shim: {
-        moduleGameBusiness: 'module.game.business',
         angular: {
             exports: 'angular'
         }
