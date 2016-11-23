@@ -13,6 +13,10 @@
 
     <a ng-if="currentPlayerCtrl.GAME_MODE.LOCAL === currentPlayerCtrl.gameMode" href="javascript:void(0)" type="button"
        class="player-next" ng-click="currentPlayerCtrl.nextPlayer()">Next</a>
+    <button class="btn-override menu-open"
+            ng-class="{'menu-open-up': currentPlayerCtrl.isMenuOpened}"
+            ng-click="currentPlayerCtrl.triggerOpenMenu()">
+    </button>
 
     <div class="player-placeholder-right">
         <span ng-show="currentPlayerCtrl.opponent && !currentPlayerCtrl.opponent.isOnline"
@@ -32,10 +36,7 @@
             opponent
         </a>
 
-        <button class="btn-override menu-open"
-                ng-class="{'menu-open-up': currentPlayerCtrl.isMenuOpened}"
-                ng-click="currentPlayerCtrl.triggerOpenMenu()">
-        </button>
+
     </div>
 
     <div>

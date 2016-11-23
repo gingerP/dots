@@ -1,9 +1,12 @@
 define([
     'angular',
-    '../toolbar.module',
-    '../controllers/toolbar.controller'
-], function (angular) {
+    'utils/common-utils',
+    'components/toolbar/toolbar.module',
+    'components/toolbar/controllers/toolbar.controller'
+], function (angular, CommonUtils) {
     'use strict';
+
+    CommonUtils.updateDeviceFlag();
 
     angular.module('toolbar.module').component('toolbar', {
         bindings: {},

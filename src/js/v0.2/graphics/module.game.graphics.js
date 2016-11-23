@@ -3,11 +3,11 @@ define([
     'lodash',
     'common/events',
     'business/game.storage',
+    'utils/common-utils',
     'graphics/utils/common-graphics-utils',
     'graphics/utils/convert-utils',
-    'graphics/utils/path-utils',
-    'utils/common-utils'
-], function (d3, _, Events, GameStorage, CommonGraphicsUtils, ConvertUtils, PathUtils, CommonUtils) {
+    'graphics/utils/path-utils'
+], function (d3, _, Events, GameStorage, CommonUtils, CommonGraphicsUtils, ConvertUtils, PathUtils) {
     'use strict';
 
     var api;
@@ -25,11 +25,11 @@ define([
     var xNum;
     var yNum;
 
-    var STEP = 20;
+    var STEP = CommonUtils.isMobile() ? 25 : 20;
     var OFFSET = 20;
     var STROKE_WIDTH = 2;
 
-    var SELECTION_CIRCLE_RADIUS = 10;
+    var SELECTION_CIRCLE_RADIUS = CommonUtils.isMobile() ? 12 : 10;
     var SELECTION_CIRCLE_D_TYPE = 'SELECTION_D_TYPE';
 
     var DOT_RADIUS = 2;
