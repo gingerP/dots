@@ -60,15 +60,15 @@ GameService.prototype.onAddDot = function (message) {
     }
 
     function updateScores(gameData) {
-        var clientGameData = gameData[0];
+        var activePlayerGameData = gameData[0];
         var opponentGameData = gameData[1];
         var opponent = gameData[2];
-        var clientDots = clientGameData.dots;
+        var activePlayerDots = activePlayerGameData.dots;
         var scores;
         var gameCopy;
 
-        if (isDotValid(dot, clientDots)) {
-            scores = GameScoreUtils.getGamersScores(dot, clientGameData, opponentGameData);
+        if (isDotValid(dot, activePlayerDots)) {
+            scores = GameScoreUtils.getGamersScores(dot, activePlayerGameData, opponentGameData);
             game.activePlayer = opponent._id;
             gameCopy = _.cloneDeep(game);
             inst.saveScores(scores);
