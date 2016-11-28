@@ -4,7 +4,7 @@ var NgAnnotatePlugin = require('ng-annotate-webpack-plugin');
 var CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
-    context: __dirname + '/src/js',
+    context: __dirname + '/client/js',
     entry: {
         app: './game'
     },
@@ -34,8 +34,8 @@ module.exports = {
         },
         root: [
             path.resolve(__dirname),
-            path.resolve(__dirname, 'src/js/v0.2/'),
-            path.resolve(__dirname, 'src/js/')
+            path.resolve(__dirname, 'client/js/v0.2/'),
+            path.resolve(__dirname, 'client/js/')
         ]
     },
     plugins: [

@@ -4,9 +4,9 @@ var server;
 var WsServer;
 
 global.req = require('app-root-path').require;
-Server = require('./WebServer').class;
-WsServer = require('./WSServer.IO');
+Server = req('server/modules/WebServer').class;
+WsServer = req('server/modules/WSServer.IO');
 server = new Server().init().start();
-require('../controller-pages').init(server.app);
+req('controller-pages').init(server.app);
 wsServer = WsServer.instance(server.server);
-require('../src/back/app').initialize(wsServer);
+req('server/app').initialize(wsServer, server);

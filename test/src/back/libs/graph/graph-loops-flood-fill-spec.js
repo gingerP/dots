@@ -1,8 +1,8 @@
 'use strict';
 
 var fs = require('fs');
-var floodFill = require('../../../../../src/back/libs/graph/graph-loops-flood-fill');
-var logger = require('../../../../../src/js/logger').create('graph-loops-flood-fill-spec');
+var floodFill = require('../../../../../server/libs/graph/graph-loops-flood-fill');
+var logger = require('../../../../../server/logging/logger').create('graph-loops-flood-fill-spec');
 var files = fs.readdirSync(__dirname + '/test-data/');
 files.forEach(function (filePath) {
     var fileName = filePath.replace(/\.json$/, '');
