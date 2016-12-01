@@ -64,23 +64,48 @@ GameService.prototype.onAddDot = function (message) {
         var opponentGameData = gameData[1];
         var opponent = gameData[2];
         var activePlayerDots = activePlayerGameData.dots;
-        var scores;
-        var gameCopy;
+
+        function combineGameData(scores) {
+            return {
+                opponent: opponent,
+                gameData: scores
+            };
+        }
 
         if (isDotValid(dot, activePlayerDots)) {
-            scores = GameScoreUtils.getGamersScores(dot, activePlayerGameData, opponentGameData);
-            game.activePlayer = opponent._id;
-            gameCopy = _.cloneDeep(game);
-            inst.saveScores(scores);
-            inst.gameDBManager.save(game);
-            message.callback(scores);
+            return GameScoreUtils.getGamersScores(dot, activePlayerGameData, opponentGameData)
+                .then(combineGameData);
+        }
+        return Promise.resolve();
+    }
+
+    function sendScores(combinedData) {
+        if (combinedData) {
+            message.callback(combinedData.gameData);
+
             inst.gameController.nextStep(
                 dot,
-                client, scores.client, scores.clientDelta,
-                opponent, scores.opponent,
-                gameCopy
+                client, combinedData.gameData.activePlayerGameData, combinedData.gameData.delta,
+                combinedData.opponent, combinedData.gameData.opponentPlayerGameData,
+                game
             );
         }
+        return Promise.resolve();
+    }
+
+    function saveGameData(combinedData) {
+        if (combinedData) {
+            return inst
+                .saveScores(combinedData.gameData)
+                .then(function () {
+                    game.activePlayer = combinedData.opponent._id;
+                    return inst.gameDBManager.save(game);
+                })
+                .then(function () {
+                    return combinedData;
+                });
+        }
+        return Promise.resolve();
     }
 
     return Promise
@@ -91,12 +116,15 @@ GameService.prototype.onAddDot = function (message) {
         .then(validateInboundData)
         .then(handleValidation)
         .then(updateScores)
+        .then(saveGameData)
+        .then(sendScores)
         .catch(errorLog);
 };
 
 GameService.prototype.saveScores = function (scores) {
-    this.gameDataDBManager.save(scores.client);
-    this.gameDataDBManager.save(scores.opponent);
+    return this.gameDataDBManager.save(scores.activePlayerGameData).then(() => {
+        return this.gameDataDBManager.save(scores.opponentPlayerGameData);
+    });
 };
 
 GameService.prototype.getName = function () {

@@ -14,12 +14,10 @@ function extractValuationData(clientGameData) {
 }
 // 1
 function prepareScoreValuation(dot, activePlayerGameData, opponentGameData) {
-    return Promise(function (resolve) {
-        resolve({
-            dot: dot,
-            active: extractValuationData(activePlayerGameData),
-            opponent: extractValuationData(opponentGameData)
-        });
+    return Promise.resolve({
+        dot: dot,
+        active: extractValuationData(activePlayerGameData),
+        opponent: extractValuationData(opponentGameData)
     });
 }
 
@@ -43,7 +41,7 @@ function calculateLoopsDelta(inbound) {
 
 // 4
 function calculateCommonScore(inbound) {
-    if (inbound.loops && inbound.loops && inbound.opponent.dots && inbound.opponent.dots.length) {
+    if (inbound.loops && inbound.loops.length && inbound.opponent.dots && inbound.opponent.dots.length) {
         _.forEach(inbound.loopsDelta, moveDotsToTrappedDotsInLoops.bind(null, inbound.opponent));
         inbound.active.loops = inbound.active.loops.concat(inbound.loopsDelta);
     }
@@ -88,7 +86,7 @@ function moveDotsToTrappedDotsInLoops(opponentGameData, loopData) {
 function getScoresDelta(loops, dot) {
     var resultLoops = [];
     _.forEach(loops, function (loopData) {
-        if (_.findIndex(loopData.dots, dot) > -1) {
+        if (_.findIndex(loopData.loop, dot) > -1) {
             resultLoops.push(loopData);
         }
     });
@@ -105,8 +103,9 @@ function getGamersScores(dot, activePlayerGameData, opponentGameData) {
         opponentGameData.loops = inbound.opponent.loops;
         opponentGameData.losingDots = inbound.opponent.losingDots;
         return {
-            active: activePlayerGameData,
-            opponent: opponentGameData
+            activePlayerGameData: activePlayerGameData,
+            opponentPlayerGameData: opponentGameData,
+            delta: inbound.loopsDelta
         };
     }
 
