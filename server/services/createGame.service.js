@@ -1,16 +1,17 @@
 'use strict';
 
-var GenericService = require('./generic.service').class;
-var constants = require('../constants/constants');
-var inviteStatuses = require('../constants/invite-statuses.json');
-var funcUtils = req('server/utils/function-utils');
-var sessionUtils = req('server/utils/session-utils');
-var _ = require('lodash');
-var Promise = require('q');
-var logger = req('server/logging/logger').create('CreateGameService');
-var gameStatuses = require('../constants/game-statuses');
-var errorLog = funcUtils.error(logger);
+const GenericService = require('./generic.service').class;
+const constants = require('../constants/constants');
+const inviteStatuses = require('../constants/invite-statuses.json');
+const funcUtils = req('server/utils/function-utils');
+const sessionUtils = req('server/utils/session-utils');
+const _ = require('lodash');
+const Promise = require('q');
+const logger = req('server/logging/logger').create('CreateGameService');
+const gameStatuses = require('../constants/game-statuses');
+const errorLog = funcUtils.error(logger);
 const Errors = req('server/modules/Errors');
+const COLORS = req('server/constants/colors');
 
 function getClient(id, clients) {
     var prepareId = _.isString(id) ? id : id.toString();
@@ -120,14 +121,14 @@ CreateGameService.prototype.onCancelGame = function (message) {
     }
 };
 
-CreateGameService.prototype.newGame = function (clientA, clientB, activePlayer, invite) {
+CreateGameService.prototype.newGame = function (clientFrom, clientTo, activePlayer, invite) {
     var inst = this;
 
     function handleNewGame(gameId) {
         invite.game = gameId;
         inst.createGameDBManager.save(invite);
-        inst.gameDataDBManager.createNew(gameId, clientA._id);
-        inst.gameDataDBManager.createNew(gameId, clientB._id);
+        inst.gameDataDBManager.createNew(gameId, clientFrom._id, COLORS.INITIATOR);
+        inst.gameDataDBManager.createNew(gameId, clientTo._id, COLORS.OPPONENT);
         return inst.gameDBManager.get(gameId);
     }
 

@@ -16,13 +16,14 @@ GameDataDBManager.prototype.getName = function () {
 };
 
 
-GameDataDBManager.prototype.createNew = function (gameId, clientId, dots, trappedDots, loops) {
+GameDataDBManager.prototype.createNew = function (gameId, clientId, color, dots, trappedDots, loops) {
     var newGameData = CreationUtils.newGameData(
         this.getObjectId(gameId),
         this.getObjectId(clientId),
         dots,
         [],
-        loops
+        loops,
+        color
     );
     return this.save(newGameData);
 };

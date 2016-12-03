@@ -3,7 +3,6 @@
 var GenericService = require('./generic.service').class;
 var constants = require('../constants/constants');
 var animals = require('../animals');
-var colors = require('../colors');
 var funcUtils = require('../utils/function-utils');
 var creationUtils = req('server/utils/creation-utils');
 var sessionUtils = req('server/utils/session-utils');
@@ -20,11 +19,6 @@ function getRandomAnimal() {
     return animals[randomIndex];
 }
 
-function getRandomColor() {
-    var randomIndex = Math.round((Math.random() * colors.length - 1));
-    return colors[randomIndex];
-}
-
 function GameSupportService() {
 }
 
@@ -33,7 +27,7 @@ GameSupportService.prototype.constructor = GameSupportService;
 
 GameSupportService.prototype.onNewClient = function (message) {
     var inst = this;
-    var client = creationUtils.newClient(getRandomAnimal(), getRandomColor(), null, null, true);
+    var client = creationUtils.newClient(getRandomAnimal(), null, null, true);
 
     function getClient(clientId) {
         return inst.clientsDBManager.get(clientId);

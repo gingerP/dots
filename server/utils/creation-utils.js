@@ -7,23 +7,23 @@ function newLoopData(dots, trappedDots) {
     };
 }
 
-function newGameData(gameId, clientId, dots, losingDots, loops) {
+function newGameData(gameId, clientId, dots, losingDots, loops, color) {
     return {
         game: gameId,
         client: clientId,
         dots: dots || [],
         loops: loops || [],
-        losingDots: losingDots || []
+        losingDots: losingDots || [],
+        color: color
     };
 }
 
-function newClient(name, color, created, updated, isOnline) {
+function newClient(name, created, updated, isOnline) {
     return {
         created: created || Date.now(),
         updated: updated || Date.now(),
         isOnline: Boolean(isOnline),
-        name: name,
-        color: color
+        name: name
     };
 }
 

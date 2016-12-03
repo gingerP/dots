@@ -81,7 +81,7 @@ define([
             if (loopData.trappedDots && loopData.trappedDots.length) {
                 result.push(
                     ConvertUtils.convertLoopsLines(
-                        PathUtils.getUnSortedPath(loopData.dots),
+                        PathUtils.getUnSortedPath(loopData.loop),
                         shift,
                         offset
                     )
