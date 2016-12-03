@@ -24,6 +24,23 @@
   }
 
   .myself-player,
+  .opponent-player {
+    &.player-style-red,
+    &.player-style-blue {
+      color: white;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    }
+    &.player-style-red {
+      background-color: #ef5350;
+    }
+
+    &.player-style-blue {
+      background-color: #4b8bff;
+    }
+  }
+
+
+  .myself-player,
   .opponent-player,
   .choose-opponent {
     position: relative;
@@ -108,6 +125,13 @@
     &.menu-open-up {
       transform: rotate(180deg);
     }
+    &.player-style-red {
+      background-color: #ef5350;
+    }
+
+    &.player-style-blue {
+      background-color: #4b8bff;
+    }
   }
 }
 
@@ -132,21 +156,4 @@
 
 .active-player {
 
-}
-
-.player-style-red {
-  background-color: #ff3616;
-}
-
-.player-style-blue {
-  background-color: #4b8bff;
-}
-
-.mobile-device {
-  .player {
-    @media screen and (orientation:portrait) {
-      max-width: 40%;
-      text-overflow: ellipsis;
-    }
-  }
 }

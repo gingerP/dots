@@ -6,6 +6,7 @@ define([
     'module.observable',
     'business/game.rules',
     'utils/game-utils',
+    'utils/player-utils',
     'business/game.storage',
     'common/services/game-data.service',
     'common/services/game.service',
@@ -13,7 +14,7 @@ define([
     'common/services/gameSupport.service',
     'graphics/module.game.graphics'
 ], function (_, q, Events, NetworkStatus, Observable, rules,
-             GameUtils, GameStorage,
+             GameUtils, PlayerUtils, GameStorage,
              GameDataService, GameService, InviteService, GameSupportService,
              Graphics) {
     'use strict';
@@ -61,7 +62,7 @@ define([
                 activePlayer.selectDot(dot);
                 observable.emit(Events.ADD_DOT, {gamePlayerId: activePlayer.getId(), dot: dot});
                 GameService.addDot(dot);
-                Graphics.updatePlayerState(activePlayer, dot);
+                Graphics.updatePlayerState(activePlayer.color, dot);
             }
         });
     }
@@ -120,15 +121,16 @@ define([
 
     function refreshGame(gameState) {
         var activeGamer = GameStorage.getGamePlayerById(gameState.game.activePlayer);
-        console.info(activeGamer.getId());
         makePlayerActive(activeGamer);
+        PlayerUtils.updatePlayersColorsFromGameData.apply(PlayerUtils, gameState.gameData);
         observable.emit(Events.REFRESH_GAME, gameState);
-        _.forEach(gameState.gameData, function (score) {
-            var client = _.find(gameState.clients, {_id: score.client});
-            var dots = (score.dots || []).concat(score.losingDots || []);
-            if (score.dots.length) {
-                GameUtils.updatePlayerState(client._id, score);
-                Graphics.updatePlayerState(client, dots, score.loops);
+        _.forEach(gameState.gameData, function (gameData) {
+            var client = _.find(gameState.clients, {_id: gameData.client});
+            var gamePlayer = GameStorage.getGamePlayerById(gameData.client);
+            var dots = (gameData.dots || []).concat(gameData.losingDots || []);
+            if (gameData.dots.length) {
+                GameUtils.updatePlayerState(client._id, gameData);
+                Graphics.updatePlayerState(gamePlayer.color, dots, gameData.loops);
             }
         });
     }
@@ -159,7 +161,7 @@ define([
                     opponent.isOnline = false;
                     GameStorage.setOpponent(opponent);
                     observable.emit(Events.OPPONENT_OFFLINE);
-                } else if (reconnected.length && reconnected.indexOf(opponent._id) > -1) {
+                } else if (reconnected.length && _.findIndex(reconnected, {_id: opponent._id}) > -1) {
                     opponent.isOnline = true;
                     GameStorage.setOpponent(opponent);
                     observable.emit(Events.OPPONENT_ONLINE);
@@ -185,7 +187,7 @@ define([
             var previousGamePlayer = GameStorage.getGamePlayerById(message.previousPlayerId);
             GameStorage.setGame(message.game);
             makePlayerActive(gamePlayer);
-            Graphics.updatePlayerState(previousGamePlayer, message.dot, message.previousPlayerGameDataDelta);
+            Graphics.updatePlayerState(previousGamePlayer.color, message.dot, message.previousPlayerGameDataDelta);
             observable.emit(Events.GAME_STEP, {
                 dot: message.dot,
                 previousGamePlayerId: message.previousPlayerId

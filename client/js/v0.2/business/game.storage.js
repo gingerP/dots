@@ -54,7 +54,6 @@ define([
                 } else {
                     gamers[key].id = obj._id;
                     gamers[key].name = obj.name;
-                    gamers[key].color = obj.color;
                     gamers[key].isOnline = obj.isOnline;
                 }
             }

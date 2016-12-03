@@ -22,15 +22,13 @@ module.exports = {
     resolve: {
         extensions: ['', '.js'],
         alias: {
-            storage: 'ext/basil.min',
+            angular: 'node_modules/angular/angular',
+            storage: 'node_modules/basil.js/build/basil',
             q: 'node_modules/q/q',
             lodash: 'node_modules/lodash/lodash',
-            i18n: 'module.i18n',
-            d3: 'ext/d3.min',
-            jquery: 'ext/jquery-2.2.1.min',
-            observable: 'module.observable',
-            socket: 'ext/socket.io-1.4.5',
-            'engine.io': 'ext/engine.io'
+            d3: 'node_modules/d3/build/d3',
+            jquery: 'node_modules/jquery/dist/jquery',
+            socket: 'node_modules/socket.io-client/dist/socket.io'
         },
         root: [
             path.resolve(__dirname),

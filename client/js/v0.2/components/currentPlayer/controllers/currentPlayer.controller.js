@@ -3,19 +3,21 @@ define([
     'module.observable',
     'business/module.game.business',
     'common/events',
-    'components/utils/scope.utils',
     'utils/game-utils',
     'business/game.storage',
     'business/domains/Constants',
-    'components/currentPlayer/currentPlayer.module'
-], function (angular, Observable, Business, Events, scopeUtils, gameUtils, GameStorage, Constants) {
+    'components/currentPlayer/currentPlayer.module',
+    'components/utils/scope.utils'
+], function (angular, Observable, Business, Events, gameUtils, GameStorage, Constants) {
     'use strict';
 
     angular.module('currentPlayer.module').controller('currentPlayerCtrl', CurrentPlayerController);
 
-    function CurrentPlayerController($scope, $rootScope) {
+    function CurrentPlayerController($scope, scopeUtils) {
         var vm = this,
-            observable = Observable.instance;
+            observable = Observable.instance,
+            PLAYER_STYLE_PREFIX = 'player-style-',
+            apply = scopeUtils.getApply($scope);
 
 
         function initialize() {
@@ -28,6 +30,21 @@ define([
             }
         }
 
+        function updatePlayersStyles() {
+            var active = GameStorage.getActiveGamePlayer();
+            if (GameStorage.hasOpponent()) {
+                vm.style.myself = PLAYER_STYLE_PREFIX + vm.myself.color;
+                vm.style.opponent = PLAYER_STYLE_PREFIX + vm.opponent.color;
+                vm.style.active = null;
+                if (active) {
+                    vm.style.active = PLAYER_STYLE_PREFIX + active.color;
+                }
+            } else {
+                vm.style = {};
+            }
+            apply();
+        }
+
         function onUpdateActivePlayer(playerId) {
             vm.myself = GameStorage.getGameClient();
             vm.opponent = GameStorage.getGameOpponent();
@@ -35,19 +52,20 @@ define([
             if (vm.opponent.getId() === playerId) {
                 vm.isMyselfActive = false;
                 vm.isOpponentActive = true;
+                vm.style.active = PLAYER_STYLE_PREFIX + vm.opponent.color;
             } else if (vm.myself.getId() === playerId) {
                 vm.isMyselfActive = true;
                 vm.isOpponentActive = false;
+                vm.style.active = PLAYER_STYLE_PREFIX + vm.myself.color;
             }
-            if (!$rootScope.$$phase) {
-                $scope.$apply();
-            }
+            apply();
         }
 
         function onCreateGame(message) {
             if (message.to && message.from && message.game) {
                 vm.opponent = GameStorage.getGameOpponent();
-                $scope.$apply();
+                updatePlayersStyles();
+                apply();
             }
         }
 
@@ -57,10 +75,16 @@ define([
 
         function onRefreshGame() {
             vm.opponent = GameStorage.getGameOpponent();
+            updatePlayersStyles();
         }
 
         function onGameModeChange() {
             vm.gameMode = GameStorage.getGameMode();
+        }
+
+        function onCancelGame() {
+            delete vm.opponent;
+            updatePlayersStyles();
         }
 
         vm.GAME_MODE = Constants.GAME_MODE;
@@ -69,23 +93,22 @@ define([
         vm.isOpponentActive = false;
         vm.myself = GameStorage.getGameClient();
         vm.opponent = GameStorage.getGameOpponent();
-        vm.colorOptions = {
-            enableEditor: false
+        vm.style = {
+            myself: null,
+            opponent: null,
+            active: null
         };
 
         vm.nextPlayer = function nextPlayer() {
             Business.makeNextPlayerActive();
         };
 
-        vm.triggerOpenMenu = function () {
+        vm.triggerOpenMenu = function triggerOpenMenu() {
             vm.isMenuOpened = !vm.isMenuOpened;
             observable.emit(Events.MENU_VISIBILITY, vm.isMenuOpened);
         };
 
-        observable.on(Events.CANCEL_GAME, function () {
-            delete vm.opponent;
-        });
-
+        observable.on(Events.CANCEL_GAME, onCancelGame);
         observable.on(Events.CREATE_GAME, onCreateGame);
         observable.on(Events.REFRESH_MYSELF, onRefreshMyself);
         observable.on(Events.REFRESH_GAME, onRefreshGame);

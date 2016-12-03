@@ -45,11 +45,15 @@ CreateGameController.prototype.rejectPlayerBeLate = function (fromClient, toClie
     });
 };
 
-CreateGameController.prototype.successPlayer = function (fromClient, toClient, gameId) {
+CreateGameController.prototype.successPlayer = function (fromClient, toClient, gameId, gameDataFrom, gameDataTo) {
     this.transmitter.send([fromClient._id, toClient._id], events.success_invite_player, {
         to: toClient,
         from: fromClient,
-        game: gameId
+        game: gameId,
+        gameData: {
+            from: gameDataFrom,
+            to: gameDataTo
+        }
     });
 };
 

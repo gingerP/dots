@@ -1,17 +1,13 @@
 require.config({
-    baseUrl: '/static/js/',
+    baseUrl: '/static/js/v0.2',
     paths: {
-        angular: './node_modules/angular/angular.min',
-        storage: './ext/basil.min',
-        q: './node_modules/q/q',
-        lodash: './node_modules/lodash/lodash.min',
-        i18n: './module.i18n',
-        d3: './ext/d3.min',
-        jquery: './ext/jquery-2.2.1.min',
-        observable: 'module.observable',
-        socket: './ext/socket.io-1.4.5',
-        'engine.io': './ext/engine.io',
-        'module.backend.service': './common/module.backend.service'
+        angular: '/node_modules/angular/angular',
+        storage: '/node_modules/basil.js/build/basil',
+        q: '/node_modules/q/q',
+        lodash: '/node_modules/lodash/lodash',
+        d3: '/node_modules/d3/build/d3',
+        jquery: '/node_modules/jquery/dist/jquery',
+        socket: '/node_modules/socket.io-client/dist/socket.io'
     },
     shim: {
         angular: {

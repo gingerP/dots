@@ -14,8 +14,15 @@ define([
             }
         }
 
+        function getApply(scope) {
+            return function () {
+                apply(scope);
+            };
+        }
+
         return {
-            apply: apply
+            apply: apply,
+            getApply: getApply
         };
     }
 });

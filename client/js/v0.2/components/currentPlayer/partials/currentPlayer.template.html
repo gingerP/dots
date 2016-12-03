@@ -1,19 +1,15 @@
 <div class="current-player">
     <div class="player-placeholder-left">
-        <div class="myself-player player"
+        <div class="myself-player player {{currentPlayerCtrl.style.myself}}"
              ng-class="{'inactive-player': !currentPlayerCtrl.isMyselfActive && currentPlayerCtrl.opponent,
              'active-player': currentPlayerCtrl.isMyselfActive && currentPlayerCtrl.opponent}">
             <div class="player-style" ng-bind="currentPlayerCtrl.myself.name"></div>
         </div>
-        <player-color
-                color="currentPlayerCtrl.myself.color"
-                options="currentPlayerCtrl.colorOptions">
-        </player-color>
     </div>
 
     <a ng-if="currentPlayerCtrl.GAME_MODE.LOCAL === currentPlayerCtrl.gameMode" href="javascript:void(0)" type="button"
        class="player-next" ng-click="currentPlayerCtrl.nextPlayer()">Next</a>
-    <button class="btn-override menu-open"
+    <button class="btn-override menu-open {{currentPlayerCtrl.style.active}}"
             ng-class="{'menu-open-up': currentPlayerCtrl.isMenuOpened}"
             ng-click="currentPlayerCtrl.triggerOpenMenu()">
     </button>
@@ -21,16 +17,11 @@
     <div class="player-placeholder-right">
         <span ng-show="currentPlayerCtrl.opponent && !currentPlayerCtrl.opponent.isOnline"
               class="opponent-offline-title">offline</span>
-        <div ng-show="currentPlayerCtrl.opponent" class="opponent-player opponent-block player"
+        <div ng-show="currentPlayerCtrl.opponent" class="opponent-player opponent-block player {{currentPlayerCtrl.style.opponent}}"
              ng-class="{'inactive-player': !currentPlayerCtrl.isOpponentActive,
              'active-player': currentPlayerCtrl.isOpponentActive}">
             <div class="player-style" ng-bind="currentPlayerCtrl.opponent.name"></div>
         </div>
-        <player-color
-                ng-show="currentPlayerCtrl.opponent"
-                color="currentPlayerCtrl.opponent.color" options="currentPlayerCtrl.colorOptions">
-        </player-color>
-
         <a ng-show="!currentPlayerCtrl.opponent" href="javascript:void(0)" type="button" class="choose-opponent player"
            ng-click="currentPlayerCtrl.triggerOpenMenu()">Choose
             opponent

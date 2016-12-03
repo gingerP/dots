@@ -217,7 +217,8 @@ GameSupportService.prototype.notifyAboutNewClient = function (newClient) {
 };
 
 GameSupportService.prototype.newGame = function (clientAId, clientBId, activePlayerId) {
-    return this.gameDBManager.createGame(clientAId, clientBId, activePlayerId, gameStatuses.active);
+    return this.gameDBManager.createGame(clientAId, clientBId, activePlayerId, gameStatuses.active)
+        .then((id) => this.gameDBManager.get(id));
 };
 
 GameSupportService.prototype.getName = function () {

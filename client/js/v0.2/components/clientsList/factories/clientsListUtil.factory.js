@@ -2,8 +2,8 @@ define([
     'angular',
     'lodash',
     'business/game.storage',
-    '../clientsList.module'
-], function(angular, _, GameStorage) {
+    'components/clientsList/clientsList.module'
+], function (angular, _, GameStorage) {
     'use strict';
 
     angular.module('clientsList.module').factory('clientsListUtil', clientsListUtilFactory);
@@ -71,7 +71,7 @@ define([
             var existClientsHashes = getClientsHashes(existClients);
             return _.filter(reconnectedClients, function (client) {
                 return existClientsHashes.indexOf(getClientHash(client)) < 0
-                    && (opponent && client._id !== opponent._id || client._id !== myself);
+                    && client._id !== myself._id && (!opponent || client._id !== opponent._id);
             });
         }
 

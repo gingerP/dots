@@ -278,24 +278,22 @@ define([
         return api;
     }
 
-    function updatePlayerState(player, dots, loops, trappedDots) {
+    function updatePlayerState(color, dots, loops, trappedDots) {
         var preparedDots, preparedLoops, preparedTrappedDots;
-        if (player) {
-            preparedDots = CommonUtils.createArray(dots);
-            preparedLoops = CommonUtils.createArray(loops);
-            preparedTrappedDots = CommonUtils.createArray(trappedDots);
-            if (preparedDots && preparedDots.length) {
-                renderDots(preparedDots, player.color);
-            }
-            if (preparedLoops && preparedLoops.length) {
-                renderLoops(
-                    CommonGraphicsUtils.getFilteredAndConvertedLoops(preparedLoops, STEP, OFFSET),
-                    player.color
-                );
-            }
-            if (preparedTrappedDots && preparedTrappedDots.length) {
-                renderTrappedDots(preparedTrappedDots, player.color);
-            }
+        preparedDots = CommonUtils.createArray(dots);
+        preparedLoops = CommonUtils.createArray(loops);
+        preparedTrappedDots = CommonUtils.createArray(trappedDots);
+        if (preparedDots && preparedDots.length) {
+            renderDots(preparedDots, color);
+        }
+        if (preparedLoops && preparedLoops.length) {
+            renderLoops(
+                CommonGraphicsUtils.getFilteredAndConvertedLoops(preparedLoops, STEP, OFFSET),
+                color
+            );
+        }
+        if (preparedTrappedDots && preparedTrappedDots.length) {
+            renderTrappedDots(preparedTrappedDots, color);
         }
     }
 

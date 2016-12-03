@@ -15,8 +15,7 @@ GameDataDBManager.prototype.getName = function () {
     return constants.GAME_DATA_DB_MANAGER;
 };
 
-
-GameDataDBManager.prototype.createNew = function (gameId, clientId, color, dots, trappedDots, loops) {
+GameDataDBManager.prototype.createNew = function createNew(gameId, clientId, color, dots, trappedDots, loops) {
     var newGameData = CreationUtils.newGameData(
         this.getObjectId(gameId),
         this.getObjectId(clientId),
@@ -25,7 +24,7 @@ GameDataDBManager.prototype.createNew = function (gameId, clientId, color, dots,
         loops,
         color
     );
-    return this.save(newGameData);
+    return this.save(newGameData).then((id) => this.get(id));
 };
 
 GameDataDBManager.prototype.saveGameData = function (/*id, dots, trappedDots, loops*/) {

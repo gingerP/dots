@@ -19,13 +19,17 @@
     "log4js": "0.6.33",
     "lodash": "4.13.1",
     "q": "1.4.1",
-    "requirejs": "2.2.0",
     "serve-favicon": "~2.3.0",
     "websocket": "1.0.22",
     "socket.io": "1.4.6",
+    "socket.io-client": "1.7.1",
     "pm2": "2.0.19",
     "mongodb": "2.2.1",
-    "cookie": "0.3.1"
+    "cookie": "0.3.1",
+    "basil.js": "0.4.4",
+    "d3": "4.4.0",
+    "jquery": "3.1.1",
+    "requirejs": "2.3.2"
   },
   "devDependencies": {
     "eslint": "^3.7.0",
