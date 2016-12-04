@@ -1,0 +1,6 @@
+{
+  "FORWARD": 1,
+  "BACKWARD": -1,
+  "NOWHERE": 0,
+  "BOTH_WAYS": 2
+}

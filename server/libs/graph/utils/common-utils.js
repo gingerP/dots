@@ -31,7 +31,8 @@ function findFirstUnselectedUnvisitedPosition(array, beginFromX, beginFromY) {
     var yIndex = beginFromY || 0;
     for (; xIndex < array.length; xIndex++) {
         for (; yIndex < array[xIndex].length; yIndex++) {
-            if (!array[xIndex][yIndex].isSelected && !array[xIndex][yIndex].isVisited) {
+            let vertex = array[xIndex][yIndex];
+            if (!vertex.isSelected && !vertex.isVisited) {
                 return {
                     x: xIndex,
                     y: yIndex
@@ -50,7 +51,8 @@ function getUnselectedUnvisitedVertexesCount(vertexes) {
     while (x < vertexes.length) {
         y = 0;
         while (y < vertexes[x].length) {
-            if (!vertexes[x][y].isSelected && !vertexes[x][y].isVisited) {
+            let vertex = vertexes[x][y];
+            if (!vertex.isSelected && !vertex.isVisited) {
                 result = result + 1;
             }
             y++;

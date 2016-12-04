@@ -1,15 +1,17 @@
 'use strict';
-
 const commonUtils = require('./utils/common-utils');
 const convertUtils = require('./utils/convert-utils');
 const vertexUtils = require('./utils/vertex-utils');
 const creationUtils = require('./utils/creation-utils');
+const directionUtils = require('./utils/direction-utils');
+const DIRECTIONS = require('./utils/directions');
 
 function getLoops(array) {
     var prepared = prepareInbound(array);
     var firstPosition = commonUtils.findFirstUnselectedUnvisitedPosition(prepared.vertexes);
     var isUnbroken;
     var loops = [];
+
     if (firstPosition) {
         let unpassVertexesCount = commonUtils.getUnselectedUnvisitedVertexesCount(prepared.vertexes);
         let futureLines = [getFutureLine(firstPosition.x, firstPosition.y, prepared.vertexes)];
@@ -35,10 +37,11 @@ function getLoops(array) {
             }
             while (futureLines.length && lineIndex < futureLines.length && lineIndex > -1) {
                 passedLine = passLine(lineIndex, futureLines, selected, prepared.vertexes);
+
                 passed += passedLine.passed;
                 isUnbroken = isUnbroken && !passedLine.isSpill;
                 unpassVertexesCount -= passedLine.passed;
-                trappedDots = trappedDots.concat(passedLine.passedDots);
+                trappedDots.push.apply(trappedDots, passedLine.passedDots);
                 lineIndex = futureLines.length - 1;
             }
             if (Object.keys(selected).length && isUnbroken) {
@@ -95,19 +98,44 @@ function updateShifts(dots, shifts) {
 
 function passLine(futureLineIndex, futureLines, selected, vertexes) {
     var line = futureLines[futureLineIndex];
+    var resultOfPassage;
+
+    futureLines[futureLineIndex] = null;
+    futureLines.length--;
+
+    if (line.direction === DIRECTIONS.FORWARD ||
+        line.direction === DIRECTIONS.BACKWARD ||
+        line.direction === DIRECTIONS.NOWHERE) {
+        resultOfPassage = passLineWithSpecificDirection(line, line.direction, futureLines, selected, vertexes);
+    } else if (line.direction === DIRECTIONS.BOTH_WAYS) {
+        resultOfPassage = passLineWithSpecificDirection(
+            line, DIRECTIONS.FORWARD, futureLines, selected, vertexes, false
+        );
+        let anotherResultOfPassage = passLineWithSpecificDirection(
+            line, DIRECTIONS.BACKWARD, futureLines, selected, vertexes, true
+        );
+        resultOfPassage.passed += anotherResultOfPassage.passed;
+        resultOfPassage.passedDots.push.apply(resultOfPassage.passedDots, anotherResultOfPassage.passedDots);
+        resultOfPassage.isSpill = resultOfPassage.isSpill || anotherResultOfPassage.isSpill;
+    }
+
+    return resultOfPassage;
+}
+
+function passLineWithSpecificDirection(line, direction, futureLines, selected, vertexes, isSkipFirst) {
     var passed = 0;
-    var index = line.pos.y;
+    var index = line.pos.y + (isSkipFirst ? direction : 0);
     var newFutureLines;
     var isSpill = false;
     var vertex = vertexes[line.pos.x][index];
     var passedDots = [];
-    futureLines[futureLineIndex] = null;
-    futureLines.length--;
     while (vertex && index >= 0 && !vertex.isSelected && !vertex.isInFutureLines) {
         vertex.isVisited = true;
         vertex.isInFutureLines = true;
         newFutureLines = getFutureLineForVertex(line.pos.x, index, vertexes);
-        isSpill = vertexUtils.hasSpill(creationUtils.newVertex(line.pos.x, index), vertexes);
+        if (!isSpill) {
+            isSpill = vertexUtils.hasSpill(creationUtils.newVertex(line.pos.x, index), vertexes);
+        }
         vertexUtils.applySelectedNeighborsFrom_8_Direction(
             creationUtils.newVertex(line.pos.x, index),
             selected,
@@ -115,12 +143,12 @@ function passLine(futureLineIndex, futureLines, selected, vertexes) {
         );
         passedDots.push(creationUtils.newVertex(line.pos.x, index));
         futureLines.push.apply(futureLines, newFutureLines);
-        index += line.direction;
+        index += direction;
         vertex = vertexes[line.pos.x][index];
         passed++;
     }
 
-    if (!isSpill && !vertexes[line.pos.x][index] || !vertexes[line.pos.x][line.pos.y - 1]) {
+    if (!isSpill && (!vertexes[line.pos.x][index] || !vertexes[line.pos.x][line.pos.y - 1])) {
         isSpill = true;
     }
     return {
@@ -157,41 +185,14 @@ function getFutureLineForVertex(x, y, vertexes) {
 
 function getFutureLine(x, y, vertexes) {
     var line;
-    if (!vertexes[x][y].isSelected && !vertexes[x][y].isInFutureLines) {
+    var vertex = vertexes[x][y];
+    if (!vertex.isSelected && !vertex.isInFutureLines) {
         line = {
             pos: creationUtils.newVertex(x, y),
-            direction: getDirection(x, y, vertexes)
+            direction: directionUtils.getDirection(x, y, vertexes)
         };
     }
     return line;
-}
-
-function getDirection(x, y, vertexes) {
-    var direction = 1;
-    var prev = vertexes[x][y - 1];
-    var next = vertexes[x][y + 1];
-    var current = vertexes[x][y];
-    if (isPrevAndNextNotExist(x, y, vertexes) || (!current.isSelected
-        && (isPrevNotExistAndNextIsSelected(x, y, vertexes) || isNextNotExistAndPrevIsSelected(x, y, vertexes)))) {
-        direction = 1;
-    } else if ((!next || next.isSelected) && !current.isSelected && prev && !prev.isSelected) {
-        direction = -1;
-    } else if (!next.isSelected && !current.isSelected && (!prev || prev.isSelected)) {
-        direction = 1;
-    }
-    return direction;
-}
-
-function isPrevAndNextNotExist(x, y, vertexes) {
-    return y + 1 >= vertexes[x].length && y <= 0;
-}
-
-function isPrevNotExistAndNextIsSelected(x, y, vertexes) {
-    return y + 1 < vertexes[x].length && vertexes[x][y + 1].isSelected && y <= 0;
-}
-
-function isNextNotExistAndPrevIsSelected(x, y, vertexes) {
-    return y > 0 && vertexes[x][y - 1].isSelected && y + 1 >= vertexes[x].length;
 }
 
 module.exports = {
