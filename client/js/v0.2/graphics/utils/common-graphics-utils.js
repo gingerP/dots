@@ -102,6 +102,13 @@ define([
         return result;
     }
 
+    function getPaneSize(xNum, yNum, unit, offset) {
+        return {
+            width: xNum * unit + offset,
+            height: yNum * unit + offset
+        };
+    }
+
     api = {
         createPaneGridData: createPaneGridData,
         getNotExistingPath: getNotExistingPath,
@@ -109,7 +116,8 @@ define([
         prepareCirclesData: prepareCirclesData,
         generateSelectorStringFromDots: generateSelectorStringFromDots,
         getFilteredAndConvertedLoops: getFilteredAndConvertedLoops,
-        getUnitSize: getUnitSize
+        getUnitSize: getUnitSize,
+        getPaneSize: getPaneSize
     };
 
     return api;

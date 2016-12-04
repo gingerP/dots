@@ -264,6 +264,11 @@ define([
         }
     }
 
+    function updatePanelSize() {
+        var size = CommonGraphicsUtils.getPaneSize(xNum, yNum, STEP, OFFSET);
+        gamePane.attr('width', size.width).attr('height', size.height);
+    }
+
     function init(gamePaneSelector, BusinessModule, xNum_, yNum_, data) {
         xNum = xNum_;
         yNum = yNum_;
@@ -275,6 +280,7 @@ define([
         circles = api.renderCircles(CommonGraphicsUtils.prepareCirclesData(data, STEP, OFFSET));
         initEvents(getElementsForMouseEvents(circles));
         renderTable();
+        updatePanelSize();
         return api;
     }
 
