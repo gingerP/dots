@@ -73,8 +73,8 @@ define([
         });
     };
 
-    Player.prototype.hasDot = function (id) {
-        return this.dots.indexOf(id) > -1;
+    Player.prototype.hasDot = function (data) {
+        return _.findIndex(this.dots, {x: data.x, y: data.y}) > -1;
     };
 
     Player.prototype.hasStepDot = function () {

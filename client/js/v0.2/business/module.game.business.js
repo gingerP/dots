@@ -7,6 +7,7 @@ define([
     'business/game.rules',
     'utils/game-utils',
     'utils/player-utils',
+    'utils/converters-utils',
     'business/game.storage',
     'common/services/game-data.service',
     'common/services/game.service',
@@ -14,7 +15,7 @@ define([
     'common/services/gameSupport.service',
     'graphics/module.game.graphics'
 ], function (_, q, Events, NetworkStatus, Observable, rules,
-             GameUtils, PlayerUtils, GameStorage,
+             GameUtils, PlayerUtils, ConvertersUtils, GameStorage,
              GameDataService, GameService, InviteService, GameSupportService,
              Graphics) {
     'use strict';
@@ -188,6 +189,10 @@ define([
             GameStorage.setGame(message.game);
             makePlayerActive(gamePlayer);
             Graphics.updatePlayerState(previousGamePlayer.color, message.dot, message.previousPlayerGameDataDelta);
+            GameUtils.updatePlayerState(
+                message.previousPlayerId,
+                ConvertersUtils.convertToGameData(message.dot, message.previousPlayerGameDataDelta)
+            );
             observable.emit(Events.GAME_STEP, {
                 dot: message.dot,
                 previousGamePlayerId: message.previousPlayerId

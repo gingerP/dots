@@ -7,9 +7,10 @@ define([
     var api;
 
     function hasPlayersDots() {
+        var args = arguments;
         return gameStorage.getGamePlayers().some(function (player) {
-            return _.every(arguments, function (id) {
-                return player.hasDot(id);
+            return _.every(args, function (dot) {
+                return player.hasDot(dot);
             });
         });
     }
@@ -23,7 +24,7 @@ define([
         },
 
         isDotFree: function isDotFree(data) {
-            return !hasPlayersDots(data.id);
+            return !hasPlayersDots(data);
         },
 
         isDotsNeighbors: function isDotsNeighbors(data1, data2) {

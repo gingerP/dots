@@ -13,6 +13,12 @@ define([], function() {
                 x: data.x,
                 y: data.y
             };
+        },
+        convertToGameData: function convertToGameData(dot, loops) {
+            return {
+                dots: [dot],
+                loops: loops
+            };
         }
     };
 

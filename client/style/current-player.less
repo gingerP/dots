@@ -134,9 +134,6 @@
     width: @toolbar-height - 5px;
     height: @toolbar-height - 5px;
     border-radius: 50%;
-    background-image: url('/static/images/ellipsis.png');
-    background-repeat: no-repeat;
-    background-position: 50%;
     box-shadow: 0 1px 2px rgba(0,0,0,0.1);
     background-color: @player-color-blue;
     transition: backgroundColor .3s;
@@ -146,6 +143,16 @@
 
     &.player-style-blue {
       background-color: @player-color-blue;
+    }
+    .menu-btn-icon {
+      width: 15px;
+      height: 15px;
+      position: absolute;
+      top: 0;
+      right: 0;
+      left: 0;
+      bottom: 0;
+      margin: auto;
     }
   }
 }
@@ -161,6 +168,10 @@
     border: 1px solid @player-color-inactive;
     height: 70px;
     width: 70px;
+    .menu-btn-icon {
+      width: 25px;
+      height: 25px;
+    }
   }
 }
 
