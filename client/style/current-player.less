@@ -1,6 +1,10 @@
 @import (reference) "./variables";
 @import (reference) "./mixins";
 
+@player-color-red: #ef5350;
+@player-color-blue: #4b8bff;
+@player-color-inactive: #DFDFDF;
+
 .current-player {
   top: 0;
   right: 0;
@@ -29,13 +33,24 @@
     &.player-style-blue {
       color: white;
       box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+      &.inactive-player {
+        background-color: @player-color-inactive;
+      }
     }
     &.player-style-red {
-      background-color: #ef5350;
+      border: 1px solid @player-color-red;
+      background-color: @player-color-red;
+      &.inactive-player {
+        color: @player-color-red;
+      }
     }
 
     &.player-style-blue {
-      background-color: #4b8bff;
+      border: 1px solid @player-color-blue;
+      background-color: @player-color-blue;
+      &.inactive-player {
+        color: @player-color-blue;
+      }
     }
   }
 
@@ -82,10 +97,11 @@
   }
 
   .player {
+    border: 1px solid @game-background-color;
     height: @toolbar-height - 10px;
     line-height: @toolbar-height - 10px;
     text-align: center;
-    margin: 5px 0;
+    margin: 4px 0;
     padding: 0 10px;
     border-radius: 2px;
     box-shadow: 0 1px 2px rgba(0,0,0,0.1);
@@ -107,31 +123,44 @@
   }
 
   .menu-open {
+    outline: none;
     cursor: pointer;
     position: absolute;
     top: 0;
     right: 0;
     bottom: 0;
     left: 0;
-    margin: 5px auto;
-    width: @toolbar-height - 10px;
-    height: @toolbar-height - 10px;
-
-    background-image: url('/static/images/down-arrow.png');
+    margin: 2px auto;
+    width: @toolbar-height - 5px;
+    height: @toolbar-height - 5px;
+    border-radius: 50%;
+    background-image: url('/static/images/ellipsis.png');
     background-repeat: no-repeat;
     background-position: 50%;
-    transition: transform .3s;
-
-    &.menu-open-up {
-      transform: rotate(180deg);
-    }
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    background-color: @player-color-blue;
+    transition: backgroundColor .3s;
     &.player-style-red {
-      background-color: #ef5350;
+      background-color: @player-color-red;
     }
 
     &.player-style-blue {
-      background-color: #4b8bff;
+      background-color: @player-color-blue;
     }
+  }
+}
+
+.mobile-device {
+  .menu-open {
+    position: fixed;
+    right: 0;
+    bottom:0;
+    top: initial;
+    left: initial;
+    margin: 20px;
+    border: 1px solid @player-color-inactive;
+    height: 70px;
+    width: 70px;
   }
 }
 
