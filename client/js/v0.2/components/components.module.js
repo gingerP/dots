@@ -1,5 +1,6 @@
 define([
     'angular',
+    'angular-animate',
     'components/game/components/game.component',
     'components/clientsList/components/clientsList.component',
     'components/currentPlayer/components/currentPlayer.component',
@@ -27,7 +28,8 @@ define([
         'gamePane.module',
         'playerColor.module',
         'common.helpers.module',
-        'app-cache'
+        'app-cache',
+        'ngAnimate'
     ]);
     angular.element(document).ready(function () {
         angular.bootstrap(document, ['app']);

@@ -1,6 +1,7 @@
 require.config({
     baseUrl: '/static/js/v0.2',
     paths: {
+        'angular-animate': '/node_modules/angular-animate/angular-animate',
         angular: '/node_modules/angular/angular',
         storage: '/node_modules/basil.js/build/basil',
         q: '/node_modules/q/q',
@@ -12,6 +13,9 @@ require.config({
     shim: {
         angular: {
             exports: 'angular'
+        },
+        'angular-animate': {
+            deps: ['angular']
         }
     },
     waitSeconds: 15

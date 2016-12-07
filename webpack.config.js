@@ -22,6 +22,7 @@ module.exports = {
     resolve: {
         extensions: ['', '.js'],
         alias: {
+            'angular-animate': 'node_modules/angular-animate/angular-animate',
             storage: 'node_modules/basil.js/build/basil',
             q: 'node_modules/q/q',
             lodash: 'node_modules/lodash/lodash',

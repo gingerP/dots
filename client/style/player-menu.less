@@ -1,10 +1,47 @@
 @import (reference) "./variables";
 @import (reference) "./mixins";
 
+@animation-speed: .3s;
+
 .mobile-device {
   player-menu {
     .player-menu {
-      height: 100%;
+      transition: all @animation-speed;
+      top: inherit;
+      left: inherit;
+      position: fixed;
+      bottom: 0;
+      right: 0;
+      min-height: inherit;
+
+      &.ng-hide-remove,
+      &:not(.ng-hide) {
+        width: 100%;
+        height: calc(~"100%" - @toolbar-height);
+        border-radius: 0;
+      }
+      &:not(.ng-hide) {
+        .player-menu-clients {
+          display: block;
+        }
+      }
+
+      &.ng-hide-remove {
+        .player-menu-clients {
+          display: none;
+        }
+      }
+
+      &.ng-hide {
+        bottom: 20px;
+        right: 20px;
+        border-radius: 50%;
+        width: @menu-btn-mobile-size;
+        height: @menu-btn-mobile-size;
+        .player-menu-clients {
+          display: none;
+        }
+      }
     }
   }
 }
