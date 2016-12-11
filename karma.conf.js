@@ -15,11 +15,11 @@ module.exports = function (config) {
 
         // list of files / patterns to load in the browser
         files: [
-            'test/test-main.js',
-            { pattern: 'client/js/**/*.js', included: false },
-            { pattern: 'test/client/**/*.js', included: false }
+            {pattern: 'client/js/**/*.js', included: false},
+            {pattern: 'test/client/**/*.js', included: false},
+            {pattern: 'node_modules/lodash/lodash.js', served: true, watched: true},
+            'test/test-main.js'
         ],
-
 
         // list of files to exclude
         exclude: [
@@ -31,7 +31,7 @@ module.exports = function (config) {
         // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
         preprocessors: {},
 
-
+        captureTimeout: 60000,
         // test results reporter to use
         // possible values: 'dots', 'progress'
         // available reporters: https://npmjs.org/browse/keyword/karma-reporter
