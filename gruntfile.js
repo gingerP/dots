@@ -65,6 +65,11 @@ grunt.initConfig({
                 [PRODUCTION_SRC_DIRECTORY + '/style/style.css']: 'client/style/style.less'
             }
         }
+    },
+    karma: {
+        unit: {
+            configFile: 'karma.conf.js'
+        }
     }
 });
 
