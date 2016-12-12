@@ -1,5 +1,5 @@
 define([
-    'client/js/v0.2/graphics/utils/convert-utils'
+    'graphics/utils/convert-utils'
 ], function () {
     'use strict';
 

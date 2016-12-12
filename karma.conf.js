@@ -17,7 +17,7 @@ module.exports = function (config) {
         files: [
             {pattern: 'client/js/**/*.js', included: false},
             {pattern: 'test/client/**/*.js', included: false},
-            {pattern: 'node_modules/lodash/lodash.js', served: true, watched: true},
+            {pattern: 'node_modules/lodash/lodash.js', served: true, included: false},
             'test/test-main.js'
         ],
 
@@ -70,9 +70,9 @@ module.exports = function (config) {
         concurrency: Infinity,
 
         plugins: [
-            "karma-phantomjs-launcher",
-            "karma-jasmine",
-            "karma-requirejs"
+            'karma-phantomjs-launcher',
+            'karma-jasmine',
+            'karma-requirejs'
         ]
     });
 };
