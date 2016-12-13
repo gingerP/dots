@@ -17,6 +17,7 @@ module.exports = function (config) {
         files: [
             {pattern: 'client/js/**/*.js', included: false},
             {pattern: 'test/client/**/*.js', included: false},
+            {pattern: 'test/helpers/**/*js', served: true, included: false},
             {pattern: 'node_modules/lodash/lodash.js', served: true, included: false},
             'test/test-main.js'
         ],
@@ -29,13 +30,18 @@ module.exports = function (config) {
 
         // preprocess matching files before serving them to the browser
         // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
-        preprocessors: {},
+        preprocessors: {
+            // source files, that you wanna generate coverage for
+            // do not include tests or libraries
+            // (these files will be instrumented by Istanbul)
+            'client/js/**/*.js': ['coverage']
+        },
 
         captureTimeout: 60000,
         // test results reporter to use
         // possible values: 'dots', 'progress'
         // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-        reporters: ['dots'],
+        reporters: ['progress', 'coverage'],
 
 
         // web server port
@@ -72,7 +78,13 @@ module.exports = function (config) {
         plugins: [
             'karma-phantomjs-launcher',
             'karma-jasmine',
-            'karma-requirejs'
-        ]
+            'karma-requirejs',
+            'karma-coverage'
+        ],
+
+        coverageReporter: {
+            type : 'html',
+            dir : 'reports/'
+        }
     });
 };

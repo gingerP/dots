@@ -1,58 +1,34 @@
 define([
-    'graphics/utils/path-utils'
-], function (PathUtils) {
+    'lodash',
+    'graphics/utils/path-utils',
+    './test-data/base4Vertex-5-testData',
+    './test-data/base4Vertex-4-testData',
+    'array-helper'
+], function (_, PathUtils,
+             Base4Vertex5TestData, Base4Vertex4TestData,
+             arrayHelpers) {
     'use strict';
-
-    var VERTEXES_4LOOP_VER01 = [
-            {x: 100, y: 100},
-            {x: 101, y: 99},
-            {x: 102, y: 100},
-            {x: 101, y: 101}
-        ],
-        VERTEXES_4LOOP_VER02 = [
-            {x: 102, y: 100},
-            {x: 100, y: 100},
-            {x: 101, y: 99},
-            {x: 101, y: 101}
-        ],
-        VERTEXES_4LOOP_VER03 = [
-            {x: 100, y: 100},
-            {x: 101, y: 99},
-            {x: 102, y: 100},
-            {x: 101, y: 101}
-        ],
-        VERTEXES_4LOOP_VER04 = [
-            {x: 101, y: 99},
-            {x: 102, y: 100},
-            {x: 100, y: 100},
-            {x: 101, y: 101}
-        ],
-        VERTEXES_4LOOP_RESULT = [
-            {start: {x: 100, y: 100}, finish: {x: 101, y: 99}},
-            {start: {x: 101, y: 99}, finish: {x: 102, y: 100}},
-            {start: {x: 102, y: 100}, finish: {x: 101, y: 101}},
-            {start: {x: 101, y: 101}, finish: {x: 100, y: 100}}
-        ];
 
     describe('path-utils', function () {
 
-        it('4 vertex loop', function () {
-            var path = PathUtils.getUnSortedPath(VERTEXES_4LOOP_VER01);
+        beforeEach(function () {
+            arrayHelpers.init();
+        });
 
-            expect(path).toEqual(VERTEXES_4LOOP_RESULT);
+        _.forEach(Base4Vertex4TestData.input, function (inboundTestData, index) {
+            it('should create valid path for Base 4 Vertex 4, rev' + index, function () {
+                var path = PathUtils.getUnSortedPath(inboundTestData);
 
-           /* path = PathUtils.getUnSortedPath(VERTEXES_4LOOP_VER02);
+                expect(path).toEqualPath(Base4Vertex4TestData.output);
+            });
+        });
 
-            expect(path).toEqual(VERTEXES_4LOOP_RESULT);
+        _.forEach(Base4Vertex5TestData.input, function (inboundTestData, index) {
+            it('should create valid path for Base 4 Vertex 5 , rev' + index, function () {
+                var path = PathUtils.getUnSortedPath(inboundTestData);
 
-            path = PathUtils.getUnSortedPath(VERTEXES_4LOOP_VER03);
-
-            expect(path).toEqual(VERTEXES_4LOOP_RESULT);
-
-            path = PathUtils.getUnSortedPath(VERTEXES_4LOOP_VER04);
-
-            expect(path).toEqual(VERTEXES_4LOOP_RESULT);*/
-
+                expect(path).toEqualPath(Base4Vertex5TestData.output);
+            });
         });
     });
 });

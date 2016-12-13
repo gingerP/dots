@@ -16,9 +16,9 @@ Object.keys(window.__karma__.files).forEach(function (file) {
 require.config({
   // Karma serves files under /base, which is the basePath from your config file
   baseUrl: '/base/client/js/v0.2',
-
   paths: {
-    lodash: '../../../node_modules/lodash/lodash'
+    lodash: '../../../node_modules/lodash/lodash',
+    'array-helper': '../../../test/helpers/array-helper'
   },
 
   // dynamically load all test files
