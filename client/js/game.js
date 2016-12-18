@@ -32,8 +32,7 @@ require([
     observable.on(Events.GAME_PANE_RENDER, function () {
         var X_SIZE = 40;
         var Y_SIZE = 40;
-        var radius = 2;
-        var vertexes = GameUtils.generateVertexes(X_SIZE, Y_SIZE, radius);
+        var vertexes = GameUtils.generateVertexes(X_SIZE, Y_SIZE);
         Business.init();
         Graphics.init('#game-pane', Business, X_SIZE, Y_SIZE, vertexes);
     });

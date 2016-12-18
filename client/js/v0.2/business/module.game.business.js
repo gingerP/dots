@@ -187,9 +187,10 @@ define([
         GameService.listen.gameStep(function (message) {
             var gamePlayer = GameStorage.getGamePlayerById(message.current.gamerId);
             var previousGamePlayer = GameStorage.getGamePlayerById(message.previous.gamerId);
+
             GameStorage.setGame(message.game);
             makePlayerActive(gamePlayer);
-            Graphics.updatePlayerState(previousGamePlayer.color, message.dot, message.previous.delta);
+            Graphics.updatePlayerStep(previousGamePlayer.color, message.dot, message.previous.delta);
 
             // Current player
             GameUtils.updatePlayerState(

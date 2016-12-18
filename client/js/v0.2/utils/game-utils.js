@@ -44,9 +44,7 @@ define([
             for (h = 0; h < ySize; h++) {
                 data.push({
                     x: w,
-                    y: h,
-                    radius: radius,
-                    id: 'circle_' + w + '_' + h
+                    y: h
                 });
             }
         }

@@ -1,12 +1,15 @@
 define([
     'lodash',
     'graphics/utils/path-utils',
-    'graphics/utils/convert-utils'
-], function (_, PathUtils, ConvertUtils) {
+    'graphics/utils/convert-utils',
+    'graphics/common/graphics-constants'
+], function (_, PathUtils, ConvertUtils, GraphicsConstants) {
     'use strict';
 
     var api,
-        DEFAULT_MULTIPLIER = 16;
+        DEFAULT_MULTIPLIER = 16,
+        DOT = GraphicsConstants.GAME_PANE.DOT,
+        TABLE = GraphicsConstants.GAME_PANE.TABLE;
 
     function createPaneGridData(xNum, yNum, step, offset) {
         var result = [];
@@ -52,6 +55,14 @@ define([
         });
     }
 
+    function getDotId(dotXY) {
+        return 'circle_' + dotXY.x + '_' + dotXY.y;
+    }
+
+    function getSelectionDotId(dotXY) {
+        return 'circle_' + dotXY.x + '_' + dotXY.y + '_selection';
+    }
+
     function getLineId(startCircle, finCircle) {
         return 'line_' +
             startCircle.x_ + '_' +
@@ -61,10 +72,12 @@ define([
     }
 
     function prepareCirclesData(data, step, offset) {
-        return _.map(data, function (dataItem) {
-            dataItem.x_ = dataItem.x * step + offset;
-            dataItem.y_ = dataItem.y * step + offset;
-            return dataItem;
+        return _.map(data, function (vertex) {
+            vertex.id = getDotId(vertex);
+            vertex.radius = DOT.RADIUS;
+            vertex.x_ = vertex.x * step + offset;
+            vertex.y_ = vertex.y * step + offset;
+            return vertex;
         });
     }
 
@@ -109,15 +122,25 @@ define([
         };
     }
 
+    function getVertexPosition(vertexXY) {
+        return {
+            x: vertexXY.x * TABLE.STEP + TABLE.OFFSET,
+            y: vertexXY.y * TABLE.STEP + TABLE.OFFSET
+        };
+    }
+
     api = {
         createPaneGridData: createPaneGridData,
         getNotExistingPath: getNotExistingPath,
+        getDotId: getDotId,
+        getSelectionDotId: getSelectionDotId,
         getLineId: getLineId,
         prepareCirclesData: prepareCirclesData,
         generateSelectorStringFromDots: generateSelectorStringFromDots,
         getFilteredAndConvertedLoops: getFilteredAndConvertedLoops,
         getUnitSize: getUnitSize,
-        getPaneSize: getPaneSize
+        getPaneSize: getPaneSize,
+        getVertexPosition: getVertexPosition
     };
 
     return api;

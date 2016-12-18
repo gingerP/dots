@@ -6,8 +6,13 @@ define([
     'utils/common-utils',
     'graphics/utils/common-graphics-utils',
     'graphics/utils/convert-utils',
-    'graphics/utils/path-utils'
-], function (d3, _, Events, GameStorage, CommonUtils, CommonGraphicsUtils, ConvertUtils, PathUtils) {
+    'graphics/utils/path-utils',
+    'graphics/utils/animation-utils',
+    'graphics/utils/selection-utils',
+    'graphics/common/graphics-constants'
+], function (d3, _, Events, GameStorage,
+             CommonUtils, CommonGraphicsUtils, ConvertUtils, PathUtils, AnimationUtils, SelectionUtils,
+             GraphicsConstants) {
     'use strict';
 
     var api;
@@ -25,33 +30,24 @@ define([
     var xNum;
     var yNum;
 
-    var STEP = CommonUtils.isMobile() ? 25 : 20;
-    var OFFSET = 20;
-    var STROKE_WIDTH = 2;
-
-    var SELECTION_CIRCLE_RADIUS = CommonUtils.isMobile() ? 12 : 10;
-    var SELECTION_CIRCLE_D_TYPE = 'SELECTION_D_TYPE';
-
-    var DOT_RADIUS = 2;
-    var DOT_RADIUS_SELECTED = 3;
-    var DOT_RADIUS_HOVER_IN = 4;
-    var MAIN_CIRCLE_D_TYPE = 'MAIN_CIRCLE_D_TYPE';
-
-    var TABLE_STROKE_WIDTH = 1;
-    var TABLE_STROKE_COLOR = '#AAEEFF';
+    var GAME_PANE = GraphicsConstants.GAME_PANE;
+    var TABLE = GAME_PANE.TABLE;
+    var DOT = GAME_PANE.DOT;
+    var SELECTION = GAME_PANE.DOT_SELECTION;
+    var PATH = GAME_PANE.PATH;
 
     var dotSize = {
         selected: function () {
-            return DOT_RADIUS_SELECTED;
+            return DOT.RADIUS_SELECTED;
         },
         unSelected: function () {
-            return DOT_RADIUS;
+            return DOT.RADIUS;
         },
         hoverIn: function () {
-            return DOT_RADIUS_HOVER_IN;
+            return DOT.RADIUS_HOVER_IN;
         },
         hoverOut: function (data) {
-            return data.isSelected ? DOT_RADIUS_SELECTED : DOT_RADIUS;
+            return data.isSelected ? DOT.RADIUS_SELECTED : DOT.RADIUS;
         }
     };
 
@@ -69,7 +65,7 @@ define([
                 .attr('x2', item.finish.x_)
                 .attr('y2', item.finish.y_)
                 .attr('stroke', color)
-                .attr('stroke-width', STROKE_WIDTH);
+                .attr('stroke-width', PATH.WIDTH);
         });
     }
 
@@ -80,23 +76,21 @@ define([
             .append('g');
         //Main circle
         mouseHoverElements.append('circle')
-            .attr('r', DOT_RADIUS)
+            .attr('r', DOT.RADIUS)
             .attr('cx', getter('x_'))
             .attr('cy', getter('y_'))
             .attr('id', getter('id'))
-            .attr('d_type', MAIN_CIRCLE_D_TYPE)
-            .attr('fill', TABLE_STROKE_COLOR)
+            .attr('d_type', DOT.ID)
+            .attr('fill', TABLE.STROKE.COLOR)
             .attr('fill-opacity', 1)
             .attr('data-id', getter('id'));
         //Selection circle
         mouseHoverElements.append('circle')
-            .attr('r', SELECTION_CIRCLE_RADIUS)
+            .attr('r', SELECTION.RADIUS)
             .attr('cx', getter('x_'))
             .attr('cy', getter('y_'))
-            .attr('id', function (circleData) {
-                return circleData.id + '_selection';
-            })
-            .attr('d_type', SELECTION_CIRCLE_D_TYPE)
+            .attr('id', CommonGraphicsUtils.getSelectionDotId)
+            .attr('d_type', SELECTION.ID)
             .attr('fill', '')
             .attr('fill-opacity', 0)
             .attr('data-id', getter('id'));
@@ -122,20 +116,20 @@ define([
 
     function getElementsForMouseEvents(elements) {
         return elements;
-        //return dotsGroup.selectAll('circle[d_type=' + SELECTION_CIRCLE_D_TYPE + ']');        
+        //return dotsGroup.selectAll('circle[d_type=' + SELECTION.ID + ']');
     }
 
     //Dots
 
     function hoverInDot(circle) {
         d3.select(circle)
-            .select('circle[d_type=' + MAIN_CIRCLE_D_TYPE + ']')
+            .select('circle[d_type=' + DOT.ID + ']')
             .attr('r', dotSize.hoverIn);
     }
 
     function hoverOutDot(circle) {
         d3.select(circle)
-            .select('circle[d_type=' + MAIN_CIRCLE_D_TYPE + ']')
+            .select('circle[d_type=' + DOT.ID + ']')
             .attr('r', dotSize.hoverOut);
     }
 
@@ -149,12 +143,12 @@ define([
     }
 
     function unSelectDots() {
-        circles.select('circle[d_type=' + MAIN_CIRCLE_D_TYPE + ']')
+        circles.select('circle[d_type=' + DOT.ID + ']')
             .attr('r', function (data) {
                 data.isSelected = false;
                 return dotSize.unSelected();
             })
-            .attr('fill', TABLE_STROKE_COLOR);
+            .attr('fill', TABLE.STROKE.COLOR);
     }
 
     function removeLoopsLins() {
@@ -163,7 +157,7 @@ define([
 
     function selectDot(circle, color) {
         d3.select(circle)
-            .select('circle[d_type=' + MAIN_CIRCLE_D_TYPE + ']')
+            .select('circle[d_type=' + DOT.ID + ']')
             .attr('r', function (data) {
                 data.isSelected = true;
                 return dotSize.selected();
@@ -222,20 +216,20 @@ define([
     }
 
     function renderTable() {
-        var gridData = CommonGraphicsUtils.createPaneGridData(xNum, yNum, STEP, OFFSET);
+        var gridData = CommonGraphicsUtils.createPaneGridData(xNum, yNum, TABLE.STEP, TABLE.OFFSET);
         tableGroup.selectAll('line').data(gridData).enter()
             .append('line')
             .attr('x1', getter('x1'))
             .attr('y1', getter('y1'))
             .attr('x2', getter('x2'))
             .attr('y2', getter('y2'))
-            .attr('stroke', TABLE_STROKE_COLOR)
-            .attr('stroke-width', TABLE_STROKE_WIDTH);
+            .attr('stroke', TABLE.STROKE.COLOR)
+            .attr('stroke-width', TABLE.STROKE.WIDTH);
     }
 
     function renderDots(dots, color) {
         var preparedDots = _.isArray(dots) ? dots : [dots];
-        var prefix = 'circle[d_type=' + MAIN_CIRCLE_D_TYPE + ']';
+        var prefix = 'circle[d_type=' + DOT.ID + ']';
         var selector = CommonGraphicsUtils.generateSelectorStringFromDots(preparedDots, prefix);
         selectDots(selector, color);
     }
@@ -262,10 +256,11 @@ define([
             unSelectDots();
             removeLoopsLins();
         }
+        return api;
     }
 
     function updatePanelSize() {
-        var size = CommonGraphicsUtils.getPaneSize(xNum, yNum, STEP, OFFSET);
+        var size = CommonGraphicsUtils.getPaneSize(xNum, yNum, TABLE.STEP, TABLE.OFFSET);
         gamePane.attr('width', size.width).attr('height', size.height);
     }
 
@@ -277,14 +272,14 @@ define([
         tableGroup = gamePane.append('g');
         pathsGroup = gamePane.append('g');
         dotsGroup = gamePane.append('g');
-        circles = api.renderCircles(CommonGraphicsUtils.prepareCirclesData(data, STEP, OFFSET));
+        circles = api.renderCircles(CommonGraphicsUtils.prepareCirclesData(data, TABLE.STEP, TABLE.OFFSET));
         initEvents(getElementsForMouseEvents(circles));
         renderTable();
         updatePanelSize();
         return api;
     }
 
-    function updatePlayerState(color, dots, loops, trappedDots) {
+    function updatePlayerState(color, dots, loops, trappedDots, losingDots) {
         var preparedDots, preparedLoops, preparedTrappedDots;
         preparedDots = CommonUtils.createArray(dots);
         preparedLoops = CommonUtils.createArray(loops);
@@ -294,17 +289,24 @@ define([
         }
         if (preparedLoops && preparedLoops.length) {
             renderLoops(
-                CommonGraphicsUtils.getFilteredAndConvertedLoops(preparedLoops, STEP, OFFSET),
+                CommonGraphicsUtils.getFilteredAndConvertedLoops(preparedLoops, TABLE.STEP, TABLE.OFFSET),
                 color
             );
         }
         if (preparedTrappedDots && preparedTrappedDots.length) {
             renderTrappedDots(preparedTrappedDots, color);
         }
+        return api;
+    }
+
+    function updatePlayerStep(color, dot, loops, trappedDots, losingDots) {
+        updatePlayerState(color, dot, loops, trappedDots, losingDots);
+        AnimationUtils.addPulsateAnimation(SelectionUtils.selectDotGroup(dot, circles), dot);
     }
 
     api = {
         init: init,
+        updatePlayerStep: updatePlayerStep,
         updatePlayerState: updatePlayerState,
         renderLoop: renderLoop,
         renderCircles: renderCircles,
