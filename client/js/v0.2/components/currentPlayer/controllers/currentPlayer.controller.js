@@ -3,12 +3,11 @@ define([
     'module.observable',
     'business/module.game.business',
     'common/events',
-    'utils/game-utils',
     'business/game.storage',
     'business/domains/Constants',
     'components/currentPlayer/currentPlayer.module',
     'components/utils/scope.utils'
-], function (angular, Observable, Business, Events, gameUtils, GameStorage, Constants) {
+], function (angular, Observable, Business, Events, GameStorage, Constants) {
     'use strict';
 
     angular.module('currentPlayer.module').controller('currentPlayerCtrl', CurrentPlayerController);
@@ -87,6 +86,12 @@ define([
             updatePlayersStyles();
         }
 
+        function onGameStepChange() {
+            vm.myself = GameStorage.getGameClient();
+            vm.opponent = GameStorage.getGameOpponent();
+            apply();
+        }
+
         vm.GAME_MODE = Constants.GAME_MODE;
         vm.isMenuOpened = false;
         vm.isMyselfActive = true;
@@ -114,6 +119,7 @@ define([
         observable.on(Events.REFRESH_GAME, onRefreshGame);
         observable.on(Events.MAKE_PLAYER_ACTIVE, onUpdateActivePlayer);
         observable.on(Events.GAME_MODE, onGameModeChange);
+        observable.on(Events.GAME_STEP, onGameStepChange);
 
         initialize();
     }

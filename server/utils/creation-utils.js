@@ -27,8 +27,17 @@ function newClient(name, created, updated, isOnline) {
     };
 }
 
+function newGamerStepData(gamer, gameData, gameDataDelta) {
+    return {
+        gamer: gamer,
+        gameData: gameData,
+        delta: gameDataDelta
+    };
+}
+
 module.exports = {
     newLoopData: newLoopData,
     newGameData: newGameData,
-    newClient: newClient
+    newClient: newClient,
+    newGamerStepData: newGamerStepData
 };

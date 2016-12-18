@@ -4,6 +4,14 @@ var Events = require('../events');
 var constants = require('../constants/constants');
 var GenericController = require('./generic.controller').class;
 
+function extractStepData(stepData) {
+    return {
+        gamerId: stepData.gamer._id,
+        gameData: stepData.gameData,
+        delta: stepData.delta
+    };
+}
+
 function GameController() {
 }
 
@@ -14,24 +22,20 @@ GameController.prototype.onAddDot = function (handler) {
     this.wss.addListener(Events.add_dot, handler);
 };
 
-GameController.prototype.nextStep = function (
-    dot,
-    previousPlayer,
-    previousPlayerGameData,
-    previousPlayerGameDataDelta,
-    currentPlayer,
-    currentPlayerGameData,
-    game) {
+GameController.prototype.nextStep = function (dot,
+                                              previousPlayerStepData,
+                                              currentPlayerStepData,
+                                              game) {
     this.transmitter.send(
-        [previousPlayer._id, currentPlayer._id],
+        [
+            previousPlayerStepData.gamer._id,
+            currentPlayerStepData.gamer._id
+        ],
         Events.game_step,
         {
             dot: dot,
-            previousPlayerId: previousPlayerGameData.client,
-            previousPlayerGameData: previousPlayerGameData,
-            previousPlayerGameDataDelta: previousPlayerGameDataDelta,
-            currentPlayerId: currentPlayerGameData.client,
-            currentPlayerGameData: currentPlayerGameData,
+            previous: extractStepData(previousPlayerStepData),
+            current: extractStepData(currentPlayerStepData),
             game: game
         }
     );

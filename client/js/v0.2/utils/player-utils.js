@@ -19,7 +19,29 @@ define([
         _.forEach(arguments, updateColor);
     }
 
+    function cancelGame() {
+        var myself = GameStorage.getGameClient();
+        var opponent = GameStorage.getGameOpponent();
+
+        if (myself) {
+            clearGamer(myself);
+        }
+
+        if (opponent) {
+            clearGamer(opponent);
+        }
+    }
+
+    function clearGamer(gamer) {
+        gamer.dots = [];
+        gamer.trappedDots = [];
+        gamer.losingDots = [];
+        gamer.loops = [];
+        gamer.style = '';
+    }
+
     return {
-        updatePlayersColorsFromGameData: updatePlayersColorsFromGameData
+        updatePlayersColorsFromGameData: updatePlayersColorsFromGameData,
+        cancelGame: cancelGame
     };
 });

@@ -140,6 +140,7 @@ define([
         var game = GameStorage.getGame();
         var opponent = GameStorage.getOpponent();
         GameStorage.clearGame();
+        PlayerUtils.cancelGame();
         Graphics.clearPane();
         observable.emit(Events.CANCEL_GAME, {
             opponent: opponent,
@@ -184,18 +185,26 @@ define([
         });
 
         GameService.listen.gameStep(function (message) {
-            var gamePlayer = GameStorage.getGamePlayerById(message.currentPlayerId);
-            var previousGamePlayer = GameStorage.getGamePlayerById(message.previousPlayerId);
+            var gamePlayer = GameStorage.getGamePlayerById(message.current.gamerId);
+            var previousGamePlayer = GameStorage.getGamePlayerById(message.previous.gamerId);
             GameStorage.setGame(message.game);
             makePlayerActive(gamePlayer);
-            Graphics.updatePlayerState(previousGamePlayer.color, message.dot, message.previousPlayerGameDataDelta);
+            Graphics.updatePlayerState(previousGamePlayer.color, message.dot, message.previous.delta);
+
+            // Current player
             GameUtils.updatePlayerState(
-                message.previousPlayerId,
-                ConvertersUtils.convertToGameData(message.dot, message.previousPlayerGameDataDelta)
+                message.current.gamerId,
+                ConvertersUtils.convertToGameData(null, null, GameUtils.collectTrappedDots(message.previous.delta))
+            );
+
+            // Previous player
+            GameUtils.updatePlayerState(
+                message.previous.gamerId,
+                ConvertersUtils.convertToGameData(null, message.previous.delta)
             );
             observable.emit(Events.GAME_STEP, {
                 dot: message.dot,
-                previousGamePlayerId: message.previousPlayerId
+                previousGamePlayerId: message.previous.gamerId
             });
         });
 

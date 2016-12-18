@@ -103,9 +103,14 @@ function getGamersScores(dot, activePlayerGameData, opponentGameData) {
         opponentGameData.loops = inbound.opponent.loops;
         opponentGameData.losingDots = inbound.opponent.losingDots;
         return {
-            activePlayerGameData: activePlayerGameData,
-            opponentPlayerGameData: opponentGameData,
-            delta: inbound.loopsDelta
+            gameData: {
+                active: activePlayerGameData,
+                opponent: opponentGameData
+            },
+            delta: {
+                active: inbound.loopsDelta,
+                opponent: {}
+            }
         };
     }
 

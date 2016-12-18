@@ -1,4 +1,6 @@
-define([], function() {
+define([
+    'utils/common-utils'
+], function (CommonUtils) {
     'use strict';
 
     var api;
@@ -14,10 +16,11 @@ define([], function() {
                 y: data.y
             };
         },
-        convertToGameData: function convertToGameData(dot, loops) {
+        convertToGameData: function convertToGameData(dot, loops, losingDots) {
             return {
-                dots: [dot],
-                loops: loops
+                dots: CommonUtils.createArray(dot),
+                losingDots: CommonUtils.createArray(losingDots),
+                loops: CommonUtils.createArray(loops)
             };
         }
     };

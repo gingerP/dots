@@ -8,6 +8,7 @@ var logger = req('server/logging/logger').create('GameService');
 var Promise = require('q');
 var errorLog = funcUtils.error(logger);
 var GameScoreUtils = req('server/services/helpers/game-scores-utils');
+var CreationUtils = req('server/utils/creation-utils');
 var sessionUtils = req('server/utils/session-utils');
 
 function isGameAndClientValid(data) {
@@ -68,7 +69,8 @@ GameService.prototype.onAddDot = function (message) {
         function combineGameData(scores) {
             return {
                 opponent: opponent,
-                gameData: scores
+                gameData: scores.gameData,
+                delta: scores.delta
             };
         }
 
@@ -82,11 +84,18 @@ GameService.prototype.onAddDot = function (message) {
     function sendScores(combinedData) {
         if (combinedData) {
             message.callback(combinedData.gameData);
-
             inst.gameController.nextStep(
                 dot,
-                client, combinedData.gameData.activePlayerGameData, combinedData.gameData.delta,
-                combinedData.opponent, combinedData.gameData.opponentPlayerGameData,
+                CreationUtils.newGamerStepData(
+                    client,
+                    combinedData.gameData.active,
+                    combinedData.delta.active
+                ),
+                CreationUtils.newGamerStepData(
+                    combinedData.opponent,
+                    combinedData.gameData.opponent,
+                    combinedData.delta.opponent
+                ),
                 game
             );
         }
@@ -121,9 +130,9 @@ GameService.prototype.onAddDot = function (message) {
         .catch(errorLog);
 };
 
-GameService.prototype.saveScores = function (scores) {
-    return this.gameDataDBManager.save(scores.activePlayerGameData).then(() => {
-        return this.gameDataDBManager.save(scores.opponentPlayerGameData);
+GameService.prototype.saveScores = function (gameData) {
+    return this.gameDataDBManager.save(gameData.active).then(() => {
+        return this.gameDataDBManager.save(gameData.opponent);
     });
 };
 

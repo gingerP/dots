@@ -57,6 +57,7 @@ define([
     Player.prototype.addTrappedDots = function (dots) {
         var preparedDots = CommonUtils.createArray(dots);
         this.trappedDots = this.trappedDots.concat(preparedDots);
+        return this;
     };
 
     Player.prototype.addLosingDots = function (dots) {

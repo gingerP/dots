@@ -5,6 +5,7 @@
              'active-player': currentPlayerCtrl.isMyselfActive && currentPlayerCtrl.opponent}">
             <div class="player-style" ng-bind="currentPlayerCtrl.myself.name"></div>
         </div>
+        <div ng-show="currentPlayerCtrl.opponent" class="player-trapped-dots {{currentPlayerCtrl.style.myself}}" ng-bind="currentPlayerCtrl.myself.trappedDots.length || 0"></div>
     </div>
 
     <a ng-if="currentPlayerCtrl.GAME_MODE.LOCAL === currentPlayerCtrl.gameMode" href="javascript:void(0)" type="button"
@@ -16,21 +17,20 @@
     </button>
 
     <div class="player-placeholder-right">
-        <span ng-show="currentPlayerCtrl.opponent && !currentPlayerCtrl.opponent.isOnline"
-              class="opponent-offline-title">offline</span>
-        <div ng-show="currentPlayerCtrl.opponent" class="opponent-player opponent-block player {{currentPlayerCtrl.style.opponent}}"
-             ng-class="{'inactive-player': !currentPlayerCtrl.isOpponentActive,
-             'active-player': currentPlayerCtrl.isOpponentActive}">
-            <div class="player-style" ng-bind="currentPlayerCtrl.opponent.name"></div>
+        <div ng-show="currentPlayerCtrl.opponent">
+            <div  class="player-trapped-dots {{currentPlayerCtrl.style.opponent}}"
+                 ng-bind="currentPlayerCtrl.opponent.trappedDots.length || 0"></div>
+            <div class="opponent-player opponent-block player {{currentPlayerCtrl.style.opponent}}"
+                 ng-class="{'inactive-player': !currentPlayerCtrl.isOpponentActive,
+                 'active-player': currentPlayerCtrl.isOpponentActive}">
+                <div class="player-style" ng-bind="currentPlayerCtrl.opponent.name"></div>
+            </div>
         </div>
         <a ng-show="!currentPlayerCtrl.opponent" href="javascript:void(0)" type="button" class="choose-opponent player"
-           ng-click="currentPlayerCtrl.triggerOpenMenu()">Choose
-            opponent
+           ng-click="currentPlayerCtrl.triggerOpenMenu()">
+            Choose opponent
         </a>
-
-
     </div>
-
     <div>
         <notification></notification>
     </div>
