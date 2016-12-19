@@ -5,6 +5,7 @@ define([
     'business/domains/NetworkStatus',
     'module.observable',
     'business/game.rules',
+    'common/common-constants',
     'utils/game-utils',
     'utils/player-utils',
     'utils/converters-utils',
@@ -14,7 +15,7 @@ define([
     'common/services/invite.service',
     'common/services/gameSupport.service',
     'graphics/module.game.graphics'
-], function (_, q, Events, NetworkStatus, Observable, rules,
+], function (_, q, Events, NetworkStatus, Observable, rules, CommonConstants,
              GameUtils, PlayerUtils, ConvertersUtils, GameStorage,
              GameDataService, GameService, InviteService, GameSupportService,
              Graphics) {
@@ -22,10 +23,7 @@ define([
 
     var api;
     var observable = Observable.instance;
-    var GAME_MODE = {
-        LOCAL: 'LOCAL',
-        NETWORK: 'NETWORK'
-    };
+    var GAME_MODE = CommonConstants.GAME_MODE;
 
     function canSelectDot(data) {
         return rules.rulesCanSelect.every(function (rule) {
@@ -94,6 +92,11 @@ define([
             }
         }
         return q();
+    }
+
+    function addListener(property, listener) {
+        observable.addListener(property, listener);
+        return api;
     }
 
     function reloadGameMode() {
@@ -213,7 +216,7 @@ define([
             // Previous player
             GameUtils.updatePlayerState(
                 message.previous.gamerId,
-                ConvertersUtils.convertToGameData(null, message.previous.delta)
+                ConvertersUtils.convertToGameData(message.dot, message.previous.delta)
             );
             observable.emit(Events.GAME_STEP, {
                 dot: message.dot,
@@ -230,23 +233,18 @@ define([
                 observable.emit(Events.CLIENTS_RECONNECT, message.reconnected);
             }
         });
+        return api;
     }
 
     api = {
-        init: function () {
-            init();
-            return api;
-        },
+        init: init,
         canConnectDots: canConnectDots,
         canSelectDot: canSelectDot,
         canChangeActivePlayer: canChangeActivePlayer,
         select: select,
         makePlayerActive: makePlayerActive,
         makeNextPlayerActive: makeNextPlayerActive,
-        addListener: function (property, listener) {
-            observable.addListener(property, listener);
-            return api;
-        },
+        addListener: addListener,
         listen: {
             invite_player: 'invite_player',
             add_active_player: 'add_active_player',

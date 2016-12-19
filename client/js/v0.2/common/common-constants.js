@@ -7,6 +7,10 @@ define(function () {
                 red: '#F44336',
                 blue: '#2196F3'
             }
+        },
+        GAME_MODE: {
+            LOCAL: 'LOCAL',
+            NETWORK: 'NETWORK'
         }
     };
 });

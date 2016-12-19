@@ -19,8 +19,8 @@ define([
         convertToGameData: function convertToGameData(dot, loops, losingDots) {
             return {
                 dots: CommonUtils.createArray(dot),
-                losingDots: CommonUtils.createArray(losingDots),
-                loops: CommonUtils.createArray(loops)
+                loops: CommonUtils.createArray(loops),
+                losingDots: CommonUtils.createArray(losingDots)
             };
         }
     };
