@@ -10,7 +10,12 @@ define([
         return d3.select(node.parentNode);
     }
 
+    function selectDotBySelectionDot(selectionDot) {
+        return selectionDot ? d3.select(selectionDot.previousSibling) : null;
+    }
+
     return {
-        selectDotGroup: selectDotGroup
+        selectDotGroup: selectDotGroup,
+        selectDotBySelectionDot: selectDotBySelectionDot
     };
 });

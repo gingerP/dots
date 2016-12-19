@@ -7,42 +7,56 @@ define([
 
     var api;
     var ANIMATION = GraphicsConstants.ANIMATION.PULSATION;
-    var DOT = GraphicsConstants.GAME_PANE.DOT;
 
-    function addPulsateAnimation(dotGroup, dot) {
+    function addPulsateAnimation(dotGroup, color, dot) {
         var position = CommonGraphicsUtils.getVertexPosition(dot);
         var circle;
-
+        var stopped = false;
         function repeat() {
-            circle = circle || dotGroup.select('id', '#' + ANIMATION.ID);
+            if (stopped) {
+                return;
+            }
+            circle = circle || dotGroup.select('[id=' + ANIMATION.ID + ']');
             circle.transition()
                 .attr('stroke-width', ANIMATION.MIN_STROKE_WIDTH)
                 .attr('r', ANIMATION.MAX_RADIUS)
+                .delay(ANIMATION.DELAY)
                 .duration(ANIMATION.DURATION)
-                .ease()
-                .each('end', function () {
-                    d3.select(this).attr('r', DOT.RADIUS).attr('stroke-width', ANIMATION.STROKE_WIDTH);
+                .ease(d3.easeCubic)
+                .on('end', function () {
+                    circle.attr('r', ANIMATION.MIN_RADIUS).attr('stroke-width', ANIMATION.STROKE_WIDTH);
                     repeat();
                 });
         }
 
-        dotGroup.append('circle')
+        dotGroup
+            .data([{}])
+            .insert('circle', ':first-child')
             .attr('id', ANIMATION.ID)
             .attr('stroke-width', ANIMATION.STROKE_WIDTH)
-            .attr('r', DOT.RADIUS)
+            .attr('r', ANIMATION.MIN_RADIUS)
             .attr('cx', position.x)
             .attr('cy', position.y)
+            .attr('stroke', color)
+            .style('fill', 'none')
             .each(repeat);
 
-    }
-
-    function clearAnimation() {
-
+        return function () {
+            stopped = true;
+            circle.transition()
+                .attr('stroke-width', ANIMATION.MIN_STROKE_WIDTH)
+                .attr('r', ANIMATION.MIN_RADIUS)
+                .delay(ANIMATION.DELAY)
+                .duration(ANIMATION.DURATION)
+                .ease(d3.easeCubic)
+                .on('end', function () {
+                    circle.remove();
+                });
+        };
     }
 
     api = {
-        addPulsateAnimation: addPulsateAnimation,
-        clearAnimation: clearAnimation
+        addPulsateAnimation: addPulsateAnimation
     };
     return api;
 });

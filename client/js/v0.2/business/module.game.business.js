@@ -122,6 +122,7 @@ define([
 
     function refreshGame(gameState) {
         var activeGamer = GameStorage.getGamePlayerById(gameState.game.activePlayer);
+        var opponent = GameStorage.getGameOpponent();
         makePlayerActive(activeGamer);
         PlayerUtils.updatePlayersColorsFromGameData.apply(PlayerUtils, gameState.gameData);
         observable.emit(Events.REFRESH_GAME, gameState);
@@ -129,9 +130,10 @@ define([
             var client = _.find(gameState.clients, {_id: gameData.client});
             var gamePlayer = GameStorage.getGamePlayerById(gameData.client);
             var dots = (gameData.dots || []).concat(gameData.losingDots || []);
+            var isOpponent = opponent.getId() === gameData.client;
             if (gameData.dots.length) {
                 GameUtils.updatePlayerState(client._id, gameData);
-                Graphics.updatePlayerState(gamePlayer.color, dots, gameData.loops);
+                Graphics.updatePlayerState(gamePlayer.color, dots, gameData.loops, null, null, isOpponent);
             }
         });
     }
@@ -173,6 +175,7 @@ define([
 
         InviteService.listen.cancel(function (message) {
             var currentGame;
+            Graphics.clearAnimation();
             if (GameStorage.hasOpponent()) {
                 currentGame = GameStorage.getGame();
                 if (currentGame._id && currentGame._id === message.game._id) {
@@ -187,10 +190,19 @@ define([
         GameService.listen.gameStep(function (message) {
             var gamePlayer = GameStorage.getGamePlayerById(message.current.gamerId);
             var previousGamePlayer = GameStorage.getGamePlayerById(message.previous.gamerId);
+            var opponent = GameStorage.getGameOpponent();
+            var isPreviousIsOpponent = message.previous.gamerId === opponent.getId();
 
             GameStorage.setGame(message.game);
             makePlayerActive(gamePlayer);
-            Graphics.updatePlayerStep(previousGamePlayer.color, message.dot, message.previous.delta);
+            Graphics.updatePlayerStep(
+                previousGamePlayer.color,
+                message.dot,
+                message.previous.delta,
+                null,
+                null,
+                isPreviousIsOpponent
+            );
 
             // Current player
             GameUtils.updatePlayerState(

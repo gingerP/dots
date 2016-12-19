@@ -1,9 +1,11 @@
 define([
     'lodash',
+    'common/common-constants',
     'graphics/utils/path-utils',
     'graphics/utils/convert-utils',
     'graphics/common/graphics-constants'
-], function (_, PathUtils, ConvertUtils, GraphicsConstants) {
+], function (_, CommonConstants,
+             PathUtils, ConvertUtils, GraphicsConstants) {
     'use strict';
 
     var api,
@@ -129,6 +131,12 @@ define([
         };
     }
 
+    function getColorValue(colorCode) {
+        var color = CommonConstants.PLAYER.COLORS[colorCode];
+
+        return color ? color : colorCode;
+    }
+
     api = {
         createPaneGridData: createPaneGridData,
         getNotExistingPath: getNotExistingPath,
@@ -140,7 +148,8 @@ define([
         getFilteredAndConvertedLoops: getFilteredAndConvertedLoops,
         getUnitSize: getUnitSize,
         getPaneSize: getPaneSize,
-        getVertexPosition: getVertexPosition
+        getVertexPosition: getVertexPosition,
+        getColorValue: getColorValue
     };
 
     return api;

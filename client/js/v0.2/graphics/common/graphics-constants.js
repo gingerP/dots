@@ -7,15 +7,17 @@ define([
         ANIMATION: {
             PULSATION: {
                 ID: 'DOT-PULSATION-ANIMATION',
+                MIN_RADIUS: 1,
                 MAX_RADIUS: 6,
                 MIN_STROKE_WIDTH: 0,
                 STROKE_WIDTH: 3,
-                DURATION: 500
+                DURATION: 500,
+                DELAY: 500
             }
         },
         GAME_PANE: {
             TABLE: {
-                STEP: CommonUtils.isMobile() ? 25 : 20,
+                STEP: CommonUtils.isMobile() ? 30 : 20,
                 OFFSET: 20,
                 STROKE: {
                     WIDTH: 1,
@@ -30,7 +32,7 @@ define([
             },
             DOT_SELECTION: {
                 ID: 'SELECTION_D_TYPE',
-                RADIUS: CommonUtils.isMobile() ? 12 : 10
+                RADIUS: CommonUtils.isMobile() ? 15 : 10
             },
             PATH: {
                 WIDTH: 2

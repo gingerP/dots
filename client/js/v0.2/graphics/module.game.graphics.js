@@ -10,7 +10,9 @@ define([
     'graphics/utils/animation-utils',
     'graphics/utils/selection-utils',
     'graphics/common/graphics-constants'
-], function (d3, _, Events, GameStorage,
+], function (d3, _,
+             Events,
+             GameStorage,
              CommonUtils, CommonGraphicsUtils, ConvertUtils, PathUtils, AnimationUtils, SelectionUtils,
              GraphicsConstants) {
     'use strict';
@@ -26,6 +28,7 @@ define([
     var dotsGroup;
 
     var lines = [];
+    var animations = [];
 
     var xNum;
     var yNum;
@@ -50,6 +53,14 @@ define([
             return data.isSelected ? DOT.RADIUS_SELECTED : DOT.RADIUS;
         }
     };
+
+    function clearAnimation() {
+        _.forEach(animations, function (clear) {
+            if (_.isFunction(clear)) {
+                clear();
+            }
+        });
+    }
 
     function getter(key) {
         return function (data) {
@@ -115,22 +126,18 @@ define([
     }
 
     function getElementsForMouseEvents(elements) {
-        return elements;
-        //return dotsGroup.selectAll('circle[d_type=' + SELECTION.ID + ']');
+        //return elements;
+        return dotsGroup.selectAll('circle[d_type=' + SELECTION.ID + ']');
     }
 
     //Dots
 
     function hoverInDot(circle) {
-        d3.select(circle)
-            .select('circle[d_type=' + DOT.ID + ']')
-            .attr('r', dotSize.hoverIn);
+        SelectionUtils.selectDotBySelectionDot(circle).attr('r', dotSize.hoverIn);
     }
 
     function hoverOutDot(circle) {
-        d3.select(circle)
-            .select('circle[d_type=' + DOT.ID + ']')
-            .attr('r', dotSize.hoverOut);
+        SelectionUtils.selectDotBySelectionDot(circle).attr('r', dotSize.hoverOut);
     }
 
     function selectDots(selector, color) {
@@ -184,9 +191,9 @@ define([
 
         elements.on('mouseenter', function (data) {
             //TODO needs to refactor
-            if (selectedCircle && data !== selectedCircle && wallPath.indexOf(data) < 0) {
-                wallPath.push(data);
-            }
+            /*            if (selectedCircle && data !== selectedCircle && wallPath.indexOf(data) < 0) {
+             wallPath.push(data);
+             }*/
             //if (business.canSelectDot(data)) {
             hoverInDot(this);
 //            }
@@ -279,29 +286,50 @@ define([
         return api;
     }
 
-    function updatePlayerState(color, dots, loops, trappedDots, losingDots) {
-        var preparedDots, preparedLoops, preparedTrappedDots;
+    function updatePlayerState(color, dots, loops, trappedDots, losingDots, withAnimation) {
+        var preparedDots,
+            preparedLoops,
+            preparedTrappedDots,
+            lastDot,
+            colorValue = CommonGraphicsUtils.getColorValue(color);
+
         preparedDots = CommonUtils.createArray(dots);
         preparedLoops = CommonUtils.createArray(loops);
         preparedTrappedDots = CommonUtils.createArray(trappedDots);
+        lastDot = preparedDots.length ? preparedDots[preparedDots.length - 1] : null;
+
         if (preparedDots && preparedDots.length) {
-            renderDots(preparedDots, color);
+            renderDots(preparedDots, colorValue);
         }
         if (preparedLoops && preparedLoops.length) {
             renderLoops(
                 CommonGraphicsUtils.getFilteredAndConvertedLoops(preparedLoops, TABLE.STEP, TABLE.OFFSET),
-                color
+                colorValue
             );
         }
         if (preparedTrappedDots && preparedTrappedDots.length) {
-            renderTrappedDots(preparedTrappedDots, color);
+            renderTrappedDots(preparedTrappedDots, colorValue);
+        }
+        if (withAnimation && lastDot) {
+            clearAnimation();
+            animations.push(
+                AnimationUtils.addPulsateAnimation(SelectionUtils.selectDotGroup(lastDot, circles), colorValue, lastDot)
+            );
         }
         return api;
     }
 
-    function updatePlayerStep(color, dot, loops, trappedDots, losingDots) {
+    function updatePlayerStep(color, dot, loops, trappedDots, losingDots, withAnimation) {
+        var colorValue = CommonGraphicsUtils.getColorValue(color);
+
         updatePlayerState(color, dot, loops, trappedDots, losingDots);
-        AnimationUtils.addPulsateAnimation(SelectionUtils.selectDotGroup(dot, circles), dot);
+
+        if (withAnimation) {
+            clearAnimation();
+            animations.push(
+                AnimationUtils.addPulsateAnimation(SelectionUtils.selectDotGroup(dot, circles), colorValue, dot)
+            );
+        }
     }
 
     api = {
@@ -310,7 +338,8 @@ define([
         updatePlayerState: updatePlayerState,
         renderLoop: renderLoop,
         renderCircles: renderCircles,
-        clearPane: clearPane
+        clearPane: clearPane,
+        clearAnimation: clearAnimation
     };
     return api;
 });
