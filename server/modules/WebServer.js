@@ -1,13 +1,14 @@
 'use strict';
 var path = require('path');
 var fs = require('fs');
+var _ = require('lodash');
 var utils = req('server/utils/utils');
 var logger = req('server/logging/logger').create('WebServer');
 var session = require('express-session');
 
-function WebServer() {
+function WebServer(props) {
     this.app = require('express')();
-    this.props = {
+    this.props = _.merge({
         network: {
             host: '0.0.0.0',
             http: 8180,
@@ -16,7 +17,7 @@ function WebServer() {
                 active: false
             }
         }
-    };
+    }, props);
 }
 
 WebServer.prototype.init = function (props) {

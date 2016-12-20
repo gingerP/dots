@@ -4,8 +4,8 @@
     "http": "8080",
     "https": "8443",
     "ssl": {
-      "active": false,
-      "path": "/home/ubuntu/ssl"
+      "active": true,
+      "path": "./application-configuration/ssl"
     }
   },
   "db": {
