@@ -1,9 +1,9 @@
 var constants = require('../constants/constants');
-var cookie = require('cookie');
+/*var cookie = require('cookie');*/
 
 function modifySocket(ws) {
-    ws.ws.set('authorization', function(data, accept) {
-        // check if there's a cookie header
+    ws.ws.set('authorization', function(/*data, accept*/) {
+/*        // check if there's a cookie header
         if (data.headers.cookie) {
             // if there is, parse the cookie
             data.cookie = cookie.parse(data.headers.cookie);
@@ -16,12 +16,12 @@ function modifySocket(ws) {
             return accept('No cookie transmitted.', false);
         }
         // accept the incoming connection
-        accept(null, true);
+        accept(null, true);*/
 
     });
 }
 
-function modifyHttp(web) {
+function modifyHttp(/*web*/) {
 }
 
 function SocketExtend() {

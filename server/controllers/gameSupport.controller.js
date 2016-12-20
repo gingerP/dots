@@ -6,7 +6,7 @@ var constants = require('../constants/constants');
 var GenericController = require('./generic.controller').class;
 var CommonUtils = req('server/utils/common-utils');
 var logger = req('server/logging/logger').create('GameSupportController');
-var sessionUtils = req('server/utils/session-utils');
+/*var sessionUtils = req('server/utils/session-utils');*/
 
 function GameSupportController() {
 }

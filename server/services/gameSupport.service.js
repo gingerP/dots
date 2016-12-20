@@ -194,7 +194,7 @@ GameSupportService.prototype.notifyOpponentAboutNetworkStatusChange =
             .catch(errorLog);
     };
 
-GameSupportService.prototype.markAnotherClientConnectionsAsInactive = function (activeConnection) {
+GameSupportService.prototype.markAnotherClientConnectionsAsInactive = function (/*activeConnection*/) {
 
 };
 

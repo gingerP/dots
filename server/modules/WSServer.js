@@ -33,11 +33,12 @@ WSServer.prototype.init = function(removeTimeout) {
 
 WSServer.prototype._initEvents = function() {
 	var inst = this;
-	function originIsAllowed(origin) {
+	function originIsAllowed(/*origin*/) {
 		// put logic here to detect whether the specified origin is allowed.
 		return true;
 	}
 	this.ws.on('request', function (request) {
+		var connection;
 		if (!originIsAllowed(request.origin)) {
 			// Make sure we only accept requests from an allowed origin
 			request.reject();
@@ -45,17 +46,17 @@ WSServer.prototype._initEvents = function() {
 			return;
 		}
 		try {
-			var connection = request.accept('echo-protocol', request.origin);
+			connection = request.accept('echo-protocol', request.origin);
 		} catch (e) {
 			logger.error(e.message);
 			return;
 		}
-		var topic = inst.evaluateTopic(request.resource);
+		let topic = inst.evaluateTopic(request.resource);
 		logger.info('Peer "%s" connected.', connection.remoteAddress);
-		var wrapper = inst.addConnection(topic, connection, request.key);
+		let wrapper = inst.addConnection(topic, connection, request.key);
 		connection.on('message', function (message) {
 			var data;
-			if (message.type == 'utf8') {
+			if (message.type === 'utf8') {
 				data = inst.extractMessage(message.utf8Data);
 				inst.propertyChange(listenerToIn + data.type, { client: wrapper, data: data });
 			}
@@ -93,7 +94,7 @@ WSServer.prototype.addConnection = function(topic, connection, id) {
 	var connectionWraper;
 	if (!topic) {
 		logger.warn('Invalid topic for websocket connection: "&s"', topic);
-		return;
+		return null;
 	}
 	this.connections[topic] = this.connections[topic] || [];
 	if (this.connections[topic].indexOf(connection) < 0) {
@@ -111,7 +112,9 @@ WSServer.prototype.getListeners = function(topic) {
 
 WSServer.prototype.removeConnection = function(connection, reason) {
 	var index;
-	for(var topic in this.connections) {
+	var topic;
+
+	for(topic in this.connections) { //eslint-disable-line
 		index = this.connections[topic].indexOf(connection);
 		if (index > -1) {
 			this.connections[topic].splice(index, 1);
@@ -137,7 +140,7 @@ WSServer.prototype.createConnectionWrapper = function(connection, topic, id) {
 			return api;
 		},
 		equalConnection: function(con) {
-			return connection == con;
+			return connection === con;
 		}
 	};
 	api[topicEvent] = function(data) {

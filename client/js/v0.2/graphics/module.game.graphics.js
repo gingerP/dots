@@ -125,7 +125,7 @@ define([
         return mouseHoverElements;
     }
 
-    function getElementsForMouseEvents(elements) {
+    function getElementsForMouseEvents() {
         //return elements;
         return dotsGroup.selectAll('circle[d_type=' + SELECTION.ID + ']');
     }
@@ -187,9 +187,9 @@ define([
 
     function initEvents(elements) {
         var selectedCircle;
-        var wallPath = [];
+        /*var wallPath = [];*/
 
-        elements.on('mouseenter', function (data) {
+        elements.on('mouseenter', function () {
             //TODO needs to refactor
             /*            if (selectedCircle && data !== selectedCircle && wallPath.indexOf(data) < 0) {
              wallPath.push(data);
@@ -203,10 +203,10 @@ define([
             //}
         }).on('mousedown', function (data) {
             selectedCircle = data;
-            wallPath = [data];
+            /*wallPath = [data];*/
         }).on('mouseup', function () {
             selectedCircle = null;
-            wallPath = [];
+            /*wallPath = [];*/
         }).on('mousemove', function (data) {
             if (selectedCircle && data !== selectedCircle) {
                 //renderWall(wallPath);

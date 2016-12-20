@@ -5,7 +5,7 @@ define([
 ], function (_, Player, GameStorage) {
     'use strict';
 
-    function updatePlayerTrappedDots(id, trappedDots) {
+    function updatePlayerTrappedDots(/*id, trappedDots*/) {
 
     }
 
@@ -36,7 +36,7 @@ define([
         return new Player().init(id, name, color, style);
     }
 
-    function generateVertexes(xSize, ySize, radius) {
+    function generateVertexes(xSize, ySize) {
         var data = [];
         var w;
         var h;

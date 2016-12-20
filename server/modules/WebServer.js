@@ -1,5 +1,4 @@
 'use strict';
-var path = require('path');
 var fs = require('fs');
 var _ = require('lodash');
 var utils = req('server/utils/utils');
@@ -75,18 +74,14 @@ WebServer.prototype._initEvents = function () {
             throw error;
         }
 
-        let bind = typeof port === 'string'
-            ? 'Pipe ' + port
-            : 'Port ' + port;
-
         // handle specific listen errors with friendly messages
         switch (error.code) {
             case 'EACCES':
-                logger.error(bind + ' requires elevated privileges');
+                logger.error('Port requires elevated privileges');
                 process.exit(1);
                 break;
             case 'EADDRINUSE':
-                logger.error(bind + ' is already in use');
+                logger.error('Post is already in use');
                 process.exit(1);
                 break;
             default:
