@@ -11,6 +11,7 @@ define([
     'components/playerMenu/components/playerMenu.component',
     'components/gamePane/components/gamePane.component',
     'components/playerColor/components/playerColor.component',
+    'components/tabbar/components/tabbar.component',
     'components/utils/common.helpers.module',
     'components/app-cache'
 ], function (angular) {
@@ -22,6 +23,7 @@ define([
         'currentPlayer.module',
         'playerScore.module',
         'toolbar.module',
+        'tabbar.module',
         'accordion.module',
         'notification.module',
         'player.menu.module',

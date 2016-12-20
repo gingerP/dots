@@ -2,7 +2,8 @@ define([
     'angular',
     'components/playerMenu/playerMenu.module',
     'components/playerMenu/controllers/playerMenu.controller',
-    'components/clientsList/components/clientsList.component'
+    'components/clientsList/components/clientsList.component',
+    'components/tabbar/components/tabbar.component'
 ], function(angular) {
     'use strict';
 

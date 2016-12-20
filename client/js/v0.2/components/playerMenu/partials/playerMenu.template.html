@@ -2,8 +2,23 @@
     <div class="player-menu-clients">
         <div ng-if="playerMenuCtrl.opponent" class="opponent-player">
             <div class="player-menu-opponent-name">{{playerMenuCtrl.opponent.name}}</div>
-            <button class="btn-override btn-right btn-opponent" ng-click="playerMenuCtrl.cancelGame(client)">Cancel game</button>
+            <button class="btn-override btn-right btn-opponent" ng-click="playerMenuCtrl.cancelGame(client)">Cancel
+                game
+            </button>
         </div>
-        <clients-list></clients-list>
+        <tabbar>
+            <transclude-header>
+                Clients
+            </transclude-header>
+            <transclude-header>
+                Sign-in
+            </transclude-header>
+            <transclude-header>
+                Logout
+            </transclude-header>
+            <transclude-body>
+                <clients-list></clients-list>
+            </transclude-body>
+        </tabbar>
     </div>
 </div>
