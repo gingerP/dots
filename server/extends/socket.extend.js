@@ -35,8 +35,8 @@ SocketExtend.prototype.getName = function getName() {
 SocketExtend.prototype.postConstructor = function postConstructor(ioc) {
     this.wss = ioc[constants.WSS];
     this.http = ioc[constants.HTTP];
-    modifyHttp(this.http);
-    modifySocket(this.wss);
+    /*modifyHttp(this.http);
+    modifySocket(this.wss);*/
 };
 
 module.exports = {

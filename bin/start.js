@@ -4,6 +4,7 @@ var server;
 var WsServer;
 var configuration = require('../application-configuration/application');
 
+debug = require('debug').enable('socket.io:server');
 global.req = require('app-root-path').require;
 Server = req('server/modules/WebServer').class;
 WsServer = req('server/modules/WSServer.IO');
