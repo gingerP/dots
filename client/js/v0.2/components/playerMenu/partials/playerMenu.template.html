@@ -7,18 +7,9 @@
             </button>
         </div>
         <tabbar>
-            <transclude-header>
-                Clients
-            </transclude-header>
-            <transclude-header>
-                Sign-in
-            </transclude-header>
-            <transclude-header>
-                Logout
-            </transclude-header>
-            <transclude-body>
-                <clients-list></clients-list>
-            </transclude-body>
+            <tabbar-header context="tab" ng-repeat-start="tab in playerMenuCtrl.config.tabbar"></tabbar-header>
+            <clients-list ng-if="playerMenuCtrl.TABS.GAMERS === tab.id"></clients-list>
+            <sign-in ng-if="playerMenuCtrl.TABS.SIGNIN === tab.id" ng-repeat-end></sign-in>
         </tabbar>
     </div>
 </div>

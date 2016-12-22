@@ -12,6 +12,8 @@ define([
     'components/gamePane/components/gamePane.component',
     'components/playerColor/components/playerColor.component',
     'components/tabbar/components/tabbar.component',
+    'components/tabbarHeader/components/tabbarHeader.component',
+    'components/signin/components/signin.component',
     'components/utils/common.helpers.module',
     'components/app-cache'
 ], function (angular) {
@@ -30,6 +32,9 @@ define([
         'gamePane.module',
         'playerColor.module',
         'common.helpers.module',
+        'signin.module',
+        'tabbarHeader.module',
+        'tabbar.module',
         'app-cache',
         'ngAnimate'
     ]);

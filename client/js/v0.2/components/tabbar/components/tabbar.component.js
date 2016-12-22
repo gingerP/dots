@@ -10,9 +10,6 @@ define([
         controller: 'tabbarCtrl',
         controllerAs: 'tabbarCtrl',
         templateUrl: '/static/js/v0.2/components/tabbar/partials/tabbar.template.html',
-        transclude: {
-            header: 'transcludeHeader',
-            body: 'transcludeBody'
-        }
+        transclude: true
     });
 });

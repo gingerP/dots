@@ -5,13 +5,14 @@ define([
     'common/events',
     'business/module.game.business',
     'components/utils/scope.utils',
-    'components/playerMenu/playerMenu.module'
+    'components/playerMenu/playerMenu.module',
+    'components/playerMenu/factories/playerMenuConfig.factory'
 ], function (angular, Observable, gameStorage, Events, GameBusiness) {
     'use strict';
 
-    angular.module('player.menu.module').controller('playerMenuController', playerMenuController);
+    angular.module('player.menu.module').controller('playerMenuController', PlayerMenuController);
 
-    function playerMenuController($scope, scopeUtils) {
+    function PlayerMenuController($scope, scopeUtils, playerMenuConfig) {
         var vm = this,
             observable = Observable.instance;
 
@@ -34,12 +35,16 @@ define([
             delete vm.opponent;
         }
 
+        function cancelGame() {
+            GameBusiness.cancelGame();
+        }
+
         vm.isMenuClosed = true;
         vm.opponent = gameStorage.getGameOpponent();
-
-        vm.cancelGame = function () {
-            GameBusiness.cancelGame();
-        };
+        vm.config = playerMenuConfig.getConfig();
+        vm.TABS = playerMenuConfig.TABS;
+        vm.activeTab = vm.TABS.GAMERS;
+        vm.cancelGame = cancelGame;
 
         observable.on(Events.REFRESH_GAME, onRefreshGame);
         observable.on(Events.MENU_VISIBILITY, onMenuVisibilityChanged);
