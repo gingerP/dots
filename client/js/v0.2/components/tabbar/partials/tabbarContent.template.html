@@ -1,0 +1,6 @@
+<div ng-class="tabbar-content" ng-show="tabbarContent.tab.isActive">
+    <div class="tabbar-content-back"
+         ng-click="tabbarContent.back()"
+         ng-if="tabbarContent.isMobile">Back</div>
+    <ng-transclude ></ng-transclude>
+</div>

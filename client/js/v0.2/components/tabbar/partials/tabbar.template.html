@@ -1,3 +1,7 @@
-<div class="tabbar">
-    <ng-transclude></ng-transclude>
+<div class="tabbar-header" ng-show="tabbarCtrl.isHeadersVisible">
+    <div class="tabbar-header-item"
+         ng-repeat="tab in tabbarCtrl.context.list"
+         ng-bind="::tab.name"
+         ng-click="tabbarCtrl.openTab(tab)"></div>
 </div>
+<ng-transclude></ng-transclude>

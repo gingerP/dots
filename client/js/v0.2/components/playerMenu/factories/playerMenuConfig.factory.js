@@ -14,15 +14,18 @@ define([
 
         function getConfig() {
             return {
-                tabbar: [
+                list: [
                     {
                         id: TABS.GAMERS,
                         name: 'Gamers',
-                        isActive: true
+                        isActive: true,
+                        isDefault: true
                     },
                     {
                         id: TABS.SIGNIN,
-                        name: 'Sign-in'
+                        name: 'Sign-in',
+                        isActive: false,
+                        isDefault: false
                     }
                 ]
             };

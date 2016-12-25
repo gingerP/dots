@@ -13,6 +13,7 @@ define([
     'components/playerColor/components/playerColor.component',
     'components/tabbar/components/tabbar.component',
     'components/tabbarHeader/components/tabbarHeader.component',
+    'components/tabbar/components/tabbarContent.component',
     'components/signin/components/signin.component',
     'components/utils/common.helpers.module',
     'components/app-cache'

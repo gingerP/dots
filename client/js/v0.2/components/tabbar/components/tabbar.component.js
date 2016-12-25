@@ -6,7 +6,9 @@ define([
     'use strict';
 
     angular.module('tabbar.module').component('tabbar', {
-        bindings: {},
+        bindings: {
+            context: '<'
+        },
         controller: 'tabbarCtrl',
         controllerAs: 'tabbarCtrl',
         templateUrl: '/static/js/v0.2/components/tabbar/partials/tabbar.template.html',

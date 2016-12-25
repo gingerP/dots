@@ -6,4 +6,26 @@
   position: relative;
   text-align: center;
   line-height: @toolbar-height;
+
+  &-item {
+    float: left;
+    width: 50%;
+    cursor: pointer;
+  }
+}
+
+.tabbar-content-back {
+  width: 100%;
+  height: @toolbar-height;
+  text-align: center;
+  line-height: @toolbar-height;
+}
+
+.mobile-device {
+  .tabbar-header-item {
+    clear: left;
+    width: 100%;
+    cursor: pointer;
+  }
+
 }

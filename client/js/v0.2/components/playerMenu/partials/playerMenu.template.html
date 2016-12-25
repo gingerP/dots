@@ -6,10 +6,13 @@
                 game
             </button>
         </div>
-        <tabbar>
-            <tabbar-header context="tab" ng-repeat-start="tab in playerMenuCtrl.config.tabbar"></tabbar-header>
-            <clients-list ng-if="playerMenuCtrl.TABS.GAMERS === tab.id"></clients-list>
-            <sign-in ng-if="playerMenuCtrl.TABS.SIGNIN === tab.id" ng-repeat-end></sign-in>
+        <tabbar context="playerMenuCtrl.config">
+            <tabbar-content tab-id="playerMenuCtrl.TABS.GAMERS">
+                <clients-list></clients-list>
+            </tabbar-content>
+            <tabbar-content tab-id="playerMenuCtrl.TABS.SIGNIN">
+                <sign-in></sign-in>
+            </tabbar-content>
         </tabbar>
     </div>
 </div>

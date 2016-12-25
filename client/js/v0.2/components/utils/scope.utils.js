@@ -1,7 +1,8 @@
 define([
     'angular',
+    'lodash',
     'components/utils/common.helpers.module'
-], function (angular) {
+], function (angular, _) {
     'use strict';
 
     angular.module('common.helpers.module').factory('scopeUtils', scopeUtils);
@@ -20,9 +21,18 @@ define([
             };
         }
 
+        function destroy(scope) {
+            return function () {
+                _.forEach(arguments, function (toRemove) {
+                    scope.on('$destroy', toRemove);
+                });
+            };
+        }
+
         return {
             apply: apply,
-            getApply: getApply
+            getApply: getApply,
+            destroy: destroy
         };
     }
 });
