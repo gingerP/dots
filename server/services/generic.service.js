@@ -1,5 +1,6 @@
 'use strict';
-var constants = require('../constants/constants');
+
+const IOC = req('server/constants/ioc.constants');
 
 function GenericService() {}
 
@@ -50,7 +51,7 @@ GenericService.prototype.list = function(mappings) {
 GenericService.prototype.postConstructor = function() {};
 
 GenericService.prototype.getName = function() {
-    return constants.GENERIC_SERVICE;
+    return IOC.SERVICE.GENERIC;
 };
 
 module.exports = {

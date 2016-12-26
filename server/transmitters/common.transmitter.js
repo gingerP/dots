@@ -1,5 +1,7 @@
+'use strict';
+
 var GenericTransmitter = require('./generic.transmitter').class;
-var constants = require('../constants/constants');
+const IOC = req('server/constants/ioc.constants');
 
 function CommonTransmitter() {}
 
@@ -7,7 +9,7 @@ CommonTransmitter.prototype = Object.create(GenericTransmitter.prototype);
 CommonTransmitter.prototype.constructor = CommonTransmitter;
 
 CommonTransmitter.prototype.getName = function() {
-    return constants.COMMON_TRANSMITTER;
+    return IOC.TRANSMITTER.COMMON;
 };
 
 module.exports = {

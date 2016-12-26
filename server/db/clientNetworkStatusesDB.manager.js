@@ -1,13 +1,14 @@
 'use strict';
 
 var GenericDBManager = require('./genericDB.manager').class;
-var constants = require('../constants/constants');
+var DB = require('../constants/db');
+var IOC = require('../constants/ioc.constants');
 var funcUtils = require('../utils/function-utils');
 var logger = req('server/logging/logger').create('ClientNetworkStatusesDBManager');
 var errroLog = funcUtils.error(logger);
 
 function ClientNetworkStatusesDBManager() {
-    this.collectionName = constants.DB_COLLECTION_CACHED_NETWORK_STATUSES;
+    this.collectionName = DB.COLLECTION.CACHED_NETWORK_STATUSES;
 }
 
 ClientNetworkStatusesDBManager.prototype = Object.create(GenericDBManager.prototype);
@@ -24,7 +25,7 @@ ClientNetworkStatusesDBManager.prototype.updateStatus = function (clientId, conn
 };
 
 ClientNetworkStatusesDBManager.prototype.getName = function () {
-    return constants.DB_COLLECTION_CACHED_NETWORK_STATUSES;
+    return IOC.DB_MANAGER.CACHED_NETWORK_STATUSES;
 };
 
 ClientNetworkStatusesDBManager.prototype.postConstructor = function () {

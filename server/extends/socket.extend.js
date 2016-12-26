@@ -1,4 +1,4 @@
-var constants = require('../constants/constants');
+const IOC = req('server/constants/ioc.constants');
 /*var cookie = require('cookie');*/
 
 function modifySocket(ws) {
@@ -33,8 +33,8 @@ SocketExtend.prototype.getName = function getName() {
 };
 
 SocketExtend.prototype.postConstructor = function postConstructor(ioc) {
-    this.wss = ioc[constants.WSS];
-    this.http = ioc[constants.HTTP];
+    this.wss = ioc[IOC.COMMON.WSS];
+    this.http = ioc[IOC.COMMON.HTTP];
     /*modifyHttp(this.http);
     modifySocket(this.wss);*/
 };

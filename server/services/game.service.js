@@ -1,7 +1,7 @@
 'use strict';
 
 var GenericService = require('./generic.service').class;
-var constants = require('../constants/constants');
+const IOC = req('server/constants/ioc.constants');
 var _ = require('lodash');
 var funcUtils = req('server/utils/function-utils');
 var logger = req('server/logging/logger').create('GameService');
@@ -137,16 +137,16 @@ GameService.prototype.saveScores = function (gameData) {
 };
 
 GameService.prototype.getName = function () {
-    return constants.GAME_SERVICE;
+    return IOC.SERVICE.GAME;
 };
 
 GameService.prototype.postConstructor = function (ioc) {
-    this.gameController = ioc[constants.GAME_CONTROLLER];
-    this.clientsDBManager = ioc[constants.CLIENTS_DB_MANAGER];
-    this.gameDBManager = ioc[constants.GAME_DB_MANAGER];
-    this.gameDataDBManager = ioc[constants.GAME_DATA_DB_MANAGER];
+    this.gameController = ioc[IOC.CONTROLLER.GAME];
+    this.clientsDBManager = ioc[IOC.DB_MANAGER.CLIENTS];
+    this.gameDBManager = ioc[IOC.DB_MANAGER.GAME];
+    this.gameDataDBManager = ioc[IOC.DB_MANAGER.GAME_DATA];
     this.gameController.onAddDot(this.onAddDot.bind(this));
-    this.loopsDBManager = ioc[constants.LOOPS_DB_MANAGER];
+    this.loopsDBManager = ioc[IOC.DB_MANAGER.LOOPS];
 };
 
 module.exports = {

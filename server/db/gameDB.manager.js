@@ -1,16 +1,17 @@
 var GenericDBManager = require('./genericDB.manager').class;
-var constants = require('../constants/constants');
+var DB = req('server/constants/db');
+var IOC = req('server/constants/ioc.constants');
 var gameStatuses = require('../constants/game-statuses');
 
 function GameSupportDBManager() {
-    this.collectionName = constants.DB_COLLECTION_GAMES;
+    this.collectionName = DB.COLLECTION.GAMES;
 }
 
 GameSupportDBManager.prototype = Object.create(GenericDBManager.prototype);
 GameSupportDBManager.prototype.constructor = GameSupportDBManager;
 
 GameSupportDBManager.prototype.getName = function () {
-    return constants.GAME_DB_MANAGER;
+    return IOC.DB_MANAGER.GAME;
 };
 
 GameSupportDBManager.prototype.createGame = function (fromClientId, toClientId, activePlayerId, status) {

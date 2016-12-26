@@ -1,7 +1,7 @@
 'use strict';
 
 var GenericService = require('./generic.service').class;
-var constants = require('../constants/constants');
+const IOC = req('server/constants/ioc.constants');
 var funcUtils = require('../utils/function-utils');
 var gameStatuses = require('../constants/game-statuses');
 var Promise = require('q');
@@ -41,7 +41,7 @@ GameDataService.prototype.onGetGameState = function (message) {
     return Promise.all([
         this.gameDBManager.get(gameId),
         this.gameDataDBManager.getGameDataForGame(gameId)
-    ]).then(function(data) {
+    ]).then(function (data) {
         game = data[0];
         gameData = data[1];
         if (!game) {
@@ -50,7 +50,7 @@ GameDataService.prototype.onGetGameState = function (message) {
             return null;
         }
         return inst.clientsDBManager.get([game.to, game.from]);
-    }).then(function(clients) {
+    }).then(function (clients) {
         message.callback({
             game: game,
             gameData: gameData,
@@ -60,7 +60,7 @@ GameDataService.prototype.onGetGameState = function (message) {
 };
 
 GameDataService.prototype.onIsGameClosed = function (message) {
-    this.gameDBManager.get(message.data.id).then(function(game) {
+    this.gameDBManager.get(message.data.id).then(function (game) {
         if (game) {
             message.callback(game.status === gameStatuses.closed);
         } else {
@@ -70,20 +70,20 @@ GameDataService.prototype.onIsGameClosed = function (message) {
 };
 
 GameDataService.prototype.getName = function () {
-    return constants.GAME_DATA_SERVICE;
+    return IOC.SERVICE.GAME_DATA;
 };
 
 GameDataService.prototype.postConstructor = function (ioc) {
-    this.gameSupportService = ioc[constants.GAME_SUPPORT_SERVICE];
-    this.gameDataController = ioc[constants.GAME_DATA_CONTROLLER];
-    this.controller = ioc[constants.GAME_DATA_CONTROLLER];
+    this.gameSupportService = ioc[IOC.SERVICE.GAME_SUPPORT];
+    this.gameDataController = ioc[IOC.CONTROLLER.GAME_DATA];
+    this.controller = ioc[IOC.CONTROLLER.GAME_DATA];
     this.controller.onGetClientsList(this.onGetClients.bind(this));
     this.controller.onGetMyself(this.onGetMySelf.bind(this));
     this.controller.onIsGameClosed(this.onIsGameClosed.bind(this));
     this.controller.onGetGameState(this.onGetGameState.bind(this));
-    this.clientsDBManager = ioc[constants.CLIENTS_DB_MANAGER];
-    this.gameDBManager = ioc[constants.GAME_DB_MANAGER];
-    this.gameDataDBManager = ioc[constants.GAME_DATA_DB_MANAGER];
+    this.clientsDBManager = ioc[IOC.DB_MANAGER.CLIENTS];
+    this.gameDBManager = ioc[IOC.DB_MANAGER.GAME];
+    this.gameDataDBManager = ioc[IOC.DB_MANAGER.GAME_DATA];
 };
 
 module.exports = {

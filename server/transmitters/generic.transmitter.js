@@ -1,5 +1,5 @@
 var _ = require('lodash');
-var constants = require('../constants/constants');
+const IOC = req('server/constants/ioc.constants');
 var CommonUtils = req('server/utils/common-utils');
 var SessionUtils = req('server/utils/session-utils');
 var logger = req('server/logging/logger').create('GenericTransmitter');
@@ -50,11 +50,11 @@ GenericTransmitter.prototype.sendAllExcept = function (exceptClientsIds, type, m
 };
 
 GenericTransmitter.prototype.getName = function () {
-    return constants.GENERIC_TRANSMITTER;
+    return IOC.TRANSMITTER.GENERIC;
 };
 
 GenericTransmitter.prototype.postConstructor = function (ioc) {
-    this.wss = ioc[constants.WSS];
+    this.wss = ioc[IOC.COMMON.WSS];
 };
 
 module.exports = {

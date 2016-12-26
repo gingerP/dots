@@ -1,0 +1,12 @@
+{
+  "COLLECTION": {
+    "CACHED_NETWORK_STATUSES": "cached_network_statuses",
+    "LOOPS": "loops",
+    "GAME_HISTORY": "game_history",
+    "CLIENTS": "clients",
+    "CREATE_GAME": "create_game",
+    "GAMES": "games",
+    "GAME_DATA": "game_data",
+    "AUTH": "auth"
+  }
+}

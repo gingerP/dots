@@ -1,6 +1,6 @@
 'use strict';
 
-var constants = require('../constants/constants');
+var IOC = require('../constants/ioc.constants');
 var events = require('../events');
 var GenericController = require('./generic.controller').class;
 var _ = require('lodash');
@@ -72,12 +72,12 @@ CreateGameController.prototype.cancelGame = function (clients, game) {
 };
 
 CreateGameController.prototype.getName = function () {
-    return constants.CREATE_GAME_CONTROLLER;
+    return IOC.CONTROLLER.CREATE_GAME;
 };
 
 CreateGameController.prototype.postConstructor = function (ioc) {
-    this.wss = ioc[constants.WSS];
-    this.transmitter = ioc[constants.COMMON_TRANSMITTER];
+    this.wss = ioc[IOC.COMMON.WSS];
+    this.transmitter = ioc[IOC.TRANSMITTER.COMMON];
 };
 
 

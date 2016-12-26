@@ -1,5 +1,7 @@
+'use strict';
+
 var _ = require('lodash');
-var constants = req('server/constants/constants');
+var IOC = req('server/constants/ioc.constants');
 var logger = req('server/logging/logger').create('DB');
 var funcUtils = req('server/utils/function-utils');
 var cfg = req('application-configuration/application').db;
@@ -378,7 +380,7 @@ GenericDBManager.prototype._correctCriteria = function (criteria) {
 };
 
 GenericDBManager.prototype.getName = function () {
-    return constants.GENERIC_DB_MANAGER;
+    return IOC.DB_MANAGER.GENERIC;
 };
 
 module.exports = {

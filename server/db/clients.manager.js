@@ -1,13 +1,14 @@
 'use strict';
 
 var GenericDBManager = require('./genericDB.manager').class;
-var constants = require('../constants/constants');
+var DB = require('../constants/db');
+var IOC = require('../constants/ioc.constants');
 var funcUtils = require('../utils/function-utils');
 var logger = req('server/logging/logger').create('ClientsDBManager');
 var errorLogger = funcUtils.error(logger);
 
 function ClientsDBManager() {
-    this.collectionName = constants.DB_COLLECTION_CLIENTS;
+    this.collectionName = DB.COLLECTION.CLIENTS;
 }
 
 ClientsDBManager.prototype = Object.create(GenericDBManager.prototype);
@@ -37,7 +38,7 @@ ClientsDBManager.prototype.getOnlineClients = function () {
 };
 
 ClientsDBManager.prototype.getName = function () {
-    return constants.CLIENTS_DB_MANAGER;
+    return IOC.DB_MANAGER.CLIENTS;
 };
 
 ClientsDBManager.prototype.getClientsPair = function (clientId, connectionId) {

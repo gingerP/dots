@@ -1,7 +1,7 @@
 'use strict';
 
 var GenericService = require('./generic.service').class;
-var constants = require('../constants/constants');
+const IOC = req('server/constants/ioc.constants');
 var animals = require('../animals');
 var funcUtils = require('../utils/function-utils');
 var creationUtils = req('server/utils/creation-utils');
@@ -222,17 +222,17 @@ GameSupportService.prototype.newGame = function (clientAId, clientBId, activePla
 };
 
 GameSupportService.prototype.getName = function () {
-    return constants.GAME_SUPPORT_SERVICE;
+    return IOC.SERVICE.GAME_SUPPORT;
 };
 
 GameSupportService.prototype.postConstructor = function (ioc) {
-    this.gameSupportController = ioc[constants.GAME_SUPPORT_CONTROLLER];
+    this.gameSupportController = ioc[IOC.CONTROLLER.GAME_SUPPORT];
     this.gameSupportController.onNewClient(this.onNewClient.bind(this));
     this.gameSupportController.onReconnect(this.onReconnect.bind(this));
     this.gameSupportController.onDisconnect(this.onDisconnect.bind(this));
-    this.cachedNetworkStatusesDBManager = ioc[constants.CACHED_NETWORK_STATUSES_DB_MANAGER];
-    this.clientsDBManager = ioc[constants.CLIENTS_DB_MANAGER];
-    this.gameDBManager = ioc[constants.GAME_DB_MANAGER];
+    this.cachedNetworkStatusesDBManager = ioc[IOC.DB_MANAGER.CACHED_NETWORK_STATUSES];
+    this.clientsDBManager = ioc[IOC.DB_MANAGER.CLIENTS];
+    this.gameDBManager = ioc[IOC.DB_MANAGER.GAME];
 };
 
 module.exports = {

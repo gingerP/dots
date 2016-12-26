@@ -1,6 +1,6 @@
 'use strict';
 
-var constants = require('../constants/constants');
+var IOC = require('../constants/ioc.constants');
 var events = require('../events');
 var GenericController = require('./generic.controller').class;
 
@@ -33,11 +33,11 @@ GameDataController.prototype.onIsGameClosed = function (handler) {
 };
 
 GameDataController.prototype.postConstructor = function (ioc) {
-    this.wss = ioc[constants.WSS];
+    this.wss = ioc[IOC.COMMON.WSS];
 };
 
 GameDataController.prototype.getName = function () {
-    return constants.GAME_DATA_CONTROLLER;
+    return IOC.CONTROLLER.GAME_DATA;
 };
 
 module.exports = {

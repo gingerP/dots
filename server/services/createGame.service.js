@@ -1,7 +1,7 @@
 'use strict';
 
 const GenericService = require('./generic.service').class;
-const constants = require('../constants/constants');
+const IOC = req('server/constants/ioc.constants');
 const inviteStatuses = require('../constants/invite-statuses.json');
 const funcUtils = req('server/utils/function-utils');
 const sessionUtils = req('server/utils/session-utils');
@@ -236,23 +236,23 @@ CreateGameService.prototype.giveAnAnswerToClient = function (message) {
 };
 
 CreateGameService.prototype.getName = function () {
-    return constants.CREATE_GAME_SERVICE;
+    return IOC.SERVICE.CREATE_GAME;
 };
 
 CreateGameService.prototype.postConstructor = function (ioc) {
-    this.transmitter = ioc[constants.COMMON_TRANSMITTER];
-    this.gameSupportService = ioc[constants.GAME_SUPPORT_SERVICE];
-    this.controller = ioc[constants.CREATE_GAME_CONTROLLER];
+    this.transmitter = ioc[IOC.TRANSMITTER.COMMON];
+    this.gameSupportService = ioc[IOC.SERVICE.GAME_SUPPORT];
+    this.controller = ioc[IOC.CONTROLLER.CREATE_GAME];
 
     this.controller.onInvitePlayer(this.onInvite.bind(this));
     this.controller.onRejectPlayer(this.onReject.bind(this));
     this.controller.onSuccessPlayer(this.onSuccess.bind(this));
     this.controller.onCancelGame(this.onCancelGame.bind(this));
 
-    this.clientsDBManager = ioc[constants.CLIENTS_DB_MANAGER];
-    this.createGameDBManager = ioc[constants.CREATE_GAME_DB_MANAGER];
-    this.gameDBManager = ioc[constants.GAME_DB_MANAGER];
-    this.gameDataDBManager = ioc[constants.GAME_DATA_DB_MANAGER];
+    this.clientsDBManager = ioc[IOC.DB_MANAGER.CLIENTS];
+    this.createGameDBManager = ioc[IOC.DB_MANAGER.CREATE_GAME];
+    this.gameDBManager = ioc[IOC.DB_MANAGER.GAME];
+    this.gameDataDBManager = ioc[IOC.DB_MANAGER.GAME_DATA];
 };
 
 module.exports = {

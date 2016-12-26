@@ -2,7 +2,7 @@
 
 var _ = require('lodash');
 var Events = require('../events');
-var constants = require('../constants/constants');
+var IOC = require('../constants/ioc.constants');
 var GenericController = require('./generic.controller').class;
 var CommonUtils = req('server/utils/common-utils');
 var logger = req('server/logging/logger').create('GameSupportController');
@@ -72,12 +72,12 @@ GameSupportController.prototype.notifyAboutNewClient = function (newClient, clie
 };
 
 GameSupportController.prototype.postConstructor = function (ioc) {
-    this.wss = ioc[constants.WSS];
-    this.transmitter = ioc[constants.COMMON_TRANSMITTER];
+    this.wss = ioc[IOC.COMMON.WSS];
+    this.transmitter = ioc[IOC.TRANSMITTER.COMMON];
 };
 
 GameSupportController.prototype.getName = function () {
-    return constants.GAME_SUPPORT_CONTROLLER;
+    return IOC.CONTROLLER.GAME_SUPPORT;
 };
 
 module.exports = {

@@ -24,6 +24,8 @@
     "log4js": "0.6.33",
     "mongodb": "2.2.1",
     "ngstorage": "0.3.10",
+    "passport": "^0.3.2",
+    "passport-google-oauth": "^1.0.0",
     "pm2": "2.0.19",
     "q": "1.4.1",
     "requirejs": "2.3.2",

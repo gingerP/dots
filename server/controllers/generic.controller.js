@@ -1,6 +1,6 @@
 'use strict';
 
-var constants = require('../constants/constants');
+var IOC = require('../constants/ioc.constants');
 
 function GenericController() {
 }
@@ -10,7 +10,7 @@ GenericController.prototype.setService = function (service) {
 };
 
 GenericController.prototype.getName = function () {
-    return constants.GENERIC_CONTROLLER;
+    return IOC.CONTROLLER.GENERIC;
 };
 
 GenericController.prototype.createHandleWithResponse = function () {

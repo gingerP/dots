@@ -1,0 +1,39 @@
+{
+  "CONTROLLER": {
+    "GENERIC": "generic.controller",
+    "CREATE_GAME": "createGame.controller",
+    "GAME": "game.controller",
+    "GAME_DATA": "game.data.controller",
+    "GAME_SUPPORT": "game.support.controller"
+  },
+  "SERVICE": {
+    "GENERIC": "generic.service",
+    "GAME_SUPPORT": "game.support.service",
+    "CREATE_GAME": "createGame.service",
+    "GAME": "game.service",
+    "GAME_DATA": "game.data.service"
+  },
+  "DB_MANAGER": {
+    "GENERIC": "generic.db.manager",
+    "CACHED_NETWORK_STATUSES": "CACHED_NETWORK_STATUSES_DB_MANAGER",
+    "LOOPS": "loops.db.manager",
+    "GAME_HISTORY": "game.history.db.manager",
+    "CLIENTS": "clients.db.manager",
+    "CREATE_GAME": "create.game.db.manager",
+    "GAME": "game.db.manager",
+    "GAME_DATA": "game.data.db.manager",
+    "AUTH": "auth.db.manager"
+  },
+  "TRANSMITTER": {
+    "GENERIC": "generic.transmitter",
+    "COMMON": "common.transmitter"
+  },
+  "COMMON": {
+    "WSS": "web.socket.server",
+    "WEB": "web.server",
+    "AUTH_CONFIG": "auth-config"
+  },
+  "AUTH": {
+    "GOOGLE": "GOOGLE"
+  }
+}
