@@ -53,7 +53,7 @@ CreateGameService.prototype.onInvite = function (message) {
 
     if (message.data.clients && message.data.clients.length) {
         clientId = message.data.clients[0];
-        clientsIds = [clientId, sessionUtils.getClientId(message.client)];
+        clientsIds = [clientId, sessionUtils.getClientId(message.client.getSession())];
         this.clientsDBManager.get(clientsIds)
             .then(handleGamers)
             .catch(errorLog);
@@ -126,7 +126,7 @@ CreateGameService.prototype.onCancelGame = function (message) {
     }
 
     if (gameId) {
-        let clientId = sessionUtils.getClientId(message.client);
+        let clientId = sessionUtils.getClientId(message.client.getSession());
         Promise.all([
             this.gameDBManager.get(gameId),
             this.clientsDBManager.get(clientId)
@@ -225,7 +225,7 @@ CreateGameService.prototype.giveAnAnswerToClient = function (message) {
 
     if (message.data && message.data.clients.length) {
         clientId = message.data.clients[0];
-        toClientId = sessionUtils.getClientId(message.client);
+        toClientId = sessionUtils.getClientId(message.client.getSession());
         return this.clientsDBManager.get([clientId, toClientId])
             .then(getInvite)
             .then(newAnswer)

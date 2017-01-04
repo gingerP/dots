@@ -172,14 +172,21 @@ WSServer.prototype.createConnectionWrapper = function (connection, id) {
         });
     }
 
+    function getConnection() {
+        return connection;
+    }
+
+    function getSession() {
+        return connection.session;
+    }
+
     api = {
         getId: getId,
         sendData: sendData,
+        getSession: getSession,
         setExtendData: setExtendData,
         getExtendData: getExtendData,
-        getConnection: function () {
-            return connection
-        },
+        getConnection: getConnection,
         equalConnection: equalConnection,
         registerListeners: registerListeners
     };

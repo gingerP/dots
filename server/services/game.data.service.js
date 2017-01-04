@@ -20,7 +20,7 @@ GameDataService.prototype.onGetClients = function (data) {
 };
 
 GameDataService.prototype.onGetMySelf = function (message) {
-    var clientId = sessionUtils.getClientId(message.client);
+    var clientId = sessionUtils.getClientId(message.client.getSession());
     this.clientsDBManager.get(clientId).then(message.callback);
 };
 

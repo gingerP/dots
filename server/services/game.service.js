@@ -33,7 +33,7 @@ GameService.prototype.constructor = GameService;
 GameService.prototype.onAddDot = function (message) {
     var inst = this;
     var gameId = message.data.extend.gameId;
-    var clientId = sessionUtils.getClientId(message.client);
+    var clientId = sessionUtils.getClientId(message.client.getSession());
     var dot = {
         x: message.data.extend.x,
         y: message.data.extend.y

@@ -20,7 +20,7 @@ GenericTransmitter.prototype.send = function (clientsIds, type, message) {
         new Promise(function (resolve) {
             preparedClientsIds = prepareIds(clientsIds);
             inst.wss.forEach(function (connection) {
-                var id = SessionUtils.getClientId(connection);
+                var id = SessionUtils.getClientId(connection.getSession());
                 if (id && preparedClientsIds.indexOf(id.toString()) >= 0) {
                     connection.sendData(message, type);
                     logger.debug('send(to: %s)', connection.getId());
@@ -38,7 +38,7 @@ GenericTransmitter.prototype.sendAllExcept = function (exceptClientsIds, type, m
         if (exceptClientsIds) {
             preparedExcepts = prepareIds(exceptClientsIds);
             inst.wss.forEach(function (connection) {
-                var id = SessionUtils.getClientId(connection);
+                var id = SessionUtils.getClientId(connection.getSession());
                 if (id && preparedExcepts.indexOf(id.toString()) < 0) {
                     connection.sendData(message, type);
                     logger.debug('sendAllExcept(to: %s)', connection.getId());

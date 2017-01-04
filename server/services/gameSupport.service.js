@@ -40,7 +40,7 @@ GameSupportService.prototype.onNewClient = function (message) {
     }
 
     function storeClient(newClient) {
-        sessionUtils.storeClientId(newClient._id, message.client);
+        sessionUtils.storeClientId(newClient._id, message.client.getSession());
         return newClient;
     }
 
@@ -55,7 +55,7 @@ GameSupportService.prototype.onNewClient = function (message) {
 
 GameSupportService.prototype.onDisconnect = function (message) {
     var inst = this;
-    var clientId = sessionUtils.getClientId(message.client);
+    var clientId = sessionUtils.getClientId(message.client.getSession());
 
     function handleConnectionNotification(disconnectedClient) {
         var isOnline = false;
@@ -87,7 +87,7 @@ GameSupportService.prototype.onReconnect = function (message) {
             throw new Error(CLIENT_NOT_EXIST);
         }
         reconnectedClient = newClient;
-        sessionUtils.storeClientId(newClient._id, message.client);
+        sessionUtils.storeClientId(newClient._id, message.client.getSession());
         return newClient;
     }
 
