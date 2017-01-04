@@ -22,12 +22,40 @@ WSServer.prototype.constructor = WSServer;
 
 WSServer.prototype.init = function (removeTimeout) {
     this.removeTimeout = removeTimeout;
-    this.ws = WebSocketServer(this.http);
+    this.ws = WebSocketServer(this.http.server);
+    this.initAuth();
     this._initEvents();
     logger.info('WebSocket server started!');
     return this;
 };
 
+WSServer.prototype.initAuth = function () {
+    var config = this.http.sessionConfig;
+    var cookieParser = require('cookie-parser')(config.secret);
+
+    this.ws.use(function (socket, next) {
+        cookieParser(socket.handshake, {}, function (err) {
+            if (err) {
+                console.log("error in parsing cookie");
+                return next(err);
+            }
+            if (!socket.handshake.signedCookies) {
+                console.log("no secureCookies|signedCookies found");
+                return next(new Error("no secureCookies found"));
+            }
+            config.store.get(socket.handshake.signedCookies[config.name], function (err, session) {
+                socket.session = session;
+                if (!err && !session) err = new Error('session not found');
+                if (err) {
+                    console.log('failed connection to socket.io:', err);
+                } else {
+                    console.log('successful connection to socket.io');
+                }
+                next(err);
+            });
+        });
+    });
+}
 WSServer.prototype._initEvents = function () {
     var inst = this;
     this.ws.on('reconnection', function () {
@@ -149,7 +177,9 @@ WSServer.prototype.createConnectionWrapper = function (connection, id) {
         sendData: sendData,
         setExtendData: setExtendData,
         getExtendData: getExtendData,
-        getConnection: function() {return connection},
+        getConnection: function () {
+            return connection
+        },
         equalConnection: equalConnection,
         registerListeners: registerListeners
     };

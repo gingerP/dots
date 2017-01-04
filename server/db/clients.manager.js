@@ -37,16 +37,22 @@ ClientsDBManager.prototype.getOnlineClients = function () {
     return this.listByCriteria({isOnline: true}).catch(errorLogger);
 };
 
-ClientsDBManager.prototype.getName = function () {
-    return IOC.DB_MANAGER.CLIENTS;
+ClientsDBManager.prototype.getClientsPair = function (clientId, connectionId) {
+    return Promise.all([
+        this.getClient(clientId),                            //To
+        this.getClientByConnectionId(connectionId)           //From
+    ]);
 };
 
-ClientsDBManager.prototype.getClientsPair = function (clientId, connectionId) {
-    var inst = this;
-    return Promise.all([
-        inst.getClient(clientId),                            //To
-        inst.getClientByConnectionId(connectionId)           //From
-    ]);
+ClientsDBManager.prototype.getByAuthIdType = function (authId, type) {
+    return this.getByCriteria({
+        'auth.id': authId,
+        'auth.type': type
+    }).catch(errorLogger);
+};
+
+ClientsDBManager.prototype.getName = function () {
+    return IOC.DB_MANAGER.CLIENTS;
 };
 
 ClientsDBManager.prototype.postConstructor = function () {

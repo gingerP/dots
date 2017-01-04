@@ -31,9 +31,14 @@
   "COMMON": {
     "WSS": "web.socket.server",
     "WEB": "web.server",
-    "AUTH_CONFIG": "auth-config"
+    "AUTH_CONFIG": "auth-config",
+    "PASSPORT": "passport"
   },
   "AUTH": {
+    "COMMON": "COMMON",
     "GOOGLE": "GOOGLE"
+  },
+  "EXTENSION": {
+    "SESSION_STORE": "sessionStore"
   }
 }

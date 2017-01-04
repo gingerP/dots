@@ -14,6 +14,9 @@ define([
     var myself;
 
     function initEvents() {
+        socket.on('error', function (error) {
+            console.error(error);
+        });
         socket.on('disconnect', function () {
             //TODO
         });

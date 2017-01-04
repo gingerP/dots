@@ -26,7 +26,7 @@ function initializeIOCType(directory, filePostfix) {
 function initialize(wss, web) {
     var container = {};
     _.merge(container, initializeIOCType('auth', '.auth.js'));
-    _.merge(container, initializeIOCType('extends', '.extend.js'));
+    _.merge(container, initializeIOCType('extension', '.extension.js'));
     _.merge(container, initializeIOCType('controllers', '.controller.js'));
     _.merge(container, initializeIOCType('services', '.service.js'));
     _.merge(container, initializeIOCType('db', '.manager.js'));

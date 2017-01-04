@@ -4,9 +4,17 @@ var _ = require('lodash');
 var utils = req('server/utils/utils');
 var logger = req('server/logging/logger').create('WebServer');
 var session = require('express-session');
+var express = require('express');
+var cookieParser = require('cookie-parser');
+var bodyParser = require('body-parser');
+var RedisStore = require('connect-redis')(session);
+var redis = require('redis');
+var appConfiguration = req('application-configuration/application');
+var passport = require('passport');
 
 function WebServer(props) {
-    this.app = require('express')();
+    this.app = express();
+    this.passport = passport;
     this.props = _.merge({
         network: {
             host: '0.0.0.0',
@@ -25,6 +33,10 @@ WebServer.prototype.init = function (props) {
 };
 
 WebServer.prototype.start = function () {
+    this.store = new RedisStore(_.extend({
+        client: redis.createClient()
+    }, appConfiguration.redis));
+
     if (this.props.network.ssl.active) {
         this._initHTTPS();
     } else {
@@ -34,33 +46,60 @@ WebServer.prototype.start = function () {
 };
 
 WebServer.prototype._initHTTP = function () {
-    var inst = this;
-    inst.transport = require('http');
-    inst.port = inst.props.network.http || 8080;
-    inst.server = inst.transport.createServer(inst.app);
-    inst.app.set('port', this.port);
-    inst.app.use(session({
-        secret: 'secret',
-        key: 'express.sid',
-        resave: true,
-        saveUninitialized: true
-    }));
+    this.transport = require('http');
+    this.port = this.props.network.http || 8080;
+    this.server = this.transport.createServer(this.app);
+    this.app.set('port', this.port);
 
-    inst.server.listen(inst.props.network.http, inst.props.network.host, function () {
-        logger.info('Node server started on http://%s:%d', inst.props.network.host, inst.props.network.http);
+    this.sessionConfig = {
+        key: 'connect.sid',
+        secret: 'keyboard cat',
+        store: this.store,
+        resave: false,
+        saveUninitialized: false,
+        cookie: {
+            secure: true,
+            httpOnly: false,
+            maxAge: 2419200000
+        }
+    };
+    this.app.use(session(this.sessionConfig));
+/*    this.app.use(this.passport.initialize());
+    this.app.use(this.passport.session());*/
+
+    this.server.listen(this.props.network.http, this.props.network.host, () => {
+        logger.info('Node server started on http://%s:%d', this.props.network.host, this.props.network.http);
     });
     logger.info('HTTP server successfully created.');
 };
 
 WebServer.prototype._initHTTPS = function () {
-    var inst = this;
-    inst.transport = require('https');
-    inst.port = inst.props.network.https || 8443;
-    inst.app.set('port', inst.port);
-    inst.server = inst.transport.createServer(inst._getCertFiles(), inst.app);
-    inst.server.listen(inst.props.network.https, inst.props.network.host, function () {
-        logger.info('Node server started on https://%s:%d', inst.props.network.host, inst.props.network.https);
+    this.transport = require('https');
+    this.port = this.props.network.https || 8443;
+    this.app.set('port', this.port);
+    this.server = this.transport.createServer(this._getCertFiles(), this.app);
+    this.sessionConfig = {
+        name: 'connect.sid',
+        secret: 'keyboard cat',
+        store: this.store,
+        resave: false,
+        saveUninitialized: true,
+        rolling: true,
+        cookie: {
+            secure: true,
+            maxAge: 2419200000
+        }
+    };
+    this.app.use(cookieParser());
+    this.app.use(bodyParser());
+    this.app.use(session(this.sessionConfig));
+    this.app.use(this.passport.initialize());
+    this.app.use(this.passport.session());
+
+    this.server.listen(this.props.network.https, this.props.network.host, () => {
+        console.info('Node server started on https://%s:%d', this.props.network.host, this.props.network.https);
     });
+
     logger.info('HTTPS server successfully created.');
 };
 

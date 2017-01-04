@@ -24,7 +24,6 @@ AuthDBManager.prototype.getByAuthIdType = function (authId, type) {
     }).catch(errorLog);
 };
 
-
 AuthDBManager.prototype.postConstructor = function () {
 };
 

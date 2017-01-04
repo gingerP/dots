@@ -1,4 +1,6 @@
 'use strict';
+const IOC = req('server/constants/ioc.constants');
+const _ = require('lodash');
 
 function newLoopData(dots, trappedDots) {
     return {
@@ -35,9 +37,31 @@ function newGamerStepData(gamer, gameData, gameDataDelta) {
     };
 }
 
+function newGoogleClient(profile, accessToken) {
+    var client = newClient(profile.displayName);
+
+    client.email = _.get(profile, 'emails[0].value');
+    client.auth = newAuth(
+        IOC.AUTH.GOOGLE,
+        profile,
+        accessToken
+    );
+
+    return client;
+}
+
+function newAuth(authType, profile, accessToken) {
+    return {
+        type: authType,
+        id: profile.id,
+        token: accessToken
+    };
+}
+
 module.exports = {
     newLoopData: newLoopData,
     newGameData: newGameData,
     newClient: newClient,
+    newGoogleClient: newGoogleClient,
     newGamerStepData: newGamerStepData
 };
