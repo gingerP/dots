@@ -1,23 +1,28 @@
 'use strict';
 
-var CreatingUtils = require('./creation-utils');
+const CreatingUtils = require('./creation-utils');
+const DIRECTION_4_SHIFTS = [
+    [-1, 0],
+    [0, -1], [0, 1],
+    [1, 0]
+];
+const DIRECTION_8_SHIFTS = [
+    [-1, -1], [0, -1], [1, -1],
+    [-1, 0], [1, 0],
+    [-1, 1], [0, 1], [1, 1]
+];
 
 function getNeighbors(pos, workData, excludes) {
     var result = [];
-    var shifts = [
-        [-1, -1], [0, -1], [1, -1],
-        [-1, 0], [1, 0],
-        [-1, 1], [0, 1], [1, 1]];
-    shifts.forEach(function (shift) {
+    DIRECTION_8_SHIFTS.forEach(function (shift) {
         var x = pos.x + shift[0];
         var y = pos.y + shift[1];
-        if (x > -1 && y > -1) {
-            if (workData[x]
-                && workData[x][y]
-                && !workData[x][y].isDeadlock
-                && checkExclude(excludes, CreatingUtils.newVertex(x, y))) {
-                result.push(CreatingUtils.newVertex(x, y));
-            }
+        if (x > -1 && y > -1 && workData[x]
+            && workData[x][y]
+            && !workData[x][y].isDeadlock
+            && checkExclude(excludes, CreatingUtils.newVertex(x, y))) {
+            result.push(CreatingUtils.newVertex(x, y));
+
         }
     });
     return result;
@@ -25,12 +30,7 @@ function getNeighbors(pos, workData, excludes) {
 
 function getSelectedNeighborsFrom_4_Direction(pos, vertexes) {
     var result = [];
-    var shifts = [
-        [-1, 0],
-        [0, -1], [0, 1],
-        [1, 0]
-    ];
-    shifts.forEach(function (shift) {
+    DIRECTION_4_SHIFTS.forEach(function (shift) {
         var x = pos.x + shift[0];
         var y = pos.y + shift[1];
         if (x > -1 && y > -1) {
@@ -46,12 +46,7 @@ function getSelectedNeighborsFrom_4_Direction(pos, vertexes) {
 
 function getSelectedNeighborsFrom_8_Direction(pos, vertexes) {
     var result = [];
-    var shifts = [
-        [-1, -1], [-1, 0], [-1, 1],
-        [0, -1], [0, 1],
-        [1, -1], [1, 0], [1, 1]
-    ];
-    shifts.forEach(function (shift) {
+    DIRECTION_8_SHIFTS.forEach(function (shift) {
         var x = pos.x + shift[0];
         var y = pos.y + shift[1];
         if (x > -1 && y > -1) {
@@ -66,19 +61,21 @@ function getSelectedNeighborsFrom_8_Direction(pos, vertexes) {
 }
 
 function applySelectedNeighborsFrom_8_Direction(pos, selected, vertexes) {
-    var shifts = [
-        [-1, -1], [-1, 0], [-1, 1],
-        [0, -1], [0, 1],
-        [1, -1], [1, 0], [1, 1]
-    ];
-    var index = shifts.length - 1;
-    while (index >= 0) {
-        let x = pos.x + shifts[index][0];
-        let y = pos.y + shifts[index][1];
-        if (x > -1 && y > -1) {
-            if (vertexes[x] && vertexes[x][y] && vertexes[x][y].isSelected) {
-                selected[x + '.' + y] = vertexes[x][y];
-                selected[x + '.' + y].pos = CreatingUtils.newVertex(x, y);
+    var index = DIRECTION_4_SHIFTS.length - 1,
+        x,
+        y,
+        key,
+        vertex;
+    while (index > -1) {
+        x = pos.x + DIRECTION_4_SHIFTS[index][0];
+        y = pos.y + DIRECTION_4_SHIFTS[index][1];
+        if (x > -1 && y > -1 && vertexes[x] && vertexes[x][y]) {
+            vertex = vertexes[x][y];
+
+            key = x + '.' + y;
+            if (!selected.hasOwnProperty(key) && vertex.isSelected) {
+                selected[key] = vertex;
+                vertex.pos = CreatingUtils.newVertex(x, y);
             }
         }
         index--;
@@ -97,15 +94,13 @@ function checkExclude(excludes, data) {
 
 function hasSpill(pos, vertexes) {
     var result = false;
-    var shifts = [
-        [0, -1],
-        [-1, 0], [1, 0],
-        [0, 1]
-    ];
-    var index = shifts.length - 1;
-    while(index > -1) {
-        let shift = shifts[index];
-        if (!vertexes[pos.x + shift[0]] || !vertexes[pos.x + shift[0]][pos.y + shift[1]]) {
+    var index = DIRECTION_4_SHIFTS.length - 1;
+    var shift;
+    var vertex;
+    while (index > -1) {
+        shift = DIRECTION_4_SHIFTS[index];
+        vertex = vertexes[pos.x + shift[0]];
+        if (!vertex || !vertex[pos.y + shift[1]]) {
             return true;
         }
         index--;

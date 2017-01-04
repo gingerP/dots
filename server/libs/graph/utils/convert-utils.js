@@ -40,8 +40,10 @@ function convertLoopToOutbound(loop, xShift, yShift) {
 function convertVertexAsObjectToArray(object) {
     var result = [];
     var key;
-    for (key in object) { // eslint-disable-line guard-for-in
-        result.push(object[key].pos);
+    for (key in object) {
+        if (object.hasOwnProperty(key)) {
+            result.push(object[key].pos);
+        }
     }
     return result;
 }

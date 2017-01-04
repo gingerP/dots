@@ -55,7 +55,8 @@ function getUnSortedPath(vertexes) {
     var lines = [];
     var vertexesHashMap = createVertexesHashesMap(vertexes);
     var linesHashes = [];
-    for (let vertexIndex = 0; vertexIndex < vertexes.length; vertexIndex++) {
+    var vertexIndex = 0;
+    for (; vertexIndex < vertexes.length; vertexIndex++) {
         lines.push.apply(lines, getVertexLines(vertexes[vertexIndex], vertexesHashMap, linesHashes));
     }
     return lines;

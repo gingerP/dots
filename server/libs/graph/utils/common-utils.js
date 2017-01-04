@@ -29,9 +29,10 @@ function getMinMaxCorners(dataArray) {
 function findFirstUnselectedUnvisitedPosition(array, beginFromX, beginFromY) {
     var xIndex = beginFromX || 0;
     var yIndex = beginFromY || 0;
+    var vertex;
     for (; xIndex < array.length; xIndex++) {
         for (; yIndex < array[xIndex].length; yIndex++) {
-            let vertex = array[xIndex][yIndex];
+            vertex = array[xIndex][yIndex];
             if (!vertex.isSelected && !vertex.isVisited) {
                 return {
                     x: xIndex,
@@ -48,10 +49,11 @@ function getUnselectedUnvisitedVertexesCount(vertexes) {
     var x = 0;
     var y;
     var result = 0;
+    var vertex;
     while (x < vertexes.length) {
         y = 0;
         while (y < vertexes[x].length) {
-            let vertex = vertexes[x][y];
+            vertex = vertexes[x][y];
             if (!vertex.isSelected && !vertex.isVisited) {
                 result = result + 1;
             }
