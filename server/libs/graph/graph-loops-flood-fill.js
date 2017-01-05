@@ -2,7 +2,7 @@
 const commonUtils = require('./utils/common-utils');
 const convertUtils = require('./utils/convert-utils');
 const vertexUtils = require('./utils/vertex-utils');
-const creationUtils = require('./utils/creation-utils');
+const CreationUtils = require('./utils/creation-utils');
 const directionUtils = require('./utils/direction-utils');
 const DIRECTIONS = require('./utils/directions');
 const DIRECTIONS_FORWARD = DIRECTIONS.FORWARD;
@@ -137,23 +137,34 @@ function passLineWithSpecificDirection(line, direction, futureLines, selected, v
     var posX = line.pos.x;
     var vertex = vertexes[posX][index];
     var passedDots = [];
+    var pos = CreationUtils.newVertex(posX, index);
+    savePreviousAsSelected(pos, direction, vertexes, selected);
     while (vertex && index >= 0 && !vertex.isSelected && !vertex.isInFutureLines) {
+        pos = CreationUtils.newVertex(posX, index);
         vertex.isVisited = true;
         vertex.isInFutureLines = true;
         newFutureLines = getFutureLineForVertex(posX, index, vertexes);
         if (!isSpill) {
-            isSpill = vertexUtils.hasSpill(creationUtils.newVertex(posX, index), vertexes);
+            isSpill = vertexUtils.hasSpill(pos, vertexes);
         }
         //console.info('x: %s, y: %s', posX, index);
-        vertexUtils.applySelectedNeighborsFrom_8_Direction(
-            creationUtils.newVertex(posX, index),
+        vertexUtils.applySelectedNeighborsFrom_2_Direction(
+            pos,
             selected,
             vertexes
         );
-        passedDots.push(creationUtils.newVertex(posX, index));
+        /*vertexUtils.applySelectedNeighborsFrom_8_Direction(
+            pos,
+            selected,
+            vertexes
+        );*/
+        passedDots.push(pos);
         futureLines.push.apply(futureLines, newFutureLines);
         index += direction;
         vertex = vertexes[posX][index];
+    }
+    if (vertex) {
+        saveAsSelected(pos, vertex, selected);
     }
 
     if (!isSpill && (!vertexes[posX][index] || !vertexes[posX][line.pos.y - 1])) {
@@ -196,11 +207,33 @@ function getFutureLine(x, y, vertexes) {
     var vertex = vertexes[x][y];
     if (!vertex.isSelected && !vertex.isInFutureLines) {
         line = {
-            pos: creationUtils.newVertex(x, y),
+            pos: CreationUtils.newVertex(x, y),
             direction: directionUtils.getDirection(x, y, vertexes)
         };
     }
     return line;
+}
+
+function saveAsSelected(pos, vertex, selected) {
+    var key = pos.x + '.' + pos.y;
+    if (!selected.hasOwnProperty(key) && vertex.isSelected) {
+        selected[key] = vertex;
+        vertex.pos = pos;
+    }
+}
+
+function savePreviousAsSelected(currentPos, direction, vertexes, selected) {
+    var previousPos = CreationUtils.newVertex(
+        currentPos.x,
+        currentPos.y + (-1 * direction)
+    );
+    var vertex = vertexes[previousPos.x][previousPos.y];
+    var key = previousPos.x + '.' + previousPos.y;
+    if (vertex && !selected.hasOwnProperty(key) && vertex.isSelected) {
+        selected[key] = vertex;
+        vertex.pos = previousPos;
+    }
+    return selected;
 }
 
 module.exports = {

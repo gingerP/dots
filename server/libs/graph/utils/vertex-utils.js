@@ -1,6 +1,7 @@
 'use strict';
 
 const CreatingUtils = require('./creation-utils');
+const DIRECTION_2_SHIFTS = [[-1, 0], [1, 0]];
 const DIRECTION_4_SHIFTS = [
     [-1, 0],
     [0, -1], [0, 1],
@@ -82,6 +83,28 @@ function applySelectedNeighborsFrom_8_Direction(pos, selected, vertexes) {
     }
 }
 
+function applySelectedNeighborsFrom_2_Direction(pos, selected, vertexes) {
+    var index = DIRECTION_2_SHIFTS.length - 1,
+        x,
+        y,
+        key,
+        vertex;
+    while (index > -1) {
+        x = pos.x + DIRECTION_2_SHIFTS[index][0];
+        y = pos.y + DIRECTION_2_SHIFTS[index][1];
+        if (x > -1 && y > -1 && vertexes[x] && vertexes[x][y]) {
+            vertex = vertexes[x][y];
+
+            key = x + '.' + y;
+            if (!selected.hasOwnProperty(key) && vertex.isSelected) {
+                selected[key] = vertex;
+                vertex.pos = CreatingUtils.newVertex(x, y);
+            }
+        }
+        index--;
+    }
+}
+
 function checkExclude(excludes, data) {
     var result = true;
     if (excludes && excludes.length) {
@@ -112,6 +135,7 @@ module.exports = {
     getNeighbors: getNeighbors,
     getSelectedNeighborsFrom_4_Direction: getSelectedNeighborsFrom_4_Direction,
     getSelectedNeighborsFrom_8_Direction: getSelectedNeighborsFrom_8_Direction,
+    applySelectedNeighborsFrom_2_Direction: applySelectedNeighborsFrom_2_Direction,
     applySelectedNeighborsFrom_8_Direction: applySelectedNeighborsFrom_8_Direction,
     hasSpill: hasSpill
 };
