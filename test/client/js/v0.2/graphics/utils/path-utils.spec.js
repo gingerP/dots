@@ -9,7 +9,7 @@ define([
              arrayHelpers) {
     'use strict';
 
-    describe('path-utils', function () {
+    xdescribe('path-utils', function () {
 
         beforeEach(function () {
             arrayHelpers.init();

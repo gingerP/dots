@@ -16,9 +16,12 @@ module.exports = function (config) {
         // list of files / patterns to load in the browser
         files: [
             {pattern: 'client/js/**/*.js', included: false},
+            {pattern: 'server/**/*.js', included: false},
             {pattern: 'test/client/**/*.js', included: false},
+            {pattern: 'test/server/**/*.js', included: false},
             {pattern: 'test/helpers/**/*js', served: true, included: false},
             {pattern: 'node_modules/lodash/lodash.js', served: true, included: false},
+            {pattern: 'node_modules/jquery/dist/jquery.min.js', served: true, included: false},
             'test/test-main.js'
         ],
 

@@ -32,7 +32,7 @@ define([
 
     function isMobileDevice() {
         return true;
-        return isMobile;
+        //return isMobile;
     }
 
     api = {

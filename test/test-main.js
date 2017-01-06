@@ -18,6 +18,7 @@ require.config({
   baseUrl: '/base/client/js/v0.2',
   paths: {
     lodash: '../../../node_modules/lodash/lodash',
+    jquery: '../../../node_modules/jquery/dist/jquery.min',
     'array-helper': '../../../test/helpers/array-helper'
   },
 
