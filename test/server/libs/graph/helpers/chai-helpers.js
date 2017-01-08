@@ -40,6 +40,10 @@ function deepUnsortedArrayEqual(expect, actual) {
     return true;
 }
 
+function equalLoopData(expected, equal) {
+
+}
+
 chai.Assertion.addMethod('deepUnsortedArrayEqual', function (expect) {
     try {
         deepUnsortedArrayEqual(expect, this._obj, '/');
@@ -49,7 +53,13 @@ chai.Assertion.addMethod('deepUnsortedArrayEqual', function (expect) {
     }
 });
 
+chai.Assertion.addMethod('equalLoopData', function (expect) {
+    try {
+        equalLoopData(expect, this._obj, '/');
+    }
+    catch (msg) {
+        this.assert(false, msg, undefined, expect, this._obj);
+    }
+});
 
-module.exports = {
-    deepUnsortedArrayEqual: deepUnsortedArrayEqual
-};
+module.exports = chai;
