@@ -138,7 +138,7 @@ function passLineWithSpecificDirection(line, direction, futureLines, selected, v
     var vertex = vertexes[posX][index];
     var passedDots = [];
     var pos = CreationUtils.newVertex(posX, index);
-    savePreviousAsSelected(pos, direction, vertexes, selected);
+    saveNextPosAsSelected(pos, direction || -1, vertexes, selected);
     while (vertex && index >= 0 && !vertex.isSelected && !vertex.isInFutureLines) {
         pos = CreationUtils.newVertex(posX, index);
         vertex.isVisited = true;
@@ -164,7 +164,7 @@ function passLineWithSpecificDirection(line, direction, futureLines, selected, v
         vertex = vertexes[posX][index];
     }
     if (vertex) {
-        saveAsSelected(pos, vertex, selected);
+        saveNextPosAsSelected(pos, direction || 1, vertexes, selected);
     }
 
     if (!isSpill && (!vertexes[posX][index] || !vertexes[posX][line.pos.y - 1])) {
@@ -214,24 +214,19 @@ function getFutureLine(x, y, vertexes) {
     return line;
 }
 
-function saveAsSelected(pos, vertex, selected) {
-    var key = pos.x + '.' + pos.y;
-    if (!selected.hasOwnProperty(key) && vertex.isSelected) {
-        selected[key] = vertex;
-        vertex.pos = pos;
-    }
-}
-
-function savePreviousAsSelected(currentPos, direction, vertexes, selected) {
-    var previousPos = CreationUtils.newVertex(
+function saveNextPosAsSelected(currentPos, direction, vertexes, selected) {
+    var nextPos = CreationUtils.newVertex(
         currentPos.x,
-        currentPos.y + (-1 * direction)
+        currentPos.y + (direction || -1)
     );
-    var vertex = vertexes[previousPos.x][previousPos.y];
-    var key = previousPos.x + '.' + previousPos.y;
+    if (!vertexes[nextPos.x]) {
+        return selected;
+    }
+    let vertex = vertexes[nextPos.x][nextPos.y];
+    let key = nextPos.x + '.' + nextPos.y;
     if (vertex && !selected.hasOwnProperty(key) && vertex.isSelected) {
         selected[key] = vertex;
-        vertex.pos = previousPos;
+        vertex.pos = nextPos;
     }
     return selected;
 }

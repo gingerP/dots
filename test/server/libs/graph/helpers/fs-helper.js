@@ -2,16 +2,14 @@
 const fs = require('fs');
 const _ = require('lodash');
 
-function isDirectoryAllowed(directoryName, directoriesInclude, directoriesExclude) {
-    var isInclude = !directoriesInclude || Boolean(directoriesInclude.length) || directoriesInclude.indexOf(directoryName) > -1;
-
-    if (isInclude) {
-        isInclude = !directoriesExclude || !directoriesExclude.length || directoriesExclude.indexOf(directoryName) < 0;
+function isDirectoryAllowed(directoryName, directoriesInclude) {
+    if (directoriesInclude && (!directoriesInclude.length || directoriesInclude.indexOf(directoryName) < 0)) {
+        return false;
     }
-    return isInclude;
+    return !directoriesInclude || directoriesInclude.indexOf(directoryName) > -1;
 }
 
-function getFiles(directory, directoriesInclude, directoriesExclude) {
+function getFiles(directory, directoriesInclude) {
     var results = [];
 
     (function walk(dir) {
@@ -20,7 +18,7 @@ function getFiles(directory, directoriesInclude, directoriesExclude) {
             var fileName = dir + '/' + file;
             var stat = fs.statSync(fileName);
             if (stat && stat.isDirectory()) {
-                if (!isDirectoryAllowed(file, directoriesInclude, directoriesExclude)){
+                if (!isDirectoryAllowed(file, directoriesInclude)){
                     return;
                 }
                 walk(fileName);
