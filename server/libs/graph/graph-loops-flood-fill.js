@@ -130,6 +130,14 @@ function passLine(futureLineIndex, futureLines, selected, vertexes) {
     return resultOfPassage;
 }
 
+function getPreviousDirection(direction) {
+    return direction === DIRECTIONS_FORWARD || direction === DIRECTIONS_NOWHERE ? -1 : 1;
+}
+
+function getNextDirection(direction) {
+    return direction === DIRECTIONS_FORWARD || direction === DIRECTIONS_NOWHERE ? 1 : -1;
+}
+
 function passLineWithSpecificDirection(line, direction, futureLines, selected, vertexes, isSkipFirst) {
     var index = line.pos.y + (isSkipFirst ? direction : 0);
     var newFutureLines;
@@ -138,7 +146,7 @@ function passLineWithSpecificDirection(line, direction, futureLines, selected, v
     var vertex = vertexes[posX][index];
     var passedDots = [];
     var pos = CreationUtils.newVertex(posX, index);
-    saveNextPosAsSelected(pos, direction || -1, vertexes, selected);
+    saveNextPosAsSelected(pos, getPreviousDirection(direction), vertexes, selected);
     while (vertex && index >= 0 && !vertex.isSelected && !vertex.isInFutureLines) {
         pos = CreationUtils.newVertex(posX, index);
         vertex.isVisited = true;
@@ -164,7 +172,7 @@ function passLineWithSpecificDirection(line, direction, futureLines, selected, v
         vertex = vertexes[posX][index];
     }
     if (vertex) {
-        saveNextPosAsSelected(pos, direction || 1, vertexes, selected);
+        saveNextPosAsSelected(pos, getNextDirection(direction), vertexes, selected);
     }
 
     if (!isSpill && (!vertexes[posX][index] || !vertexes[posX][line.pos.y - 1])) {

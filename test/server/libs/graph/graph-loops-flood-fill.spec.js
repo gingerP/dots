@@ -46,11 +46,24 @@ describe('Quality graph-loops-flood-fill', function () {
             _.forEach(loopsData, function (loopItem, index) {
                 assert(_.some(expectedData.outbound, function (expectedLoopItem) {
                     var result = LoopHelpers.isUnsortedArraysEqual(loopItem.loop, expectedLoopItem.loop) &&
-                        LoopHelpers.isUnsortedArraysEqual(loopItem.trappedDots, expectedLoopItem.trappedDots)
+                        LoopHelpers.isUnsortedArraysEqual(loopItem.trappedDots, expectedLoopItem.trappedDots);
 
                     return result;
                 }), index + ' loop should not exist!');
             });
+        });
+    });
+});
+
+describe('Quality EMPTY graph-loops-flood-fill', function () {
+    var files = FsHelper.getFiles(__dirname + '/test-data/', ['specials', 'empty-loops', 'big']);
+    _.forEach(files, function (filePath) {
+        var fileName = filePath.replace(/\.json$/, '');
+        var expectedData = require(fileName);
+        it(expectedData.name + ' ' + filePath.replace(__dirname + '/test-data/', ''), function () {
+            var loopsData = graphLoopsFloodFill.getLoops(expectedData.inbound);
+            this.timeout(Infinity);
+            assert.equal(loopsData.length, 0);
         });
     });
 });
