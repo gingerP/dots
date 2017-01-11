@@ -2,6 +2,7 @@
 
 function storeClientId(clientId, session) {
     session.clientId = clientId;
+    session.save();
 }
 
 function getClientId(session) {

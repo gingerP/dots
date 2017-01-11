@@ -55,7 +55,8 @@ WSServer.prototype.initAuth = function () {
             });
         });
     });
-}
+};
+
 WSServer.prototype._initEvents = function () {
     var inst = this;
     this.ws.on('reconnection', function () {

@@ -26,11 +26,11 @@ GoogleAuth.prototype.initStrategy = function initStrategy() {
                         newClient = CreationUtils.newGoogleClient(profile, accessToken);
                         newClient.isOnline = true;
                         return this.clientsDB.save(newClient).then((id) => {
-                            SessionUtils.storeClientId(String(id));
+                            SessionUtils.storeClientId(String(id), request.session);
                             calback(null, newClient);
                         });
                     }
-                    SessionUtils.storeClientId(String(client._id));
+                    SessionUtils.storeClientId(String(client._id), request.session);
                     return calback(null, client);
                 }).catch(calback);
         }

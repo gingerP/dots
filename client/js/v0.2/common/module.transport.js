@@ -20,8 +20,9 @@ define([
         socket.on('disconnect', function () {
             //TODO
         });
-        socket.on('reconnect', function () {
+        socket.on('reconnect', function (client) {
             //TODO
+            client;
         });
         socket.on('connect', function () {
             connectionTimes++;

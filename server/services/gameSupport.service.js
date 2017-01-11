@@ -5,7 +5,7 @@ const IOC = req('server/constants/ioc.constants');
 var animals = require('../animals');
 var funcUtils = require('../utils/function-utils');
 var creationUtils = req('server/utils/creation-utils');
-var sessionUtils = req('server/utils/session-utils');
+var SessionUtils = req('server/utils/session-utils');
 var gameStatuses = require('../constants/game-statuses');
 var logger = req('server/logging/logger').create('GameSupportService');
 var errorLog = funcUtils.error(logger);
@@ -40,7 +40,7 @@ GameSupportService.prototype.onNewClient = function (message) {
     }
 
     function storeClient(newClient) {
-        sessionUtils.storeClientId(newClient._id, message.client.getSession());
+        SessionUtils.storeClientId(newClient._id, message.client.getSession());
         return newClient;
     }
 
@@ -55,7 +55,7 @@ GameSupportService.prototype.onNewClient = function (message) {
 
 GameSupportService.prototype.onDisconnect = function (message) {
     var inst = this;
-    var clientId = sessionUtils.getClientId(message.client.getSession());
+    var clientId = SessionUtils.getClientId(message.client.getSession());
 
     function handleConnectionNotification(disconnectedClient) {
         var isOnline = false;
@@ -76,6 +76,8 @@ GameSupportService.prototype.onReconnect = function (message) {
     var inst = this;
     var reconnectedClientId = message.data._id;
     var reconnectedClient = message.data._id;
+    var session;
+    var sessionClientId;
 
     function handleConnectionNotification() {
         var isOnline = true;
@@ -87,22 +89,28 @@ GameSupportService.prototype.onReconnect = function (message) {
             throw new Error(CLIENT_NOT_EXIST);
         }
         reconnectedClient = newClient;
-        sessionUtils.storeClientId(newClient._id, message.client.getSession());
+        SessionUtils.storeClientId(newClient._id, session);
         return newClient;
     }
 
     if (message.data) {
         console.info('onReconnect: ' + reconnectedClientId.toString());
+        session = message.client.getSession();
+        sessionClientId = SessionUtils.getClientId(session);
 
+        /**
+         * Pick up authorized client from session
+         */
+        if (!_.isUndefined(sessionClientId)) {
+            reconnectedClientId = sessionClientId;
+        }
         return inst.updateNetworkStatus(reconnectedClientId, true)
             .then(storeClient)
             .then(message.callback)
             .then(handleConnectionNotification)
             .catch(errorLog);
     }
-    return new Promise(function (resolve) {
-        resolve({});
-    });
+    return Promise.resolve({});
 };
 
 GameSupportService.prototype.notifyAboutConnectionStatus = function (client, isOnline) {
