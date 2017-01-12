@@ -2,21 +2,25 @@ define([
     'angular',
     'module.observable',
     'business/module.game.business',
+    'common/common-constants',
     'common/events',
     'business/game.storage',
     'business/domains/Constants',
     'components/currentPlayer/currentPlayer.module',
     'components/utils/scope.utils'
-], function (angular, Observable, Business, Events, GameStorage, Constants) {
+], function (angular, Observable, Business,
+             CommonConstants, Events,
+             GameStorage) {
     'use strict';
 
     angular.module('currentPlayer.module').controller('currentPlayerCtrl', CurrentPlayerController);
 
-    function CurrentPlayerController($scope, scopeUtils) {
+    function CurrentPlayerController($scope, $rootScope, scopeUtils) {
         var vm = this,
             observable = Observable.instance,
             PLAYER_STYLE_PREFIX = 'player-style-',
-            apply = scopeUtils.getApply($scope);
+            apply = scopeUtils.getApply($scope),
+            TABS = CommonConstants.TABS;
 
 
         function initialize() {
@@ -42,6 +46,11 @@ define([
                 vm.style = {};
             }
             apply();
+        }
+
+        function openMyself() {
+            triggerOpenMenu();
+            $rootScope.$emit(Events.OPEN_TAB, TABS.SIGNIN);
         }
 
         function onUpdateActivePlayer(playerId) {
@@ -92,7 +101,16 @@ define([
             apply();
         }
 
-        vm.GAME_MODE = Constants.GAME_MODE;
+        function nextPlayer() {
+            Business.makeNextPlayerActive();
+        }
+
+        function triggerOpenMenu() {
+            vm.isMenuOpened = !vm.isMenuOpened;
+            observable.emit(Events.MENU_VISIBILITY, vm.isMenuOpened);
+        }
+
+        vm.GAME_MODE = CommonConstants.GAME_MODE;
         vm.isMenuOpened = false;
         vm.isMyselfActive = true;
         vm.isOpponentActive = false;
@@ -104,14 +122,10 @@ define([
             active: null
         };
 
-        vm.nextPlayer = function nextPlayer() {
-            Business.makeNextPlayerActive();
-        };
 
-        vm.triggerOpenMenu = function triggerOpenMenu() {
-            vm.isMenuOpened = !vm.isMenuOpened;
-            observable.emit(Events.MENU_VISIBILITY, vm.isMenuOpened);
-        };
+        vm.openMyself = openMyself;
+        vm.nextPlayer = nextPlayer;
+        vm.triggerOpenMenu = triggerOpenMenu;
 
         observable.on(Events.CANCEL_GAME, onCancelGame);
         observable.on(Events.CREATE_GAME, onCreateGame);

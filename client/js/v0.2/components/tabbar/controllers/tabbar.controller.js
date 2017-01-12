@@ -2,19 +2,26 @@ define([
     'angular',
     'lodash',
     'utils/common-utils',
+    'common/events',
+    'components/utils/scope.utils',
     'components/tabbar/tabbar.module'
-], function (angular, _, CommonUtils) {
+], function (angular, _, CommonUtils, Events) {
     'use strict';
 
     angular.module('tabbar.module').controller('tabbarCtrl', TabbarController);
 
-    function TabbarController($scope, $element, $transclude) {
-        var vm = this;
+    function TabbarController($scope, $rootScope, $element, $transclude, scopeUtils) {
+        var vm = this,
+            onDestroy = scopeUtils.destroy($scope);
 
-        function openTab(newActiveTab) {
+        function onOpenedTab(event, tabId) {
+            openTab(tabId);
+        }
+
+        function openTab(tabId) {
             vm.isHeadersVisible = false;
             _.forEach(vm.context.list, function (tab) {
-                tab.isActive = tab.id === newActiveTab.id;
+                tab.isActive = tab.id === tabId;
             });
         }
 
@@ -44,9 +51,13 @@ define([
         }
 
         vm.registr = registr;
-        vm.openTab = openTab;
+        vm.openTab = function (tab) {
+            openTab(tab.id);
+        };
         vm.back = back;
         vm.$postLink = postLink;
         vm.$onInit = init;
+
+        onDestroy($rootScope.$on(Events.OPEN_TAB, onOpenedTab));
     }
 });

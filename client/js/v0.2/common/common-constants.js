@@ -11,6 +11,10 @@ define(function () {
         GAME_MODE: {
             LOCAL: 'LOCAL',
             NETWORK: 'NETWORK'
+        },
+        TABS: {
+            GAMERS: 'gamers',
+            SIGNIN: 'signin'
         }
     };
 });

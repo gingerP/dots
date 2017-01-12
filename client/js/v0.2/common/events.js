@@ -29,7 +29,9 @@ define([], function () {
         CREATE_GAME: 'CREATE_GAME',
         MENU_VISIBILITY: 'MENU_VISIBILITY',
         CANCEL_GAME: 'CANCEL_GAME',
-        UPDATE_CLIENT: 'UPDATE_CLIENT'
+        UPDATE_CLIENT: 'UPDATE_CLIENT',
+
+        OPEN_TAB: 'OPEN_TAB'
     };
 
 });

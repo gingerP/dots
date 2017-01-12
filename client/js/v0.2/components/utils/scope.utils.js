@@ -24,7 +24,7 @@ define([
         function destroy(scope) {
             return function () {
                 _.forEach(arguments, function (toRemove) {
-                    scope.on('$destroy', toRemove);
+                    scope.$on('$destroy', toRemove);
                 });
             };
         }

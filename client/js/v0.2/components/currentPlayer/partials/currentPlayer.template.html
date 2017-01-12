@@ -3,9 +3,13 @@
         <div class="myself-player player {{currentPlayerCtrl.style.myself}}"
              ng-class="{'inactive-player': !currentPlayerCtrl.isMyselfActive && currentPlayerCtrl.opponent,
              'active-player': currentPlayerCtrl.isMyselfActive && currentPlayerCtrl.opponent}">
-            <div class="player-style" ng-bind="currentPlayerCtrl.myself.name"></div>
+            <div class="player-style"
+                 ng-bind="currentPlayerCtrl.myself.name"
+                 ng-click="currentPlayerCtrl.openMyself()">
+            </div>
         </div>
-        <div ng-show="currentPlayerCtrl.opponent" class="player-trapped-dots {{currentPlayerCtrl.style.myself}}" ng-bind="currentPlayerCtrl.myself.trappedDots.length || 0"></div>
+        <div ng-show="currentPlayerCtrl.opponent" class="player-trapped-dots {{currentPlayerCtrl.style.myself}}"
+             ng-bind="currentPlayerCtrl.myself.trappedDots.length || 0"></div>
     </div>
 
     <a ng-if="currentPlayerCtrl.GAME_MODE.LOCAL === currentPlayerCtrl.gameMode" href="javascript:void(0)" type="button"
@@ -18,7 +22,7 @@
 
     <div class="player-placeholder-right">
         <div ng-show="currentPlayerCtrl.opponent">
-            <div  class="player-trapped-dots {{currentPlayerCtrl.style.opponent}}"
+            <div class="player-trapped-dots {{currentPlayerCtrl.style.opponent}}"
                  ng-bind="currentPlayerCtrl.opponent.trappedDots.length || 0"></div>
             <div class="opponent-player opponent-block player {{currentPlayerCtrl.style.opponent}}"
                  ng-class="{'inactive-player': !currentPlayerCtrl.isOpponentActive,

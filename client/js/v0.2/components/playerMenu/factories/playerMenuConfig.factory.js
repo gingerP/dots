@@ -1,16 +1,14 @@
 define([
     'angular',
+    'common/common-constants',
     'components/playerMenu/playerMenu.module'
-], function (angular) {
+], function (angular, CommonConstants) {
     'use strict';
 
     angular.module('playerColor.module').factory('playerMenuConfig', playerMenuConfig);
 
     function playerMenuConfig() {
-        var TABS = {
-            GAMERS: 'gamers',
-            SIGNIN: 'signin'
-        };
+        var TABS = CommonConstants.TABS;
 
         function getConfig() {
             return {
