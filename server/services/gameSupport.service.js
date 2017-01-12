@@ -11,7 +11,7 @@ var logger = req('server/logging/logger').create('GameSupportService');
 var errorLog = funcUtils.error(logger);
 var _ = require('lodash');
 var Promise = require('q');
-
+const SessionConstants = req('server/constants/session-constants');
 const CLIENT_NOT_EXIST = 'Reconnected Client does NOT exist';
 
 function getRandomAnimal() {
@@ -40,6 +40,7 @@ GameSupportService.prototype.onNewClient = function (message) {
     }
 
     function storeClient(newClient) {
+        message.client.updateSession({[SessionConstants.CLIENT_ID]: newClient._id.toString()});
         SessionUtils.storeClientId(newClient._id, message.client.getSession());
         return newClient;
     }
@@ -94,7 +95,7 @@ GameSupportService.prototype.onReconnect = function (message) {
     }
 
     if (message.data) {
-        console.info('onReconnect: ' + reconnectedClientId.toString());
+        logger.debug('onReconnect: ' + reconnectedClientId.toString());
         session = message.client.getSession();
         sessionClientId = SessionUtils.getClientId(session);
 

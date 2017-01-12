@@ -4,14 +4,15 @@ const IOC = req('server/constants/ioc.constants');
 const GOOGLE_CODE = IOC.AUTH.GOOGLE;
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const CreationUtils = req('server/utils/creation-utils');
-const SessionUtils = req('server/utils/session-utils');
+const AuthUtils = req('server/utils/auth-utils');
 
 function GoogleAuth() {
 
 }
 
 GoogleAuth.prototype.initStrategy = function initStrategy() {
-    this.passport.use(new GoogleStrategy({
+    this.passport.use(new GoogleStrategy(
+        {
             clientID: this.AUTH_CONFIG.CLIENT_ID,
             clientSecret: this.AUTH_CONFIG.CLIENT_SECRET,
             callbackURL: this.AUTH_CONFIG.CALLBACK_URL,
@@ -21,17 +22,17 @@ GoogleAuth.prototype.initStrategy = function initStrategy() {
             this.clientsDB
                 .getByAuthIdType(profile.id, GOOGLE_CODE)
                 .then((client) => {
-                    var newClient;
-                    if (!client) {
-                        newClient = CreationUtils.newGoogleClient(profile, accessToken);
-                        newClient.isOnline = true;
-                        return this.clientsDB.save(newClient).then((id) => {
-                            SessionUtils.storeClientId(String(id), request.session);
-                            calback(null, newClient);
-                        });
+                    var preparedClient = client;
+                    if (!preparedClient) {
+                        preparedClient = CreationUtils.newGoogleClient(profile, accessToken);
+                    } else {
+                        preparedClient = AuthUtils.mergeGoogleClient(preparedClient, profile, accessToken);
                     }
-                    SessionUtils.storeClientId(String(client._id), request.session);
-                    return calback(null, client);
+                    preparedClient.isOnline = true;
+                    return this.clientsDB.save(preparedClient).then((id) => {
+                        this.CommonAuth.updateSessionClientId(request, String(id));
+                        calback(null, preparedClient);
+                    });
                 }).catch(calback);
         }
     ));
@@ -55,6 +56,7 @@ GoogleAuth.prototype.postConstructor = function (ioc) {
     this.authDB = ioc[IOC.DB_MANAGER.AUTH];
     this.clientsDB = ioc[IOC.DB_MANAGER.CLIENTS];
     this.server = ioc[IOC.COMMON.WEB];
+    this.CommonAuth = ioc[IOC.AUTH.COMMON];
     this.passport = this.server.passport;
     this.initStrategy();
     this.initApi(this.server.app);

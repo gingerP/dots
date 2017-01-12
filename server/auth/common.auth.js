@@ -1,11 +1,19 @@
 'use strict';
 
+var _ = require('lodash');
 const IOC = req('server/constants/ioc.constants');
-const passportSocketIo = require('passport.socketio');
+const SessionConstants = req('server/constants/session-constants');
 
 function CommonAuth() {
 
 }
+
+CommonAuth.prototype.updateSessionClientId = function (request, clientId) {
+    _.extend(request.session, {
+        [SessionConstants.CLIENT_ID]: clientId
+    });
+    request.session.save();
+};
 
 CommonAuth.prototype.init = function initApi(server, ws) {
     function isLogin(request, response, next) {

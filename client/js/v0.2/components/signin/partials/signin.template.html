@@ -1,3 +1,5 @@
 <div class="signin">
-    <a class="login-btn login-btn-google" ng-href="/auth/google" >Google</a>
+    <div ng-if="vm.isAuthenticated">
+        <a class="login-btn login-btn-google" ng-click="signinCtrl.loginGoogle()">Google</a>
+    </div>
 </div>

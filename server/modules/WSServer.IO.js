@@ -6,6 +6,7 @@ var logger = req('server/logging/logger').create('WSServer');
 var DEFAULT_TOPIC = 'connection';
 var connectedNum = 0;
 var disconnectedNum = 0;
+var _ = require('lodash');
 
 function WSServer(http) {
     this.http = http;
@@ -45,7 +46,9 @@ WSServer.prototype.initAuth = function () {
             }
             config.store.get(socket.handshake.signedCookies[config.name], function (err, session) {
                 socket.session = session;
-                if (!err && !session) err = new Error('session not found');
+                if (!err && !session) {
+                    err = new Error('session not found');
+                }
                 if (err) {
                     console.log('failed connection to socket.io:', err);
                 } else {
@@ -55,6 +58,12 @@ WSServer.prototype.initAuth = function () {
             });
         });
     });
+};
+
+WSServer.prototype.storeSession = function (connection) {
+    var config = this.http.sessionConfig;
+    var sessionId = connection.handshake.signedCookies[config.name];
+    config.store.get(sessionId, connection.session);
 };
 
 WSServer.prototype._initEvents = function () {
@@ -164,6 +173,7 @@ WSServer.prototype.createConnectionWrapper = function (connection, id) {
     function registerListeners(key) {
         connection.on(key, function (message, callback) {
             var data;
+
             try {
                 data = inst.extractMessage(message);
                 inst.propertyChange(key, {client: api, data: data, callback: callback});
@@ -181,10 +191,24 @@ WSServer.prototype.createConnectionWrapper = function (connection, id) {
         return connection.session;
     }
 
+    function updateSession(data) {
+        var session = getSession();
+
+        if (!session) {
+            logger.warn('Session did not found!');
+            return api;
+        }
+        _.extend(session, data || {});
+        inst.storeSession(connection);
+
+        return api;
+    }
+
     api = {
         getId: getId,
         sendData: sendData,
         getSession: getSession,
+        updateSession: updateSession,
         setExtendData: setExtendData,
         getExtendData: getExtendData,
         getConnection: getConnection,

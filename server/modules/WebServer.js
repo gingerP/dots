@@ -64,9 +64,6 @@ WebServer.prototype._initHTTP = function () {
         }
     };
     this.app.use(session(this.sessionConfig));
-/*    this.app.use(this.passport.initialize());
-    this.app.use(this.passport.session());*/
-
     this.server.listen(this.props.network.http, this.props.network.host, () => {
         logger.info('Node server started on http://%s:%d', this.props.network.host, this.props.network.http);
     });

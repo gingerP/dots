@@ -6,7 +6,7 @@ var logger = req('server/logging/logger').create('DB');
 var funcUtils = req('server/utils/function-utils');
 var cfg = req('application-configuration/application').db;
 var utils = req('server/utils/utils');
-var bongo = require('mongodb');
+var mongo = require('mongodb');
 var assert = require('assert');
 var errorLog = funcUtils.error(logger);
 
@@ -36,6 +36,13 @@ var validate = {
 var Observable = req('server/modules/Observable').class;
 validate.dbConfig(cfg);
 
+function getReplacedId(isUpsert, result, id) {
+    if (!isUpsert) {
+        return result.upsertedId ? result.upsertedId._id : null;
+    }
+    return id;
+}
+
 function GenericDBManager() {
 }
 
@@ -53,17 +60,13 @@ GenericDBManager.prototype.getCollectionName = function () {
 };
 GenericDBManager.prototype.exec = function () {
     if (!this.connection) {
-        try {
-            return new Promise((resolve) => {
-                bongo.connect(this._getDBUrl(), (error, db) => {
-                    assert.equal(null, error);
-                    this.connection = db;
-                    resolve(this.connection);
-                });
-            }).catch(errorLog);
-        } catch (e) {
-            logger.error(e.message);
-        }
+        return new Promise((resolve) => {
+            mongo.connect(this._getDBUrl(), (error, db) => {
+                assert.equal(null, error);
+                this.connection = db;
+                resolve(this.connection);
+            });
+        }).catch(errorLog);
     }
     return Promise.resolve(this.connection).catch(errorLog);
 };
@@ -115,7 +118,7 @@ GenericDBManager.prototype._saveEntities = function (/*doc, callback*/) {
     logger.info('_saveEntities not implemented');
 };
 GenericDBManager.prototype._update = function (criteria, doc, callback, mappings, upsert) {
-    var preparedUpsert = utils.hasContent(upsert) ? !!upsert : true;
+    const preparedUpsert = utils.hasContent(upsert) ? Boolean(upsert) : true;
     validate.collectionName(this.collectionName);
     this._correctCriteria(criteria);
     this.exec().then((db) => {
@@ -130,7 +133,7 @@ GenericDBManager.prototype._update = function (criteria, doc, callback, mappings
                     throw new Error(error);
                 } else if (typeof callback === 'function') {
                     logger.debug('Document was successfully updated in "%s".', this.collectionName);
-                    callback(result.upsertedId ? result.upsertedId._id : null);
+                    callback(getReplacedId(preparedUpsert, result, id));
                 }
             });
         } else {
@@ -359,10 +362,10 @@ GenericDBManager.prototype._getDBUrl = function () {
 };
 
 GenericDBManager.prototype.getObjectId = function (id) {
-    if (id instanceof bongo.ObjectID) {
+    if (id instanceof mongo.ObjectID) {
         return id;
     }
-    return new bongo.ObjectId(id);
+    return new mongo.ObjectId(id);
 };
 
 GenericDBManager.prototype.getObjectIdsList = function (ids) {
