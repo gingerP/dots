@@ -46,15 +46,13 @@ define([
     }
 
     function gamerSet(key) {
-        return function (obj) {
-            if (obj) {
-                set(key, obj);
+        return function (client) {
+            if (client) {
+                set(key, client);
                 if (!gamers[key]) {
-                    gamers[key] = new Player().init(obj._id, obj.name, obj.color, '');
+                    gamers[key] = new Player().init(client);
                 } else {
-                    gamers[key].id = obj._id;
-                    gamers[key].name = obj.name;
-                    gamers[key].isOnline = obj.isOnline;
+                    gamers[key].merge(client);
                 }
             }
         };

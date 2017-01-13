@@ -3,7 +3,7 @@ var graph = req('server/libs/graph/graph');
 var commonLoopsUtils = req('server/libs/graph/utils/common-utils');
 var _ = require('lodash');
 var CreationUtils = req('server/utils/creation-utils');
-var Promise = require('q');
+var Promise = require('bluebird');
 
 function extractValuationData(clientGameData) {
     return {

@@ -15,6 +15,7 @@ define([
     'components/tabbarHeader/components/tabbarHeader.component',
     'components/tabbar/components/tabbarContent.component',
     'components/signin/components/signin.component',
+    'components/userProfile/components/userProfile.component',
     'components/utils/common.helpers.module',
     'components/app-cache'
 ], function (angular) {
@@ -36,6 +37,7 @@ define([
         'signin.module',
         'tabbarHeader.module',
         'tabbar.module',
+        'userProfile.module',
         'app-cache',
         'ngAnimate'
     ]);

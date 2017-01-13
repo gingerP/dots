@@ -33,7 +33,12 @@ define([
     }
 
     function createNewPlayer(id, name, color, style) {
-        return new Player().init(id, name, color, style);
+        return new Player().init({
+            id: id,
+            name: name,
+            color: color,
+            style: style
+        });
     }
 
     function generateVertexes(xSize, ySize) {

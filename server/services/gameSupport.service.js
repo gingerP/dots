@@ -10,13 +10,22 @@ var gameStatuses = require('../constants/game-statuses');
 var logger = req('server/logging/logger').create('GameSupportService');
 var errorLog = funcUtils.error(logger);
 var _ = require('lodash');
-var Promise = require('q');
+var Promise = require('bluebird');
 const SessionConstants = req('server/constants/session-constants');
 const CLIENT_NOT_EXIST = 'Reconnected Client does NOT exist';
 
 function getRandomAnimal() {
     var randomIndex = Math.round((Math.random() * animals.length - 1));
     return animals[randomIndex];
+}
+
+function storeClient(socket, client) {
+    if (!client) {
+        throw new Error(CLIENT_NOT_EXIST);
+    }
+    socket.updateSession({[SessionConstants.CLIENT_ID]: String(client._id)});
+
+    return client;
 }
 
 function GameSupportService() {
@@ -39,16 +48,10 @@ GameSupportService.prototype.onNewClient = function (message) {
         return newClient;
     }
 
-    function storeClient(newClient) {
-        message.client.updateSession({[SessionConstants.CLIENT_ID]: newClient._id.toString()});
-        SessionUtils.storeClientId(newClient._id, message.client.getSession());
-        return newClient;
-    }
-
     this.clientsDBManager
         .save(client)
         .then(getClient)
-        .then(storeClient)
+        .then(storeClient.bind(null, message.client))
         .then(notifyAboutNewClient)
         .then(message.callback)
         .catch(errorLog);
@@ -76,22 +79,13 @@ GameSupportService.prototype.onDisconnect = function (message) {
 GameSupportService.prototype.onReconnect = function (message) {
     var inst = this;
     var reconnectedClientId = message.data._id;
-    var reconnectedClient = message.data._id;
+    var reconnectedClient = message.data;
     var session;
     var sessionClientId;
 
     function handleConnectionNotification() {
         var isOnline = true;
         return inst.notifyAboutConnectionStatus(reconnectedClient, isOnline);
-    }
-
-    function storeClient(newClient) {
-        if (!newClient) {
-            throw new Error(CLIENT_NOT_EXIST);
-        }
-        reconnectedClient = newClient;
-        SessionUtils.storeClientId(newClient._id, session);
-        return newClient;
     }
 
     if (message.data) {
@@ -106,7 +100,7 @@ GameSupportService.prototype.onReconnect = function (message) {
             reconnectedClientId = sessionClientId;
         }
         return inst.updateNetworkStatus(reconnectedClientId, true)
-            .then(storeClient)
+            .then(storeClient.bind(null, message.client))
             .then(message.callback)
             .then(handleConnectionNotification)
             .catch(errorLog);

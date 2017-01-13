@@ -36,7 +36,8 @@
   },
   "AUTH": {
     "COMMON": "COMMON",
-    "GOOGLE": "GOOGLE"
+    "GOOGLE": "GOOGLE",
+    "VK": "VK"
   },
   "EXTENSION": {
     "SESSION_STORE": "sessionStore"

@@ -7,6 +7,7 @@ var DEFAULT_TOPIC = 'connection';
 var connectedNum = 0;
 var disconnectedNum = 0;
 var _ = require('lodash');
+var Promise = require('bluebird');
 
 function WSServer(http) {
     this.http = http;
@@ -61,9 +62,14 @@ WSServer.prototype.initAuth = function () {
 };
 
 WSServer.prototype.storeSession = function (connection) {
-    var config = this.http.sessionConfig;
-    var sessionId = connection.handshake.signedCookies[config.name];
-    config.store.get(sessionId, connection.session);
+    return new Promise((resolve) => {
+        var config = this.http.sessionConfig;
+        var sessionId = connection.handshake.signedCookies[config.name];
+        config.store.set(sessionId, connection.session, function (error, message) {
+            logger.debug('Session stored!');
+            resolve();
+        });
+    });
 };
 
 WSServer.prototype._initEvents = function () {

@@ -36,6 +36,7 @@ WebServer.prototype.start = function () {
     this.store = new RedisStore(_.extend({
         client: redis.createClient()
     }, appConfiguration.redis));
+    this.store.on('error', logger.error.bind(logger));
 
     if (this.props.network.ssl.active) {
         this._initHTTPS();

@@ -1,3 +1,4 @@
 {
-  "CLIENT_ID": "clientId"
+  "CLIENT_ID": "clientId",
+  "OLD_CLIENT_ID": "oldClientId"
 }

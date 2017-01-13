@@ -9,17 +9,29 @@ define([
     function Player() {
     }
 
-    Player.prototype.init = function (id, name, color, style, networkStatus) {
+    Player.prototype.init = function (client) {
         this.dots = [];
         this.trappedDots = [];
         this.losingDots = [];
         this.loops = [];
-        this.id = id;
-        this.name = name;
-        this.color = color;
-        this.style = style;
+        this.id = client.id || client._id;
+        this.icon = client.icon;
+        this.name = client.name;
+        this.color = client.color;
+        this.style = client.style;
+        this.auth = client.auth;
         this.isActive = false;
-        this.isOnline = _.isUndefined(networkStatus) || NetworkStatus.ONLINE;
+        this.isOnline = _.isUndefined(client.networkStatus) || NetworkStatus.ONLINE;
+        return this;
+    };
+
+    Player.prototype.merge = function merge(client) {
+        this.id = client.id || client._id;
+        this.name = client.name;
+        this.color = client.color;
+        this.style = client.style;
+        this.auth = client.auth;
+        this.icon = client.icon;
         return this;
     };
 

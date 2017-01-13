@@ -3,11 +3,10 @@ const IOC = req('server/constants/ioc.constants');
 var CommonUtils = req('server/utils/common-utils');
 var SessionUtils = req('server/utils/session-utils');
 var logger = req('server/logging/logger').create('GenericTransmitter');
+var Promise = require('bluebird');
 
 function prepareIds(clientIds) {
-    return _.map(CommonUtils.createArray(clientIds), function(id) {
-        return _.isString(id) ? id : id.toString();
-    });
+    return _.map(CommonUtils.createArray(clientIds), String);
 }
 
 function GenericTransmitter() {
@@ -15,11 +14,10 @@ function GenericTransmitter() {
 
 GenericTransmitter.prototype.send = function (clientsIds, type, message) {
     var preparedClientsIds;
-    var inst = this;
     if (clientsIds) {
-        new Promise(function (resolve) {
+        new Promise((resolve) => {
             preparedClientsIds = prepareIds(clientsIds);
-            inst.wss.forEach(function (connection) {
+            this.wss.forEach((connection) => {
                 var id = SessionUtils.getClientId(connection.getSession());
                 if (id && preparedClientsIds.indexOf(id.toString()) >= 0) {
                     connection.sendData(message, type);
@@ -33,11 +31,10 @@ GenericTransmitter.prototype.send = function (clientsIds, type, message) {
 
 GenericTransmitter.prototype.sendAllExcept = function (exceptClientsIds, type, message) {
     var preparedExcepts;
-    var inst = this;
-    new Promise(function (resolve) {
+    new Promise((resolve) => {
         if (exceptClientsIds) {
             preparedExcepts = prepareIds(exceptClientsIds);
-            inst.wss.forEach(function (connection) {
+            this.wss.forEach((connection) => {
                 var id = SessionUtils.getClientId(connection.getSession());
                 if (id && preparedExcepts.indexOf(id.toString()) < 0) {
                     connection.sendData(message, type);

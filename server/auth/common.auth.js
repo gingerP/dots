@@ -3,16 +3,20 @@
 var _ = require('lodash');
 const IOC = req('server/constants/ioc.constants');
 const SessionConstants = req('server/constants/session-constants');
+var logger = req('server/logging/logger').create('CommonAuth');
 
 function CommonAuth() {
 
 }
 
-CommonAuth.prototype.updateSessionClientId = function (request, clientId) {
-    _.extend(request.session, {
-        [SessionConstants.CLIENT_ID]: clientId
-    });
-    request.session.save();
+CommonAuth.prototype.updateSessionClientId = function (request, clientId, oldClientId) {
+    var data = {[SessionConstants.CLIENT_ID]: clientId};
+
+    if (!_.isUndefined(oldClientId)) {
+        data[SessionConstants.OLD_CLIENT_ID] = oldClientId;
+    }
+    _.extend(request.session, data);
+    //request.session.save();
 };
 
 CommonAuth.prototype.init = function initApi(server, ws) {
@@ -38,19 +42,17 @@ CommonAuth.prototype.init = function initApi(server, ws) {
     });
 
     let config = server.sessionConfig;
-/*    ws.use(passportSocketIo.authorize({
-        key: config.key, // make sure is the same as in your session settings in app.js
-        secret: config.secret, // make sure is the same as in your session settings in app.js
-        passport: server.passport,
-        store: config.store // you need to use the same sessionStore you defined in the app.use(session({... in app.js
-    }));
-
-    ws.use(passportSocketIo.authorize({
-        name: 'connect.sid',       // make sure is the same as in your session settings in app.js
-        secret: 'keyboard cat',      // make sure is the same as in your session settings in app.js
-        passport: this.passport,
-        store: server.store        // you need to use the same sessionStore you defined in the app.use(session({... in app.js
-    }));*/
+    // route for logging out
+    server.app.get('/logout', (req, res) => {
+        var oldClientId = req.session[SessionConstants.OLD_CLIENT_ID];
+        req.session.regenerate((error) => {
+            if (error) {
+                logger.error(error);
+            }
+            req.session[SessionConstants.CLIENT_ID] = oldClientId;
+            res.redirect('/');
+        });
+    });
 };
 
 CommonAuth.prototype.getName = function getName() {

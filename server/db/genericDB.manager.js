@@ -9,6 +9,7 @@ var utils = req('server/utils/utils');
 var mongo = require('mongodb');
 var assert = require('assert');
 var errorLog = funcUtils.error(logger);
+var Promise = require('bluebird');
 
 var messages = {
     dbCfg: 'Db config invalid',

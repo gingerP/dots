@@ -1,5 +1,9 @@
 <div class="signin">
-    <div ng-if="vm.isAuthenticated">
+    <div ng-if="!signinCtrl.isAuthenticated">
         <a class="login-btn login-btn-google" ng-click="signinCtrl.loginGoogle()">Google</a>
+        <a class="login-btn login-btn-vk" ng-click="signinCtrl.loginVk()">Vkontakte</a>
+    </div>
+    <div ng-if="signinCtrl.isAuthenticated">
+        <user-profile></user-profile>
     </div>
 </div>

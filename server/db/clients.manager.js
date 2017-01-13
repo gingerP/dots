@@ -6,6 +6,7 @@ var IOC = require('../constants/ioc.constants');
 var funcUtils = require('../utils/function-utils');
 var logger = req('server/logging/logger').create('ClientsDBManager');
 var errorLogger = funcUtils.error(logger);
+var Promise = require('bluebird');
 
 function ClientsDBManager() {
     this.collectionName = DB.COLLECTION.CLIENTS;

@@ -1,6 +1,7 @@
 'use strict';
 
 const IOC = req('server/constants/ioc.constants');
+var Promise = require('bluebird');
 
 function GenericService() {}
 

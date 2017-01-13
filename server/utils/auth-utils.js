@@ -26,7 +26,6 @@ function newGoogleClient(profile, accessToken) {
     return client;
 }
 
-
 function mergeGoogleClient(client, profile, accessToken) {
     _.extend(client, {
         name: profile.displayName,
@@ -41,7 +40,38 @@ function mergeGoogleClient(client, profile, accessToken) {
     return client;
 }
 
+function newVkClient(profile, accessToken) {
+    var client = CreationUtils.newClient(profile.displayName);
+
+    client.icon = _.get(profile, 'photos[0].value');
+    client.email = _.get(profile, 'emails[0].value');
+    client.auth = newAuth(
+        IOC.AUTH.VK,
+        profile,
+        accessToken
+    );
+
+    return client;
+}
+
+function mergeVkClient(client, profile, accessToken) {
+    _.extend(client, {
+        name: profile.displayName,
+        icon: _.get(profile, 'photos[0].value'),
+        email: _.get(profile, 'emails[0].value'),
+        auth: newAuth(
+            IOC.AUTH.VK,
+            profile,
+            accessToken
+        )
+    });
+    return client;
+}
+
 module.exports = {
     newGoogleClient: newGoogleClient,
-    mergeGoogleClient: mergeGoogleClient
+    mergeGoogleClient: mergeGoogleClient,
+
+    newVkClient: newVkClient,
+    mergeVkClient: mergeVkClient
 };

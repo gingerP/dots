@@ -1,0 +1,10 @@
+<div class="user-profile">
+    <img class="user-profile-icon" ng-src="{{userProfileCtrl.user.icon}}"/>
+    <div class="user-profile-right-block">
+        <div class="user-profile-name" ng-bind="::userProfileCtrl.user.name"></div>
+        <div ng-if="userProfileCtrl.user.auth"
+             class="user-profile-logout user-profile-{{userProfileCtrl.user.auth.type}}">
+            <button ng-click="userProfileCtrl.logout()">Logout</button>
+        </div>
+    </div>
+</div>

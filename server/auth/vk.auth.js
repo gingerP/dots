@@ -1,31 +1,25 @@
 'use strict';
 
 const IOC = req('server/constants/ioc.constants');
-const GOOGLE_CODE = IOC.AUTH.GOOGLE;
-const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const VK_CODE = IOC.AUTH.VK;
+const VkStrategy = require('passport-vkontakte').Strategy;
 const AuthUtils = req('server/utils/auth-utils');
 const SessionUtils = req('server/utils/session-utils');
 var Promise = require('bluebird');
-function GoogleAuth() {
+function VkAuth() {
 
 }
 
-GoogleAuth.prototype.initStrategy = function initStrategy() {
-    var config = {
-            clientID: this.AUTH_CONFIG.CLIENT_ID,
-            clientSecret: this.AUTH_CONFIG.CLIENT_SECRET,
-            callbackURL: this.AUTH_CONFIG.CALLBACK_URL,
-            passReqToCallback: true
-        },
-        clientsDB = this.clientsDB,
+VkAuth.prototype.initStrategy = function initStrategy() {
+    var clientsDB = this.clientsDB,
         inst = this;
 
     function prepareClient(profile, accessToken, client) {
         var preparedClient = client;
         if (!preparedClient) {
-            preparedClient = AuthUtils.newGoogleClient(profile, accessToken);
+            preparedClient = AuthUtils.newVkClient(profile, accessToken);
         } else {
-            preparedClient = AuthUtils.mergeGoogleClient(preparedClient, profile, accessToken);
+            preparedClient = AuthUtils.mergeVkClient(preparedClient, profile, accessToken);
         }
         preparedClient.isOnline = true;
         return preparedClient;
@@ -50,11 +44,16 @@ GoogleAuth.prototype.initStrategy = function initStrategy() {
         });
     }
 
-    this.passport.use(new GoogleStrategy(
-        config,
-        (request, accessToken, refreshToken, profile, callback) => {
+    this.passport.use(new VkStrategy(
+        {
+            clientID: this.AUTH_CONFIG.CLIENT_ID,
+            clientSecret: this.AUTH_CONFIG.CLIENT_SECRET,
+            callbackURL: this.AUTH_CONFIG.CALLBACK_URL,
+            passReqToCallback: true
+        },
+        (request, accessToken, refreshToken, params, profile, callback) => {
             clientsDB
-                .getByAuthIdType(profile.id, GOOGLE_CODE)
+                .getByAuthIdType(profile.id, VK_CODE)
                 .then(prepareClient.bind(null, profile, accessToken))
                 .then(saveClient)
                 .then(updateSession.bind(null, request, callback))
@@ -63,21 +62,21 @@ GoogleAuth.prototype.initStrategy = function initStrategy() {
     ));
 };
 
-GoogleAuth.prototype.initApi = function initApi(app) {
-    app.get('/auth/google',
-        this.passport.authenticate('google', {scope: ['profile', 'email']}));
+VkAuth.prototype.initApi = function initApi(app) {
+    app.get('/auth/vk',
+        this.passport.authenticate('vkontakte', {scope: ['profile', 'email']}));
 
-    app.get('/auth/google/callback',
-        this.passport.authenticate('google', {successRedirect: '/', failureRedirect: '/'})
+    app.get('/auth/vk/callback',
+        this.passport.authenticate('vkontakte', {successRedirect: '/', failureRedirect: '/'})
     );
 };
 
-GoogleAuth.prototype.getName = function getName() {
-    return GOOGLE_CODE;
+VkAuth.prototype.getName = function getName() {
+    return VK_CODE;
 };
 
-GoogleAuth.prototype.postConstructor = function (ioc) {
-    this.AUTH_CONFIG = ioc[IOC.COMMON.AUTH_CONFIG][GOOGLE_CODE];
+VkAuth.prototype.postConstructor = function (ioc) {
+    this.AUTH_CONFIG = ioc[IOC.COMMON.AUTH_CONFIG][VK_CODE];
     this.authDB = ioc[IOC.DB_MANAGER.AUTH];
     this.clientsDB = ioc[IOC.DB_MANAGER.CLIENTS];
     this.server = ioc[IOC.COMMON.WEB];
@@ -88,5 +87,5 @@ GoogleAuth.prototype.postConstructor = function (ioc) {
 };
 
 module.exports = {
-    class: GoogleAuth
+    class: VkAuth
 };
