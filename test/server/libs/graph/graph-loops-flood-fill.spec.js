@@ -7,7 +7,7 @@ var graphLoopsFloodFill = req('server/libs/graph/graph-loops-flood-fill');
 var FsHelper = req('test/server/libs/graph/helpers/fs-helper');
 var LoopHelpers = req('test/server/libs/graph/helpers/loop-helper');
 
-describe.skip('Performance graph-loops-flood-fill', function () {
+describe('Performance graph-loops-flood-fill', function () {
     var files = FsHelper.getFiles(__dirname + '/test-data/', ['performance']);
     var ITERATION_NUM = 50;
     _.forEach(files, function (filePath) {
