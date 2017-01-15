@@ -27,7 +27,7 @@
     "mongodb": "2.2.1",
     "ngstorage": "0.3.10",
     "passport": "^0.3.2",
-    "passport-anonymous": "^1.0.1",
+    "passport-facebook": "^2.1.1",
     "passport-google-oauth": "^1.0.0",
     "passport-vkontakte": "^0.3.2",
     "pm2": "2.0.19",

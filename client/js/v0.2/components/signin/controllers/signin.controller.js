@@ -40,6 +40,7 @@ define([
 
         vm.loginGoogle = getLoginFn(AuthConstants.SOCIAL.GOOGLE);
         vm.loginVk = getLoginFn(AuthConstants.SOCIAL.VK);
+        vm.loginFacebook = getLoginFn(AuthConstants.SOCIAL.FACEBOOK);
         observable.on(Events.REFRESH_MYSELF, onRefreshMyself);
 
         vm.$onInit = init;

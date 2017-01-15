@@ -35,8 +35,10 @@
     "PASSPORT": "passport"
   },
   "AUTH": {
+    "GENERIC": "GENERIC",
     "COMMON": "COMMON",
     "GOOGLE": "GOOGLE",
+    "FACEBOOK": "FACEBOOK",
     "VK": "VK"
   },
   "EXTENSION": {
