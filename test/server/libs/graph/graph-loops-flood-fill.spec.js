@@ -1,13 +1,12 @@
 'use strict';
 var chai = require('chai');
 var assert = chai.assert;
-var expect = chai.expect;
 var _ = require('lodash');
 var graphLoopsFloodFill = req('server/libs/graph/graph-loops-flood-fill');
 var FsHelper = req('test/server/libs/graph/helpers/fs-helper');
 var LoopHelpers = req('test/server/libs/graph/helpers/loop-helper');
 
-describe('Performance graph-loops-flood-fill', function () {
+describe.skip('Performance graph-loops-flood-fill', function () {
     var files = FsHelper.getFiles(__dirname + '/test-data/', ['performance']);
     var ITERATION_NUM = 50;
     _.forEach(files, function (filePath) {
@@ -26,6 +25,7 @@ describe('Performance graph-loops-flood-fill', function () {
                 graphLoopsFloodFill.getLoops(testData.inbound);
                 summaryEnd += Date.now();
             }
+            console.log('-------------------------------------------------------------------------------------------');
             console.log('\t%sms', (summaryEnd - summaryStart) / ITERATION_NUM);
         });
     });
