@@ -28,9 +28,8 @@ function getDirection(x, y, vertexes) {
         isPrevSelected && isNextSelected ||
         !isPrev && isNextSelected ||
         !isNext && isPrevSelected) {
-
         return DIRECTIONS_NOWHERE;
-    } else if (isPrevSelected) {
+    } else if ((!isPrev || isPrev && isPrevSelected) && !isNextSelected && isNext) {
         return DIRECTIONS_FORWARD;
     } else if (isNextSelected) {
         return DIRECTIONS_BACKWARD;

@@ -37,7 +37,8 @@ function getLoops(array) {
             if (whileLimitIndex) {
                 firstPosition = commonUtils.findFirstUnselectedUnvisitedPosition(prepared.vertexes);
                 if (firstPosition) {
-                    futureLines = [getFutureLine(firstPosition.x, firstPosition.y, prepared.vertexes)];
+                    let line = getFutureLine(firstPosition.x, firstPosition.y, prepared.vertexes);
+                    futureLines = line ? [line] : [];
                 } else {
                     break;
                 }
@@ -147,7 +148,7 @@ function passLineWithSpecificDirection(line, direction, futureLines, selected, v
     var passedDots = [];
     var pos = CreationUtils.newVertex(posX, index);
     saveNextPosAsSelected(pos, getPreviousDirection(direction), vertexes, selected);
-    while (vertex && index >= 0 && !vertex.isSelected && !vertex.isInFutureLines) {
+    while (vertex && index >= 0 && !vertex.isSelected && !vertex.isVisited) {
         pos = CreationUtils.newVertex(posX, index);
         vertex.isVisited = true;
         vertex.isInFutureLines = true;
@@ -167,7 +168,9 @@ function passLineWithSpecificDirection(line, direction, futureLines, selected, v
             vertexes
         );*/
         passedDots.push(pos);
-        futureLines.push.apply(futureLines, newFutureLines);
+        if (newFutureLines.length) {
+            futureLines.push.apply(futureLines, newFutureLines);
+        }
         index += direction;
         vertex = vertexes[posX][index];
     }
@@ -218,8 +221,33 @@ function getFutureLine(x, y, vertexes) {
             pos: CreationUtils.newVertex(x, y),
             direction: directionUtils.getDirection(x, y, vertexes)
         };
+        markFutureLine(line, vertexes);
     }
     return line;
+}
+
+function markFutureLine(line, vertexes) {
+    if (line.direction === DIRECTIONS_BOTH_WAYS) {
+        markFutureLineWithDirection(line, DIRECTIONS_BACKWARD, vertexes);
+        markFutureLineWithDirection(line, DIRECTIONS_FORWARD, vertexes);
+    } else if (line.direction) {
+        markFutureLineWithDirection(line, line.direction, vertexes);
+    } else if (!line.direction) {
+        vertexes[line.pos.x][line.pos.y].isInFutureLines = true;
+    }
+}
+
+function markFutureLineWithDirection(line, direction, vertexes) {
+    var yIndex = line.pos.y;
+    var vertex;
+    for(;(vertex = vertexes[line.pos.x][yIndex]);) {
+        if (!vertex.isInFutureLines && !vertex.isSelected && !vertex.isVisited) {
+            vertex.isInFutureLines = true;
+        } else if (vertex.isSelected) {
+            break;
+        }
+        yIndex += direction;
+    }
 }
 
 function saveNextPosAsSelected(currentPos, direction, vertexes, selected) {
