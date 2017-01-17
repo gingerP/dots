@@ -7,12 +7,23 @@ function getMinMaxCorners(dataArray) {
     var minY = dataArray[0].y;
     var maxX = dataArray[0].x;
     var maxY = dataArray[0].y;
-    dataArray.forEach(function (data) {
-        maxX = data.x > maxX ? data.x : maxX;
-        maxY = data.y > maxY ? data.y : maxY;
-        minX = data.x < minX ? data.x : minX;
-        minY = data.y < minY ? data.y : minY;
-    });
+    var index = 0;
+    var data;
+    for(; index < dataArray.length; index++) {
+        data = dataArray[index];
+        if (data.x > maxX) {
+            maxX = data.x;
+        }
+        if (data.y > maxY) {
+            maxY = data.y;
+        }
+        if (data.x < minX) {
+            minX = data.x;
+        }
+        if (data.y < minY) {
+            minY = data.y;
+        }
+    }
     return {
         min: {
             x: minX,

@@ -4,9 +4,12 @@ var creationUtils = require('./creation-utils');
 
 function convertInbound(sizeX, sizeY, minX, minY, sourceData) {
     var workData = createDefaultArray(sizeX, sizeY);
-    sourceData.forEach(function (data) {
+    var index = 0;
+    var data;
+    for(; index < sourceData.length; index++) {
+        data = sourceData[index];
         workData[data.x - minX][data.y - minY].isSelected = true;
-    });
+    }
     return workData;
 }
 
@@ -32,9 +35,15 @@ function createDefaultArray(xSize, ySize) {
 }
 
 function convertLoopToOutbound(loop, xShift, yShift) {
-    return loop.map(function (loopItem) {
-        return creationUtils.newVertex(loopItem.x + xShift, loopItem.y + yShift);
-    });
+    var index = 0;
+    var loopItem;
+    var len = loop.length;
+    var result = new Array(len);
+    for(; index < len; index++) {
+        loopItem = loop[index];
+        result.push(creationUtils.newVertex(loopItem.x + xShift, loopItem.y + yShift));
+    }
+    return result;
 }
 
 function convertVertexAsObjectToArray(object) {

@@ -1,9 +1,7 @@
 function sortFunction(o1, o2) {
-    var sum1 = Number('' + o1.x + o1.y);
-    var sum2 = Number('' + o2.x + o2.y);
-    if (sum1 > sum2) {
+    if (o1.x > o2.x || o1.x === o2.x && o1.y > o2.y) {
         return -1;
-    } else if (sum1 < sum2) {
+    } else if (o1.x < o2.x || o1.x === o2.x && o1.y < o2.y) {
         return 1;
     }
     return 0;
@@ -11,7 +9,8 @@ function sortFunction(o1, o2) {
 
 function isUnsortedArraysEqual(expect, actual) {
     function isEqualToExpect(actualItem, index) {
-        return actualItem.x === expect[index].x && actualItem.y === expect[index].y;
+        var result = actualItem.x === expect[index].x && actualItem.y === expect[index].y;
+        return result;
     }
 
     actual.sort(sortFunction);

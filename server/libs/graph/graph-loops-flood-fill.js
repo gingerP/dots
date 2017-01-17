@@ -23,6 +23,7 @@ function getLoops(array) {
     var passed;
     var selected;
     var trappedDots;
+    var line;
     if (firstPosition) {
         unpassVertexesCount = commonUtils.getUnselectedUnvisitedVertexesCount(prepared.vertexes);
         futureLines = [getFutureLine(firstPosition.x, firstPosition.y, prepared.vertexes)];
@@ -37,7 +38,7 @@ function getLoops(array) {
             if (whileLimitIndex) {
                 firstPosition = commonUtils.findFirstUnselectedUnvisitedPosition(prepared.vertexes);
                 if (firstPosition) {
-                    let line = getFutureLine(firstPosition.x, firstPosition.y, prepared.vertexes);
+                    line = getFutureLine(firstPosition.x, firstPosition.y, prepared.vertexes);
                     futureLines = line ? [line] : [];
                 } else {
                     break;
@@ -86,9 +87,11 @@ function prepareInbound(array) {
 }
 
 function prepareOutBound(loops, shift) {
+    var loopIndex = 0;
+    var loop;
     if (loops && loops.length) {
-        for (let loopIndex = 0; loopIndex < loops.length; loopIndex++) {
-            let loop = loops[loopIndex];
+        for (; loopIndex < loops.length; loopIndex++) {
+            loop = loops[loopIndex];
             loop.loop = updateShifts(loop.loop, shift);
             loop.trappedDots = updateShifts(loop.trappedDots, shift);
         }
@@ -97,11 +100,14 @@ function prepareOutBound(loops, shift) {
 }
 
 function updateShifts(dots, shifts) {
-    return dots.map(function (dot) {
-        dot.x += shifts.x;
-        dot.y += shifts.y;
-        return dot;
-    });
+    var index = 0;
+    var dot;
+    for(;index < dots.length; index++) {
+        dot = dots[index];
+        dot.x = dot.x + shifts.x;
+        dot.y = dot.y + shifts.y;
+    }
+    return dots;
 }
 
 function passLine(futureLineIndex, futureLines, selected, vertexes) {
@@ -260,7 +266,7 @@ function saveNextPosAsSelected(currentPos, direction, vertexes, selected) {
     }
     let vertex = vertexes[nextPos.x][nextPos.y];
     let key = nextPos.x + '.' + nextPos.y;
-    if (vertex && !selected.hasOwnProperty(key) && vertex.isSelected) {
+    if (vertex && vertex.isSelected && !selected.hasOwnProperty(key)) {
         selected[key] = vertex;
         vertex.pos = nextPos;
     }
