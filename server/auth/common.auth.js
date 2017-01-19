@@ -12,11 +12,10 @@ function CommonAuth() {
 CommonAuth.prototype.updateSessionClientId = function (request, clientId, oldClientId) {
     var data = {[SessionConstants.CLIENT_ID]: clientId};
 
-    if (!_.isUndefined(oldClientId)) {
+    if (oldClientId !== null && !_.isUndefined(oldClientId)) {
         data[SessionConstants.OLD_CLIENT_ID] = oldClientId;
     }
     _.extend(request.session, data);
-    //request.session.save();
 };
 
 CommonAuth.prototype.init = function initApi(server, ws) {

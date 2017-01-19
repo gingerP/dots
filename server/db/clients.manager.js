@@ -17,7 +17,12 @@ ClientsDBManager.prototype.constructor = ClientsDBManager;
 
 ClientsDBManager.prototype.getClient = function (id) {
     if (id) {
-        return this.get(id);
+        return this.get(id).then((client) => {
+            if (client.auth) {
+                delete client.auth.token;
+            }
+            return client;
+        });
     }
     return funcUtils.emptyPromise({});
 };

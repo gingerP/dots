@@ -18,15 +18,21 @@ define([
             openTab(tabId);
         }
 
+        function setHeaderVisibility(isVisible) {
+            if (CommonUtils.isMobile()) {
+                vm.isHeadersVisible = isVisible;
+            }
+        }
+
         function openTab(tabId) {
-            vm.isHeadersVisible = false;
+            setHeaderVisibility(false);
             _.forEach(vm.context.list, function (tab) {
                 tab.isActive = tab.id === tabId;
             });
         }
 
         function back() {
-            vm.isHeadersVisible = true;
+            setHeaderVisibility(true);
             _.forEach(vm.context.list, function (tab) {
                 tab.isActive = false;
             });
@@ -37,7 +43,7 @@ define([
         }
 
         function init() {
-            vm.isHeadersVisible = true;
+            setHeaderVisibility(true);
 
             if (CommonUtils.isMobile()) {
                 _.forEach(vm.context.list, function (tab) {
@@ -57,6 +63,7 @@ define([
         vm.back = back;
         vm.$postLink = postLink;
         vm.$onInit = init;
+        vm.isHeadersVisible = true;
 
         onDestroy($rootScope.$on(Events.OPEN_TAB, onOpenedTab));
     }

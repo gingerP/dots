@@ -5,6 +5,7 @@ const SessionUtils = req('server/utils/session-utils');
 const _ = require('lodash');
 const AuthUtils = req('server/utils/auth-utils');
 var Promise = require('bluebird');
+const logger = req('server/logging/logger').create('GenericAuth');
 
 function getStrategy(strategy) {
     if (_.isString(strategy)) {
@@ -48,13 +49,26 @@ GenericAuth.prototype.initStrategy = function initStrategy(strategy, authConfig,
         Strategy = getStrategy(strategy),
         prepareClient = prepareClientCallback || this.prepareClient;
 
+    function validateOldClient(id) {
+        return clientsDB.get(id).then((client) => {
+            if (client && client.auth) {
+                logger.debug('Social login from old client(%s - %s)', client.auth.type, client._id);
+                return null;
+            }
+            return id;
+        });
+    }
+
     function updateSession(request, calback, preparedClient) {
         return new Promise((resolve) => {
             var oldClientId = SessionUtils.getClientId(request.session);
-            request.session.regenerate(() => {
-                inst.CommonAuth.updateSessionClientId(request, String(preparedClient._id), oldClientId);
-                calback(null, preparedClient);
-                resolve(preparedClient);
+            validateOldClient(oldClientId).then((validatedClientId) => {
+                request.session.regenerate(() => {
+                    logger.debug('Create new session with new client(%s - %s)', preparedClient.auth.type, preparedClient._id);
+                    inst.CommonAuth.updateSessionClientId(request, String(preparedClient._id), validatedClientId);
+                    calback(null, preparedClient);
+                    resolve(preparedClient);
+                });
             });
         });
     }
