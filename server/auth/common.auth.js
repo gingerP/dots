@@ -1,22 +1,12 @@
 'use strict';
 
-var _ = require('lodash');
 const IOC = req('server/constants/ioc.constants');
-const SessionConstants = req('server/constants/session-constants');
+const SessionUtils = req('server/utils/session-utils');
 var logger = req('server/logging/logger').create('CommonAuth');
 
 function CommonAuth() {
 
 }
-
-CommonAuth.prototype.updateSessionClientId = function (request, clientId, oldClientId) {
-    var data = {[SessionConstants.CLIENT_ID]: clientId};
-
-    if (oldClientId !== null && !_.isUndefined(oldClientId)) {
-        data[SessionConstants.OLD_CLIENT_ID] = oldClientId;
-    }
-    _.extend(request.session, data);
-};
 
 CommonAuth.prototype.init = function initApi(server, ws) {
     function isLogin(request, response, next) {
@@ -43,12 +33,13 @@ CommonAuth.prototype.init = function initApi(server, ws) {
     let config = server.sessionConfig;
     // route for logging out
     server.app.get('/logout', (req, res) => {
-        var oldClientId = req.session[SessionConstants.OLD_CLIENT_ID];
+        var oldClientId = SessionUtils.getOldClientId(req.session);
         req.session.regenerate((error) => {
             if (error) {
                 logger.error(error);
             }
-            req.session[SessionConstants.CLIENT_ID] = oldClientId;
+            let newClientId = oldClientId;
+            SessionUtils.storeClientsIds(req.session, newClientId);
             res.redirect('/');
         });
     });

@@ -12,6 +12,7 @@ define([
         var vm = this;
 
         function logout() {
+            GameStorage.clear();
             $window.open(AuthConstants.LOGOUT, '_self');
         }
 

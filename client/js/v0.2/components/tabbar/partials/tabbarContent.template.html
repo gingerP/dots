@@ -2,5 +2,7 @@
     <div class="tabbar-content-back"
          ng-click="tabbarContent.back()"
          ng-if="tabbarContent.isMobile">Back</div>
-    <ng-transclude ></ng-transclude>
+    <div class="tabbar-content-placeholder">
+        <ng-transclude ></ng-transclude>
+    </div>
 </div>

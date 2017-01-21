@@ -11,7 +11,6 @@ var logger = req('server/logging/logger').create('GameSupportService');
 var errorLog = funcUtils.error(logger);
 var _ = require('lodash');
 var Promise = require('bluebird');
-const SessionConstants = req('server/constants/session-constants');
 const CLIENT_NOT_EXIST = 'Reconnected Client does NOT exist';
 
 function getRandomAnimal() {
@@ -19,13 +18,21 @@ function getRandomAnimal() {
     return animals[randomIndex];
 }
 
-function storeClient(socket, client) {
+function updateSession(socket, client) {
+    var session;
     if (!client) {
         throw new Error(CLIENT_NOT_EXIST);
     }
-    socket.updateSession({[SessionConstants.CLIENT_ID]: String(client._id)});
+    session = socket.getSession();
+    SessionUtils.storeClientsIds(session, client._id);
 
-    return client;
+    return socket.saveSession().return(client);
+}
+
+function createClient(clientsDB) {
+    var client = creationUtils.newClient(getRandomAnimal(), null, null, true);
+
+    return clientsDB.save(client).then(clientsDB.get.bind(clientsDB));
 }
 
 function GameSupportService() {
@@ -36,22 +43,32 @@ GameSupportService.prototype.constructor = GameSupportService;
 
 GameSupportService.prototype.onNewClient = function (message) {
     var inst = this;
-    var client = creationUtils.newClient(getRandomAnimal(), null, null, true);
-
-    function getClient(clientId) {
-        return inst.clientsDBManager.get(clientId);
-    }
+    var clientsDB = this.clientsDBManager;
 
     function notifyAboutNewClient(newClient) {
         var isOnline = true;
+
         inst.notifyAboutConnectionStatus(newClient, isOnline);
+
         return newClient;
     }
 
-    this.clientsDBManager
-        .save(client)
-        .then(getClient)
-        .then(storeClient.bind(null, message.client))
+    function resolveClient() {
+        var session = message.client.getSession();
+        var sessionClientId = SessionUtils.getClientId(session);
+        var promise;
+
+        if (sessionClientId) {
+            promise = clientsDB.get(sessionClientId);
+        } else {
+            promise = createClient(clientsDB);
+        }
+
+        return promise;
+    }
+
+    return resolveClient()
+        .then(updateSession.bind(null, message.client))
         .then(notifyAboutNewClient)
         .then(message.callback)
         .catch(errorLog);
@@ -100,7 +117,7 @@ GameSupportService.prototype.onReconnect = function (message) {
             reconnectedClientId = sessionClientId;
         }
         return inst.updateNetworkStatus(reconnectedClientId, true)
-            .then(storeClient.bind(null, message.client))
+            .then(updateSession.bind(null, message.client))
             .then(message.callback)
             .then(handleConnectionNotification)
             .catch(errorLog);

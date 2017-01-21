@@ -149,7 +149,6 @@ WSServer.prototype.removeConnection = function (id, reason) {
 WSServer.prototype.createConnectionWrapper = function (connection, id) {
     var inst = this;
     var api;
-    var extend;
 
     function getId() {
         return id;
@@ -161,15 +160,6 @@ WSServer.prototype.createConnectionWrapper = function (connection, id) {
                 resolve(messageData);
             });
         });
-    }
-
-    function setExtendData(data) {
-        extend = data;
-        return api;
-    }
-
-    function getExtendData() {
-        return extend;
     }
 
     function equalConnection(con) {
@@ -197,6 +187,10 @@ WSServer.prototype.createConnectionWrapper = function (connection, id) {
         return connection.session;
     }
 
+    function saveSession() {
+        return inst.storeSession(connection);
+    }
+
     function updateSession(data) {
         var session = getSession();
 
@@ -213,10 +207,9 @@ WSServer.prototype.createConnectionWrapper = function (connection, id) {
     api = {
         getId: getId,
         sendData: sendData,
+        saveSession: saveSession,
         getSession: getSession,
         updateSession: updateSession,
-        setExtendData: setExtendData,
-        getExtendData: getExtendData,
         getConnection: getConnection,
         equalConnection: equalConnection,
         registerListeners: registerListeners

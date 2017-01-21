@@ -45,7 +45,6 @@ GenericAuth.prototype.initStrategy = function initStrategy(strategy, authConfig,
             passReqToCallback: true
         },
         clientsDB = this.clientsDB,
-        inst = this,
         Strategy = getStrategy(strategy),
         prepareClient = prepareClientCallback || this.prepareClient;
 
@@ -64,8 +63,9 @@ GenericAuth.prototype.initStrategy = function initStrategy(strategy, authConfig,
             var oldClientId = SessionUtils.getClientId(request.session);
             validateOldClient(oldClientId).then((validatedClientId) => {
                 request.session.regenerate(() => {
-                    logger.debug('Create new session with new client(%s - %s)', preparedClient.auth.type, preparedClient._id);
-                    inst.CommonAuth.updateSessionClientId(request, String(preparedClient._id), validatedClientId);
+                    logger.debug(
+                        'Create new session with new client(%s - %s)', preparedClient.auth.type, preparedClient._id);
+                    SessionUtils.storeClientsIds(request.session, String(preparedClient._id), validatedClientId);
                     calback(null, preparedClient);
                     resolve(preparedClient);
                 });

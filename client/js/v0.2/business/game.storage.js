@@ -183,9 +183,17 @@ define([
         return null;
     }
 
+    function clear() {
+        api.clearClient();
+        api.clearOpponent();
+        api.clearGame();
+    }
+
     api = {
         set: set,
         get: get,
+
+        clear: clear,
 
         setGameMode: genericSet(keys.NETWORK_MODE),
         getGameMode: genericGet(keys.NETWORK_MODE),
