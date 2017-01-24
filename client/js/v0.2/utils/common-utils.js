@@ -12,7 +12,7 @@ define([
         || navigator.userAgent.match(/iPod/i)
         || navigator.userAgent.match(/BlackBerry/i)
         || navigator.userAgent.match(/Windows Phone/i));
-    var DEVICE_CLASS = isMobile ? 'mobile-device' : 'mobile-device';
+    var DEVICE_CLASS = isMobile ? 'mobile-device' : 'desktop-device';
 
     function updateDeviceFlag() {
         $(document.body).addClass(DEVICE_CLASS);
@@ -31,7 +31,6 @@ define([
     }
 
     function isMobileDevice() {
-        return true;
         return isMobile;
     }
 
