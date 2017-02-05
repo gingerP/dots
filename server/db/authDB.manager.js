@@ -6,6 +6,7 @@ var IOC = req('server/constants/ioc.constants');
 var funcUtils = require('../utils/function-utils');
 var logger = req('server/logging/logger').create('AuthDBManager');
 var errorLog = funcUtils.error(logger);
+
 function AuthDBManager() {
     this.collectionName = DB.COLLECTION.AUTH;
 }

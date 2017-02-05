@@ -86,6 +86,12 @@ GameSupportDBManager.prototype.getGameByClientsByGameId = function(clientAId, cl
     return this.getByCriteria(criteria);
 };
 
+GameSupportDBManager.prototype.getGamesForClient = function getGamesForClient(clientId) {
+    return this.listByCriteria({
+        client: this.getObjectId(clientId)
+    });
+};
+
 GameSupportDBManager.prototype.deleteInvite = function () {
 
 };

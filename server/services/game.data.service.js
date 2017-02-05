@@ -8,6 +8,18 @@ var Promise = require('bluebird');
 var logger = req('server/logging/logger').create('GameDataService');
 var errorLog = funcUtils.error(logger);
 var sessionUtils = req('server/utils/session-utils');
+const _ = require('lodash');
+
+function aggregateGamesHistory(data) {
+/*    var gameDataObject = {};
+    _.forEach(data.gamesData, function(gameData) {
+        gameDataObject[String(gameData._id)] = gameDataObject[String(gameData._id)] || [];
+        gameDataObject[String(gameData._id)].push(prepareGameData(gameData));
+    });
+    _.forEach(data.games, function (game) {
+//        game[]
+    });*/
+}
 
 function GameDataService() {
 }
@@ -30,6 +42,20 @@ GameDataService.prototype.onReject = function () {
 
 GameDataService.prototype.onSuccess = function () {
 
+};
+
+/**
+ *
+ * @param clientId - client id, whose history is loaded
+ */
+
+GameDataService.prototype.getGamesHistory = function (clientId) {
+
+   /* return Promise.props({
+        games: this.gameDBManager.getGamesHistoryForClient(clientId),
+        gamesData: this.gameDataDBManager.loadGameDataForStatistic(clientId)
+    }).then(aggregateGamesHistory)
+        .catch(errorLog);*/
 };
 
 GameDataService.prototype.onGetGameState = function (message) {
@@ -77,6 +103,7 @@ GameDataService.prototype.postConstructor = function (ioc) {
     this.gameSupportService = ioc[IOC.SERVICE.GAME_SUPPORT];
     this.gameDataController = ioc[IOC.CONTROLLER.GAME_DATA];
     this.controller = ioc[IOC.CONTROLLER.GAME_DATA];
+    this.controller.onGetGamesHistory(this.getGamesHistory.bind(this));
     this.controller.onGetClientsList(this.onGetClients.bind(this));
     this.controller.onGetMyself(this.onGetMySelf.bind(this));
     this.controller.onIsGameClosed(this.onIsGameClosed.bind(this));

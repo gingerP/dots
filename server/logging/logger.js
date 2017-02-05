@@ -4,7 +4,7 @@ var logger;
 var mainScriptName = __filename.split(__dirname)[1].substr(1);
 const DEFAULT_LEVEL = 'DEBUG';
 log4js.configure('./application-configuration/log-properties.json');
-log4js.addAppender(log4js.appenders.file('./logs/' + mainScriptName + '_' + dateFormat('yyyyddHHMM') + '.log'));
+log4js.addAppender(log4js.appenders.file('./logs/' + mainScriptName + '_' + dateFormat('yyyymmddHHMM') + '.log'));
 logger = log4js.getLogger();
 logger.setLevel(DEFAULT_LEVEL);
 module.exports = {

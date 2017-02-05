@@ -16,5 +16,8 @@
     "get_events": "get_events",
     "get_game_state": "get_game_state",
     "add_dot": "add_dot",
-    "game_step": "game_step"
+    "game_step": "game_step",
+    "GAMES_HISTORY": {
+        "LIST": "games_history/list"
+    }
 }

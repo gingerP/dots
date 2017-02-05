@@ -1,0 +1,6 @@
+<div class="games-history-list">
+    <div class="games-history-placeholder">
+        <div ng-repeat="history in gamesHistoryCtrl.historyList track by history._id| orderBy: '-name'" class="games-history-item">
+        </div>
+    </div>
+</div>

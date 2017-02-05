@@ -17,12 +17,13 @@
     "GENERIC": "generic.db.manager",
     "CACHED_NETWORK_STATUSES": "CACHED_NETWORK_STATUSES_DB_MANAGER",
     "LOOPS": "loops.db.manager",
-    "GAME_HISTORY": "game.history.db.manager",
+    "GAME_HISTORY": "game_history.db.manager",
     "CLIENTS": "clients.db.manager",
-    "CREATE_GAME": "create.game.db.manager",
+    "CREATE_GAME": "create_game.db.manager",
     "GAME": "game.db.manager",
-    "GAME_DATA": "game.data.db.manager",
-    "AUTH": "auth.db.manager"
+    "GAME_DATA": "game_data.db.manager",
+    "AUTH": "auth.db.manager",
+    "CLIENTS_HISTORY_AGGREGATE": "clients_history_aggregate.db.manager"
   },
   "TRANSMITTER": {
     "GENERIC": "generic.transmitter",

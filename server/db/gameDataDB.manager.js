@@ -1,9 +1,14 @@
 'use strict';
 
+var _ = require('lodash');
 var GenericDBManager = require('./genericDB.manager').class;
 var DB = req('server/constants/db');
 var IOC = req('server/constants/ioc.constants');
 var CreationUtils = req('server/utils/creation-utils');
+var logger = req('server/logging/logger').create('GameDataDBManager');
+var FuncUtils = req('server/utils/function-utils');
+var errorLog = FuncUtils.error(logger);
+var CommonUtils = req('server/utils/common-utils');
 
 function GameDataDBManager() {
     this.collectionName = DB.COLLECTION.GAME_DATA;
@@ -28,17 +33,17 @@ GameDataDBManager.prototype.createNew = function createNew(gameId, clientId, col
     return this.save(newGameData).then((id) => this.get(id));
 };
 
-GameDataDBManager.prototype.saveGameData = function (/*id, dots, trappedDots, loops*/) {
+GameDataDBManager.prototype.saveGameData = function saveGameData(/*id, dots, trappedDots, loops*/) {
 };
 
-GameDataDBManager.prototype.getGameData = function (gameId, clientId) {
+GameDataDBManager.prototype.getGameData = function getGameData(gameId, clientId) {
     return this.getByCriteria({
         game: this.getObjectId(gameId),
         client: this.getObjectId(clientId)
     });
 };
 
-GameDataDBManager.prototype.addDot = function (dot, clientId, gameId) {
+GameDataDBManager.prototype.addDot = function addDot(dot, clientId, gameId) {
     return this.getByCriteria({
         client: this.getObjectId(clientId),
         game: this.getObjectId(gameId)
@@ -47,10 +52,61 @@ GameDataDBManager.prototype.addDot = function (dot, clientId, gameId) {
     });
 };
 
-GameDataDBManager.prototype.getGameDataForGame = function (gameId) {
+GameDataDBManager.prototype.getGameDataForGame = function getGameDataForGame(gameId) {
+    if (_.isArray(gameId)) {
+        return this.listByCriteria({
+            game: this.getObjectId(gameId)
+        });
+    } else {
+        return this.listByCriteria({
+            game: this.getObjectId(gameId)
+        });
+    }
+};
+
+GameDataDBManager.prototype.getGamesDataForClient = function getGamesHistoryForClient(clientId) {
     return this.listByCriteria({
-        game: this.getObjectId(gameId)
+        client: this.getObjectId(clientId)
     });
+};
+
+GameDataDBManager.prototype.getAggregatedGameData = function loadGameData(clientsIds) {
+    const COLLECTION_NAME = this.collectionName;
+    var config = [
+        {
+            $match: {
+                client: _.map(CommonUtils.createArray(clientsIds), this.getObjectId)
+            }
+        },
+        {
+            $project: {
+                client: true,
+                game: true,
+                color: true,
+                loops: true,
+                dots: {
+                    $size: '$dots'
+                },
+                losingDots: {
+                    $size: '$losingDots'
+                }
+            }
+        }
+    ];
+
+    function extractData(db) {
+        return new Promise((resolve, reject) => {
+            db[COLLECTION_NAME].aggregate(config, function (error, result) {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(prepareAggregatedGameData(result));
+                }
+            });
+        });
+    }
+
+    return this.exec().then(extractData).catch(errorLog);
 };
 
 GameDataDBManager.prototype.postConstructor = function () {

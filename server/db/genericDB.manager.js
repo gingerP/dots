@@ -102,6 +102,7 @@ GenericDBManager.prototype._getDoc = function (criteria, callback, mappings) {
         });
     });
 };
+
 GenericDBManager.prototype._save = function (doc, callback, criteria, mappings) {
     var id = doc._id;
     if (criteria) {
