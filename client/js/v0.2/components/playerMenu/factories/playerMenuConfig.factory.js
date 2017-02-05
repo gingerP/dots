@@ -24,6 +24,12 @@ define([
                         name: 'Sign-in',
                         isActive: false,
                         isDefault: false
+                    },
+                    {
+                        id: TABS.CLIENT_HISTORY,
+                        name: 'My history',
+                        isActive: false,
+                        isDefault: false
                     }
                 ]
             };

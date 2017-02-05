@@ -1,8 +1,9 @@
 define([
     'common/module.transport',
     'utils/service-utils',
-    'common/backend-events'
-], function (Transport, ServiceUtils, BackendEvents) {
+    'common/backend-events',
+    'business/game.storage'
+], function (Transport, ServiceUtils, BackendEvents, GameStorage) {
     'use strict';
 
     var api;
@@ -17,6 +18,11 @@ define([
         },
         getGameState: function (gameId) {
             return Transport.send({id: gameId}, BackendEvents.DATA.GET_GAME_STATE);
+        },
+        getCurrentClientHistory: function getCurrentClientHistory() {
+            var clientId = GameStorage.getClient()._id;
+
+            return Transport.send({id: clientId}, BackendEvents.DATA.GET_GAME_STATE);
         }
     };
 

@@ -14,7 +14,8 @@ define(function () {
         },
         TABS: {
             GAMERS: 'gamers',
-            SIGNIN: 'signin'
+            SIGNIN: 'signin',
+            CLIENT_HISTORY: 'clientHistory'
         }
     };
 });

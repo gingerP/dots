@@ -4,6 +4,7 @@ define([
     'components/playerMenu/controllers/playerMenu.controller',
     'components/clientsList/components/clientsList.component',
     'components/signin/components/signin.component',
+    'components/clientHistory/component/clientHistory.component',
     'components/tabbar/components/tabbar.component',
     'components/tabbarHeader/components/tabbarHeader.component'
 ], function(angular) {

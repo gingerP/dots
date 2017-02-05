@@ -16,7 +16,7 @@ define([
     'components/tabbar/components/tabbarContent.component',
     'components/signin/components/signin.component',
     'components/userProfile/components/userProfile.component',
-    'client/js/v0.2/components/gamesHistory/component/gamesHistory.component',
+    'components/clientHistory/component/clientHistory.component',
     'components/utils/common.helpers.module',
     'components/app-cache'
 ], function (angular) {
@@ -41,7 +41,7 @@ define([
         'userProfile.module',
         'app-cache',
         'ngAnimate',
-        'games.history.module'
+        'client.history.module'
     ]);
     angular.element(document).ready(function () {
         angular.bootstrap(document, ['app']);
