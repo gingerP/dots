@@ -1,23 +1,69 @@
 {
-    "is_game_closed": "is_game_closed",
-    "invite_player": "invite_player",
-    "reject_invite_player": "reject_invite_player",
-    "reject_invite_player_to_late": "reject_invite_player_to_late",
-    "success_invite_player": "success_invite_player",
-    "success_invite_player_to_late": "success_invite_player_to_late",
-    "cancel_game": "cancel_game",
-    "get_clients_list": "get_clients_list",
-    "new_client": "new_client",
-    "client_reconnect": "client_reconnect",
-    "client_disconnect": "client_disconnect",
-    "clients_status_change": "clients_status_change",
-    "new_connection": "new_connection",
-    "get_myself": "get_myself",
-    "get_events": "get_events",
-    "get_game_state": "get_game_state",
-    "add_dot": "add_dot",
-    "game_step": "game_step",
-    "GAMES_HISTORY": {
-        "LIST": "games_history/list"
+  "is_game_closed": "is_game_closed",
+  "invite_player": "invite_player",
+  "reject_invite_player": "reject_invite_player",
+  "reject_invite_player_to_late": "reject_invite_player_to_late",
+  "success_invite_player": "success_invite_player",
+  "success_invite_player_to_late": "success_invite_player_to_late",
+  "cancel_game": "cancel_game",
+  "get_clients_list": "get_clients_list",
+  "new_client": "new_client",
+  "client_reconnect": "client_reconnect",
+  "client_disconnect": "client_disconnect",
+  "clients_status_change": "clients_status_change",
+  "new_connection": "new_connection",
+  "get_myself": "get_myself",
+  "get_events": "get_events",
+  "get_game_state": "get_game_state",
+  "add_dot": "add_dot",
+  "game_step": "game_step",
+  "client_history": {
+    "list": "client_history/list"
+  },
+
+  "GAME": {
+    "IS_CLOSED": "game/is_closed",
+    "CANCEL": "game/cancel",
+    "STATE": {
+      "GET": "game/state/get"
+    },
+    "STEP": {
+      "NEW": "game/step/new"
     }
+  },
+  "INVITE": {
+    "INVITE": "invite",
+    "REJECT": "invite/reject",
+    "REJECT_TO_LATE": "invite/reject_to_late",
+    "SUCCESS": "invite/success",
+    "SUCCESS_TO_LATE": "invite/success_to_late"
+  },
+  "CLIENT": {
+    "LIST": {
+      "GET": "client/list/get"
+    },
+    "MYSELF": {
+      "GET": "client/myself/get"
+    },
+    "NEW": "client/new",
+    "RECONNECT": "client/reconnect",
+    "DISCONNECT": "client/disconnect",
+    "STATUS": {
+      "CHANGE": "client/status/change"
+    },
+    "HISTORY": {
+      "GET": "client/history/get"
+    }
+  },
+  "CONNECTION": {
+    "NEW": "connnection/new"
+  },
+  "EVENTS": {
+    "LIST": {
+      "GET": "events/list/get"
+    }
+  },
+  "DOT": {
+    "ADD": "dot/add"
+  }
 }

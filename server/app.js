@@ -11,7 +11,7 @@ function postConstructor(ioc) {
         if (typeof(module.postConstructor) === 'function') {
             module.postConstructor(ioc);
         }
-    }
+    };
 }
 
 function handleNewConnections(wss) {

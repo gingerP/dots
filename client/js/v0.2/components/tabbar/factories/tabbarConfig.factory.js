@@ -7,6 +7,7 @@ define([
     angular.module('tabbar.module').factory('tabbarConfig', tabbarConfig);
 
     function tabbarConfig() {
+
         return {
             TAB: {
                 OPEN: 'OPEN',

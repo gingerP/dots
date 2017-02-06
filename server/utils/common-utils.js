@@ -20,9 +20,19 @@ function createArray(array) {
     return prepareArray;
 }
 
+function getDeepKeys(object) {
+    var isBreak = false,
+        path;
+
+    while(isBreak) {
+
+    }
+}
+
 module.exports = {
     isClientIdEmpty: isClientIdEmpty,
     getRandomString: getRandomString,
     getRandomArbitrary: getRandomArbitrary,
-    createArray: createArray
+    createArray: createArray,
+    getDeepKeys: getDeepKeys
 };

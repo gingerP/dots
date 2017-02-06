@@ -11,30 +11,33 @@ function normalizePath(directory) {
 
 function initializeIOCType(path, filePostfix) {
     var result = {};
-    var files = fs.readdirSync(path);
-    files.forEach(function (filePath) {
-        var Class;
-        var instance;
-        var fileName;
-        var relativeFilePath = path + '/' + filePath;
-        var stats = fs.statSync(relativeFilePath);
+    var files;
+    if (fs.existsSync(path)) {
+        files = fs.readdirSync(path);
+        files.forEach(function (filePath) {
+            var Class;
+            var instance;
+            var fileName;
+            var relativeFilePath = path + '/' + filePath;
+            var stats = fs.statSync(relativeFilePath);
 
-        if (stats.isFile()) {
-            if (filePath.endsWith(filePostfix)) {
-                fileName = filePath.replace(/\.js$/, '');
-                Class = req(relativeFilePath);
-                if (typeof Class === 'function') {
-                    instance = new Class();
-                    result[instance.getName()] = instance;
-                } else if (typeof Class.postConstructor === 'function') {
-                    result[Class.getName()] = Class;
+            if (stats.isFile()) {
+                if (filePath.endsWith(filePostfix)) {
+                    fileName = filePath.replace(/\.js$/, '');
+                    Class = req(relativeFilePath);
+                    if (typeof Class.class === 'function') {
+                        instance = new Class.class();
+                        result[instance.getName()] = instance;
+                    } else if (typeof Class.postConstructor === 'function') {
+                        result[Class.getName()] = Class;
+                    }
+                    logger.info('\'%s\' was successfully initialized!', fileName);
                 }
-                logger.info('\'%s\' was successfully initialized!', fileName);
+            } else if (stats.isDirectory()) {
+                initializeIOCType(relativeFilePath, filePostfix);
             }
-        } else if (stats.isDirectory()) {
-            initializeIOCType(relativeFilePath, filePostfix);
-        }
-    });
+        });
+    }
     return result;
 }
 

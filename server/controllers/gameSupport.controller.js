@@ -15,11 +15,11 @@ GameSupportController.prototype = Object.create(GenericController.prototype);
 GameSupportController.prototype.constructor = GameSupportController;
 
 GameSupportController.prototype.onNewClient = function (handler) {
-    this.wss.addListener(Events.new_client, handler);
+    this.wss.addListener(Events.CLIENT.NEW, handler);
 };
 
 GameSupportController.prototype.onReconnect = function (handler) {
-    this.wss.addListener(Events.client_reconnect, handler);
+    this.wss.addListener(Events.CLIENT.RECONNECT, handler);
 };
 
 GameSupportController.prototype.onDisconnect = function (handler) {

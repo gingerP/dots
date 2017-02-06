@@ -22,7 +22,7 @@ define([
         getCurrentClientHistory: function getCurrentClientHistory() {
             var clientId = GameStorage.getClient()._id;
 
-            return Transport.send({id: clientId}, BackendEvents.DATA.GET_GAME_STATE);
+            return Transport.send({id: clientId}, BackendEvents.DATA.CLIENT_HISTORY);
         }
     };
 

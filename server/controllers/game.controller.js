@@ -19,7 +19,7 @@ GameController.prototype = Object.create(GenericController.prototype);
 GameController.prototype.constructor = GameController;
 
 GameController.prototype.onAddDot = function (handler) {
-    this.wss.addListener(Events.add_dot, handler);
+    this.wss.addListener(Events.DOT.ADD, handler);
 };
 
 GameController.prototype.nextStep = function (dot,

@@ -83,7 +83,7 @@ GameDataService.prototype.getName = function () {
 };
 
 GameDataService.prototype.bindApi = function bindApi() {
-    this.controller.onGetGamesHistory(this.getClientHistory.bind(this));
+    this.controller.onGetClientHistory(this.getClientHistory.bind(this));
     this.controller.onGetClientsList(this.onGetClients.bind(this));
     this.controller.onGetMyself(this.onGetMySelf.bind(this));
     this.controller.onIsGameClosed(this.onIsGameClosed.bind(this));

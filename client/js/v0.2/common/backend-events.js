@@ -21,7 +21,8 @@ define([], function () {
         DATA: {
             GET_GAME_STATE: 'get_game_state',
             IS_GAME_CLOSED: 'is_game_closed',
-            GET_CLIENTS_LIST: 'get_clients_list'
+            GET_CLIENTS_LIST: 'get_clients_list',
+            CLIENT_HISTORY: 'client_history/list'
         }
     };
 });
