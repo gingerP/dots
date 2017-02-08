@@ -9,17 +9,17 @@ define([
 
     api = {
         listen: {
-            ask: serviceUtils.createListener(BackendEvents.INVITE.ASK),
+            ask: serviceUtils.createListener(BackendEvents.INVITE.INVITE),
             success: serviceUtils.createListener(BackendEvents.INVITE.SUCCESS),
             successToLate: serviceUtils.createListener(BackendEvents.INVITE.SUCCESS_TO_LATE),
             reject: serviceUtils.createListener(BackendEvents.INVITE.REJECT),
             rejectToLate: serviceUtils.createListener(BackendEvents.INVITE.REJECT_TO_LATE),
-            cancel: serviceUtils.createListener(BackendEvents.INVITE.CANCEL_GAME)
+            cancel: serviceUtils.createListener(BackendEvents.GAME.CANCEL)
         },
         ask: function (clientId) {
             return Transport.send(
-                serviceUtils.createInvitePack(BackendEvents.INVITE.ASK, clientId),
-                BackendEvents.INVITE.ASK
+                serviceUtils.createInvitePack(BackendEvents.INVITE.INVITE, clientId),
+                BackendEvents.INVITE.INVITE
             );
         },
         success: function (clientId) {
@@ -42,8 +42,8 @@ define([
         },
         cancelGame: function (gameId) {
             return Transport.send(
-                serviceUtils.createInvitePack(BackendEvents.INVITE.CANCEL_GAME, null, {gameId: gameId}),
-                BackendEvents.INVITE.CANCEL_GAME
+                serviceUtils.createInvitePack(BackendEvents.GAME.CANCEL, null, {gameId: gameId}),
+                BackendEvents.GAME.CANCEL
             );
         }
     };

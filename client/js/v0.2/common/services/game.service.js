@@ -12,20 +12,20 @@ define([
         var game = gameStorage.getGame();
         if (game) {
             Transport.send(
-                serviceUtils.createGamePack(BackendEvents.GAME.ADD_DOT, {
+                serviceUtils.createGamePack(BackendEvents.DOT.ADD, {
                     x: dot.x,
                     y: dot.y,
                     gameId: game._id
                 }),
-                BackendEvents.GAME.ADD_DOT
+                BackendEvents.DOT.ADD
             );
         }
     }
 
     api = {
         listen: {
-            addDot: serviceUtils.createListener(BackendEvents.GAME.ADD_DOT),
-            gameStep: serviceUtils.createListener(BackendEvents.GAME.GAME_STEP)
+            addDot: serviceUtils.createListener(BackendEvents.DOT.ADD),
+            gameStep: serviceUtils.createListener(BackendEvents.GAME.STEP.NEW)
         },
         addDot: addDot
     };

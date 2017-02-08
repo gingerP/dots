@@ -14,7 +14,7 @@ var clientsDb;
 function execAggregation(config, games, db) {
     const COLLECTION = gameDataDb.collectionName;
     return new Promise((resolve, reject) => {
-        db[COLLECTION].aggregate(config, function (error, result) {
+        db.collection(COLLECTION).aggregate(config, function (error, result) {
             if (error) {
                 reject(error);
             } else {
@@ -46,7 +46,7 @@ function getGameDataList(games) {
     var config = [
         {
             $match: {
-                game: _.map(CommonUtils.createArray(games), this.getObjectId)
+                game: _.map(CommonUtils.createArray(games), gameDb.getObjectId)
             }
         },
         {

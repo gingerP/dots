@@ -8,7 +8,7 @@ define([
 
     api = {
         listen: {
-            networkStatusChange: ServiceUtils.createListener(BackendEvents.GENERAL.CLIENT_NETWORK_STATUS_CHANGED)
+            networkStatusChange: ServiceUtils.createListener(BackendEvents.CLIENT.STATUS.CHANGE)
         }
     };
 

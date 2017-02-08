@@ -3,8 +3,9 @@ define([
     'socket',
     'q',
     'common/events',
+    'common/backend-events',
     'business/game.storage'
-], function (Observable, io, q, Events, gameStorage) {
+], function (Observable, io, q, Events, BackendEvents, gameStorage) {
     'use strict';
 
     var api;
@@ -53,13 +54,13 @@ define([
             connectionTimes += myself ? 1 : 0;
         }
         if (connectionTimes === 1 || !myself) {
-            api.send({}, 'new_client').then(function (data) {
+            api.send({}, BackendEvents.CLIENT.NEW).then(function (data) {
                 myself = data;
                 gameStorage.setClient(myself);
                 observable.emit(Events.REFRESH_MYSELF);
             });
         } else {
-            api.send(myself, 'client_reconnect').then(function (data) {
+            api.send(myself, BackendEvents.CLIENT.RECONNECT).then(function (data) {
                 myself = data;
                 gameStorage.setClient(myself);
                 observable.emit(Events.REFRESH_MYSELF);
@@ -75,12 +76,7 @@ define([
             return api;
         },
         getMyself: function () {
-            return api.send({}, 'get_myself');
-        },
-        listen: {
-            add_dot: 'add_dot',
-            add_client: 'add_client',
-            invite_player: 'invite_player'
+            return api.send({}, BackendEvents.CLIENT.MYSELF.GET);
         },
         getId: function () {
             return socket.id;

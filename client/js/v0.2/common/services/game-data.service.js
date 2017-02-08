@@ -11,18 +11,18 @@ define([
     api = {
         listen: {},
         getClients: function getClients() {
-            return Transport.send({}, BackendEvents.DATA.GET_CLIENTS_LIST);
+            return Transport.send({}, BackendEvents.CLIENT.LIST.GET);
         },
         isGameClosed: function (gameId) {
-            return Transport.send({id: gameId}, BackendEvents.DATA.IS_GAME_CLOSED);
+            return Transport.send({id: gameId}, BackendEvents.GAME.IS_CLOSED);
         },
         getGameState: function (gameId) {
-            return Transport.send({id: gameId}, BackendEvents.DATA.GET_GAME_STATE);
+            return Transport.send({id: gameId}, BackendEvents.GAME.STATE.GET);
         },
         getCurrentClientHistory: function getCurrentClientHistory() {
             var clientId = GameStorage.getClient()._id;
 
-            return Transport.send({id: clientId}, BackendEvents.DATA.CLIENT_HISTORY);
+            return Transport.send({id: clientId}, BackendEvents.CLIENT.HISTORY.GET);
         }
     };
 

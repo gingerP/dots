@@ -19,10 +19,10 @@ define([
         listen: {},
         getMyself: getMyself,
         clientReconnect: function(client) {
-            return Transport.send(client, BackendEvents.GENERAL.CLIENT_RECONNECT);
+            return Transport.send(client, BackendEvents.CLIENT.RECONNECT);
         },
         newClient: function() {
-            return Transport.send({}, BackendEvents.GENERAL.NEW_CLIENT);
+            return Transport.send({}, BackendEvents.CLIENT.NEW);
         },
         getId: function() {
           return Transport.getId();

@@ -34,7 +34,7 @@ function initializeIOCType(path, filePostfix) {
                     logger.info('\'%s\' was successfully initialized!', fileName);
                 }
             } else if (stats.isDirectory()) {
-                initializeIOCType(relativeFilePath, filePostfix);
+                _.merge(result, initializeIOCType(relativeFilePath, filePostfix));
             }
         });
     }

@@ -1,3 +1,5 @@
+'use strict';
+
 var _ = require('lodash');
 var events = require('./events');
 function initialize(wss, web) {
@@ -14,9 +16,21 @@ function postConstructor(ioc) {
     };
 }
 
+function eachEvents(eventsTree, callback) {
+    for(let key in eventsTree) {
+        if (eventsTree.hasOwnProperty(key)) {
+            if (typeof eventsTree[key] === 'string') {
+                callback(eventsTree[key]);
+            } else {
+                eachEvents(eventsTree[key], callback);
+            }
+        }
+    }
+}
+
 function handleNewConnections(wss) {
     wss.addListener('new_connection', function(client) {
-        _.forEach(events, function(event) {
+        eachEvents(events, function(event) {
             client.registerListeners(event);
         });
     });

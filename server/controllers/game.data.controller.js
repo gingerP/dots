@@ -11,32 +11,32 @@ GameDataController.prototype = Object.create(GenericController.prototype);
 GameDataController.prototype.constructor = GameDataController;
 
 GameDataController.prototype.onGetClientsList = function (handler) {
-    this.wss.addListener(Events.CLIENT.LIST, handler);
+    this.wss.addListener(Events.CLIENT.LIST.GET, handler);
 };
 
 GameDataController.prototype.onGetMyself = function (handler) {
-    this.wss.addListener(Events.CLIENT.MYSELF, handler);
+    this.wss.addListener(Events.CLIENT.MYSELF.GET, handler);
 };
 
 GameDataController.prototype.onGetGameState = function (handler) {
-    this.wss.addListener(Events.GAME.STATE, handler);
+    this.wss.addListener(Events.GAME.STATE.GET, handler);
 };
 
 GameDataController.prototype.onGetClientHistory = function (handler) {
-    this.wss.addListener(Events.client_history.list, function (message) {
-        var clientId = message.data.clientId;
+    this.wss.addListener(Events.CLIENT.HISTORY.GET, function (message) {
+        var clientId = message.data.id;
         return handler(clientId, message.client).then(message.callback);
     });
 };
 
 GameDataController.prototype.onGetEvents = function () {
-    this.wss.addListener(Events.events.list, function (data) {
+    this.wss.addListener(Events.EVENTS.LIST.GET, function (data) {
         data.callback(Events);
     });
 };
 
 GameDataController.prototype.onIsGameClosed = function (handler) {
-    this.wss.addListener(Events.game.is_closed, handler);
+    this.wss.addListener(Events.GAME.IS_CLOSED, handler);
 };
 
 GameDataController.prototype.postConstructor = function (ioc) {
