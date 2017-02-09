@@ -1,11 +1,11 @@
 'use strict';
 
-const IOC = req('server/constants/ioc.constants');
-const SessionUtils = req('server/utils/session-utils');
+const IOC = require('server/constants/ioc.constants');
+const SessionUtils = require('server/utils/session-utils');
 const _ = require('lodash');
-const AuthUtils = req('server/utils/auth-utils');
+const AuthUtils = require('server/utils/auth-utils');
 var Promise = require('bluebird');
-const logger = req('server/logging/logger').create('GenericAuth');
+const logger = require('server/logging/logger').create('GenericAuth');
 
 function getStrategy(strategy) {
     if (_.isString(strategy)) {

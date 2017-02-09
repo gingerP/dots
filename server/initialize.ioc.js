@@ -1,9 +1,9 @@
-const IOC = req('server/constants/ioc.constants');
-const AUTH_CONFIG = req('application-configuration/auth');
+const IOC = require('server/constants/ioc.constants');
+const AUTH_CONFIG = require('application-configuration/auth');
 var _ = require('lodash');
 var fs = require('fs');
-var ROOT_PATH = './server';
-var logger = req('server/logging/logger').create('IOC');
+var ROOT_PATH = 'server';
+var logger = require('server/logging/logger').create('IOC');
 
 function normalizePath(directory) {
     return ROOT_PATH + '/' + directory;
@@ -24,7 +24,7 @@ function initializeIOCType(path, filePostfix) {
             if (stats.isFile()) {
                 if (filePath.endsWith(filePostfix)) {
                     fileName = filePath.replace(/\.js$/, '');
-                    Class = req(relativeFilePath);
+                    Class = require(relativeFilePath);
                     if (typeof Class.class === 'function') {
                         instance = new Class.class();
                         result[instance.getName()] = instance;

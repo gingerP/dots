@@ -1,7 +1,7 @@
 'use strict';
 
 var IOC = require('../constants/ioc.constants');
-var Events = require('../events');
+var Events = require('server/events');
 var GenericController = require('./generic.controller').class;
 
 function GameDataController() {
@@ -11,32 +11,32 @@ GameDataController.prototype = Object.create(GenericController.prototype);
 GameDataController.prototype.constructor = GameDataController;
 
 GameDataController.prototype.onGetClientsList = function (handler) {
-    this.wss.addListener(Events.CLIENT.LIST.GET, handler);
+    this.wss.addListener(Events.CLIENT.LIST.GET(), handler);
 };
 
 GameDataController.prototype.onGetMyself = function (handler) {
-    this.wss.addListener(Events.CLIENT.MYSELF.GET, handler);
+    this.wss.addListener(Events.CLIENT.MYSELF.GET(), handler);
 };
 
 GameDataController.prototype.onGetGameState = function (handler) {
-    this.wss.addListener(Events.GAME.STATE.GET, handler);
+    this.wss.addListener(Events.GAME.STATE.GET(), handler);
 };
 
 GameDataController.prototype.onGetClientHistory = function (handler) {
-    this.wss.addListener(Events.CLIENT.HISTORY.GET, function (message) {
+    this.wss.addListener(Events.CLIENT.HISTORY.GET(), function (message) {
         var clientId = message.data.id;
         return handler(clientId, message.client).then(message.callback);
     });
 };
 
 GameDataController.prototype.onGetEvents = function () {
-    this.wss.addListener(Events.EVENTS.LIST.GET, function (data) {
+    this.wss.addListener(Events.EVENTS.LIST.GET(), function (data) {
         data.callback(Events);
     });
 };
 
 GameDataController.prototype.onIsGameClosed = function (handler) {
-    this.wss.addListener(Events.GAME.IS_CLOSED, handler);
+    this.wss.addListener(Events.GAME.IS_CLOSED(), handler);
 };
 
 GameDataController.prototype.postConstructor = function (ioc) {

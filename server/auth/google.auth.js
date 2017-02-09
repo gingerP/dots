@@ -1,9 +1,9 @@
 'use strict';
 
-const IOC = req('server/constants/ioc.constants');
+const IOC = require('server/constants/ioc.constants');
 const GOOGLE_CODE = IOC.AUTH.GOOGLE;
 const STRATEGY = 'passport-google-oauth20';
-var GenericAuth = req('server/auth/generic.auth').class;
+var GenericAuth = require('server/auth/generic.auth').class;
 
 function GoogleAuth() {
 

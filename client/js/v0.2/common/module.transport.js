@@ -23,7 +23,6 @@ define([
         });
         socket.on('reconnect', function (client) {
             //TODO
-            client;
         });
         socket.on('connect', function () {
             connectionTimes++;

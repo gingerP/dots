@@ -1,9 +1,9 @@
 'use strict';
 
-const IOC = req('server/constants/ioc.constants');
+const IOC = require('server/constants/ioc.constants');
 const FACEBOOK_CODE = IOC.AUTH.FACEBOOK;
 const STRATEGY = 'passport-facebook';
-var GenericAuth = req('server/auth/generic.auth').class;
+var GenericAuth = require('server/auth/generic.auth').class;
 
 function FacebookAuth() {
 

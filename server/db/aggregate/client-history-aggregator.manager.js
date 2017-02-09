@@ -1,11 +1,11 @@
 'use strict';
 
 var _ = require('lodash');
-var CommonUtils = req('server/utils/common-utils');
+var CommonUtils = require('server/utils/common-utils');
 var Promise = require('bluebird');
-var IOC = req('server/constants/ioc.constants');
-var funcUtils = req('server/utils/function-utils');
-var logger = req('server/logging/logger').create('ClientHistoryAggregateDBManager');
+var IOC = require('server/constants/ioc.constants');
+var funcUtils = require('server/utils/function-utils');
+var logger = require('server/logging/logger').create('ClientHistoryAggregateDBManager');
 var errorLog = funcUtils.error(logger);
 var gameDb;
 var gameDataDb;
@@ -46,7 +46,11 @@ function getGameDataList(games) {
     var config = [
         {
             $match: {
-                game: _.map(CommonUtils.createArray(games), gameDb.getObjectId)
+                game: {
+                    $in: _.map(CommonUtils.createArray(games), (game) => {
+                        return game._id;
+                    })
+                }
             }
         },
         {
@@ -74,44 +78,48 @@ function getGameDataList(games) {
 function getSummaryTrappedDots(loops) {
     var sum = 0;
 
-    _.forEach(loops, function(loop) {
+    _.forEach(loops, function (loop) {
         sum += loop.trappedDots.length;
     });
 
     return sum;
 }
 
-function squeezeGameData(gameDataList) {
-    _.forEach(gameDataList, (gameData) => {
+function squeezeGameData(gameDataPack) {
+    _.forEach(gameDataPack.gameData, (gameData) => {
         gameData.trappedDots = getSummaryTrappedDots(gameData.loops);
         delete gameData.loops;
     });
-    return gameDataList;
+    return gameDataPack.gameData;
 }
 
 function pickData(data) {
-    var gameDataList = data.gameData;
-    var gameList = data.games;
+    var gameDataList = data.gameDataList;
+    var gameList = data.games || [];
     var gamers = data.gamers;
     var gamesMap = {};
     var gamersMap = {};
 
-    _.forEach(gamers, (gamer) => {
-        gamersMap[String(gamer._id)] = gamer;
-    });
+    if (gameList.length) {
+        _.forEach(gamers, (gamer) => {
+            gamersMap[String(gamer._id)] = gamer;
+        });
 
-    _.forEach(gameList, (game) => {
-        let fromId = String(game.from);
-        let toId = String(game.to);
-        gamesMap[String(game._id)] = game;
-        game.from = gamersMap[fromId];
-        game.to = gamersMap[toId];
-    });
+        _.forEach(gameList, (game) => {
+            let fromId = String(game.from);
+            let toId = String(game.to);
+            gamesMap[String(game._id)] = game;
+            game.from = gamersMap[fromId];
+            game.to = gamersMap[toId];
+        });
 
-    _.forEach(gameDataList, (gameData) => {
-        let gamerId = String(gameData.client);
-        gamersMap[gamerId].gameData = gameData;
-    });
+        _.forEach(gameDataList, (gameData) => {
+            let gamerId = String(gameData.client);
+            gamersMap[gamerId].gameData = gameData;
+        });
+    }
+
+    return gameList;
 }
 
 function postConstructor(ioc) {
@@ -125,10 +133,12 @@ function getName() {
 }
 
 function preload(games) {
+    var isEmpty = !games.length;
+
     return Promise.props({
         games: games,
-        gamers: getGamers(games),
-        gameDataList: getGameDataList(games)
+        gamers: isEmpty ? [] : getGamers(games),
+        gameDataList: isEmpty ? [] : getGameDataList(games)
     });
 }
 

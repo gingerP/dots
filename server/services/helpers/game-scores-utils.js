@@ -1,8 +1,8 @@
-var graphLoop = req('server/libs/graph/graph-loops-flood-fill');
-var graph = req('server/libs/graph/graph');
-var commonLoopsUtils = req('server/libs/graph/utils/common-utils');
+var graphLoop = require('server/libs/graph/graph-loops-flood-fill');
+var graph = require('server/libs/graph/graph');
+var commonLoopsUtils = require('server/libs/graph/utils/common-utils');
 var _ = require('lodash');
-var CreationUtils = req('server/utils/creation-utils');
+var CreationUtils = require('server/utils/creation-utils');
 var Promise = require('bluebird');
 
 function extractValuationData(clientGameData) {

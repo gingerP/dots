@@ -1,6 +1,6 @@
 'use strict';
 
-var Events = require('../events');
+var Events = require('server/events');
 var IOC = require('../constants/ioc.constants');
 var GenericController = require('./generic.controller').class;
 
@@ -19,7 +19,7 @@ GameController.prototype = Object.create(GenericController.prototype);
 GameController.prototype.constructor = GameController;
 
 GameController.prototype.onAddDot = function (handler) {
-    this.wss.addListener(Events.DOT.ADD, handler);
+    this.wss.addListener(Events.DOT.ADD(), handler);
 };
 
 GameController.prototype.nextStep = function (dot,
@@ -31,7 +31,7 @@ GameController.prototype.nextStep = function (dot,
             previousPlayerStepData.gamer._id,
             currentPlayerStepData.gamer._id
         ],
-        Events.game_step,
+        Events.GAME.STEP.NEW(),
         {
             dot: dot,
             previous: extractStepData(previousPlayerStepData),

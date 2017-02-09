@@ -1,5 +1,5 @@
 'use strict';
-const SessionConstants = req('server/constants/session-constants');
+const SessionConstants = require('server/constants/session-constants');
 
 function storeClientId(clientId, session) {
     session[SessionConstants.CLIENT_ID] = clientId;

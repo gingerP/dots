@@ -1,7 +1,7 @@
 var server;
 var Observable = require('./Observable').class;
 var WebSocketServer = require('websocket').server;
-var logger = req('server/logging/logger').create('WSServer');
+var logger = require('server/logging/logger').create('WSServer');
 var listenerToOut = 'out::';
 var listenerToIn = 'in::';
 

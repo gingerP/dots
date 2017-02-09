@@ -2,13 +2,13 @@
 
 var _ = require('lodash');
 var GenericDBManager = require('./genericDB.manager').class;
-var DB = req('server/constants/db');
-var IOC = req('server/constants/ioc.constants');
-var CreationUtils = req('server/utils/creation-utils');
-var logger = req('server/logging/logger').create('GameDataDBManager');
-var FuncUtils = req('server/utils/function-utils');
+var DB = require('server/constants/db');
+var IOC = require('server/constants/ioc.constants');
+var CreationUtils = require('server/utils/creation-utils');
+var logger = require('server/logging/logger').create('GameDataDBManager');
+var FuncUtils = require('server/utils/function-utils');
 var errorLog = FuncUtils.error(logger);
-var CommonUtils = req('server/utils/common-utils');
+var CommonUtils = require('server/utils/common-utils');
 
 function GameDataDBManager() {
     this.collectionName = DB.COLLECTION.GAME_DATA;

@@ -1,6 +1,10 @@
-<div class="games-history-list">
-    <div class="games-history-placeholder">
-        <div ng-repeat="history in gamesHistoryCtrl.historyList track by history._id| orderBy: '-name'" class="games-history-item">
+<div class="client-history-list">
+    <div class="client-history-placeholder">
+        <div ng-repeat="record in clientHistoryCtrl.historyList track by record._id| orderBy: '-name'" class="client-history-item">
+            <div ng-bind="record.myself.name"></div>
+            <div ng-bind="record.myself.gameData.trappedDots"></div>
+            <div ng-bind="record.opponent.name"></div>
+            <div ng-bind="record.opponent.gameData.trappedDots"></div>
         </div>
     </div>
 </div>

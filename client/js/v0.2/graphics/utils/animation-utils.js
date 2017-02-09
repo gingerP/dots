@@ -8,7 +8,7 @@ define([
     var api;
     var ANIMATION = GraphicsConstants.ANIMATION.PULSATION;
 
-    function addPulsateAnimation(dotGroup, color, dot) {
+/*    function addPulsateAnimation(dotGroup, color, dot) {
         var position = CommonGraphicsUtils.getVertexPosition(dot);
         var circle;
         var stopped = false;
@@ -53,6 +53,10 @@ define([
                     circle.remove();
                 });
         };
+    }*/
+
+    function addPulsateAnimation() {
+        return function() {};
     }
 
     api = {

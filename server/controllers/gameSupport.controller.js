@@ -1,12 +1,12 @@
 'use strict';
 
 var _ = require('lodash');
-var Events = require('../events');
+var Events = require('server/events');
 var IOC = require('../constants/ioc.constants');
 var GenericController = require('./generic.controller').class;
-var CommonUtils = req('server/utils/common-utils');
-var logger = req('server/logging/logger').create('GameSupportController');
-/*var sessionUtils = req('server/utils/session-utils');*/
+var CommonUtils = require('server/utils/common-utils');
+var logger = require('server/logging/logger').create('GameSupportController');
+/*var sessionUtils = require('server/utils/session-utils');*/
 
 function GameSupportController() {
 }
@@ -15,11 +15,11 @@ GameSupportController.prototype = Object.create(GenericController.prototype);
 GameSupportController.prototype.constructor = GameSupportController;
 
 GameSupportController.prototype.onNewClient = function (handler) {
-    this.wss.addListener(Events.CLIENT.NEW, handler);
+    this.wss.addListener(Events.CLIENT.NEW(), handler);
 };
 
 GameSupportController.prototype.onReconnect = function (handler) {
-    this.wss.addListener(Events.CLIENT.RECONNECT, handler);
+    this.wss.addListener(Events.CLIENT.RECONNECT(), handler);
 };
 
 GameSupportController.prototype.onDisconnect = function (handler) {
@@ -39,7 +39,7 @@ GameSupportController.prototype.notifyClientsAboutNetworkStatusChange =
         logger.debug('Notify about network status: %s', JSON.stringify(notifyDetails));
         this.transmitter.sendAllExcept(
             summaryClients,
-            Events.clients_status_change,
+            Events.CLIENT.STATUS.CHANGE(),
             notifyDetails
         );
     };
@@ -52,7 +52,7 @@ GameSupportController.prototype.notifyAboutNetworkStatusChange =
         };
         this.transmitter.send(
             _.map(CommonUtils.createArray(clientsIdsToNotify), '_id'),
-            Events.client_disconnect,
+            Events.CLIENT.DISCONNECT(),
             data);
     };
 
@@ -68,7 +68,7 @@ GameSupportController.prototype.notifyAboutNetworkStatusChange =
     };*/
 
 GameSupportController.prototype.notifyAboutNewClient = function (newClient, clients) {
-    this.transmitter.send(_.map(clients, '_id'), Events.new_client, newClient);
+    this.transmitter.send(_.map(clients, '_id'), Events.CLIENT.NEW(), newClient);
 };
 
 GameSupportController.prototype.postConstructor = function (ioc) {

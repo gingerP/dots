@@ -1,15 +1,15 @@
 'use strict';
 
 var GenericService = require('./generic.service').class;
-const IOC = req('server/constants/ioc.constants');
+const IOC = require('server/constants/ioc.constants');
 var _ = require('lodash');
-var funcUtils = req('server/utils/function-utils');
-var logger = req('server/logging/logger').create('GameService');
+var funcUtils = require('server/utils/function-utils');
+var logger = require('server/logging/logger').create('GameService');
 var Promise = require('bluebird');
 var errorLog = funcUtils.error(logger);
-var GameScoreUtils = req('server/services/helpers/game-scores-utils');
-var CreationUtils = req('server/utils/creation-utils');
-var sessionUtils = req('server/utils/session-utils');
+var GameScoreUtils = require('server/services/helpers/game-scores-utils');
+var CreationUtils = require('server/utils/creation-utils');
+var sessionUtils = require('server/utils/session-utils');
 
 function isGameAndClientValid(data) {
     logger.warn('isGameAndClientValid game: %s, from: %s, to: %s, client: %s',

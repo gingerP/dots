@@ -3,12 +3,13 @@ var wsServer;
 var server;
 var WsServer;
 var configuration = require('../application-configuration/application');
+var path = require('path');
 
 //require('debug').enable('socket.io:*');
-global.req = require('app-root-path').require;
-Server = req('server/modules/WebServer').class;
-WsServer = req('server/modules/WSServer.IO');
+require('app-module-path').addPath(path.resolve(__dirname, '../'));
+Server = require('server/modules/WebServer').class;
+WsServer = require('server/modules/WSServer.IO');
 server = new Server(configuration).init().start();
-req('server/controller-pages').init(server.app);
+require('server/controller-pages').init(server.app);
 wsServer = WsServer.instance(server);
-req('server/app').initialize(wsServer, server);
+require('server/app').initialize(wsServer, server);

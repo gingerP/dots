@@ -1,6 +1,6 @@
 var GenericDBManager = require('./genericDB.manager').class;
-var DB = req('server/constants/db');
-var IOC = req('server/constants/ioc.constants');
+var DB = require('server/constants/db');
+var IOC = require('server/constants/ioc.constants');
 
 function CreateGameDBManager() {
     this.collectionName = DB.COLLECTION.CREATE_GAME;

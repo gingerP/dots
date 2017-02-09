@@ -1,7 +1,7 @@
 'use strict';
 
 var GenericTransmitter = require('./generic.transmitter').class;
-const IOC = req('server/constants/ioc.constants');
+const IOC = require('server/constants/ioc.constants');
 
 function CommonTransmitter() {}
 

@@ -1,6 +1,6 @@
 var GenericDBManager = require('./genericDB.manager').class;
-var DB = req('server/constants/db');
-var IOC = req('server/constants/ioc.constants');
+var DB = require('server/constants/db');
+var IOC = require('server/constants/ioc.constants');
 var gameStatuses = require('../constants/game-statuses');
 
 function GameSupportDBManager() {
@@ -88,7 +88,15 @@ GameSupportDBManager.prototype.getGameByClientsByGameId = function(clientAId, cl
 
 GameSupportDBManager.prototype.getGamesForClient = function getGamesForClient(clientId) {
     return this.listByCriteria({
-        client: this.getObjectId(clientId)
+        $or: [
+            {
+                from: this.getObjectId(clientId)
+            },
+            {
+                to: this.getObjectId(clientId)
+            }
+        ],
+        status: 'closed'
     });
 };
 

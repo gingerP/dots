@@ -1,8 +1,8 @@
 'use strict';
 
-const IOC = req('server/constants/ioc.constants');
-const SessionUtils = req('server/utils/session-utils');
-var logger = req('server/logging/logger').create('CommonAuth');
+const IOC = require('server/constants/ioc.constants');
+const SessionUtils = require('server/utils/session-utils');
+var logger = require('server/logging/logger').create('CommonAuth');
 
 function CommonAuth() {
 

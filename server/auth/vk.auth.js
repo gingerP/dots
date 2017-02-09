@@ -1,9 +1,9 @@
 'use strict';
 
-const IOC = req('server/constants/ioc.constants');
+const IOC = require('server/constants/ioc.constants');
 const VK_CODE = IOC.AUTH.VK;
 const STRATEGY = 'passport-vkontakte';
-var GenericAuth = req('server/auth/generic.auth').class;
+var GenericAuth = require('server/auth/generic.auth').class;
 
 function VkAuth() {
 

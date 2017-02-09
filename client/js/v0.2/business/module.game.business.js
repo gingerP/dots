@@ -245,14 +245,6 @@ define([
         makePlayerActive: makePlayerActive,
         makeNextPlayerActive: makeNextPlayerActive,
         addListener: addListener,
-        listen: {
-            invite_player: 'invite_player',
-            add_active_player: 'add_active_player',
-            change_active_player: 'change_active_player',
-            add_client: 'add_client',
-            add_dot: 'add_dot',
-            conquer_dots: 'conquer_dots'
-        },
         cancelGame: function () {
             cancelGame(true);
         }

@@ -1,10 +1,10 @@
 'use strict';
 
 var GenericDBManager = require('./genericDB.manager').class;
-var DB = req('server/constants/db');
-var IOC = req('server/constants/ioc.constants');
+var DB = require('server/constants/db');
+var IOC = require('server/constants/ioc.constants');
 var funcUtils = require('../utils/function-utils');
-var logger = req('server/logging/logger').create('LoopsDBManager');
+var logger = require('server/logging/logger').create('LoopsDBManager');
 var errorLog = funcUtils.error(logger);
 function LoopsDBManager() {
     this.collectionName = DB.COLLECTION.LOOPS;

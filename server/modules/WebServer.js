@@ -1,15 +1,15 @@
 'use strict';
 var fs = require('fs');
 var _ = require('lodash');
-var utils = req('server/utils/utils');
-var logger = req('server/logging/logger').create('WebServer');
+var utils = require('server/utils/utils');
+var logger = require('server/logging/logger').create('WebServer');
 var session = require('express-session');
 var express = require('express');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var RedisStore = require('connect-redis')(session);
 var redis = require('redis');
-var appConfiguration = req('application-configuration/application');
+var appConfiguration = require('application-configuration/application');
 var passport = require('passport');
 
 function WebServer(props) {

@@ -1,5 +1,5 @@
 const sysUtil = require('util');
-var log = req('server/logging/logger');
+var log = require('server/logging/logger');
 var logger = {
     gc: log.create('runGc'),
     gr: log.create('getRef'),

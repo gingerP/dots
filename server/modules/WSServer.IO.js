@@ -2,7 +2,7 @@
 var server;
 var Observable = require('./Observable').class;
 var WebSocketServer = require('socket.io');
-var logger = req('server/logging/logger').create('WSServer');
+var logger = require('server/logging/logger').create('WSServer');
 var DEFAULT_TOPIC = 'connection';
 var connectedNum = 0;
 var disconnectedNum = 0;

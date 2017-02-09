@@ -1,11 +1,11 @@
 'use strict';
 
 var _ = require('lodash');
-var IOC = req('server/constants/ioc.constants');
-var logger = req('server/logging/logger').create('DB');
-var funcUtils = req('server/utils/function-utils');
-var cfg = req('application-configuration/application').db;
-var utils = req('server/utils/utils');
+var IOC = require('server/constants/ioc.constants');
+var logger = require('server/logging/logger').create('DB');
+var funcUtils = require('server/utils/function-utils');
+var cfg = require('application-configuration/application').db;
+var utils = require('server/utils/utils');
 var mongo = require('mongodb');
 var assert = require('assert');
 var errorLog = funcUtils.error(logger);
@@ -34,7 +34,7 @@ var validate = {
         assert.notEqual(criteria, null, messages.criteriaNotEmpty);
     }
 };
-var Observable = req('server/modules/Observable').class;
+var Observable = require('server/modules/Observable').class;
 validate.dbConfig(cfg);
 
 function getReplacedId(isUpsert, result, id) {

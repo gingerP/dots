@@ -4,7 +4,7 @@ var GenericDBManager = require('./genericDB.manager').class;
 var DB = require('../constants/db');
 var IOC = require('../constants/ioc.constants');
 var funcUtils = require('../utils/function-utils');
-var logger = req('server/logging/logger').create('ClientNetworkStatusesDBManager');
+var logger = require('server/logging/logger').create('ClientNetworkStatusesDBManager');
 var errroLog = funcUtils.error(logger);
 
 function ClientNetworkStatusesDBManager() {

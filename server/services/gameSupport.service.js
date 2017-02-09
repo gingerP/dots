@@ -1,13 +1,13 @@
 'use strict';
 
 var GenericService = require('./generic.service').class;
-const IOC = req('server/constants/ioc.constants');
+const IOC = require('server/constants/ioc.constants');
 var animals = require('../animals');
 var funcUtils = require('../utils/function-utils');
-var creationUtils = req('server/utils/creation-utils');
-var SessionUtils = req('server/utils/session-utils');
+var creationUtils = require('server/utils/creation-utils');
+var SessionUtils = require('server/utils/session-utils');
 var gameStatuses = require('../constants/game-statuses');
-var logger = req('server/logging/logger').create('GameSupportService');
+var logger = require('server/logging/logger').create('GameSupportService');
 var errorLog = funcUtils.error(logger);
 var _ = require('lodash');
 var Promise = require('bluebird');

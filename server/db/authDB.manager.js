@@ -1,10 +1,10 @@
 'use strict';
 
-var GenericDBManager = require('./genericDB.manager').class;
-var DB = req('server/constants/db');
-var IOC = req('server/constants/ioc.constants');
-var funcUtils = require('../utils/function-utils');
-var logger = req('server/logging/logger').create('AuthDBManager');
+var GenericDBManager = require('server/db/genericDB.manager').class;
+var DB = require('server/constants/db');
+var IOC = require('server/constants/ioc.constants');
+var funcUtils = require('server/utils/function-utils');
+var logger = require('server/logging/logger').create('AuthDBManager');
 var errorLog = funcUtils.error(logger);
 
 function AuthDBManager() {

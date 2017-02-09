@@ -1,8 +1,8 @@
 var _ = require('lodash');
-const IOC = req('server/constants/ioc.constants');
-var CommonUtils = req('server/utils/common-utils');
-var SessionUtils = req('server/utils/session-utils');
-var logger = req('server/logging/logger').create('GenericTransmitter');
+const IOC = require('server/constants/ioc.constants');
+var CommonUtils = require('server/utils/common-utils');
+var SessionUtils = require('server/utils/session-utils');
+var logger = require('server/logging/logger').create('GenericTransmitter');
 var Promise = require('bluebird');
 
 function prepareIds(clientIds) {

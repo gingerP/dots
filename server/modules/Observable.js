@@ -1,4 +1,4 @@
-var utils = req('server/utils/utils');
+var utils = require('server/utils/utils');
 
 function getListenerName(property) {
     return 'on' + property.charAt(0).toUpperCase() + property.substr(1, property.length - 1) + 'Change';

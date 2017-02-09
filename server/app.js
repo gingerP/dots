@@ -19,8 +19,8 @@ function postConstructor(ioc) {
 function eachEvents(eventsTree, callback) {
     for(let key in eventsTree) {
         if (eventsTree.hasOwnProperty(key)) {
-            if (typeof eventsTree[key] === 'string') {
-                callback(eventsTree[key]);
+            if (typeof eventsTree[key] === 'function') {
+                callback(eventsTree[key]());
             } else {
                 eachEvents(eventsTree[key], callback);
             }

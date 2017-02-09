@@ -1,18 +1,18 @@
 'use strict';
 
 const GenericService = require('./generic.service').class;
-const IOC = req('server/constants/ioc.constants');
+const IOC = require('server/constants/ioc.constants');
 const inviteStatuses = require('../constants/invite-statuses.json');
-const funcUtils = req('server/utils/function-utils');
-const sessionUtils = req('server/utils/session-utils');
-const CommonUtils = req('server/utils/common-utils');
+const funcUtils = require('server/utils/function-utils');
+const sessionUtils = require('server/utils/session-utils');
+const CommonUtils = require('server/utils/common-utils');
 const _ = require('lodash');
 const Promise = require('bluebird');
-const logger = req('server/logging/logger').create('CreateGameService');
+const logger = require('server/logging/logger').create('CreateGameService');
 const gameStatuses = require('../constants/game-statuses');
 const errorLog = funcUtils.error(logger);
-const Errors = req('server/modules/Errors');
-const COLORS = req('server/constants/colors');
+const Errors = require('server/modules/Errors');
+const COLORS = require('server/constants/colors');
 
 function getClient(id, clients) {
     var prepareId = _.isString(id) ? id : id.toString();
