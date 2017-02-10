@@ -10,7 +10,7 @@ define([
 
     function clientHistoryConfig() {
         function prepareHistoryForUi(clientHistory) {
-            var myself = GameStorage.getGameClient();
+            var myself = GameStorage.getClient();
 
             _.forEach(clientHistory, function prepareHistoryRecord(historyRecord) {
                 if (historyRecord.from._id === myself._id) {
@@ -30,5 +30,5 @@ define([
         return {
             prepareHistoryForUi: prepareHistoryForUi
         };
-    };
+    }
 });

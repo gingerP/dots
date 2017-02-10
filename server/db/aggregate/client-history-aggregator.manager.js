@@ -93,33 +93,50 @@ function squeezeGameData(gameDataPack) {
     return gameDataPack.gameData;
 }
 
-function pickData(data) {
-    var gameDataList = data.gameDataList;
-    var gameList = data.games || [];
-    var gamers = data.gamers;
-    var gamesMap = {};
-    var gamersMap = {};
+function preparePack(pack) {
+    return new Promise(function(resolve) {
+        pack.gamersMap = {};
+        pack.gamesMap = {};
 
-    if (gameList.length) {
-        _.forEach(gamers, (gamer) => {
-            gamersMap[String(gamer._id)] = gamer;
+        _.forEach(pack.gamers, (gamer) => {
+            pack.gamersMap[String(gamer._id)] = gamer;
         });
+        _.forEach(pack.games, (game) => {
+            pack.gamesMap[String(game._id)] = game;
+        });
+        resolve(pack);
+    });
+}
 
-        _.forEach(gameList, (game) => {
+function fillGamesWithClients(pack) {
+    return new Promise(function(resolve) {
+        _.forEach(pack.games, (game) => {
             let fromId = String(game.from);
             let toId = String(game.to);
-            gamesMap[String(game._id)] = game;
-            game.from = gamersMap[fromId];
-            game.to = gamersMap[toId];
+            pack.gamesMap[String(game._id)] = game;
+            game.from = _.cloneDeep(pack.gamersMap[fromId]);
+            game.to = _.cloneDeep(pack.gamersMap[toId]);
         });
+        resolve(pack);
+    });
+}
 
-        _.forEach(gameDataList, (gameData) => {
+function fillClientsWithGameData(pack) {
+    return new Promise(function(resolve) {
+        _.forEach(pack.gameDataList, (gameData) => {
             let gamerId = String(gameData.client);
-            gamersMap[gamerId].gameData = gameData;
-        });
-    }
+            let gameId = String(gameData.game);
+            let fromId = String(pack.gamesMap[gameId].from._id);
+            let toId = String(pack.gamesMap[gameId].to._id);
 
-    return gameList;
+            if (fromId === gamerId) {
+                pack.gamesMap[gameId].from.gameData = gameData;
+            } else if (toId === gamerId) {
+                pack.gamesMap[gameId].to.gameData = gameData;
+            }
+        });
+        resolve(pack);
+    });
 }
 
 function postConstructor(ioc) {
@@ -140,6 +157,23 @@ function preload(games) {
         gamers: isEmpty ? [] : getGamers(games),
         gameDataList: isEmpty ? [] : getGameDataList(games)
     });
+}
+
+function pickData(data) {
+    var gameList = data.games || [];
+
+    function returnGames(pack) {
+        return pack.games;
+    }
+
+    if (gameList.length) {
+        return preparePack(data)
+            .then(fillGamesWithClients)
+            .then(fillClientsWithGameData)
+            .then(returnGames);
+    }
+
+    return gameList;
 }
 
 function aggregate(clientId) {

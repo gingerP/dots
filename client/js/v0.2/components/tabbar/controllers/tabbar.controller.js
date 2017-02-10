@@ -29,7 +29,7 @@ define([
 
             setHeaderVisibility(false);
             _.forEach(vm.context.list, function (tab) {
-                if (tab.isActive && tabId !== tab.id) {
+                if (!tab.isActive && tabId === tab.id) {
                     isChanged = true;
                 }
                 tab.isActive = tab.id === tabId;

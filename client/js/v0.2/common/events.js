@@ -31,7 +31,11 @@ define([], function () {
         CANCEL_GAME: 'CANCEL_GAME',
         UPDATE_CLIENT: 'UPDATE_CLIENT',
 
-        OPEN_TAB: 'OPEN_TAB'
+        OPEN_TAB: 'OPEN_TAB',
+        CLIENT: {
+            HISTORY: {
+                NEED_UPDATE: 'client_history_need_update'
+            }
+        }
     };
-
 });

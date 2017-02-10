@@ -1,4 +1,7 @@
 .client-history {
+  &-placeholder {
+    margin: 5px 0;
+  }
   &-item {
     height: @client-item-height;
     line-height: @client-item-height;
@@ -9,6 +12,37 @@
     background-color: @client-item-height;
     position: relative;
     cursor: pointer;
-    color: @text-color-dark;
+    color: @text-color-light;
+
+    &:hover {
+      background-color: @hover-client-background;
+    }
+
+    &-right,
+    &-left {
+      float: left;
+      width: 50%;
+    }
+
+    &-right {
+      .client {
+        &-name {
+          right: 0;
+        }
+        &-score {
+          left: 0;
+        }
+      }
+    }
+    &-left {
+      .client {
+        &-name {
+          left: 0;
+        }
+        &-score {
+          left: 0;
+        }
+      }
+    }
   }
 }

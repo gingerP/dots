@@ -66,7 +66,7 @@ WSServer.prototype.storeSession = function (connection) {
         var config = this.http.sessionConfig;
         var sessionId = connection.handshake.signedCookies[config.name];
         config.store.set(sessionId, connection.session, function (error, message) {
-            logger.debug('Session stored!');
+            logger.debug('Session stored! %s', JSON.stringify(connection.session));
             resolve();
         });
     });
