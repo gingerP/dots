@@ -1,6 +1,13 @@
 define([], function () {
     return {
         input: [
+            /*
+            The same matrix in all tests, just another order
+             ┼─┼─■─┼─┼─
+             ┼─■─┼─■─┼─
+             ┼─┼─■─┼─┼─
+             ┼─┼─┼─┼─┼─
+             */
             // rev 00
             [
                 {x: 100, y: 100},
