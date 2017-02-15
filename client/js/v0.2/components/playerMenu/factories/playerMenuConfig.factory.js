@@ -14,6 +14,12 @@ define([
             return {
                 list: [
                     {
+                        id: TABS.ACTIVE_GAME,
+                        name: 'Active Game',
+                        isActive: false,
+                        isDefault: false
+                    },
+                    {
                         id: TABS.GAMERS,
                         name: 'Gamers',
                         isActive: true,

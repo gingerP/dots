@@ -1,0 +1,6 @@
+<div ng-if="activeGameCtrl.opponent" class="opponent-player">
+    <div class="active-game-opponent-name">{{activeGameCtrl.opponent.name}}</div>
+    <button class="btn-override btn-right btn-opponent" ng-click="activeGameCtrl.cancelGame(client)">Cancel
+        game
+    </button>
+</div>

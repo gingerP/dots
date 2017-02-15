@@ -13,6 +13,7 @@ define(function () {
             NETWORK: 'NETWORK'
         },
         TABS: {
+            ACTIVE_GAME: 'activeGame',
             GAMERS: 'gamers',
             SIGNIN: 'signin',
             CLIENT_HISTORY: 'clientHistory'

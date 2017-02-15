@@ -6,7 +6,8 @@ define([
     'components/signin/components/signin.component',
     'components/clientHistory/component/clientHistory.component',
     'components/tabbar/components/tabbar.component',
-    'components/tabbarHeader/components/tabbarHeader.component'
+    'components/tabbarHeader/components/tabbarHeader.component',
+    'components/active-game/components/active-game.component'
 ], function(angular) {
     'use strict';
 

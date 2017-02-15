@@ -14,6 +14,13 @@
     cursor: pointer;
     color: @text-color-light;
 
+    &-score {
+      position: absolute;
+      margin: auto;
+      left: 0;
+      right: 0;
+      text-align: center;
+    }
     &:hover {
       background-color: @hover-client-background;
     }
@@ -25,12 +32,16 @@
     }
 
     &-right {
+      position: relative;
       .client {
         &-name {
           right: 0;
+          text-align: right;
         }
         &-score {
           left: 0;
+          top: 0;
+          position: absolute;
         }
       }
     }

@@ -17,12 +17,14 @@ define([
     'components/signin/components/signin.component',
     'components/userProfile/components/userProfile.component',
     'components/clientHistory/component/clientHistory.component',
+    'components/active-game/components/active-game.component',
     'components/utils/common.helpers.module',
     'components/app-cache'
 ], function (angular) {
     'use strict';
 
     angular.module('app', [
+        'active-game.module',
         'game.module',
         'clientsList.module',
         'currentPlayer.module',
