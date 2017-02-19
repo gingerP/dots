@@ -4,12 +4,13 @@ var commonLoopsUtils = require('server/libs/graph/utils/common-utils');
 var _ = require('lodash');
 var CreationUtils = require('server/utils/creation-utils');
 var Promise = require('bluebird');
+var TrappedDotsHelper = require('server/services/helpers/game-score/trapped-dots-helper');
 
 function extractValuationData(clientGameData) {
     return {
-        dots: clientGameData.dots,
-        loops: clientGameData.loops,
-        losingDots: clientGameData.losingDots
+        dots: clientGameData.dots || [],
+        loops: clientGameData.loops || [],
+        losingDots: clientGameData.losingDots || []
     };
 }
 // 1
@@ -44,15 +45,10 @@ function calculateLoopsDelta(inbound) {
 // 4
 function calculateCommonScore(inbound) {
     if (inbound.loops && inbound.loops.length && inbound.opponent.dots && inbound.opponent.dots.length) {
-        inbound.loopsDelta = filterLoopsByOpponentTrappedDots();
+        TrappedDotsHelper.filterAndUpdateLoopsByOpponentTrappedDots(inbound.loopsDelta, inbound.opponent);
         inbound.active.loops = inbound.active.loops.concat(inbound.loopsDelta);
     }
     return inbound;
-}
-
-function filterLoopsByOpponentTrappedDots(loops, opponentGameData) {
-    //_.forEach(inbound.loopsDelta, moveDotsToTrappedDotsInLoops.bind(null, inbound.opponent));
-
 }
 
 function getGameDataDeltas(dot, dotClientGameData) {
@@ -70,24 +66,6 @@ function getGameDataDeltas(dot, dotClientGameData) {
         client: clientDeltaGameData,
         opponent: opponentDeltaGameData
     };
-}
-
-function moveDotsToTrappedDots(trappedDots, opponentGameData, dot) {
-    var index = _.findIndex(opponentGameData.dots, dot);
-    if (index > -1) {
-        opponentGameData.dots.splice(index, 1);
-        opponentGameData.losingDots.push(dot);
-        trappedDots.push(dot);
-    }
-}
-
-function moveDotsToTrappedDotsInLoops(opponentGameData, loopData) {
-    var preparedLoopData = CreationUtils.newLoopData(loopData.loop);
-    _.forEach(
-        loopData.trappedDots,
-        moveDotsToTrappedDots.bind(null, preparedLoopData.trappedDots, opponentGameData)
-    );
-    return preparedLoopData;
 }
 
 function getScoresDelta(loops, dot) {

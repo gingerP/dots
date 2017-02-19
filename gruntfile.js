@@ -1,5 +1,6 @@
-var grunt = require('grunt'),
-    PRODUCTION_SRC_DIRECTORY = 'build';
+var grunt = require('grunt');
+var PRODUCTION_SRC_DIRECTORY = 'build';
+var path = require('path');
 
 function normalizeTemplateUrl(url) {
     return url.replace('./client', '/static');
@@ -22,6 +23,8 @@ function normalizeAppCacheModule(module, script) {
 }
 
 global.req = require('app-root-path').require;
+require('app-module-path').addPath(path.resolve(__dirname, './'));
+
 require('load-grunt-tasks')(grunt);
 grunt.initConfig({
     eslint: {

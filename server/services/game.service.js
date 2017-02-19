@@ -7,7 +7,7 @@ var funcUtils = require('server/utils/function-utils');
 var logger = require('server/logging/logger').create('GameService');
 var Promise = require('bluebird');
 var errorLog = funcUtils.error(logger);
-var GameScoreUtils = require('server/services/helpers/game-scores-utils');
+var GameScoreUtils = require('server/services/helpers/game-score/game-score-utils');
 var CreationUtils = require('server/utils/creation-utils');
 var sessionUtils = require('server/utils/session-utils');
 
