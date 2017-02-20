@@ -10,6 +10,37 @@ const DIRECTIONS_BACKWARD = DIRECTIONS.BACKWARD;
 const DIRECTIONS_NOWHERE = DIRECTIONS.NOWHERE;
 const DIRECTIONS_BOTH_WAYS = DIRECTIONS.BOTH_WAYS;
 
+function getLoop(vertexes, firstPosition) {
+    var prepared = prepareInbound(vertexes);
+    var isUnbroken = true;
+    var loops = [];
+    var futureLines = [getFutureLine(
+        firstPosition.x - prepared.shift.x,
+        firstPosition.y - prepared.shift.y,
+        prepared.vertexes
+    )];
+    var lineIndex = 0;
+    var passedLine;
+    var passed = 0;
+    var selected = {};
+    var trappedDots = [];
+    while (futureLines.length && lineIndex < futureLines.length && lineIndex > -1) {
+        passedLine = passLine(lineIndex, futureLines, selected, prepared.vertexes);
+        passed += passedLine.passed;
+        isUnbroken = isUnbroken && !passedLine.isSpill;
+        trappedDots.push.apply(trappedDots, passedLine.passedDots);
+        lineIndex = futureLines.length - 1;
+    }
+    if (Object.keys(selected).length && isUnbroken) {
+        loops.push({
+            loop: convertUtils.convertVertexAsObjectToArray(selected),
+            passed: passed,
+            trappedDots: trappedDots
+        });
+    }
+    return prepareOutBound(loops, prepared.shift);
+}
+
 function getLoops(array) {
     var prepared = prepareInbound(array);
     var firstPosition = commonUtils.findFirstUnselectedUnvisitedPosition(prepared.vertexes);
@@ -102,7 +133,7 @@ function prepareOutBound(loops, shift) {
 function updateShifts(dots, shifts) {
     var index = 0;
     var dot;
-    for(;index < dots.length; index++) {
+    for (; index < dots.length; index++) {
         dot = dots[index];
         dot.x = dot.x + shifts.x;
         dot.y = dot.y + shifts.y;
@@ -169,10 +200,10 @@ function passLineWithSpecificDirection(line, direction, futureLines, selected, v
             vertexes
         );
         /*vertexUtils.applySelectedNeighborsFrom_8_Direction(
-            pos,
-            selected,
-            vertexes
-        );*/
+         pos,
+         selected,
+         vertexes
+         );*/
         passedDots.push(pos);
         if (newFutureLines.length) {
             futureLines.push.apply(futureLines, newFutureLines);
@@ -246,7 +277,7 @@ function markFutureLine(line, vertexes) {
 function markFutureLineWithDirection(line, direction, vertexes) {
     var yIndex = line.pos.y;
     var vertex;
-    for(;(vertex = vertexes[line.pos.x][yIndex]);) {
+    for (; (vertex = vertexes[line.pos.x][yIndex]);) {
         if (!vertex.isInFutureLines && !vertex.isSelected && !vertex.isVisited) {
             vertex.isInFutureLines = true;
         } else if (vertex.isSelected) {
@@ -274,5 +305,6 @@ function saveNextPosAsSelected(currentPos, direction, vertexes, selected) {
 }
 
 module.exports = {
-    getLoops: getLoops
+    getLoops: getLoops,
+    getLoop: getLoop
 };

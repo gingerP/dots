@@ -131,9 +131,10 @@ GameService.prototype.onAddDot = function (message) {
 };
 
 GameService.prototype.saveScores = function (gameData) {
-    return this.gameDataDBManager.save(gameData.active).then(() => {
-        return this.gameDataDBManager.save(gameData.opponent);
-    });
+    return Promise.all([
+        this.gameDataDBManager.save(gameData.active),
+        this.gameDataDBManager.save(gameData.opponent)
+    ]);
 };
 
 GameService.prototype.getName = function () {

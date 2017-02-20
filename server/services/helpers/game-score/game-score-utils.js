@@ -25,6 +25,11 @@ function prepareScoreValuation(dot, activePlayerGameData, opponentGameData) {
 }
 
 // 2
+function checkIfNewDotHitInLoop(inbound) {
+
+}
+
+// 2
 function calculateLoops(inbound) {
     var activePlayerTempGameData = CreationUtils.newGameData();
 
@@ -45,7 +50,11 @@ function calculateLoopsDelta(inbound) {
 // 4
 function calculateCommonScore(inbound) {
     if (inbound.loops && inbound.loops.length && inbound.opponent.dots && inbound.opponent.dots.length) {
-        TrappedDotsHelper.filterAndUpdateLoopsByOpponentTrappedDots(inbound.loopsDelta, inbound.opponent);
+        TrappedDotsHelper.filterAndUpdateLoopsByOpponentTrappedDots(
+            inbound.loopsDelta,
+            inbound.opponent,
+            inbound.active
+        );
         inbound.active.loops = inbound.active.loops.concat(inbound.loopsDelta);
     }
     return inbound;
@@ -100,6 +109,7 @@ function getGamersScores(dot, activePlayerGameData, opponentGameData) {
     }
 
     return prepareScoreValuation(dot, activePlayerGameData, opponentGameData)
+        .then(checkIfNewDotHitInLoop)
         .then(calculateLoops)
         .then(calculateLoopsDelta)
         .then(calculateCommonScore)

@@ -26,11 +26,14 @@ function updateLoop(loop, opponentGameData) {
  * @param loops
  * @param opponentGameData
  */
-function filterAndUpdateLoopsByOpponentTrappedDots(loops, opponentGameData) {
-    _.forEachRight(loops, function(loop, index) {
-        if (!updateLoop(loop, opponentGameData)) {
-        // If after updating loop the trappedDots list is empty, so we removed it from loop;
-            loops.splice(index, 1);
+function filterAndUpdateLoopsByOpponentTrappedDots(loopsDelta, opponentGameData, activeGameData) {
+    _.forEachRight(loopsDelta, function(loop, index) {
+        var hasTrappedDots = updateLoop(loop, opponentGameData);
+
+        if (!hasTrappedDots) {
+            // If after updating loop the trappedDots list is empty, so we removed it from loop;
+            loopsDelta.splice(index, 1);
+            activeGameData.loops.push(loop);
         }
     });
 }

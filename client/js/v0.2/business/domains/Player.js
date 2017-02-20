@@ -28,7 +28,7 @@ define([
     Player.prototype.merge = function merge(client) {
         this.id = client.id || client._id;
         this.name = client.name;
-        this.color = client.color;
+        this.color = client.color ? client.color : this.color;
         this.style = client.style;
         this.auth = client.auth;
         this.icon = client.icon;

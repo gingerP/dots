@@ -8,7 +8,7 @@ var LoopHelpers = require('test/server/libs/graph/helpers/loop-helper');
 var TEST_DATA_TEMPLATE_01 = require('test/server/services/helpers/game-score/test-data/trapped-dots');
 var TEST_DATA_TEMPLATE_02 = require('test/server/services/helpers/game-score/test-data/empty-trapped-dots');
 
-describe('Utilities for game score', function() {
+describe.skip('Utilities for game score', function() {
     it('Test Data Template 01 - ' + TEST_DATA_TEMPLATE_01.name, function (done) {
         var args = TEST_DATA_TEMPLATE_01.input;
         GameScoreUtils.getGamersScores(args.dot, args.activePlayerGameData, args.opponentGameData).then((result) => {

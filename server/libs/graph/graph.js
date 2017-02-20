@@ -12,8 +12,12 @@ function getLoopsLinesUnsorted(vertexes) {
     });
 }
 
+function getLoopAroundDot() {
+    var loopsRaw = floodLoops.getLoop(vertexes, vertex);
+}
 
 module.exports = {
     getLoopsData: floodLoops.getLoops,
+    getLoopAroundDot: getLoopAroundDot,
     getLoopsLinesUnsorted: getLoopsLinesUnsorted
 };
