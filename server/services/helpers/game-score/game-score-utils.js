@@ -20,13 +20,24 @@ function prepareScoreValuation(dot, activePlayerGameData, opponentGameData) {
         active: extractValuationData(activePlayerGameData),
         opponent: extractValuationData(opponentGameData),
         loops: [],
-        loopsDelta: []
+        delta: {
+            opponent: [],
+            active: []
+        },
+        isNewDotHitInLoop: false
     });
 }
 
 // 2
-function checkIfNewDotHitInLoop(inbound) {
+function isNewDotHitInLoop(inbound) {
+    var loop = {};
 
+    if (inbound.opponent.dots.length > 3) {
+        loop = graph.getLoop(inbound.opponent.dots, inbound.dot);
+    }
+    inbound.isNewDotHitInLoop = !_.isEmpty(loop);
+
+    return Promise.resolve(inbound);
 }
 
 // 2
@@ -34,30 +45,35 @@ function calculateLoops(inbound) {
     var activePlayerTempGameData = CreationUtils.newGameData();
 
     activePlayerTempGameData.dots = inbound.active.dots.concat([inbound.dot]);
-    inbound.loops = graph.getLoopsData(activePlayerTempGameData.dots);
+    inbound.loops = graph.getLoops(activePlayerTempGameData.dots);
     inbound.active.dots.push(inbound.dot);
 
-    return inbound;
+    return Promise.resolve(inbound);
 }
 
 // 3
 function calculateLoopsDelta(inbound) {
-    inbound.loopsDelta = getScoresDelta(inbound.loops, inbound.dot);
+    inbound.delta.active = getScoresDelta(inbound.loops, inbound.dot);
 
-    return inbound;
+    return Promise.resolve(inbound);
 }
 
 // 4
 function calculateCommonScore(inbound) {
     if (inbound.loops && inbound.loops.length && inbound.opponent.dots && inbound.opponent.dots.length) {
         TrappedDotsHelper.filterAndUpdateLoopsByOpponentTrappedDots(
-            inbound.loopsDelta,
+            inbound.delta.active,
             inbound.opponent,
             inbound.active
         );
         inbound.active.loops = inbound.active.loops.concat(inbound.loopsDelta);
     }
-    return inbound;
+    return Promise.resolve(inbound);
+}
+
+// A1
+function updateNewOpponentLoop(inbound) {
+
 }
 
 function getGameDataDeltas(dot, dotClientGameData) {
@@ -66,7 +82,7 @@ function getGameDataDeltas(dot, dotClientGameData) {
     var dots = _.cloneDeep(dotClientGameData.dots || []);
     var newLoops;
     dots.push(dot);
-    newLoops = graphLoop.getLoops(dots);
+    newLoops = graph.getLoops(dots);
 
     clientDeltaGameData.loops = commonLoopsUtils.getNewLoops(newLoops, clientDeltaGameData.loops);
     clientDeltaGameData.dots = [dot];
@@ -87,7 +103,7 @@ function getScoresDelta(loops, dot) {
     return resultLoops;
 }
 
-function getGamersScores(dot, activePlayerGameData, opponentGameData) {
+function getGamersScores(dot, activePlayerGameData, opponentGameData, opponentCache) {
     function prepareOutBoundScore(inbound) {
         activePlayerGameData.dots = inbound.active.dots;
         activePlayerGameData.loops = inbound.active.loops;
@@ -102,18 +118,24 @@ function getGamersScores(dot, activePlayerGameData, opponentGameData) {
                 opponent: opponentGameData
             },
             delta: {
-                active: inbound.loopsDelta,
-                opponent: {}
-            }
+                active: inbound.delta.active,
+                opponent: inbound.delta.opponent
+            },
+            loops: inbound.loops
         };
     }
 
-    return prepareScoreValuation(dot, activePlayerGameData, opponentGameData)
-        .then(checkIfNewDotHitInLoop)
-        .then(calculateLoops)
-        .then(calculateLoopsDelta)
-        .then(calculateCommonScore)
-        .then(prepareOutBoundScore);
+    return prepareScoreValuation(dot, activePlayerGameData, opponentGameData, opponentCache)
+        .then(isNewDotHitInLoop)
+        .then((inbound) => {
+            if(inbound.isNewDotHitInLoop) {
+                return ;
+            }
+            return calculateLoops(inbound)
+                .then(calculateLoopsDelta)
+                .then(calculateCommonScore)
+                .then(prepareOutBoundScore);
+        });
 }
 
 module.exports = {

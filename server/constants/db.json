@@ -7,6 +7,7 @@
     "CREATE_GAME": "create_game",
     "GAMES": "games",
     "GAME_DATA": "game_data",
+    "GAME_DATA_CACHE": "game_data_cache",
     "AUTH": "auth"
   }
 }

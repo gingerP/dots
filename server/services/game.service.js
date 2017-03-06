@@ -48,35 +48,42 @@ GameService.prototype.onAddDot = function (message) {
         return isGameAndClientValid(data);
     }
 
-    function handleValidation(isValid) {
+    function loadDataForEvaluation(isValid) {
         if (isValid) {
             opponentId = game.to.equals(client._id) ? game.from : game.to;
-            return Promise.all([
-                inst.gameDataDBManager.getGameData(gameId, client._id),
-                inst.gameDataDBManager.getGameData(gameId, opponentId),
-                inst.clientsDBManager.get(opponentId)
-            ]);
+            return Promise.all({
+                activeGameData: inst.gameDataDBManager.getGameData(gameId, client._id),
+                opponentGameData: inst.gameDataDBManager.getGameData(gameId, opponentId),
+                opponent: inst.clientsDBManager.get(opponentId)
+            }).then((combined) => {
+                return inst.gameDataCacheDBManager
+                    .getCacheByGameDataId(combined.opponentGameData._id)
+                    .then((cache) => {
+                        combined.opponentCache = cache;
+                        return combined;
+                    });
+            });
         }
         throw new Error('Invalid gameId or clientId');
     }
 
-    function updateScores(gameData) {
-        var activePlayerGameData = gameData[0];
-        var opponentGameData = gameData[1];
-        var opponent = gameData[2];
-        var activePlayerDots = activePlayerGameData.dots;
-
+    function updateScores(inbound) {
         function combineGameData(scores) {
             return {
-                opponent: opponent,
+                opponent: inbound.opponent,
                 gameData: scores.gameData,
-                delta: scores.delta
+                delta: scores.delta,
+                loops: scores.loops
             };
         }
 
-        if (isDotValid(dot, activePlayerDots)) {
-            return GameScoreUtils.getGamersScores(dot, activePlayerGameData, opponentGameData)
-                .then(combineGameData);
+        if (isDotValid(dot, inbound.activeGameData.dots)) {
+            return GameScoreUtils.getGamersScores(
+                dot,
+                inbound.activePlayerGameData,
+                inbound.opponentGameData,
+                inbound.opponentCache
+            ).then(combineGameData);
         }
         return Promise.resolve();
     }
@@ -105,7 +112,7 @@ GameService.prototype.onAddDot = function (message) {
     function saveGameData(combinedData) {
         if (combinedData) {
             return inst
-                .saveScores(combinedData.gameData)
+                .saveScores(combinedData)
                 .then(function () {
                     game.activePlayer = combinedData.opponent._id;
                     return inst.gameDBManager.save(game);
@@ -123,15 +130,18 @@ GameService.prototype.onAddDot = function (message) {
             this.gameDBManager.get(gameId)
         ])
         .then(validateInboundData)
-        .then(handleValidation)
+        .then(loadDataForEvaluation)
         .then(updateScores)
         .then(saveGameData)
         .then(sendScores)
         .catch(errorLog);
 };
 
-GameService.prototype.saveScores = function (gameData) {
+GameService.prototype.saveScores = function (combineData) {
+    var gameData = combineData.gameData;
+
     return Promise.all([
+        this.gameDataCacheDBManager.saveCache(gameData.active._id, combineData.loops),
         this.gameDataDBManager.save(gameData.active),
         this.gameDataDBManager.save(gameData.opponent)
     ]);
@@ -146,6 +156,7 @@ GameService.prototype.postConstructor = function (ioc) {
     this.clientsDBManager = ioc[IOC.DB_MANAGER.CLIENTS];
     this.gameDBManager = ioc[IOC.DB_MANAGER.GAME];
     this.gameDataDBManager = ioc[IOC.DB_MANAGER.GAME_DATA];
+    this.gameDataCacheDBManager = ioc[IOC.DB_MANAGER.GAME_DATA_CACHE];
     this.gameController.onAddDot(this.onAddDot.bind(this));
     this.loopsDBManager = ioc[IOC.DB_MANAGER.LOOPS];
 };

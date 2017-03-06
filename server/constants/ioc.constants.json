@@ -22,6 +22,7 @@
     "CREATE_GAME": "create_game.db.manager",
     "GAME": "game.db.manager",
     "GAME_DATA": "game_data.db.manager",
+    "GAME_DATA_CACHE": "game_data_cache.db.manager",
     "AUTH": "auth.db.manager",
     "CLIENTS_HISTORY_AGGREGATE": "clients_history_aggregate.db.manager"
   },

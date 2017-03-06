@@ -38,7 +38,7 @@ function getLoop(vertexes, firstPosition) {
             trappedDots: trappedDots
         });
     }
-    return prepareOutBound(loops, prepared.shift);
+    return loops.length ? prepareOutBound(loops, prepared.shift) : {};
 }
 
 function getLoops(array) {

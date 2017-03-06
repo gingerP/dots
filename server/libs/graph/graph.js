@@ -17,7 +17,8 @@ function getLoopAroundDot() {
 }
 
 module.exports = {
-    getLoopsData: floodLoops.getLoops,
+    getLoops: floodLoops.getLoops,
+    getLoop: floodLoops.getLoop,
     getLoopAroundDot: getLoopAroundDot,
     getLoopsLinesUnsorted: getLoopsLinesUnsorted
 };
