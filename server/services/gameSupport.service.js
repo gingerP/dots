@@ -41,37 +41,25 @@ function GameSupportService() {
 GameSupportService.prototype = Object.create(GenericService.prototype);
 GameSupportService.prototype.constructor = GameSupportService;
 
-GameSupportService.prototype.onNewClient = function (message) {
-    var inst = this;
-    var clientsDB = this.clientsDBManager;
-
-    function notifyAboutNewClient(newClient) {
-        var isOnline = true;
-
-        inst.notifyAboutConnectionStatus(newClient, isOnline);
-
-        return newClient;
-    }
-
-    function resolveClient() {
-        var session = message.client.getSession();
-        var sessionClientId = SessionUtils.getClientId(session);
-        var promise;
+GameSupportService.prototype.onNewClient = async function (message) {
+    const inst = this;
+    try {
+        const clientsDB = inst.clientsDBManager;
+        const session = message.client.getSession();
+        const sessionClientId = SessionUtils.getClientId(session);
+        let client;
 
         if (sessionClientId) {
-            promise = clientsDB.get(sessionClientId);
+            client = await clientsDB.get(sessionClientId);
         } else {
-            promise = createClient(clientsDB);
+            client = await createClient(clientsDB);
         }
+        await updateSession(message.client, client);
+        await inst.notifyAboutConnectionStatus(client, true);
 
-        return promise;
+    } catch (e) {
+        errorLog(e);
     }
-
-    return resolveClient()
-        .then(updateSession.bind(null, message.client))
-        .then(notifyAboutNewClient)
-        .then(message.callback)
-        .catch(errorLog);
 };
 
 GameSupportService.prototype.onDisconnect = function (message) {

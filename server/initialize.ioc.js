@@ -1,5 +1,5 @@
 const IOC = require('server/constants/ioc.constants');
-const AUTH_CONFIG = require('application-configuration/auth');
+const AUTH_CONFIG = require('config/auth');
 var _ = require('lodash');
 var fs = require('fs');
 var ROOT_PATH = 'server';

@@ -25,8 +25,8 @@ WSServer.prototype.constructor = WSServer;
 WSServer.prototype.init = function (removeTimeout) {
     this.removeTimeout = removeTimeout;
     this.ws = WebSocketServer(this.http.server);
-    this.initAuth();
     this._initEvents();
+    this.initAuth();
     logger.info('WebSocket server started!');
     return this;
 };

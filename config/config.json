@@ -4,8 +4,8 @@
     "http": "8180",
     "https": "8443",
     "ssl": {
-      "active": true,
-      "path": "./application-configuration/ssl"
+      "active": false,
+      "path": "./config/ssl"
     }
   },
   "db": {
@@ -19,5 +19,19 @@
   "redis": {
     "host": "127.0.0.1",
     "port": "6379"
+  },
+  "log": {
+    "appenders": [
+      {
+        "type": "file",
+        "filename": "./logs/dots.log",
+        "maxLogSize": 20480,
+        "backups": 3,
+        "category": "relative-logger"
+      },
+      {
+        "type": "console"
+      }
+    ]
   }
 }

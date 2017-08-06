@@ -4,7 +4,7 @@ var _ = require('lodash');
 var IOC = require('server/constants/ioc.constants');
 var logger = require('server/logging/logger').create('DB');
 var funcUtils = require('server/utils/function-utils');
-var cfg = require('application-configuration/application').db;
+var cfg = require('config/config').db;
 var utils = require('server/utils/utils');
 var mongo = require('mongodb');
 var assert = require('assert');
@@ -37,6 +37,22 @@ var validate = {
 var Observable = require('server/modules/Observable').class;
 validate.dbConfig(cfg);
 
+function _getDBUrl() {
+    return 'mongodb://'
+        + cfg.user + ':'
+        + cfg.pass + '@'
+        + cfg.host + ':'
+        + cfg.port + '/'
+        + cfg.dbName;
+}
+
+function getObjectId(id) {
+    if (id instanceof mongo.ObjectID) {
+        return id;
+    }
+    return new mongo.ObjectId(id);
+}
+
 function getReplacedId(isUpsert, result, id) {
     if (!isUpsert) {
         return result.upsertedId ? result.upsertedId._id : null;
@@ -44,186 +60,185 @@ function getReplacedId(isUpsert, result, id) {
     return id;
 }
 
-function GenericDBManager() {
-}
+class GenericDBManager extends Observable {
 
-GenericDBManager.prototype = Object.create(Observable.prototype);
-GenericDBManager.prototype.constructor = GenericDBManager;
 
-GenericDBManager.prototype.init = function () {
-    this.connection = null;
-};
-GenericDBManager.prototype.setCollectionName = function (collectionName) {
-    this.collectionName = collectionName;
-};
-GenericDBManager.prototype.getCollectionName = function () {
-    return this.collectionName;
-};
-GenericDBManager.prototype.exec = function () {
-    if (!this.connection) {
-        return new Promise((resolve) => {
-            mongo.connect(this._getDBUrl(), (error, db) => {
-                assert.equal(null, error);
-                this.connection = db;
-                resolve(this.connection);
-            });
-        }).catch(errorLog);
+    async init() {
+        this.connection = null;
     }
-    return Promise.resolve(this.connection).catch(errorLog);
-};
-GenericDBManager.prototype.update = function () {
 
-};
-GenericDBManager.prototype._getDoc = function (criteria, callback, mappings) {
-    var preparedCriteria = criteria;
-    if (typeof(criteria) === 'number' || typeof(criteria) === 'string') {
-        preparedCriteria = {_id: new this.getObjectId(criteria)};
+    async setCollectionName(collectionName) {
+        this.collectionName = collectionName;
     }
-    validate.collectionName(this.collectionName);
-    validate.criteria(preparedCriteria);
-    this.exec().then((db) => {
-        db.collection(this.collectionName).find(preparedCriteria, (error, cursor) => {
-            cursor.next((cursorError, doc) => {
-                if (cursorError) {
-                    logger.debug('An ERROR has occurred while extracted document from "%s".', this.collectionName);
-                    callback({});
-                } else {
-                    logger.debug('Document {_id: "%s"} was successfully extracted from "%s" by criteria: %s',
-                        doc ? doc._id : null,
-                        this.collectionName,
-                        JSON.stringify(preparedCriteria));
-                    if (mappings) {
-                        callback(utils.extractFields(doc, mappings));
-                    } else {
-                        callback(doc);
-                    }
-                }
-            });
-        });
-    });
-};
 
-GenericDBManager.prototype._save = function (doc, callback, criteria, mappings) {
-    var id = doc._id;
-    if (criteria) {
-        delete doc._id;
-        this._correctCriteria(criteria);
-        this._update(criteria, doc, callback, mappings);
-    } else if (utils.hasContent(id)) {
-        this._update({_id: this.getObjectId(id)}, doc, callback, mappings);
-    } else {
-        delete doc._id;
-        this._insert(doc, callback, mappings);
+    async getCollectionName() {
+        return this.collectionName;
     }
-};
-GenericDBManager.prototype._saveEntities = function (/*doc, callback*/) {
-    logger.info('_saveEntities not implemented');
-};
-GenericDBManager.prototype._update = function (criteria, doc, callback, mappings, upsert) {
-    const preparedUpsert = utils.hasContent(upsert) ? Boolean(upsert) : true;
-    validate.collectionName(this.collectionName);
-    this._correctCriteria(criteria);
-    this.exec().then((db) => {
+
+    async exec() {
+        try {
+            if (!this.connection) {
+                this.connection = await mongo.connect(_getDBUrl());
+                return this.connection;
+            }
+            return this.connection;
+        } catch (e) {
+            errorLog(e);
+        }
+    }
+
+    async update() {
+
+    }
+
+    async _getDoc(criteria, mappings) {
+        try {
+            let preparedCriteria = criteria;
+            if (typeof(criteria) === 'number' || typeof(criteria) === 'string') {
+                preparedCriteria = {_id: new getObjectId(criteria)};
+            }
+            validate.collectionName(this.collectionName);
+            validate.criteria(preparedCriteria);
+            const db = await this.exec();
+            const cursor = await db.collection(this.collectionName).find(preparedCriteria);
+            const doc = await cursor.next();
+            logger.debug(
+                `Document {_id: ${doc ? doc._id : null} was successfully extracted from ${this.collectionName} by criteria: ${JSON.stringify(preparedCriteria)}`
+            );
+            if (mappings) {
+                return utils.extractFields(doc, mappings);
+            } else {
+                return doc;
+            }
+        } catch (e) {
+            errorLog(e);
+        }
+    }
+
+    async _save(doc, criteria, mappings) {
         var id = doc._id;
-        if (!mappings) {
-            db.collection(this.collectionName).replaceOne({_id: id}, doc, {
-                upsert: preparedUpsert,
-                raw: true
-            }, (error, result) => {
-                if (error) {
-                    logger.error('An ERROR has occurred while updating document in "%s".', this.collectionName);
-                    throw new Error(error);
-                } else if (typeof callback === 'function') {
-                    logger.debug('Document was successfully updated in "%s".', this.collectionName);
-                    callback(getReplacedId(preparedUpsert, result, id));
-                }
-            });
+        if (criteria) {
+            delete doc._id;
+            this._correctCriteria(criteria);
+            return await this._update(criteria, doc, mappings);
+        } else if (utils.hasContent(id)) {
+            return await this._update({_id: getObjectId(id)}, doc, mappings);
         } else {
             delete doc._id;
-            db.collection(this.collectionName).find(criteria, (error, cursor) => {
-                cursor.next((cursorError, cursorDoc) => {
-                    if (cursorError) {
-                        logger.error('An ERROR has occurred while getting document from "%s" to update.',
-                            this.collectionName);
-                        callback(null);
-                    } else {
-                        logger.debug('Document {_id: "%s"} was successfully extracted from "%s".',
-                            doc ? doc._id : null,
-                            this.collectionName);
-                        this._mergeTo(cursorDoc, doc, mappings);
-                        this._update({_id: cursorDoc._id}, cursorDoc, () => {
-                            callback(cursorDoc._id);
-                        });
-                    }
-                    return false;
-                });
-            });
+            return await this._insert(doc, mappings);
         }
-    });
-};
-GenericDBManager.prototype._insert = function (doc, callback) {
-    validate.collectionName(this.collectionName);
-    this.exec().then((db) => {
-        db.collection(this.collectionName).insertOne(doc, (error, result) => {
-            var id;
-            if (error) {
-                logger.error('An ERROR has occurred while inserting document in "%s": \n%s.',
-                    this.collectionName,
-                    error.message);
-                throw new Error(error);
-            } else if (typeof(callback) === 'function') {
-                id = doc._id || result.insertedId;
-                logger.debug('Document was successfully inserted into "%s".', this.collectionName);
-                callback(id);
-            }
-        });
-    });
-};
-
-GenericDBManager.prototype._delete = function (criteria, callback) {
-    var preparedCriteria = criteria;
-    if (typeof(criteria) === 'number' || typeof(criteria) === 'string') {
-        preparedCriteria = {_id: new this.getObjectId(criteria)};
     }
-    validate.collectionName(this.collectionName);
-    this.exec().then((db) => {
-        db.collection(this.collectionName).removeOne(preparedCriteria, (error, result) => {
-            if (error) {
-                logger.error('An ERROR has occurred while deleting document in "%s".', this.collectionName);
-                throw error;
-            } else if (typeof(callback) === 'function') {
-                logger.debug('Document was successfully deleted in "%s".', this.collectionName);
-                callback(result);
-            }
-        });
-    });
-};
 
-GenericDBManager.prototype._deleteMany = function (criteria, callback) {
-    var preparedCriteria = criteria;
-    if (typeof(criteria) === 'number' || typeof(criteria) === 'string') {
-        preparedCriteria = {_id: new this.getObjectId(criteria)};
+    async _saveEntities(/*doc, callback*/) {
+        logger.info('_saveEntities not implemented');
     }
-    validate.collectionName(this.collectionName);
-    this.exec().then((db) => {
-        db.collection(this.collectionName).deleteMany(preparedCriteria, (error, result) => {
-            if (error) {
-                logger.error('An ERROR has occurred while deleting document in "%s".', this.collectionName);
-                throw error;
-            } else if (typeof(callback) === 'function') {
-                logger.debug('Documents were successfully deleted in "%s".', this.collectionName);
-                callback(result);
+
+    async _update(criteria, doc, callback, mappings, upsert) {
+        const preparedUpsert = utils.hasContent(upsert) ? Boolean(upsert) : true;
+        validate.collectionName(this.collectionName);
+        this._correctCriteria(criteria);
+        this.exec().then((db) => {
+            var id = doc._id;
+            if (!mappings) {
+                db.collection(this.collectionName).replaceOne({_id: id}, doc, {
+                    upsert: preparedUpsert,
+                    raw: true
+                }, (error, result) => {
+                    if (error) {
+                        logger.error('An ERROR has occurred while updating document in "%s".', this.collectionName);
+                        throw new Error(error);
+                    } else if (typeof callback === 'function') {
+                        logger.debug('Document was successfully updated in "%s".', this.collectionName);
+                        callback(getReplacedId(preparedUpsert, result, id));
+                    }
+                });
+            } else {
+                delete doc._id;
+                db.collection(this.collectionName).find(criteria, (error, cursor) => {
+                    cursor.next((cursorError, cursorDoc) => {
+                        if (cursorError) {
+                            logger.error('An ERROR has occurred while getting document from "%s" to update.',
+                                this.collectionName);
+                            callback(null);
+                        } else {
+                            logger.debug('Document {_id: "%s"} was successfully extracted from "%s".',
+                                doc ? doc._id : null,
+                                this.collectionName);
+                            this._mergeTo(cursorDoc, doc, mappings);
+                            this._update({_id: cursorDoc._id}, cursorDoc, () => {
+                                callback(cursorDoc._id);
+                            });
+                        }
+                        return false;
+                    });
+                });
             }
         });
-    });
-};
+    }
 
-GenericDBManager.prototype._list = function (criteria, callback, mappings) {
-    validate.collectionName(this.collectionName);
-    this.exec().then((db) => {
-        var cursor = db.collection(this.collectionName).find(criteria);
-        var index = 0;
-        var res = [];
+    async _insert(doc, callback) {
+        validate.collectionName(this.collectionName);
+        this.exec().then((db) => {
+            db.collection(this.collectionName).insertOne(doc, (error, result) => {
+                var id;
+                if (error) {
+                    logger.error('An ERROR has occurred while inserting document in "%s": \n%s.',
+                        this.collectionName,
+                        error.message);
+                    throw new Error(error);
+                } else if (typeof(callback) === 'function') {
+                    id = doc._id || result.insertedId;
+                    logger.debug('Document was successfully inserted into "%s".', this.collectionName);
+                    callback(id);
+                }
+            });
+        });
+    }
+
+    async _delete(criteria, callback) {
+        var preparedCriteria = criteria;
+        if (typeof(criteria) === 'number' || typeof(criteria) === 'string') {
+            preparedCriteria = {_id: new getObjectId(criteria)};
+        }
+        validate.collectionName(this.collectionName);
+        this.exec().then((db) => {
+            db.collection(this.collectionName).removeOne(preparedCriteria, (error, result) => {
+                if (error) {
+                    logger.error('An ERROR has occurred while deleting document in "%s".', this.collectionName);
+                    throw error;
+                } else if (typeof(callback) === 'function') {
+                    logger.debug('Document was successfully deleted in "%s".', this.collectionName);
+                    callback(result);
+                }
+            });
+        });
+    }
+
+    async _deleteMany(criteria, callback) {
+        var preparedCriteria = criteria;
+        if (typeof(criteria) === 'number' || typeof(criteria) === 'string') {
+            preparedCriteria = {_id: new getObjectId(criteria)};
+        }
+        validate.collectionName(this.collectionName);
+        this.exec().then((db) => {
+            db.collection(this.collectionName).deleteMany(preparedCriteria, (error, result) => {
+                if (error) {
+                    logger.error('An ERROR has occurred while deleting document in "%s".', this.collectionName);
+                    throw error;
+                } else if (typeof(callback) === 'function') {
+                    logger.debug('Documents were successfully deleted in "%s".', this.collectionName);
+                    callback(result);
+                }
+            });
+        });
+    }
+
+    async _list(criteria, mappings) {
+        validate.collectionName(this.collectionName);
+        const db = await this.exec();
+        const cursor = db.collection(this.collectionName).find(criteria);
+        let index = 0;
+        const res = [];
         cursor.count({}, (error, count) => {
             if (count) {
                 cursor.forEach((doc) => {
@@ -246,147 +261,132 @@ GenericDBManager.prototype._list = function (criteria, callback, mappings) {
                 callback(res);
             }
         });
-    });
-};
-
-GenericDBManager.prototype._mergeTo = function (dest, src, mappings) {
-    if (mappings && mappings.length) {
-        mappings.forEach((mappingItem) => {
-            var srcValue = utils.getValueFromObjectByPath(src, mappingItem.input || mappingItem.property);
-            utils.setValueToObjectByPath(dest, mappingItem.property, srcValue);
-        });
     }
-    return dest;
-};
 
-/**************************/
+    _mergeTo(dest, src, mappings) {
+        if (mappings && mappings.length) {
+            mappings.forEach((mappingItem) => {
+                var srcValue = utils.getValueFromObjectByPath(src, mappingItem.input || mappingItem.property);
+                utils.setValueToObjectByPath(dest, mappingItem.property, srcValue);
+            });
+        }
+        return dest;
+    }
 
-GenericDBManager.prototype.save = function (doc, mappings) {
-    return new Promise((resolve) => {
-        this._save(doc, (data) => {
-            this.propertyChange('save', [data, doc, mappings]);
-            resolve(data);
-        }, null, mappings);
-    }).catch(errorLog);
-};
+    /**************************/
 
-GenericDBManager.prototype.saveByCriteria = function (doc, criteria, mappings) {
-    return new Promise((resolve) => {
-        this._save(doc, (data) => {
-            this.propertyChange('saveByCriteria', [data, doc, criteria, mappings]);
-            resolve(data);
-        }, criteria, mappings);
-    }).catch(errorLog);
-};
+    async save(doc, mappings) {
+        return new Promise((resolve) => {
+            this._save(doc, (data) => {
+                this.propertyChange('save', [data, doc, mappings]);
+                resolve(data);
+            }, null, mappings);
+        }).catch(errorLog);
+    }
 
-GenericDBManager.prototype.get = function (ids, mappings) {
-    return new Promise((resolve) => {
-        var criteria;
-        if (Array.isArray(ids)) {
-            criteria = {
-                _id: {
-                    $in: _.map(ids, this.getObjectId.bind(this))
-                }
-            };
-            this._list(criteria, (entities) => {
+    async saveByCriteria(doc, criteria, mappings) {
+        return new Promise((resolve) => {
+            this._save(doc, (data) => {
+                this.propertyChange('saveByCriteria', [data, doc, criteria, mappings]);
+                resolve(data);
+            }, criteria, mappings);
+        }).catch(errorLog);
+    }
+
+    async get(ids, mappings) {
+        try {
+            if (Array.isArray(ids)) {
+                const criteria = {
+                    _id: {
+                        $in: _.map(ids, getObjectId.bind(this))
+                    }
+                };
+                const entities = await this._list(criteria, mappings);
                 this.propertyChange('list', [entities, ids, mappings]);
-                resolve(entities);
-            }, mappings);
-        } else {
-            criteria = {
-                _id: this.getObjectId(ids)
-            };
-            this._getDoc(criteria, (entities) => {
+                return entities;
+            } else {
+                const criteria = {
+                    _id: getObjectId(ids)
+                };
+                const entities = await this._getDoc(criteria, mappings);
                 this.propertyChange('get', [entities, ids, mappings]);
+                return entities;
+            }
+        } catch (e) {
+            errorLog(e);
+            return null;
+        }
+    }
+
+    async getByCriteria(criteria, mappings) {
+        try {
+            const entity = await this._getDoc(criteria, mappings);
+            this.propertyChange('getByCriteria', [entities, criteria, mappings]);
+            return entity;
+        } catch (e) {
+            errorLog(e);
+        }
+    }
+
+    async remove(id) {
+        return new Promise((resolve) => {
+            var criteria = {_id: getObjectId(id)};
+            if (_.isArray(id)) {
+                criteria = {
+                    _id: {
+                        $in: this.getObjectIdsList(id)
+                    }
+                };
+                this._deleteMany(criteria, (data) => {
+                    this.propertyChange('remove', [data, id]);
+                    resolve(data);
+                });
+            } else {
+                criteria = {_id: getObjectId(id)};
+                this._delete(criteria, (data) => {
+                    this.propertyChange('remove', [data, id]);
+                    resolve(data);
+                });
+            }
+        }).catch(errorLog);
+    }
+
+    async list(mappings) {
+        return new Promise((resolve) => {
+            this._list({}, (entities) => {
+                this.propertyChange('list', [{}/*filters*/, mappings]);
                 resolve(entities);
             }, mappings);
+        }).catch(errorLog);
+    }
+
+    async listByCriteria(criteria, mappings) {
+        return new Promise((resolve) => {
+            this._list(criteria, (entities) => {
+                this.propertyChange('list', [criteria, mappings]);
+                resolve(entities);
+            }, mappings);
+        }).catch(errorLog);
+    }
+
+    async getObjectIdsList(ids) {
+        return _.map(ids, this.getObjectId.bind(this));
+    }
+
+    async _correctCriteria(criteria) {
+        if (!criteria) {
+            return null;
         }
-    }).catch(errorLog);
-};
-
-GenericDBManager.prototype.getByCriteria = function (criteria, mappings) {
-    return new Promise((resolve) => {
-        this._getDoc(criteria, (entities) => {
-            this.propertyChange('getByCriteria', [entities, criteria, mappings]);
-            resolve(entities);
-        }, mappings);
-    }).catch(errorLog);
-};
-
-GenericDBManager.prototype.remove = function (id) {
-    return new Promise((resolve) => {
-        var criteria = {_id: this.getObjectId(id)};
-        if (_.isArray(id)) {
-            criteria = {
-                _id: {
-                    $in: this.getObjectIdsList(id)
-                }
-            };
-            this._deleteMany(criteria, (data) => {
-                this.propertyChange('remove', [data, id]);
-                resolve(data);
-            });
-        } else {
-            criteria = {_id: this.getObjectId(id)};
-            this._delete(criteria, (data) => {
-                this.propertyChange('remove', [data, id]);
-                resolve(data);
-            });
+        if (criteria.hasOwnProperty('_id')) {
+            criteria._id = getObjectId(criteria._id);
         }
-    }).catch(errorLog);
-};
-
-GenericDBManager.prototype.list = function (mappings) {
-    return new Promise((resolve) => {
-        this._list({}, (entities) => {
-            this.propertyChange('list', [{}/*filters*/, mappings]);
-            resolve(entities);
-        }, mappings);
-    }).catch(errorLog);
-};
-
-GenericDBManager.prototype.listByCriteria = function (criteria, mappings) {
-    return new Promise((resolve) => {
-        this._list(criteria, (entities) => {
-            this.propertyChange('list', [criteria, mappings]);
-            resolve(entities);
-        }, mappings);
-    }).catch(errorLog);
-};
-
-GenericDBManager.prototype._getDBUrl = function () {
-    return 'mongodb://'
-        + cfg.user + ':'
-        + cfg.pass + '@'
-        + cfg.host + ':'
-        + cfg.port + '/'
-        + cfg.dbName;
-};
-
-GenericDBManager.prototype.getObjectId = function (id) {
-    if (id instanceof mongo.ObjectID) {
-        return id;
+        return criteria;
     }
-    return new mongo.ObjectId(id);
-};
 
-GenericDBManager.prototype.getObjectIdsList = function (ids) {
-    return _.map(ids, this.getObjectId.bind(this));
-};
-
-GenericDBManager.prototype._correctCriteria = function (criteria) {
-    if (!criteria) {
-        return null;
+    async getName() {
+        return IOC.DB_MANAGER.GENERIC;
     }
-    if (criteria.hasOwnProperty('_id')) {
-        criteria._id = this.getObjectId(criteria._id);
-    }
-    return criteria;
-};
-
-GenericDBManager.prototype.getName = function () {
-    return IOC.DB_MANAGER.GENERIC;
-};
+}
 
 module.exports = {
     class: GenericDBManager

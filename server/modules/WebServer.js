@@ -9,7 +9,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var RedisStore = require('connect-redis')(session);
 var redis = require('redis');
-var appConfiguration = require('application-configuration/application');
+var appConfiguration = require('config/config');
 var passport = require('passport');
 
 function WebServer(props) {
@@ -53,18 +53,22 @@ WebServer.prototype._initHTTP = function () {
     this.app.set('port', this.port);
 
     this.sessionConfig = {
-        key: 'connect.sid',
+        name: 'connect.sid',
         secret: 'keyboard cat',
         store: this.store,
         resave: false,
-        saveUninitialized: false,
+        saveUninitialized: true,
+        rolling: true,
         cookie: {
-            secure: true,
-            httpOnly: false,
+            secure: false,
             maxAge: 2419200000
         }
     };
+    this.app.use(cookieParser());
+    this.app.use(bodyParser());
     this.app.use(session(this.sessionConfig));
+    this.app.use(this.passport.initialize());
+    this.app.use(this.passport.session());
     this.server.listen(this.props.network.http, this.props.network.host, () => {
         logger.info('Node server started on http://%s:%d', this.props.network.host, this.props.network.http);
     });

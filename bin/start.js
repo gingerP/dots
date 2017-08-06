@@ -2,7 +2,7 @@ var Server;
 var wsServer;
 var server;
 var WsServer;
-var configuration = require('../application-configuration/application');
+var configuration = require('../config/config');
 var path = require('path');
 
 //require('debug').enable('socket.io:*');

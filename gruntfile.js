@@ -22,7 +22,6 @@ function normalizeAppCacheModule(module, script) {
     return result;
 }
 
-global.req = require('app-root-path').require;
 require('app-module-path').addPath(path.resolve(__dirname, './'));
 
 require('load-grunt-tasks')(grunt);

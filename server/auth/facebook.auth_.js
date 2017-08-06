@@ -3,7 +3,7 @@
 const IOC = require('server/constants/ioc.constants');
 const FACEBOOK_CODE = IOC.AUTH.FACEBOOK;
 const STRATEGY = 'passport-facebook';
-var GenericAuth = require('server/auth/generic.auth').class;
+var GenericAuth = require('server/auth/generic.auth_').class;
 
 function FacebookAuth() {
 

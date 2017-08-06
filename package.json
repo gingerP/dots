@@ -1,9 +1,9 @@
 {
   "name": "dots",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "node bin/start.js"
+    "start": "node --inspect=9999 bin/start.js"
   },
   "dependencies": {
     "angular": "1.5.6",
