@@ -29,10 +29,11 @@ function updateSession(socket, client) {
     return socket.saveSession().return(client);
 }
 
-function createClient(clientsDB) {
+async function createClient(clientsDB) {
     var client = creationUtils.newClient(getRandomAnimal(), null, null, true);
 
-    return clientsDB.save(client).then(clientsDB.get.bind(clientsDB));
+    const savedClient = await clientsDB.save(client);
+    return savedClient;
 }
 
 function GameSupportService() {
@@ -56,6 +57,7 @@ GameSupportService.prototype.onNewClient = async function (message) {
         }
         await updateSession(message.client, client);
         await inst.notifyAboutConnectionStatus(client, true);
+        message.callback(client);
 
     } catch (e) {
         errorLog(e);

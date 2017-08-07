@@ -116,16 +116,20 @@ class GenericDBManager extends Observable {
     }
 
     async _save(doc, criteria, mappings) {
-        var id = doc._id;
-        if (criteria) {
-            delete doc._id;
-            this._correctCriteria(criteria);
-            return await this._update(criteria, doc, mappings);
-        } else if (utils.hasContent(id)) {
-            return await this._update({_id: getObjectId(id)}, doc, mappings);
-        } else {
-            delete doc._id;
-            return await this._insert(doc, mappings);
+        try {
+            var id = doc._id;
+            if (criteria) {
+                delete doc._id;
+                this._correctCriteria(criteria);
+                return await this._update(criteria, doc, mappings);
+            } else if (utils.hasContent(id)) {
+                return await this._update({_id: getObjectId(id)}, doc, mappings);
+            } else {
+                delete doc._id;
+                return await this._insert(doc, mappings);
+            }
+        } catch (e) {
+            errorLog(e);
         }
     }
 
@@ -176,23 +180,17 @@ class GenericDBManager extends Observable {
         });
     }
 
-    async _insert(doc, callback) {
-        validate.collectionName(this.collectionName);
-        this.exec().then((db) => {
-            db.collection(this.collectionName).insertOne(doc, (error, result) => {
-                var id;
-                if (error) {
-                    logger.error('An ERROR has occurred while inserting document in "%s": \n%s.',
-                        this.collectionName,
-                        error.message);
-                    throw new Error(error);
-                } else if (typeof(callback) === 'function') {
-                    id = doc._id || result.insertedId;
-                    logger.debug('Document was successfully inserted into "%s".', this.collectionName);
-                    callback(id);
-                }
-            });
-        });
+    async _insert(doc) {
+        try {
+            validate.collectionName(this.collectionName);
+            const db = await this.exec();
+            const result = await db.collection(this.collectionName).insertOne(doc);
+            const id = doc._id || result.insertedId;
+            logger.debug(`Document was successfully inserted into "${this.collectionName}".`);
+            return this._getDoc(id);
+        } catch (e) {
+            logger.error(`An ERROR has occurred while inserting document in "${this.collectionName}": \n${e.message}.`);
+        }
     }
 
     async _delete(criteria, callback) {
@@ -236,31 +234,31 @@ class GenericDBManager extends Observable {
     async _list(criteria, mappings) {
         validate.collectionName(this.collectionName);
         const db = await this.exec();
-        const cursor = db.collection(this.collectionName).find(criteria);
+        const cursor = await db.collection(this.collectionName).find(criteria);
         let index = 0;
-        const res = [];
-        cursor.count({}, (error, count) => {
-            if (count) {
+        let result = [];
+        const count = await cursor.count({});
+        if (count) {
+            return new Promise((resolve) => {
                 cursor.forEach((doc) => {
                     index++;
                     if (mappings) {
-                        res.push(utils.extractFields(doc, mappings));
+                        result.push(utils.extractFields(doc, mappings));
                     } else {
-                        res.push(doc);
+                        result.push(doc);
                     }
-                    if (index === count && typeof(callback) === 'function') {
+                    if (index === count) {
                         logger.debug('List(num: %s) of documents was successfully extracted from "%s".',
                             index, this.collectionName);
-                        callback(res);
+                        resolve(result);
                     }
                 });
-            } else if (typeof(callback) === 'function') {
-                logger.debug('List(num: %s) of documents was successfully extracted from "%s".',
-                    index,
-                    this.collectionName);
-                callback(res);
-            }
-        });
+            });
+
+        } else {
+            logger.debug(`List(num: ${index}) of documents was successfully extracted from "${this.collectionName}".`);
+            return result;
+        }
     }
 
     _mergeTo(dest, src, mappings) {
@@ -276,12 +274,13 @@ class GenericDBManager extends Observable {
     /**************************/
 
     async save(doc, mappings) {
-        return new Promise((resolve) => {
-            this._save(doc, (data) => {
-                this.propertyChange('save', [data, doc, mappings]);
-                resolve(data);
-            }, null, mappings);
-        }).catch(errorLog);
+        try {
+            const data = await this._save(doc, null, mappings);
+            this.propertyChange('save', [data, doc, mappings]);
+            return data;
+        } catch (e) {
+            errorLog(e);
+        }
     }
 
     async saveByCriteria(doc, criteria, mappings) {
@@ -352,21 +351,23 @@ class GenericDBManager extends Observable {
     }
 
     async list(mappings) {
-        return new Promise((resolve) => {
-            this._list({}, (entities) => {
-                this.propertyChange('list', [{}/*filters*/, mappings]);
-                resolve(entities);
-            }, mappings);
-        }).catch(errorLog);
+        try {
+            const entities = await this._list({}, mappings);
+            this.propertyChange('list', [{}/*filters*/, mappings]);
+            return entities;
+        } catch (e) {
+            errorLog(e);
+        }
     }
 
     async listByCriteria(criteria, mappings) {
-        return new Promise((resolve) => {
-            this._list(criteria, (entities) => {
-                this.propertyChange('list', [criteria, mappings]);
-                resolve(entities);
-            }, mappings);
-        }).catch(errorLog);
+        try {
+            const entities = await this._list(criteria, mappings);
+            this.propertyChange('list', [criteria, mappings]);
+            return entities;
+        } catch (e) {
+            errorLog(e);
+        }
     }
 
     async getObjectIdsList(ids) {

@@ -53,7 +53,7 @@ class CommonAuth {
         this.authDB = ioc[IOC.DB_MANAGER.AUTH];
         this.passport = ioc[IOC.COMMON.PASSPORT];
         this.clienstDB = ioc[IOC.DB_MANAGER.CLIENTS];
-        this.init(server, ws);
+        this.initApi(server, ws);
     }
 }
 module.exports = {

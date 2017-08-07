@@ -81,14 +81,6 @@ WSServer.prototype._initEvents = function () {
         connectedNum++;
         logger.info('Peer "%s" connected. %s', connection.client.conn.remoteAddress, connectedNum);
         let wrapper = inst.addConnection(connection, connection.id);
-        connection.on('dots', function (message, callback) {
-            try {
-                let data = inst.extractMessage(message);
-                inst.propertyChange(data.type, {client: wrapper, data: data, callback: callback});
-            } catch (e) {
-                logger.error('While parsing input message: ' + e.message);
-            }
-        });
         connection.on('disconnect', function (reasonCode, description) {
             disconnectedNum++;
             inst.removeConnection(this.id, {code: reasonCode, description: description});
