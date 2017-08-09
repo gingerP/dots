@@ -28,7 +28,7 @@ ClientsDBManager.prototype.getClient = function (id) {
 };
 
 ClientsDBManager.prototype.getClientByConnectionId = function (connectionId) {
-    return this.getByCriteria({connection_id: connectionId}).catch(errorLogger);
+    return this.getByCriteria({connection_id: connectionId});
 };
 
 ClientsDBManager.prototype.getClientsExcept = function (client) {
@@ -36,7 +36,7 @@ ClientsDBManager.prototype.getClientsExcept = function (client) {
         _id: {
             $ne: this.getObjectId(client._id)
         }
-    }).catch(errorLogger);
+    });
 };
 
 ClientsDBManager.prototype.getOnlineClients = function () {
@@ -54,7 +54,7 @@ ClientsDBManager.prototype.getByAuthIdType = function (authId, type) {
     return this.getByCriteria({
         'auth.id': authId,
         'auth.type': type
-    }).catch(errorLogger);
+    })
 };
 
 ClientsDBManager.prototype.getName = function () {

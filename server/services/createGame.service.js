@@ -50,118 +50,105 @@ class CreateGameService extends GenericService {
                     }
                 }
             }
-        } catch(error) {
+        } catch (error) {
             errorLog(error);
         }
     }
 
     async onReject(message) {
-        var inst = this;
-        inst.giveAnAnswerToClient(message).then(function (answer) {
+        const inst = this;
+        try {
+            const answer = await inst.giveAnAnswerToClient(message);
             if (!answer) {
                 return;
             }
             if (answer.isInviteExist) {
                 answer.invite.status = inviteStatuses.denied;
-                inst.createGameDBManager.save(answer.invite);
-                inst.controller.rejectPlayer(answer.fromClient, answer.toClient);
+                await inst.createGameDBManager.save(answer.invite);
+                await inst.controller.rejectPlayer(answer.fromClient, answer.toClient);
             } else {
-                inst.controller.rejectPlayerBeLate(answer.fromClient, answer.toClient);
+                await inst.controller.rejectPlayerBeLate(answer.fromClient, answer.toClient);
             }
-        }).catch(errorLog);
+        } catch (e) {
+            errorLog(e);
+        }
     }
 
-    onSuccess(message) {
+    async onSuccess(message) {
         var inst = this;
-
-        function handleSuccessGame(answer) {
+        try {
+            const answer = await inst.giveAnAnswerToClient(message);
             if (!answer) {
                 return;
             }
             if (answer.isInviteExist) {
                 answer.invite.status = inviteStatuses.successful;
-                inst.createGameDBManager.save(answer.invite);
-                inst.newGame(answer.fromClient, answer.toClient, answer.fromClient, answer.invite)
-                    .then(function (gameDetails) {
-                        inst.controller.successPlayer(
-                            answer.fromClient,
-                            answer.toClient,
-                            gameDetails.game,
-                            gameDetails.gameDataFrom,
-                            gameDetails.gameDataTo
-                        );
-                    });
+                await inst.createGameDBManager.save(answer.invite);
+                const gameDetails = await inst.newGame(answer.fromClient, answer.toClient, answer.fromClient, answer.invite);
+                await inst.controller.successPlayer(
+                    answer.fromClient,
+                    answer.toClient,
+                    gameDetails.game,
+                    gameDetails.gameDataFrom,
+                    gameDetails.gameDataTo
+                );
             } else {
-                inst.controller.successPlayerBeLate(answer.fromClient, answer.toClient);
+                await inst.controller.successPlayerBeLate(answer.fromClient, answer.toClient);
             }
-        }
-
-        return inst.giveAnAnswerToClient(message)
-            .then(handleSuccessGame)
-            .catch(errorLog);
-    }
-
-    onCancelGame(message) {
-        var inst = this;
-        var gameId = _.get(message, 'data.extend.gameId');
-
-        function cancelGame(data) {
-            var game = data[0];
-            var client = data[1];
-            if (game.from.equals(client._id) || game.to.equals(client._id)) {
-                let opponentId = game.from.equals(client._id) ? game.to : game.from;
-                message.callback(true);
-                inst.clientsDBManager.get(opponentId).then(function (opponent) {
-                    inst.cancelGame([opponent, client], game);
-                });
-            } else {
-                message.callback(Errors.noAccess);
-                errorLog(Errors.noAccess);
-            }
-        }
-
-        if (gameId) {
-            let clientId = sessionUtils.getClientId(message.client.getSession());
-            Promise.all([
-                this.gameDBManager.get(gameId),
-                this.clientsDBManager.get(clientId)
-            ]).then(cancelGame)
-                .catch(errorLog);
-        } else {
-            logger.error('onCancelGame: gameId empty!');
+        } catch (e) {
+            errorLog(e);
         }
     }
 
-    newGame(clientFrom, clientTo, activePlayer, invite) {
-        var inst = this;
+    async onCancelGame(message) {
+        const inst = this;
+        try {
+            const gameId = _.get(message, 'data.extend.gameId');
+            if (gameId) {
+                let clientId = sessionUtils.getClientId(message.client.getSession());
+                const [game, client] = await Promise.all([
+                    this.gameDBManager.get(gameId),
+                    this.clientsDBManager.get(clientId)
+                ]);
 
-        function saveInvite(game) {
+                if (game.from.equals(client._id) || game.to.equals(client._id)) {
+                    let opponentId = game.from.equals(client._id) ? game.to : game.from;
+                    message.callback(true);
+                    const opponent = await inst.clientsDBManager.get(opponentId);
+                    await inst.cancelGame([opponent, client], game);
+                } else {
+                    message.callback(Errors.noAccess);
+                }
+            } else {
+                logger.error('onCancelGame: gameId empty!');
+            }
+        } catch (e) {
+            errorLog(e);
+        }
+    }
+
+    async newGame(clientFrom, clientTo, activePlayer, invite) {
+        const inst = this;
+        try {
+
+            const game = await this.gameSupportService.newGame(clientFrom._id, clientTo._id, activePlayer._id);
             invite.game = game._id;
-            return inst.createGameDBManager
-                .save(invite)
-                .then(() => game);
-        }
-
-        function createGameData(game) {
-            var colors = getRandomColorsPair();
-            return Promise.all([
+            await inst.createGameDBManager.save(invite);
+            const colors = getRandomColorsPair();
+            const [gameDataFrom, gameDataTo] = await Promise.all([
                 inst.gameDataDBManager.createNew(game._id, clientFrom._id, colors[0]),
                 inst.gameDataDBManager.createNew(game._id, clientTo._id, colors[1])
-            ]).then((gameData) => {
-                return {
-                    gameDataFrom: gameData[0],
-                    gameDataTo: gameData[1],
-                    game: game
-                };
-            });
+            ]);
+            return {
+                gameDataFrom: gameData[0],
+                gameDataTo: gameData[1],
+                game: game
+            };
+        } catch(e) {
+            errorLog(e);
         }
-
-        return this.gameSupportService
-            .newGame(clientFrom._id, clientTo._id, activePlayer._id)
-            .then(saveInvite)
-            .then(createGameData)
-            .catch(errorLog);
     }
+
 
     async cancelGameById(id) {
         const inst = this;
@@ -195,8 +182,8 @@ class CreateGameService extends GenericService {
         inst.controller.cancelGame(clients, gameCopy);
     }
 
-    giveAnAnswerToClient(message) {
-        var inst = this;
+    async giveAnAnswerToClient(message) {
+        const inst = this;
         var clientId;
         var toClientId;
         var fromClient;
