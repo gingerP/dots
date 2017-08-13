@@ -39,12 +39,12 @@ class WSServer extends Observable {
         this.ws.use(function (socket, next) {
             cookieParser(socket.handshake, {}, function (err) {
                 if (err) {
-                    console.log("error in parsing cookie");
+                    logger.error('error in parsing cookie');
                     return next(err);
                 }
                 if (!socket.handshake.signedCookies) {
-                    console.log("no secureCookies|signedCookies found");
-                    return next(new Error("no secureCookies found"));
+                    logger.error('no secureCookies|signedCookies found');
+                    return next(new Error('no secureCookies found'));
                 }
                 config.store.get(socket.handshake.signedCookies[config.name], function (err, session) {
                     socket.session = session;
@@ -52,9 +52,9 @@ class WSServer extends Observable {
                         err = new Error('session not found');
                     }
                     if (err) {
-                        console.log('failed connection to socket.io:', err);
+                        logger.error(`failed connection to socket.io: ${err.message}`);
                     } else {
-                        console.log('successful connection to socket.io');
+                        logger.debug('successful connection to socket.io');
                     }
                     next(err);
                 });
@@ -67,7 +67,7 @@ class WSServer extends Observable {
             var config = this.http.sessionConfig;
             var sessionId = connection.handshake.signedCookies[config.name];
             config.store.set(sessionId, connection.session, function (error, message) {
-                logger.debug('Session stored! %s', JSON.stringify(connection.session));
+                logger.debug(`Session stored! ${JSON.stringify(connection.session)}`);
                 resolve();
             });
         });
@@ -80,12 +80,12 @@ class WSServer extends Observable {
         });
         this.ws.on('connection', function (connection) {
             connectedNum++;
-            logger.info('Peer "%s" connected. %s', connection.client.conn.remoteAddress, connectedNum);
+            logger.debug('Peer "%s" connected. %s', connection.client.conn.remoteAddress, connectedNum);
             let wrapper = inst.addConnection(connection, connection.id);
             connection.on('disconnect', function (reasonCode, description) {
                 disconnectedNum++;
-                inst.removeConnection(this.id, {code: reasonCode, description: description});
-                logger.info('Peer "%s" disconnected. %s', connection.client.conn.remoteAddress, disconnectedNum);
+                inst.removeConnection(this.id, {code: reasonCode});
+                logger.debug(`Peer "${connection.client.conn.remoteAddress}" disconnected. ${disconnectedNum}`);
             });
         });
     }
@@ -131,6 +131,7 @@ class WSServer extends Observable {
         var connectionObj = this.connections[id];
 
         delete this.connections[id];
+        this.runHandler(this.events.REMOVE_CONNECTION, {client: connectionObj.wrapper, data: reason});
         this.propertyChange(
             this.events.REMOVE_CONNECTION,
             {client: connectionObj.wrapper, data: reason}

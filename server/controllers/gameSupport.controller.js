@@ -34,7 +34,9 @@ class GameSupportController extends GenericController {
     onRemoveConnection(handler) {
         this.wss.setHandler(
             this.wss.events.REMOVE_CONNECTION,
-            this.validator(Joi.string().length(24).required()),
+            this.validator(Joi.object().keys({
+                code: Joi.string().required()
+            })),
             handler
         );
     }

@@ -69,10 +69,9 @@ class GameSupportService extends GenericService {
             message.callback(true);
         }
 
-        const disconnectedClient = await this.updateNetworkStatus(clientId, false);
         const isOnline = false;
+        const disconnectedClient = await this.updateNetworkStatus(clientId, isOnline);
         await inst.notifyAboutConnectionStatus(disconnectedClient, isOnline);
-        message.callback(true);
     }
 
     async onReconnect(message) {
@@ -128,7 +127,7 @@ class GameSupportService extends GenericService {
             throw new Errors.ClientNotFoundError();
         }
         client.isOnline = Boolean(isOnline);
-        return await this.clientsDBManager.save(client);
+        return this.clientsDBManager.save(client);
     }
 
     saveNewConnectionId(client, connectionId) {
@@ -210,7 +209,7 @@ class GameSupportService extends GenericService {
         this.gameSupportController = ioc[IOC.CONTROLLER.GAME_SUPPORT];
         this.gameSupportController.onNewClient(this.onNewClient.bind(this));
         this.gameSupportController.onReconnect(this.onReconnect.bind(this));
-        this.gameSupportController.onDisconnect(this.onDisconnect.bind(this));
+        this.gameSupportController.onRemoveConnection(this.onDisconnect.bind(this));
         this.cachedNetworkStatusesDBManager = ioc[IOC.DB_MANAGER.CACHED_NETWORK_STATUSES];
         this.clientsDBManager = ioc[IOC.DB_MANAGER.CLIENTS];
         this.gameDBManager = ioc[IOC.DB_MANAGER.GAME];
