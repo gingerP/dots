@@ -75,6 +75,8 @@ class GenericDBManager extends Observable {
             let preparedCriteria = criteria;
             if (typeof(criteria) === 'number' || typeof(criteria) === 'string') {
                 preparedCriteria = {_id: this.getObjectId(criteria)};
+            } else if (criteria instanceof mongo.ObjectID) {
+                preparedCriteria = {_id: criteria};
             }
             validate.collectionName(this.collectionName);
             validate.criteria(preparedCriteria);
@@ -121,7 +123,7 @@ class GenericDBManager extends Observable {
                 const result = await db.collection(this.collectionName)
                     .replaceOne({_id: id}, doc, {upsert: preparedUpsert, raw: true});
                 logger.debug('Document was successfully updated in "%s".', this.collectionName);
-                return this.getReplacedId(preparedUpsert, result, id);
+                return this._getDoc(id);
             } else {
                 delete doc._id;
                 const cursor = await db.collection(this.collectionName).find(criteria);
@@ -139,7 +141,8 @@ class GenericDBManager extends Observable {
     async _insert(doc) {
         try {
             validate.collectionName(this.collectionName);
-            const result = await this.exec().collection(this.collectionName).insertOne(doc);
+            const db = await this.exec();
+            const result = await db.collection(this.collectionName).insertOne(doc);
             const id = doc._id || result.insertedId;
             logger.debug(`Document was successfully inserted into "${this.collectionName}".`);
             return await this._getDoc(id);
@@ -156,7 +159,8 @@ class GenericDBManager extends Observable {
                 preparedCriteria = {_id: this.getObjectId(criteria)};
             }
             validate.collectionName(this.collectionName);
-            return await this.exec().collection(this.collectionName).removeOne(preparedCriteria);
+            const db = await this.exec();
+            return await db.collection(this.collectionName).removeOne(preparedCriteria);
         } catch (error) {
             logger.error(error);
             throw error;
@@ -170,7 +174,8 @@ class GenericDBManager extends Observable {
                 preparedCriteria = {_id: this.getObjectId(criteria)};
             }
             validate.collectionName(this.collectionName);
-            return await this.exec().collection(this.collectionName).deleteMany(preparedCriteria);
+            const db = await this.exec();
+            return await db.collection(this.collectionName).deleteMany(preparedCriteria);
         } catch (error) {
             logger.error(error);
             throw error;
@@ -180,7 +185,8 @@ class GenericDBManager extends Observable {
     async _list(criteria, mappings) {
         try {
             validate.collectionName(this.collectionName);
-            const cursor = await this.exec().collection(this.collectionName).find(criteria);
+            const db = await this.exec();
+            const cursor = await db.collection(this.collectionName).find(criteria);
             let index = 0;
             let result = [];
             const count = await cursor.count({});

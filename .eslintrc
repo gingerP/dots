@@ -36,7 +36,7 @@
   },
 
   "rules": {
-
+    "no-return-await": 2, //disallow unnecessary return await
     //
     //Possible Errors
     //

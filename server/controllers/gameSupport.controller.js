@@ -1,6 +1,7 @@
 'use strict';
 
 var _ = require('lodash');
+const Joi = require('joi');
 var Events = require('server/events');
 var IOC = require('../constants/ioc.constants');
 var GenericController = require('./generic.controller').class;
@@ -8,26 +9,37 @@ var CommonUtils = require('server/utils/common-utils');
 var logger = require('server/logging/logger').create('GameSupportController');
 /*var sessionUtils = require('server/utils/session-utils');*/
 
-function GameSupportController() {
-}
+class GameSupportController extends GenericController {
 
-GameSupportController.prototype = Object.create(GenericController.prototype);
-GameSupportController.prototype.constructor = GameSupportController;
+    onNewClient(handler) {
+        this.wss.setHandler(Events.CLIENT.NEW(), handler);
+    }
 
-GameSupportController.prototype.onNewClient = function (handler) {
-    this.wss.addListener(Events.CLIENT.NEW(), handler);
-};
+    onReconnect(handler) {
+        this.wss.setHandler(
+            Events.CLIENT.RECONNECT(),
+            this.validator(Joi.string().length(24).required()),
+            handler
+        );
+    }
 
-GameSupportController.prototype.onReconnect = function (handler) {
-    this.wss.addListener(Events.CLIENT.RECONNECT(), handler);
-};
+    onDisconnect(handler) {
+        this.wss.setHandler(
+            Events.CLIENT.DISCONNECT,
+            this.validator(Joi.string().length(24).required()),
+            handler
+        );
+    }
 
-GameSupportController.prototype.onDisconnect = function (handler) {
-    this.wss.addListener(this.wss.events.REMOVE_CONNECTION, handler);
-};
+    onRemoveConnection(handler) {
+        this.wss.setHandler(
+            this.wss.events.REMOVE_CONNECTION,
+            this.validator(Joi.string().length(24).required()),
+            handler
+        );
+    }
 
-GameSupportController.prototype.notifyClientsAboutNetworkStatusChange =
-    function (offlineClients, onlineClients) {
+    notifyClientsAboutNetworkStatusChange(offlineClients, onlineClients) {
         var preparedOfflineClients = CommonUtils.createArray(offlineClients);
         var preparedOnlineClients = CommonUtils.createArray(onlineClients);
         var summaryClients = preparedOfflineClients.concat(_.map(preparedOnlineClients, '_id'));
@@ -42,10 +54,9 @@ GameSupportController.prototype.notifyClientsAboutNetworkStatusChange =
             Events.CLIENT.STATUS.CHANGE(),
             notifyDetails
         );
-    };
+    }
 
-GameSupportController.prototype.notifyAboutNetworkStatusChange =
-    function (clientsIdsToNotify, disconnectedClientsIds, reconnectedClientsIds) {
+    notifyAboutNetworkStatusChange(clientsIdsToNotify, disconnectedClientsIds, reconnectedClientsIds) {
         var data = {
             disconnected: CommonUtils.createArray(disconnectedClientsIds || []),
             reconnected: CommonUtils.createArray(reconnectedClientsIds || [])
@@ -54,32 +65,33 @@ GameSupportController.prototype.notifyAboutNetworkStatusChange =
             _.map(CommonUtils.createArray(clientsIdsToNotify), '_id'),
             Events.CLIENT.DISCONNECT(),
             data);
-    };
+    }
 
-/*GameSupportController.prototype.markClientConnectionInactive =
-    function (activeConnection) {
-        var clientId = sessionUtils.getClientId(activeConnection);
-        var connectionId = activeConnection.getId();
+    /*GameSupportController.prototype.markClientConnectionInactive =
+     function (activeConnection) {
+     var clientId = sessionUtils.getClientId(activeConnection);
+     var connectionId = activeConnection.getId();
 
-        this.wss.forEach(function(connection) {
-            var anotherClientId = sessionUtils.getClientId(activeConnection);
+     this.wss.forEach(function(connection) {
+     var anotherClientId = sessionUtils.getClientId(activeConnection);
 
-        });
-    };*/
+     });
+     };*/
 
-GameSupportController.prototype.notifyAboutNewClient = function (newClient, clients) {
-    this.transmitter.send(_.map(clients, '_id'), Events.CLIENT.NEW(), newClient);
-};
+    notifyAboutNewClient(newClient, clients) {
+        this.transmitter.send(_.map(clients, '_id'), Events.CLIENT.NEW(), newClient);
+    }
 
-GameSupportController.prototype.postConstructor = function (ioc) {
-    this.wss = ioc[IOC.COMMON.WSS];
-    this.transmitter = ioc[IOC.TRANSMITTER.COMMON];
-};
+    postConstructor(ioc) {
+        this.wss = ioc[IOC.COMMON.WSS];
+        this.transmitter = ioc[IOC.TRANSMITTER.COMMON];
+    }
 
-GameSupportController.prototype.getName = function () {
-    return IOC.CONTROLLER.GAME_SUPPORT;
-};
+    getName() {
+        return IOC.CONTROLLER.GAME_SUPPORT;
+    }
 
+}
 module.exports = {
     class: GameSupportController
 };

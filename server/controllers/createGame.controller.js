@@ -4,23 +4,34 @@ const IOC = require('../constants/ioc.constants');
 const Events = require('server/events');
 const GenericController = require('./generic.controller').class;
 const _ = require('lodash');
+const Joi = require('joi');
 
-class CreateGameController extends GenericController() {
+class CreateGameController extends GenericController {
 
     onInvitePlayer(handler) {
-        this.wss.addListener(Events.INVITE.INVITE(), handler);
+        this.wss.setHandler(
+            Events.INVITE.INVITE(),
+            this.validator(
+                Joi.object().keys({
+                    clients: Joi.array().length(1).items(Joi.string().length(24).required()).required(),
+                    type: Joi.string().valid('invite'),
+                    extend: Joi.object().length(0)
+                })
+            ),
+            handler
+        )
     }
 
     onSuccessPlayer(handler) {
-        this.wss.addListener(Events.INVITE.SUCCESS(), handler);
+        this.wss.setHandler(Events.INVITE.SUCCESS(), handler);
     }
 
     onRejectPlayer(handler) {
-        this.wss.addListener(Events.INVITE.REJECT(), handler);
+        this.wss.setHandler(Events.INVITE.REJECT(), handler);
     }
 
     onCancelGame(handler) {
-        this.wss.addListener(Events.GAME.CANCEL(), handler);
+        this.wss.setHandler(Events.GAME.CANCEL(), handler);
     }
 
     invitePlayer(fromClient, toClient) {

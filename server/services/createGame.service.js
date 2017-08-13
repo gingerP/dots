@@ -11,7 +11,7 @@ const Promise = require('bluebird');
 const logger = require('server/logging/logger').create('CreateGameService');
 const gameStatuses = require('../constants/game-statuses');
 const errorLog = funcUtils.error(logger);
-const Errors = require('server/modules/Errors');
+const Errors = require('server/errors/index');
 const COLORS = require('server/constants/colors');
 
 function getClient(id, clients) {
@@ -32,27 +32,19 @@ function getRandomColorsPair() {
 class CreateGameService extends GenericService {
 
     async onInvite(message) {
-        try {
-            if (message.data.clients && message.data.clients.length) {
-                const inst = this;
-                const clientId = message.data.clients[0];
-                const clientsIds = [clientId, sessionUtils.getClientId(message.client.getSession())];
-                const clients = await inst.clientsDBManager.get(clientsIds);
+        const inst = this;
+        const clientIdTo = message.data.clients[0];
+        const clientIdFrom = sessionUtils.getClientId(message.client.getSession());
+        const [clientTo, clientFrom] = await Promise.all([
+            inst.clientsDBManager.get(clientIdTo),
+            inst.clientsDBManager.get(clientIdFrom)
+        ]);
+        //if (!clientTo) {
+        throw new Errors.ClientNotFoundError(`Client(${clientIdTo}) not found.`);
+        //}
 
-                for (let cIndex = 0; cIndex < clients.length; cIndex++) {
-                    const to = getClient(clientsIds[0], clients);
-                    const from = getClient(clientsIds[1], clients);
-                    if (!_.isEmpty(to) && !_.isEmpty(from)) {
-                        await inst.createGameDBManager.createInvite(from, to, inviteStatuses.active);
-                        await inst.controller.invitePlayer(from, to);
-                    } else {
-                        logger.warn('Invite - client does not exist!');
-                    }
-                }
-            }
-        } catch (error) {
-            errorLog(error);
-        }
+        await inst.createGameDBManager.createInvite(clientFrom, clientTo, inviteStatuses.active);
+        await inst.controller.invitePlayer(clientFrom, clientTo);
     }
 
     async onReject(message) {
@@ -117,7 +109,7 @@ class CreateGameService extends GenericService {
                     const opponent = await inst.clientsDBManager.get(opponentId);
                     await inst.cancelGame([opponent, client], game);
                 } else {
-                    message.callback(Errors.noAccess);
+                    message.callback(new Errors.CouldNotCancelGame());
                 }
             } else {
                 logger.error('onCancelGame: gameId empty!');
@@ -144,7 +136,7 @@ class CreateGameService extends GenericService {
                 gameDataTo: gameData[1],
                 game: game
             };
-        } catch(e) {
+        } catch (e) {
             errorLog(e);
         }
     }

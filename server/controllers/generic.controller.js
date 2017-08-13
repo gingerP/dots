@@ -1,24 +1,44 @@
 'use strict';
 
-var IOC = require('../constants/ioc.constants');
+const IOC = require('../constants/ioc.constants');
+const Joi = require('joi');
+const Errors = require('../errors');
 
-function GenericController() {
+class GenericController {
+    setService(service) {
+        this.service = service;
+    }
+
+    getName() {
+        return IOC.CONTROLLER.GENERIC;
+    }
+
+    createHandleWithResponse() {
+
+    }
+
+    postConstructor() {
+    }
+
+    validate(schema, callback) {
+        return function(message) {
+            const result = Joi.validate(message.data, schema);
+            if (result.error) {
+                throw result.error;
+            }
+            return callback(message);
+        }
+    }
+
+    validator(schema) {
+        return function(message, endPointName) {
+            const result = Joi.validate(message.data, schema);
+            if (result.error) {
+                throw new Errors.RequestValidationError(`end point "${endPointName}" - ${result.error.message}`);
+            }
+        }
+    }
 }
-
-GenericController.prototype.setService = function (service) {
-    this.service = service;
-};
-
-GenericController.prototype.getName = function () {
-    return IOC.CONTROLLER.GENERIC;
-};
-
-GenericController.prototype.createHandleWithResponse = function () {
-
-};
-
-GenericController.prototype.postConstructor = function () {
-};
 
 module.exports = {
     class: GenericController

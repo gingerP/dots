@@ -10,7 +10,7 @@ define([
 
     var api;
     var observable = Observable.instance;
-    var socket = io();
+    var socket = io({'sync disconnect on unload': true });
     var connectionTimes = 0;
     var myself;
 
@@ -19,7 +19,7 @@ define([
             console.error(error);
         });
         socket.on('disconnect', function () {
-            //TODO
+            api.send(myself._id, BackendEvents.CLIENT.DISCONNECT);
         });
         socket.on('reconnect', function (client) {
             //TODO
@@ -40,9 +40,12 @@ define([
     initEvents();
 
     function send(data, key) {
-        return new Promise(function (resolve) {
+        return new Promise(function (resolve, reject) {
             socket.emit(key || 'dots', JSON.stringify(data), function (response) {
-                resolve(response);
+                if (response.error) {
+                    return reject(response.error);
+                }
+                return resolve(response.data);
             });
         });
     }
@@ -59,7 +62,7 @@ define([
                 observable.emit(Events.REFRESH_MYSELF);
             });
         } else {
-            api.send(myself, BackendEvents.CLIENT.RECONNECT).then(function (data) {
+            api.send(myself._id, BackendEvents.CLIENT.RECONNECT).then(function (data) {
                 myself = data;
                 gameStorage.setClient(myself);
                 observable.emit(Events.REFRESH_MYSELF);
