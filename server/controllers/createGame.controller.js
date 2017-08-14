@@ -13,9 +13,7 @@ class CreateGameController extends GenericController {
             Events.INVITE.INVITE(),
             this.validator(
                 Joi.object().keys({
-                    clients: Joi.array().length(1).items(Joi.string().length(24).required()).required(),
-                    type: Joi.string().valid('invite'),
-                    extend: Joi.object().length(0)
+                    clientId: Joi.string().length(24).required()
                 })
             ),
             handler
@@ -23,15 +21,38 @@ class CreateGameController extends GenericController {
     }
 
     onSuccessPlayer(handler) {
-        this.wss.setHandler(Events.INVITE.SUCCESS(), handler);
+        this.wss.setHandler(
+            Events.INVITE.SUCCESS(),
+            this.validator(
+                Joi.object().keys({
+                    clientId: Joi.string().length(24).required()
+                })
+            ),
+            handler);
     }
 
     onRejectPlayer(handler) {
-        this.wss.setHandler(Events.INVITE.REJECT(), handler);
+        this.wss.setHandler(
+            Events.INVITE.REJECT(),
+            this.validator(
+                Joi.object().keys({
+                    clientId: Joi.string().length(24).required()
+                })
+            ),
+            handler
+        );
     }
 
     onCancelGame(handler) {
-        this.wss.setHandler(Events.GAME.CANCEL(), handler);
+        this.wss.setHandler(
+            Events.GAME.CANCEL(),
+            this.validator(
+                Joi.object().keys({
+                    gameId: Joi.string().length(24).required()
+                })
+            ),
+            handler
+        );
     }
 
     invitePlayer(fromClient, toClient) {
@@ -70,9 +91,9 @@ class CreateGameController extends GenericController {
         });
     }
 
-    cancelGame(clients, game) {
-        var ids = _.map(clients, '_id');
-        this.transmitter.send(ids, Events.GAME.CANCEL(), {
+    async cancelGame(clients, game) {
+        const ids = _.map(clients, '_id');
+        return this.transmitter.send(ids, Events.GAME.CANCEL(), {
             clients: clients,
             game: game
         });

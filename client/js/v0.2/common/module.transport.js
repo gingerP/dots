@@ -19,7 +19,6 @@ define([
             console.error(error);
         });
         socket.on('disconnect', function () {
-            api.send(myself._id, BackendEvents.CLIENT.DISCONNECT);
         });
         socket.on('reconnect', function (client) {
             //TODO

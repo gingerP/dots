@@ -17,34 +17,19 @@ define([
             cancel: serviceUtils.createListener(BackendEvents.GAME.CANCEL)
         },
         ask: function (clientId) {
-            return Transport.send(
-                serviceUtils.createInvitePack(BackendEvents.INVITE.INVITE, clientId),
-                BackendEvents.INVITE.INVITE
-            );
+            return Transport.send({clientId: clientId}, BackendEvents.INVITE.INVITE);
         },
         success: function (clientId) {
-            return Transport.send(
-                serviceUtils.createInvitePack(BackendEvents.INVITE.SUCCESS, clientId),
-                BackendEvents.INVITE.SUCCESS
-            );
+            return Transport.send({clientId: clientId}, BackendEvents.INVITE.SUCCESS);
         },
         successToLate: function (clientId) {
-            return Transport.send(
-                serviceUtils.createInvitePack(BackendEvents.INVITE.SUCCESS_TO_LATE, clientId),
-                BackendEvents.INVITE.SUCCESS_TO_LATE
-            );
+            return Transport.send({clientId: clientId}, BackendEvents.INVITE.SUCCESS_TO_LATE);
         },
         reject: function (clientId) {
-            return Transport.send(
-                serviceUtils.createInvitePack(BackendEvents.INVITE.REJECT, clientId),
-                BackendEvents.INVITE.REJECT
-            );
+            return Transport.send({clientId: clientId}, BackendEvents.INVITE.REJECT);
         },
         cancelGame: function (gameId) {
-            return Transport.send(
-                serviceUtils.createInvitePack(BackendEvents.GAME.CANCEL, null, {gameId: gameId}),
-                BackendEvents.GAME.CANCEL
-            );
+            return Transport.send({gameId: gameId}, BackendEvents.GAME.CANCEL);
         }
     };
 

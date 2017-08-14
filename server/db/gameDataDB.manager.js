@@ -22,7 +22,7 @@ GameDataDBManager.prototype.getName = function () {
 };
 
 GameDataDBManager.prototype.createNew = function createNew(gameId, clientId, color, dots, trappedDots, loops) {
-    var newGameData = CreationUtils.newGameData(
+    const newGameData = CreationUtils.newGameData(
         this.getObjectId(gameId),
         this.getObjectId(clientId),
         dots,
@@ -30,7 +30,7 @@ GameDataDBManager.prototype.createNew = function createNew(gameId, clientId, col
         loops,
         color
     );
-    return this.save(newGameData).then((id) => this.get(id));
+    return this.save(newGameData);
 };
 
 GameDataDBManager.prototype.saveGameData = function saveGameData(/*id, dots, trappedDots, loops*/) {

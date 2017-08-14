@@ -32,7 +32,13 @@ class GenericController {
 
     validator(schema) {
         return function(message, endPointName) {
-            const result = Joi.validate(message.data, schema);
+            const result = Joi.validate(
+                message.data,
+                schema,
+                {
+                    allowUnknown: false
+                }
+            );
             if (result.error) {
                 throw new Errors.RequestValidationError(`end point "${endPointName}" - ${result.error.message}`);
             }

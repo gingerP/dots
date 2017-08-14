@@ -238,10 +238,20 @@ class GenericDBManager extends Observable {
 
     async get(ids, mappings) {
         if (Array.isArray(ids)) {
+
             const criteria = {_id: {$in: _.map(ids, this.getObjectId)}};
+            const stringifiedIds = _.map(ids, id => id.toString());
             const entities = await this._list(criteria, mappings);
             this.propertyChange('list', [entities, ids, mappings]);
-            return entities;
+            const sortedEntities = [];
+            sortedEntities.length = ids.length;
+            _.forEach(entities, (entity) => {
+                const index = stringifiedIds.indexOf(entity._id.toString());
+                if (index >= 0) {
+                    sortedEntities[index] = entity;
+                }
+            });
+            return sortedEntities;
         } else {
             const criteria = {
                 _id: this.getObjectId(ids)
@@ -254,7 +264,7 @@ class GenericDBManager extends Observable {
 
     async getByCriteria(criteria, mappings) {
         const entity = await this._getDoc(criteria, mappings);
-        this.propertyChange('getByCriteria', [entities, criteria, mappings]);
+        this.propertyChange('getByCriteria', [entity, criteria, mappings]);
         return entity;
     }
 

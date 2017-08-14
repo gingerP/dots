@@ -6,7 +6,7 @@ var animals = require('../animals');
 var funcUtils = require('../utils/function-utils');
 var creationUtils = require('server/utils/creation-utils');
 var SessionUtils = require('server/utils/session-utils');
-var gameStatuses = require('../constants/game-statuses');
+var GameStatuses = require('../constants/game-statuses');
 var logger = require('server/logging/logger').create('GameSupportService');
 var errorLog = funcUtils.error(logger);
 var _ = require('lodash');
@@ -196,9 +196,8 @@ class GameSupportService extends GenericService {
         return newClient;
     }
 
-    newGame(clientAId, clientBId, activePlayerId) {
-        return this.gameDBManager.createGame(clientAId, clientBId, activePlayerId, gameStatuses.active)
-            .then((id) => this.gameDBManager.get(id));
+    async newGame(clientAId, clientBId, activePlayerId) {
+        return this.gameDBManager.createGame(clientAId, clientBId, activePlayerId, GameStatuses.active);
     }
 
     getName() {
