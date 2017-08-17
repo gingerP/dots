@@ -1,8 +1,9 @@
 'use strict';
 
-var Events = require('server/events');
-var IOC = require('../constants/ioc.constants');
-var GenericController = require('./generic.controller').class;
+const Events = require('server/events');
+const IOC = require('../constants/ioc.constants');
+const GenericController = require('./generic.controller').class;
+const Joi = require('joi');
 
 function extractStepData(stepData) {
     return {
@@ -12,51 +13,56 @@ function extractStepData(stepData) {
     };
 }
 
-function GameController() {
+class GameController extends GenericController {
+
+    onAddDot(handler) {
+        this.wss.setHandler(
+            Events.DOT.ADD(),
+            this.validator({
+                gameId: Joi.string().length(24).required(),
+                x: Joi.number().integer().min(0).required(),
+                y: Joi.number().integer().min(0).required()
+            }),
+            handler
+        );
+    }
+
+    nextStep(dot,
+             previousPlayerStepData,
+             currentPlayerStepData,
+             game) {
+        this.transmitter.send(
+            [
+                previousPlayerStepData.gamer._id,
+                currentPlayerStepData.gamer._id
+            ],
+            Events.GAME.STEP.NEW(),
+            {
+                dot: dot,
+                previous: extractStepData(previousPlayerStepData),
+                current: extractStepData(currentPlayerStepData),
+                game: game
+            }
+        );
+    }
+
+    invitePlayer() {
+
+    }
+
+    rejectPlayer() {
+
+    }
+
+    postConstructor(ioc) {
+        this.wss = ioc[IOC.COMMON.WSS];
+        this.transmitter = ioc[IOC.TRANSMITTER.COMMON];
+    }
+
+    getName() {
+        return IOC.CONTROLLER.GAME;
+    }
 }
-
-GameController.prototype = Object.create(GenericController.prototype);
-GameController.prototype.constructor = GameController;
-
-GameController.prototype.onAddDot = function (handler) {
-    this.wss.setHandler(Events.DOT.ADD(), handler);
-};
-
-GameController.prototype.nextStep = function (dot,
-                                              previousPlayerStepData,
-                                              currentPlayerStepData,
-                                              game) {
-    this.transmitter.send(
-        [
-            previousPlayerStepData.gamer._id,
-            currentPlayerStepData.gamer._id
-        ],
-        Events.GAME.STEP.NEW(),
-        {
-            dot: dot,
-            previous: extractStepData(previousPlayerStepData),
-            current: extractStepData(currentPlayerStepData),
-            game: game
-        }
-    );
-};
-
-GameController.prototype.invitePlayer = function () {
-
-};
-
-GameController.prototype.rejectPlayer = function () {
-
-};
-
-GameController.prototype.postConstructor = function (ioc) {
-    this.wss = ioc[IOC.COMMON.WSS];
-    this.transmitter = ioc[IOC.TRANSMITTER.COMMON];
-};
-
-GameController.prototype.getName = function () {
-    return IOC.CONTROLLER.GAME;
-};
 
 module.exports = {
     class: GameController

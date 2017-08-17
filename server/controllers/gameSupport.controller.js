@@ -18,7 +18,7 @@ class GameSupportController extends GenericController {
     onReconnect(handler) {
         this.wss.setHandler(
             Events.CLIENT.RECONNECT(),
-            this.validator(Joi.string().length(24).required()),
+            this.validatorRaw(Joi.string().length(24).required()),
             handler
         );
     }
@@ -26,7 +26,7 @@ class GameSupportController extends GenericController {
     onDisconnect(handler) {
         this.wss.setHandler(
             Events.CLIENT.DISCONNECT,
-            this.validator(Joi.string().length(24).required()),
+            this.validatorRaw(Joi.string().length(24).required()),
             handler
         );
     }
@@ -34,9 +34,7 @@ class GameSupportController extends GenericController {
     onRemoveConnection(handler) {
         this.wss.setHandler(
             this.wss.events.REMOVE_CONNECTION,
-            this.validator(Joi.object().keys({
-                code: Joi.string().required()
-            })),
+            this.validator({code: Joi.string().required()}),
             handler
         );
     }

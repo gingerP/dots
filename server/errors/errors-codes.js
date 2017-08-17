@@ -8,5 +8,8 @@ module.exports = {
     CouldNotCancelGameError: code(2),
     RouteNotFoundError: code(3),
     RequestValidationError: code(4),
-    GameNotFoundError: code(5)
+    GameNotFoundError: code(5),
+    GameNotActiveError: code(6),
+    ClientNotBelongToGameError: code(7),
+    DotAlreadyExistsError: code(8)
 };

@@ -3,7 +3,7 @@ define([
     'utils/service-utils',
     'common/backend-events',
     'business/game.storage'
-], function(Transport, serviceUtils, BackendEvents, gameStorage) {
+], function (Transport, serviceUtils, BackendEvents, gameStorage) {
     'use strict';
 
     var api;
@@ -12,11 +12,11 @@ define([
         var game = gameStorage.getGame();
         if (game) {
             Transport.send(
-                serviceUtils.createGamePack(BackendEvents.DOT.ADD, {
+                {
                     x: dot.x,
                     y: dot.y,
                     gameId: game._id
-                }),
+                },
                 BackendEvents.DOT.ADD
             );
         }

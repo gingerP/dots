@@ -31,6 +31,10 @@ class GenericController {
     }
 
     validator(schema) {
+        return this.validatorRaw(Joi.object().keys(schema));
+    }
+
+    validatorRaw(schema) {
         return function(message, endPointName) {
             const result = Joi.validate(
                 message.data,

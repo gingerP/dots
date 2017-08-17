@@ -11,11 +11,7 @@ class CreateGameController extends GenericController {
     onInvitePlayer(handler) {
         this.wss.setHandler(
             Events.INVITE.INVITE(),
-            this.validator(
-                Joi.object().keys({
-                    clientId: Joi.string().length(24).required()
-                })
-            ),
+            this.validator({clientId: Joi.string().length(24).required()}),
             handler
         )
     }
@@ -23,22 +19,14 @@ class CreateGameController extends GenericController {
     onSuccessPlayer(handler) {
         this.wss.setHandler(
             Events.INVITE.SUCCESS(),
-            this.validator(
-                Joi.object().keys({
-                    clientId: Joi.string().length(24).required()
-                })
-            ),
+            this.validator({clientId: Joi.string().length(24).required()}),
             handler);
     }
 
     onRejectPlayer(handler) {
         this.wss.setHandler(
             Events.INVITE.REJECT(),
-            this.validator(
-                Joi.object().keys({
-                    clientId: Joi.string().length(24).required()
-                })
-            ),
+            this.validator({clientId: Joi.string().length(24).required()}),
             handler
         );
     }
@@ -46,11 +34,7 @@ class CreateGameController extends GenericController {
     onCancelGame(handler) {
         this.wss.setHandler(
             Events.GAME.CANCEL(),
-            this.validator(
-                Joi.object().keys({
-                    gameId: Joi.string().length(24).required()
-                })
-            ),
+            this.validator({gameId: Joi.string().length(24).required()}),
             handler
         );
     }

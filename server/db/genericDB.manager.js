@@ -112,7 +112,7 @@ class GenericDBManager extends Observable {
         logger.info('_saveEntities not implemented');
     }
 
-    async _update(criteria, doc, callback, mappings, upsert) {
+    async _update(criteria, doc, mappings, upsert) {
         try {
             const preparedUpsert = utils.hasContent(upsert) ? Boolean(upsert) : true;
             validate.collectionName(this.collectionName);
