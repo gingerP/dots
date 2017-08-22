@@ -19,7 +19,7 @@ class GameService extends GenericService {
         const clientId = sessionUtils.getClientId(message.client.getSession());
         const dot = {x: message.data.x, y: message.data.y};
 
-        const [client, game] = await Promise.all([
+        let [client, game] = await Promise.all([
             this.clientsDBManager.get(clientId),
             this.gameDBManager.get(gameId)
         ]);
@@ -67,8 +67,7 @@ class GameService extends GenericService {
         ]);
 
         game.activePlayer = opponent._id;
-        await inst.gameDBManager.save(game);
-        await message.callback(gameData);
+        game = await inst.gameDBManager.save(game);
 
         inst.gameController.nextStep(
             dot,
@@ -76,6 +75,8 @@ class GameService extends GenericService {
             CreationUtils.newGamerStepData(opponent, gameData.opponent, scores.delta.opponent),
             game
         );
+
+        return gameData;
     }
 
     getName() {

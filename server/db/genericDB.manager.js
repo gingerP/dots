@@ -118,12 +118,21 @@ class GenericDBManager extends Observable {
             validate.collectionName(this.collectionName);
             this._correctCriteria(criteria);
             const db = await this.exec();
-            const id = doc._id;
             if (!mappings) {
-                const result = await db.collection(this.collectionName)
-                    .replaceOne({_id: id}, doc, {upsert: preparedUpsert, raw: true});
+                delete doc._id;
+                const cursor = await db.collection(this.collectionName).find(criteria);
+                let cursorDoc = await cursor.next();
+                let docId;
+                if (cursorDoc) {
+                    docId = cursorDoc._id;
+                    await db.collection(this.collectionName)
+                        .replaceOne({_id: docId}, doc, {upsert: preparedUpsert, raw: true});
+                } else {
+                    const insertResult = await db.collection(this.collectionName).insertOne(doc);
+                    docId = insertResult.insertedId;
+                }
                 logger.debug('Document was successfully updated in "%s".', this.collectionName);
-                return this._getDoc(id);
+                return this._getDoc(docId);
             } else {
                 delete doc._id;
                 const cursor = await db.collection(this.collectionName).find(criteria);

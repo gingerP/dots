@@ -37,13 +37,13 @@ GameDataCacheDBManager.prototype.saveCache = function saveCache(gameDataId, cach
         cache: cache
     }, {
         gameDataId: this.getObjectId(gameDataId)
-    }).catch(errorLog);
+    });
 };
 
 GameDataCacheDBManager.prototype.getCacheByGameDataId = function saveCache(gameDataId) {
     return this.getByCriteria({
         gameDataId: gameDataId
-    }).catch(errorLog);
+    });
 };
 
 GameDataCacheDBManager.prototype.postConstructor = function () {
