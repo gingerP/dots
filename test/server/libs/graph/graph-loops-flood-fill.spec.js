@@ -11,7 +11,7 @@ const DIRECTORY_GET_LOOP = __dirname + '/test-data/getLoop/';
 
 describe('Graph loops flood fill', function() {
     describe('method "getLoops"', function() {
-        describe('Performance', function () {
+        xdescribe('Performance', function () {
             var files = FsHelper.getFiles(DIRECTORY_GET_LOOPS, ['performance']);
             var ITERATION_NUM = 50;
             _.forEach(files, function (filePath) {

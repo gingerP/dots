@@ -41,6 +41,15 @@ function getLoop(vertexes, firstPosition) {
     return loops.length ? prepareOutBound(loops, prepared.shift) : {};
 }
 
+/**
+ *
+ * @param array, e.g. [{x: 0, y: 1}, {x: 2, y: 3}, ...]
+ * @returns array, e.g.
+ * [
+ *  {loop: [{x: 0, y: 1}, {x: 2, y: 3}, ...], trappedDots: [{x: 0, y: 1}, {x: 2, y: 3}, ...]},
+ *  ...
+ * ]
+ */
 function getLoops(array) {
     var prepared = prepareInbound(array);
     var firstPosition = commonUtils.findFirstUnselectedUnvisitedPosition(prepared.vertexes);

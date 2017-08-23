@@ -22,7 +22,7 @@ function getGameDataDeltas(dot, dotClientGameData) {
     };
 }
 
-async function getGamersScores(dot, activePlayerGameData, opponentGameData, opponentCache) {
+async function getGamersScoresV1(dot, activePlayerGameData, opponentGameData, opponentCache) {
     const inbound = {
         dot: dot,
         active: {
@@ -70,7 +70,7 @@ async function getGamersScores(dot, activePlayerGameData, opponentGameData, oppo
             inbound.opponent,
             inbound.active
         );
-        inbound.active.loops = inbound.active.loops.concat(inbound.loopsDelta);
+        //inbound.active.loops = inbound.active.loops.concat(inbound.loopsDelta);
     }
 
     activePlayerGameData.dots = inbound.active.dots;
@@ -93,7 +93,12 @@ async function getGamersScores(dot, activePlayerGameData, opponentGameData, oppo
     };
 }
 
+async function getGamersScores(dot, activePlayerGameData, opponentGameData, opponentCache) {
+
+}
+
 module.exports = {
     getGameDataDeltas: getGameDataDeltas,
-    getGamersScores: getGamersScores
+    getGamersScores: getGamersScores,
+    getGamersScoresV1: getGamersScoresV1
 };
