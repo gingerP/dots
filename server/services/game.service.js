@@ -40,7 +40,6 @@ class GameService extends GenericService {
             throw new Errors.ClientNotBelongToGameError();
         }
 
-
         const opponentId = game.to.equals(client._id) ? game.from : game.to;
         const [activePlayerGameData, opponentGameData, opponent] = await Promise.all([
             this.gameDataDBManager.getGameData(gameId, client._id),

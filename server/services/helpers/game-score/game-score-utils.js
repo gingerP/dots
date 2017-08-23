@@ -1,88 +1,17 @@
-var graphLoop = require('server/libs/graph/graph-loops-flood-fill');
-var graph = require('server/libs/graph/graph');
-var commonLoopsUtils = require('server/libs/graph/utils/common-utils');
-var _ = require('lodash');
-var CreationUtils = require('server/utils/creation-utils');
-var Promise = require('bluebird');
-var TrappedDotsHelper = require('server/services/helpers/game-score/trapped-dots-helper');
-
-function extractValuationData(clientGameData) {
-    return {
-        dots: clientGameData.dots || [],
-        loops: clientGameData.loops || [],
-        losingDots: clientGameData.losingDots || []
-    };
-}
-// 1
-function prepareScoreValuation(dot, activePlayerGameData, opponentGameData) {
-    return Promise.resolve({
-        dot: dot,
-        active: extractValuationData(activePlayerGameData),
-        opponent: extractValuationData(opponentGameData),
-        loops: [],
-        delta: {
-            opponent: [],
-            active: []
-        },
-        isNewDotHitInLoop: false
-    });
-}
-
-// 2
-function isNewDotHitInLoop(inbound) {
-    var loop = {};
-
-    if (inbound.opponent.dots.length > 3) {
-        loop = graph.getLoop(inbound.opponent.dots, inbound.dot);
-    }
-    inbound.isNewDotHitInLoop = !_.isEmpty(loop);
-
-    return Promise.resolve(inbound);
-}
-
-// 2
-function calculateLoops(inbound) {
-    var activePlayerTempGameData = CreationUtils.newGameData();
-
-    activePlayerTempGameData.dots = inbound.active.dots.concat([inbound.dot]);
-    inbound.loops = graph.getLoops(activePlayerTempGameData.dots);
-    inbound.active.dots.push(inbound.dot);
-
-    return Promise.resolve(inbound);
-}
-
-// 3
-function calculateLoopsDelta(inbound) {
-    inbound.delta.active = getScoresDelta(inbound.loops, inbound.dot);
-
-    return Promise.resolve(inbound);
-}
-
-// 4
-function calculateCommonScore(inbound) {
-    if (inbound.loops && inbound.loops.length && inbound.opponent.dots && inbound.opponent.dots.length) {
-        TrappedDotsHelper.filterAndUpdateLoopsByOpponentTrappedDots(
-            inbound.delta.active,
-            inbound.opponent,
-            inbound.active
-        );
-        inbound.active.loops = inbound.active.loops.concat(inbound.loopsDelta);
-    }
-    return Promise.resolve(inbound);
-}
-
-// A1
-function updateNewOpponentLoop(inbound) {
-
-}
+const graphLoop = require('server/libs/graph/graph-loops-flood-fill');
+const graph = require('server/libs/graph/graph');
+const commonLoopsUtils = require('server/libs/graph/utils/common-utils');
+const _ = require('lodash');
+const CreationUtils = require('server/utils/creation-utils');
+const Promise = require('bluebird');
+const TrappedDotsHelper = require('server/services/helpers/game-score/trapped-dots-helper');
 
 function getGameDataDeltas(dot, dotClientGameData) {
-    var clientDeltaGameData = CreationUtils.newGameData();
-    var opponentDeltaGameData = CreationUtils.newGameData();
-    var dots = _.cloneDeep(dotClientGameData.dots || []);
-    var newLoops;
+    const clientDeltaGameData = CreationUtils.newGameData();
+    const opponentDeltaGameData = CreationUtils.newGameData();
+    const dots = _.cloneDeep(dotClientGameData.dots || []);
     dots.push(dot);
-    newLoops = graph.getLoops(dots);
+    const newLoops = graph.getLoops(dots);
 
     clientDeltaGameData.loops = commonLoopsUtils.getNewLoops(newLoops, clientDeltaGameData.loops);
     clientDeltaGameData.dots = [dot];
@@ -93,49 +22,75 @@ function getGameDataDeltas(dot, dotClientGameData) {
     };
 }
 
-function getScoresDelta(loops, dot) {
-    var resultLoops = [];
-    _.forEach(loops, function (loopData) {
+async function getGamersScores(dot, activePlayerGameData, opponentGameData, opponentCache) {
+    const inbound = {
+        dot: dot,
+        active: {
+            dots: activePlayerGameData.dots || [],
+            loops: activePlayerGameData.loops || [],
+            losingDots: activePlayerGameData.losingDots || []
+        },
+        opponent: {
+            dots: opponentGameData.dots || [],
+            loops: opponentGameData.loops || [],
+            losingDots: opponentGameData.losingDots || []
+        },
+        loops: [],
+        delta: {
+            opponent: [],
+            active: []
+        },
+        isNewDotHitInLoop: false
+    };
+
+    let loop = {};
+/*    if (inbound.opponent.dots.length > 3) {
+        loop = await graph.getLoop(inbound.opponent.dots, inbound.dot);
+    }*/
+    inbound.isNewDotHitInLoop = !_.isEmpty(loop);
+    if (inbound.isNewDotHitInLoop) {
+        return;
+    }
+    let activePlayerTempGameData = CreationUtils.newGameData();
+
+    activePlayerTempGameData.dots = inbound.active.dots.concat([inbound.dot]);
+    inbound.loops = await graph.getLoops(activePlayerTempGameData.dots);
+    inbound.active.dots.push(inbound.dot);
+
+    inbound.delta.active = [];
+    _.forEach(inbound.loops, function (loopData) {
         if (_.findIndex(loopData.loop, dot) > -1) {
-            resultLoops.push(loopData);
+            inbound.delta.active.push(loopData);
         }
     });
-    return resultLoops;
-}
 
-function getGamersScores(dot, activePlayerGameData, opponentGameData, opponentCache) {
-    function prepareOutBoundScore(inbound) {
-        activePlayerGameData.dots = inbound.active.dots;
-        activePlayerGameData.loops = inbound.active.loops;
-        activePlayerGameData.losingDots = inbound.active.losingDots;
-
-        opponentGameData.dots = inbound.opponent.dots;
-        opponentGameData.loops = inbound.opponent.loops;
-        opponentGameData.losingDots = inbound.opponent.losingDots;
-        return {
-            gameData: {
-                active: activePlayerGameData,
-                opponent: opponentGameData
-            },
-            delta: {
-                active: inbound.delta.active,
-                opponent: inbound.delta.opponent
-            },
-            loops: inbound.loops
-        };
+    if (inbound.loops && inbound.loops.length && inbound.opponent.dots && inbound.opponent.dots.length) {
+        TrappedDotsHelper.filterAndUpdateLoopsByOpponentTrappedDots(
+            inbound.delta.active,
+            inbound.opponent,
+            inbound.active
+        );
+        inbound.active.loops = inbound.active.loops.concat(inbound.loopsDelta);
     }
 
-    return prepareScoreValuation(dot, activePlayerGameData, opponentGameData, opponentCache)
-        .then(isNewDotHitInLoop)
-        .then((inbound) => {
-            if(inbound.isNewDotHitInLoop) {
-                return ;
-            }
-            return calculateLoops(inbound)
-                .then(calculateLoopsDelta)
-                .then(calculateCommonScore)
-                .then(prepareOutBoundScore);
-        });
+    activePlayerGameData.dots = inbound.active.dots;
+    activePlayerGameData.loops = inbound.active.loops;
+    activePlayerGameData.losingDots = inbound.active.losingDots;
+
+    opponentGameData.dots = inbound.opponent.dots;
+    opponentGameData.loops = inbound.opponent.loops;
+    opponentGameData.losingDots = inbound.opponent.losingDots;
+    return {
+        gameData: {
+            active: activePlayerGameData,
+            opponent: opponentGameData
+        },
+        delta: {
+            active: inbound.delta.active,
+            opponent: inbound.delta.opponent
+        },
+        loops: inbound.loops
+    };
 }
 
 module.exports = {

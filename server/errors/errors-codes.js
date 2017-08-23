@@ -11,5 +11,6 @@ module.exports = {
     GameNotFoundError: code(5),
     GameNotActiveError: code(6),
     ClientNotBelongToGameError: code(7),
-    DotAlreadyExistsError: code(8)
+    DotAlreadyExistsError: code(8),
+    InternalError: code(9)
 };

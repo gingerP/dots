@@ -1,8 +1,8 @@
 'use strict';
 var chai = require('chai');
 var expect = chai.expect;
-var DirectionUtils = req('server/libs/graph/utils/direction-utils');
-var Directions = req('server/libs/graph/utils/directions');
+var DirectionUtils = require('server/libs/graph/utils/direction-utils');
+var Directions = require('server/libs/graph/utils/directions');
 var testVertexesForwardBorders = [
     [{isSelected: false}, {isSelected: false}, {isSelected: false}],
     [{isSelected: false}, {isSelected: false}, {isSelected: false}],

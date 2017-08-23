@@ -2,9 +2,9 @@
 var chai = require('chai');
 var assert = chai.assert;
 var _ = require('lodash');
-var graphLoopsFloodFill = req('server/libs/graph/graph-loops-flood-fill');
-var FsHelper = req('test/server/libs/graph/helpers/fs-helper');
-var LoopHelpers = req('test/server/libs/graph/helpers/loop-helper');
+var graphLoopsFloodFill = require('server/libs/graph/graph-loops-flood-fill');
+var FsHelper = require('test/server/libs/graph/helpers/fs-helper');
+var LoopHelpers = require('test/server/libs/graph/helpers/loop-helper');
 
 const DIRECTORY_GET_LOOPS = __dirname + '/test-data/getLoops/';
 const DIRECTORY_GET_LOOP = __dirname + '/test-data/getLoop/';

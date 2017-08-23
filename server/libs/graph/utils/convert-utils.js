@@ -6,6 +6,7 @@ function convertInbound(sizeX, sizeY, minX, minY, sourceData) {
     var workData = createDefaultArray(sizeX, sizeY);
     var index = 0;
     var data;
+
     for(; index < sourceData.length; index++) {
         data = sourceData[index];
         workData[data.x - minX][data.y - minY].isSelected = true;

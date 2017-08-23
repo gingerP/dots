@@ -8,6 +8,8 @@ const RequestValidationError = require('./RequestValidation');
 const GameNotActiveError = require('./GameNotActive');
 const ClientNotBelongToGameError = require('./ClientNotBelongToGame');
 const DotAlreadyExistsError = require('./DotAlreadyExistsError');
+const InternalError = require('./InternalError');
+const GenericError = require('./GenericError');
 
 module.exports = {
     CouldNotCancelGameError: CouldNotCancelGameError,
@@ -17,5 +19,7 @@ module.exports = {
     GameNotFoundError: GameNotFoundError,
     GameNotActiveError: GameNotActiveError,
     ClientNotBelongToGameError: ClientNotBelongToGameError,
-    DotAlreadyExistsError: DotAlreadyExistsError
+    DotAlreadyExistsError: DotAlreadyExistsError,
+    InternalError: InternalError,
+    GenericError: GenericError
 };

@@ -174,6 +174,9 @@ class WSServer extends Observable {
                     await inst.propertyChange(key, {client: api, data: data, callback: cb});
                     await inst.runHandler(key, {client: api, data: data, callback: cb});
                 } catch (error) {
+                    if (!(error instanceof Errors.GenericError)) {
+                        error = new Errors.InternalError(error.stack);
+                    }
                     logger.error(`Api request "${key}" finished with error.`);
                     logger.error(error.stack);
                     cb(error);

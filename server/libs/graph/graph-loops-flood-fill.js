@@ -147,8 +147,7 @@ function passLine(futureLineIndex, futureLines, selected, vertexes) {
     var anotherResultOfPassage;
     var direction = line.direction;
 
-    futureLines[futureLineIndex] = null;
-    futureLines.length--;
+    futureLines.splice(futureLineIndex, 1);
 
     if (direction === DIRECTIONS_FORWARD ||
         direction === DIRECTIONS_BACKWARD ||
