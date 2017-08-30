@@ -1,5 +1,6 @@
 'use strict';
 
+const _ = require('lodash');
 const CreatingUtils = require('./creation-utils');
 const DIRECTION_2_SHIFTS = [[-1, 0], [1, 0]];
 const DIRECTION_4_SHIFTS = [
@@ -12,6 +13,7 @@ const DIRECTION_8_SHIFTS = [
     [-1, 0], [1, 0],
     [-1, 1], [0, 1], [1, 1]
 ];
+const DIRECTION_8_SHIFTS_TRUE_DIRECTION = [[-1, -1], [0, -1], [1, -1], [1, 0], [1, 1], [0, 1], [-1, 1], [-1, 0]];
 
 function getNeighbors(pos, workData, excludes) {
     var result = [];
@@ -131,11 +133,65 @@ function hasSpill(pos, vertexes) {
     return result;
 }
 
+/**
+ *
+ * @param vertex, e.g. {x: 1, y: 1}
+ * @param vertexes, e.g. [{x: 1, y: 1}, {x: 2, y: 2}, ...]
+ */
+function getHolesFromNeighbors(vertex, vertexes) {
+    let index = DIRECTION_8_SHIFTS.length - 1;
+    let neighbor;
+    const holes = [];
+    while (index >= 0) {
+        neighbor = {x: vertex.x + DIRECTION_8_SHIFTS[index].x, y: vertex.y + DIRECTION_8_SHIFTS[index].y};
+        if (!_.has(vertexes, neighbor)) {
+            holes.push(neighbor);
+        }
+        index--;
+    }
+    return holes;
+}
+
+/**
+ *
+ * @param vertex, e.g. {x: 1, y: 1}
+ * @param vertexes, [{x: 1, y: 1}, {x: 2, y: 2}, {x: 4, y: 5}, ...]
+ * @returns e.g. [[{x: 1, y: 1}, {x: 2, y: 2}], [{x: 4, y: 5}], ...]
+ */
+function getHolesFromNeighborsAsGroups(vertex, vertexes) {
+    let index = 0;
+    let neighbor;
+    const holesGroups = [];
+    let group = [];
+    while (index < DIRECTION_8_SHIFTS_TRUE_DIRECTION.length) {
+        neighbor = {
+            x: vertex.x + DIRECTION_8_SHIFTS_TRUE_DIRECTION[index][0],
+            y: vertex.y + DIRECTION_8_SHIFTS_TRUE_DIRECTION[index][1]
+        };
+        if (_.findIndex(vertexes, neighbor) === -1) {
+            group = group || [];
+            group.push(neighbor);
+            if (index === DIRECTION_8_SHIFTS_TRUE_DIRECTION.length - 1) {
+                holesGroups.push(group);
+            }
+        } else {
+            if (group.length) {
+                holesGroups.push(group);
+            }
+            group = [];
+        }
+        index++;
+    }
+    return holesGroups;
+}
+
 module.exports = {
     getNeighbors: getNeighbors,
     getSelectedNeighborsFrom_4_Direction: getSelectedNeighborsFrom_4_Direction,
     getSelectedNeighborsFrom_8_Direction: getSelectedNeighborsFrom_8_Direction,
     applySelectedNeighborsFrom_2_Direction: applySelectedNeighborsFrom_2_Direction,
     applySelectedNeighborsFrom_8_Direction: applySelectedNeighborsFrom_8_Direction,
-    hasSpill: hasSpill
+    hasSpill: hasSpill,
+    getHolesFromNeighbors: getHolesFromNeighbors,
+    getHolesFromNeighborsAsGroups: getHolesFromNeighborsAsGroups
 };

@@ -43,14 +43,6 @@ async function getGamersScoresV1(dot, activePlayerGameData, opponentGameData, op
         isNewDotHitInLoop: false
     };
 
-    let loop = {};
-/*    if (inbound.opponent.dots.length > 3) {
-        loop = await graph.getLoop(inbound.opponent.dots, inbound.dot);
-    }*/
-    inbound.isNewDotHitInLoop = !_.isEmpty(loop);
-    if (inbound.isNewDotHitInLoop) {
-        return;
-    }
     let activePlayerTempGameData = CreationUtils.newGameData();
 
     activePlayerTempGameData.dots = inbound.active.dots.concat([inbound.dot]);
@@ -63,6 +55,17 @@ async function getGamersScoresV1(dot, activePlayerGameData, opponentGameData, op
             inbound.delta.active.push(loopData);
         }
     });
+
+    if (!inbound.delta.active.length) {
+/*        let loop = {};
+        /!*    if (inbound.opponent.dots.length > 3) {
+         loop = await graph.getLoop(inbound.opponent.dots, inbound.dot);
+         }*!/
+        inbound.isNewDotHitInLoop = !_.isEmpty(loop);
+        if (inbound.isNewDotHitInLoop) {
+            return;
+        }*/
+    }
 
     if (inbound.loops && inbound.loops.length && inbound.opponent.dots && inbound.opponent.dots.length) {
         TrappedDotsHelper.filterAndUpdateLoopsByOpponentTrappedDots(
@@ -93,12 +96,86 @@ async function getGamersScoresV1(dot, activePlayerGameData, opponentGameData, op
     };
 }
 
-async function getGamersScores(dot, activePlayerGameData, opponentGameData, opponentCache) {
+async function getGamersScoresV2(dot, activePlayerGameData, opponentGameData, opponentCache) {
 
+
+
+
+    const inbound = {
+        dot: dot,
+        active: {
+            dots: activePlayerGameData.dots || [],
+            loops: activePlayerGameData.loops || [],
+            losingDots: activePlayerGameData.losingDots || []
+        },
+        opponent: {
+            dots: opponentGameData.dots || [],
+            loops: opponentGameData.loops || [],
+            losingDots: opponentGameData.losingDots || []
+        },
+        loops: [],
+        delta: {
+            opponent: [],
+            active: []
+        },
+        isNewDotHitInLoop: false
+    };
+
+    let activePlayerTempGameData = CreationUtils.newGameData();
+
+    activePlayerTempGameData.dots = inbound.active.dots.concat([inbound.dot]);
+    inbound.loops = await graph.getLoops(activePlayerTempGameData.dots);
+    inbound.active.dots.push(inbound.dot);
+
+    inbound.delta.active = [];
+    _.forEach(inbound.loops, function (loopData) {
+        if (_.findIndex(loopData.loop, dot) > -1) {
+            inbound.delta.active.push(loopData);
+        }
+    });
+
+    if (!inbound.delta.active.length) {
+        /*        let loop = {};
+         /!*    if (inbound.opponent.dots.length > 3) {
+         loop = await graph.getLoop(inbound.opponent.dots, inbound.dot);
+         }*!/
+         inbound.isNewDotHitInLoop = !_.isEmpty(loop);
+         if (inbound.isNewDotHitInLoop) {
+         return;
+         }*/
+    }
+
+    if (inbound.loops && inbound.loops.length && inbound.opponent.dots && inbound.opponent.dots.length) {
+        TrappedDotsHelper.filterAndUpdateLoopsByOpponentTrappedDots(
+            inbound.delta.active,
+            inbound.opponent,
+            inbound.active
+        );
+        //inbound.active.loops = inbound.active.loops.concat(inbound.loopsDelta);
+    }
+
+    activePlayerGameData.dots = inbound.active.dots;
+    activePlayerGameData.loops = inbound.active.loops;
+    activePlayerGameData.losingDots = inbound.active.losingDots;
+
+    opponentGameData.dots = inbound.opponent.dots;
+    opponentGameData.loops = inbound.opponent.loops;
+    opponentGameData.losingDots = inbound.opponent.losingDots;
+    return {
+        gameData: {
+            active: activePlayerGameData,
+            opponent: opponentGameData
+        },
+        delta: {
+            active: inbound.delta.active,
+            opponent: inbound.delta.opponent
+        },
+        loops: inbound.loops
+    };
 }
 
 module.exports = {
     getGameDataDeltas: getGameDataDeltas,
-    getGamersScores: getGamersScores,
-    getGamersScoresV1: getGamersScoresV1
+    getGamersScores: getGamersScoresV1,
+    getGamersScoresV2: getGamersScoresV2
 };

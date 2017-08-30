@@ -27,7 +27,7 @@ function updateLoop(loop, opponentGameData) {
  * @param opponentGameData
  */
 function filterAndUpdateLoopsByOpponentTrappedDots(loopsDelta, opponentGameData, activeGameData) {
-    _.forEachRight(loopsDelta, function(loop, index) {
+    _.forEachRight(loopsDelta, (loop, index) => {
         var hasTrappedDots = updateLoop(loop, opponentGameData);
 
         if (!hasTrappedDots) {

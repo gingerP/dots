@@ -10,6 +10,12 @@ const DIRECTIONS_BACKWARD = DIRECTIONS.BACKWARD;
 const DIRECTIONS_NOWHERE = DIRECTIONS.NOWHERE;
 const DIRECTIONS_BOTH_WAYS = DIRECTIONS.BOTH_WAYS;
 
+/**
+ *
+ * @param vertexes
+ * @param firstPosition
+ * @returns {object}, e.g. {loop: [{x: 0, y: 1}, {x: 2, y: 3}, ...], trappedDots: [{x: 0, y: 1}, {x: 2, y: 3}, ...]}
+ */
 function getLoop(vertexes, firstPosition) {
     var prepared = prepareInbound(vertexes);
     var isUnbroken = true;
