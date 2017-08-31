@@ -17,9 +17,10 @@ const DIRECTIONS_BOTH_WAYS = DIRECTIONS.BOTH_WAYS;
  * @returns {object}, e.g. {loop: [{x: 0, y: 1}, {x: 2, y: 3}, ...], trappedDots: [{x: 0, y: 1}, {x: 2, y: 3}, ...]}
  */
 function getLoop(vertexes, firstPosition) {
-    var prepared = prepareInbound(vertexes);
+    var prepared = prepareInbound(vertexes, firstPosition);
     var isUnbroken = true;
     var loops = [];
+    console.log(JSON.stringify(prepared))
     var futureLines = [getFutureLine(
         firstPosition.x - prepared.shift.x,
         firstPosition.y - prepared.shift.y,
@@ -112,8 +113,14 @@ function getLoops(array) {
     return prepareOutBound(loops, prepared.shift);
 }
 
-function prepareInbound(array) {
+function prepareInbound(array, firstPosition) {
+    if (firstPosition) {
+        array.push(firstPosition);
+    }
     var borders = commonUtils.getMinMaxCorners(array);
+    if (firstPosition) {
+        array.pop();
+    }
     var minX = borders.min.x;
     var minY = borders.min.y;
     var result = convertUtils.convertInbound(

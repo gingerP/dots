@@ -24,30 +24,32 @@ function getLoopWithDot() {
  * @param vertex,
  */
 function getLoopsWithVertexInBorder(vertexes, vertex) {
-    const loops = [];
+    let result = [];
     const holesGroups = VertexUtils.getHolesFromNeighborsAsGroups(vertex, vertexes);
     if (holesGroups.length) {
         let index = holesGroups.length - 1;
         holesGroupsLoop:while (index >= 0) {
             const holesGroup = holesGroups[index];
             index--;
-            //if loops are not empty we should check if first vertex of current group contained in trapped dots
-            if (loops.length) {
-                let loopIndex = loops.length - 1;
+            //if result are not empty we should check if first vertex of current group contained in trapped dots
+            if (result.length) {
+                let loopIndex = result.length - 1;
                 while(loopIndex >= 0) {
-                    const loop = loops[loopIndex];
-                    if (_.findIndex(loop.trappedDots, holesGroup[0])) {
+                    const loop = result[loopIndex];
+                    if (_.findIndex(loop.trappedDots, holesGroup[0]) !== -1) {
                         continue holesGroupsLoop;
                     }
+                    loopIndex--;
                 }
             }
-            const loop = FloodLoops.getLoop(vertexes, holesGroup[0]);
-            if (loop) {
-                loops.push(loop);
+            console.info(holesGroup[0]);
+            const loops = FloodLoops.getLoop(vertexes, holesGroup[0]);
+            if (loops && loops.length) {
+                result = result.concat(loops);
             }
         }
     }
-    return loops;
+    return result;
 }
 
 module.exports = {

@@ -171,11 +171,11 @@ function getHolesFromNeighborsAsGroups(vertex, vertexes) {
         if (_.findIndex(vertexes, neighbor) === -1) {
             group = group || [];
             group.push(neighbor);
-            if (index === DIRECTION_8_SHIFTS_TRUE_DIRECTION.length - 1) {
+            if (index === DIRECTION_8_SHIFTS_TRUE_DIRECTION.length - 1 && isHolesGroupValid(group, vertex)) {
                 holesGroups.push(group);
             }
         } else {
-            if (group.length) {
+            if (group.length && isHolesGroupValid(group, vertex)) {
                 holesGroups.push(group);
             }
             group = [];
@@ -183,6 +183,14 @@ function getHolesFromNeighborsAsGroups(vertex, vertexes) {
         index++;
     }
     return holesGroups;
+}
+
+function isHolesGroupValid(group, vertex) {
+    if (group.length === 1) {
+        const sum = Math.abs(group[0].x - vertex.x) + Math.abs(group[0].y - vertex.y);
+        return sum !== 2;
+    }
+    return true;
 }
 
 module.exports = {
