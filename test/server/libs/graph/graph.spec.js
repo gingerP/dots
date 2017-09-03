@@ -44,7 +44,7 @@ const TEST_DATA = [
         [
             [{x: 1, y: 1}, {x: 2, y: 1}, {x: 0, y: 2}, {x: 3, y: 2}, {x: 1, y: 3}, {x: 3, y: 3}, {x: 2, y: 4}],
             [{x: 3, y: 3}, {x: 4, y: 3}, {x: 2, y: 4}, {x: 5, y: 4},
-                {x: 2, y: 5}, {x: 4, y: 5}, {x: 2, y: 6}]
+                {x: 2, y: 5}, {x: 4, y: 5}, {x: 3, y: 6}]
         ]
         /*
          ┼─┼─┼─■─┼─┼─┼─
@@ -54,6 +54,24 @@ const TEST_DATA = [
          ┼─┼─■─┼─┼─■─┼─
          ┼─┼─■─┼─■─┼─┼─
          ┼─┼─■─■─┼─┼─┼─*/
+    ],
+    [
+        '0 loops with another 4 loops',
+        [{x: 2, y: 1}, {x: 3, y: 1}, {x: 4, y: 1}, {x: 5, y: 1}, {x: 6, y: 1}, {x: 1, y: 2}, {x: 3, y: 2},
+            {x: 6, y: 2}, {x: 1, y: 3}, {x: 2, y: 3}, {x: 3, y: 3}, {x: 4, y: 3}, {x: 5, y: 3}, {x: 6, y: 3},
+            {x: 1, y: 4}, {x: 3, y: 4}, {x: 6, y: 4}, {x: 1, y: 5}, {x: 3, y: 5}, {x: 6, y: 5}, {x: 2, y: 6},
+            {x: 3, y: 6}, {x: 4, y: 6}, {x: 5, y: 6}],
+        {x: 3, y: 3},
+        []
+        /*
+         ┼─┼─┼─┼─┼─┼─┼─┼─┼─┼─
+         ┼─┼─■─■─■─■─■─┼─┼─┼─
+         ┼─■─┼─■─┼─┼─■─┼─┼─┼─
+         ┼─■─■─×─■─■─■─┼─┼─┼─
+         ┼─■─┼─■─┼─┼─■─┼─┼─┼─
+         ┼─■─┼─■─┼─┼─■─┼─┼─┼─
+         ┼─┼─■─■─■─■─┼─┼─┼─┼─
+         ┼─┼─┼─┼─┼─┼─┼─┼*/
     ]
 ];
 
@@ -63,7 +81,6 @@ describe('Graph', function () {
             it(`should be ${data[0]}`, () => {
                 const result = Graph.getLoopsWithVertexInBorder(data[1], data[2]);
                 const loops = result.map(loop => loop.loop);
-                console.info(loops.length - data[3].length);
                 expect(LoopsHelpers.isUnsortedListOfArraysEqual(loops, data[3])).to.be.true;
             });
         });

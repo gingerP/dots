@@ -20,10 +20,6 @@ function isUnsortedArraysEqual(expect, actual) {
 
     preparedActual.sort(sortFunction);
     preparedExpect.sort(sortFunction);
-    console.info('Actual-----------------------')
-    console.info(preparedActual)
-    console.info('Expect******************')
-    console.info(preparedExpect)
 
     return preparedActual.every(isEqualToExpect);
 }
