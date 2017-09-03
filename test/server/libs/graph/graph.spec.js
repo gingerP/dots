@@ -2,6 +2,7 @@
 const chai = require('chai');
 const expect = chai.expect;
 const Graph = require('../../../../server/libs/graph/graph');
+const LoopsHelpers = require('./helpers/loop-helper');
 const TEST_DATA = [
     [
         'only 1 loop',
@@ -60,10 +61,10 @@ describe('Graph', function () {
     describe('Graph.getLoopsWithVertexInBorder', function () {
         TEST_DATA.forEach((data) => {
             it(`should be ${data[0]}`, () => {
-               const result = Graph.getLoopsWithVertexInBorder(data[1], data[2]);
-               const loops = result.map(loop => loop.loop);
-
-               expect(loops).to.deep.equal(data[3]);
+                const result = Graph.getLoopsWithVertexInBorder(data[1], data[2]);
+                const loops = result.map(loop => loop.loop);
+                console.info(loops.length - data[3].length);
+                expect(LoopsHelpers.isUnsortedListOfArraysEqual(loops, data[3])).to.be.true;
             });
         });
     });

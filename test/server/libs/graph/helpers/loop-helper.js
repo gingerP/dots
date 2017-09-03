@@ -1,3 +1,7 @@
+'use strict';
+
+const _ = require('lodash');
+
 function sortFunction(o1, o2) {
     if (o1.x > o2.x || o1.x === o2.x && o1.y > o2.y) {
         return -1;
@@ -9,16 +13,44 @@ function sortFunction(o1, o2) {
 
 function isUnsortedArraysEqual(expect, actual) {
     function isEqualToExpect(actualItem, index) {
-        var result = actualItem.x === expect[index].x && actualItem.y === expect[index].y;
-        return result;
+        return actualItem.x === preparedExpect[index].x && actualItem.y === preparedExpect[index].y;
     }
+    const preparedActual = _.cloneDeep(actual);
+    const preparedExpect = _.cloneDeep(expect);
 
-    actual.sort(sortFunction);
-    expect.sort(sortFunction);
+    preparedActual.sort(sortFunction);
+    preparedExpect.sort(sortFunction);
+    console.info('Actual-----------------------')
+    console.info(preparedActual)
+    console.info('Expect******************')
+    console.info(preparedExpect)
 
-    return actual.every(isEqualToExpect);
+    return preparedActual.every(isEqualToExpect);
+}
+
+function isUnsortedListOfArraysEqual(expect, actual) {
+    const preparedActual = _.cloneDeep(actual);
+    const preparedExpect = _.cloneDeep(expect);
+    let arraysAreEquals = true;
+    _.forEachRight(preparedActual, (actualItem, actualIndex) => {
+        let tryNext = false;
+        _.forEachRight(preparedExpect, (expectItem, expectIndex) => {
+            if (isUnsortedArraysEqual(expectItem, actualItem)) {
+                preparedExpect.splice(expectIndex, 1);
+                preparedActual.splice(actualIndex, 1);
+                tryNext = true;
+                return false;
+            }
+        });
+        if (!tryNext) {
+            arraysAreEquals = false;
+            return false;
+        }
+    });
+    return arraysAreEquals;
 }
 
 module.exports = {
-    isUnsortedArraysEqual: isUnsortedArraysEqual
+    isUnsortedArraysEqual: isUnsortedArraysEqual,
+    isUnsortedListOfArraysEqual: isUnsortedListOfArraysEqual
 };

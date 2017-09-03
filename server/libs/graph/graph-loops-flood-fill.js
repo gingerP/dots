@@ -20,7 +20,6 @@ function getLoop(vertexes, firstPosition) {
     var prepared = prepareInbound(vertexes, firstPosition);
     var isUnbroken = true;
     var loops = [];
-    console.log(JSON.stringify(prepared))
     var futureLines = [getFutureLine(
         firstPosition.x - prepared.shift.x,
         firstPosition.y - prepared.shift.y,

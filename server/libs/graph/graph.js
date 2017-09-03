@@ -42,7 +42,6 @@ function getLoopsWithVertexInBorder(vertexes, vertex) {
                     loopIndex--;
                 }
             }
-            console.info(holesGroup[0]);
             const loops = FloodLoops.getLoop(vertexes, holesGroup[0]);
             if (loops && loops.length) {
                 result = result.concat(loops);
