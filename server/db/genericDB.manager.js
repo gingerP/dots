@@ -336,6 +336,23 @@ class GenericDBManager extends Observable {
         return id;
     }
 
+    orderByIds(entities, ids) {
+        return this.orderByGenericIds('_id', entities, ids);
+    }
+
+    orderByGenericIds(idKey, entities, ids) {
+        return _.map(ids, (id) => {
+            let entity;
+            _.forEach(entities, (anotherEntity) => {
+                if (anotherEntity[idKey].equals(id)) {
+                    entity = anotherEntity;
+                    return false;
+                }
+            });
+            return entity;
+        });
+    }
+
 }
 
 module.exports = {

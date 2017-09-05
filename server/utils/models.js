@@ -3,7 +3,7 @@ const Joi = require('joi');
 Joi.objectId = require('joi-objectid')(Joi);
 
 module.exports = {
-    gameData: Joi.object().keys({
+    game_data: Joi.object().keys({
         _id: Joi.objectId().required(),
         game: Joi.objectId().required(),
         client: Joi.objectId().required(),
@@ -18,7 +18,7 @@ module.exports = {
         })),
         color: Joi.string().required()
     }),
-    gameDataCache: Joi.object().keys({
+    game_data_cache: Joi.object().keys({
         _id: Joi.objectId().required(),
         gameDataId: Joi.objectId().required(),
         cache: Joi.array().items(Joi.object().keys({

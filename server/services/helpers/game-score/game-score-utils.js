@@ -1,3 +1,5 @@
+'use strict';
+
 const graphLoop = require('server/libs/graph/graph-loops-flood-fill');
 const graph = require('server/libs/graph/graph');
 const commonLoopsUtils = require('server/libs/graph/utils/common-utils');
@@ -96,8 +98,11 @@ async function getGamersScoresV1(dot, activePlayerGameData, opponentGameData, op
     };
 }
 
-async function getGamersScoresV2(dot, activePlayerGameData, opponentGameData, opponentCache) {
+async function getGamersScoresV2(dot, activePlayerGameData, activePlayerCache, opponentGameData, opponentCache) {
+    const activePlayerExistsLoop = getLoopToWhichDotHit(dot, activePlayerCache);
+    if (activePlayerExistsLoop) {
 
+    }
 
 
 
@@ -172,6 +177,23 @@ async function getGamersScoresV2(dot, activePlayerGameData, opponentGameData, op
         },
         loops: inbound.loops
     };
+}
+
+function getLoopToWhichDotHit(dot, gameDataCache) {
+    let cacheIndex = gameDataCache.length - 1;
+    while(cacheIndex >= 0) {
+        const loop = gameDataCache[cacheIndex];
+        let dotIndex = loop.trappedDots.length - 1;
+        while(dotIndex >= 0) {
+            const trappedDot = loop.trappedDots[dotIndex];
+            if (dot.x === trappedDot.x && dot.y === trappedDot.y) {
+                return loop;
+            }
+            dotIndex--;
+        }
+        cacheIndex--;
+    }
+    return null;
 }
 
 module.exports = {
