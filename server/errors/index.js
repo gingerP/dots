@@ -10,6 +10,7 @@ const ClientNotBelongToGameError = require('./ClientNotBelongToGame');
 const DotAlreadyExistsError = require('./DotAlreadyExistsError');
 const InternalError = require('./InternalError');
 const GenericError = require('./GenericError');
+const DotNotAllowed = require('./DotNotAllowed');
 
 module.exports = {
     CouldNotCancelGameError: CouldNotCancelGameError,
@@ -20,6 +21,7 @@ module.exports = {
     GameNotActiveError: GameNotActiveError,
     ClientNotBelongToGameError: ClientNotBelongToGameError,
     DotAlreadyExistsError: DotAlreadyExistsError,
+    DotNotAllowed: DotNotAllowed,
     InternalError: InternalError,
     GenericError: GenericError
 };

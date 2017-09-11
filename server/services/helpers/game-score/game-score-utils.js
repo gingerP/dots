@@ -1,19 +1,21 @@
 'use strict';
 
 const graphLoop = require('server/libs/graph/graph-loops-flood-fill');
-const graph = require('server/libs/graph/graph');
+const Graph = require('server/libs/graph/graph');
 const commonLoopsUtils = require('server/libs/graph/utils/common-utils');
 const _ = require('lodash');
 const CreationUtils = require('server/utils/creation-utils');
 const Promise = require('bluebird');
 const TrappedDotsHelper = require('server/services/helpers/game-score/trapped-dots-helper');
+const Errors = require('../../../errors');
+
 
 function getGameDataDeltas(dot, dotClientGameData) {
     const clientDeltaGameData = CreationUtils.newGameData();
     const opponentDeltaGameData = CreationUtils.newGameData();
     const dots = _.cloneDeep(dotClientGameData.dots || []);
     dots.push(dot);
-    const newLoops = graph.getLoops(dots);
+    const newLoops = Graph.getLoops(dots);
 
     clientDeltaGameData.loops = commonLoopsUtils.getNewLoops(newLoops, clientDeltaGameData.loops);
     clientDeltaGameData.dots = [dot];
@@ -48,7 +50,7 @@ async function getGamersScoresV1(dot, activePlayerGameData, opponentGameData, op
     let activePlayerTempGameData = CreationUtils.newGameData();
 
     activePlayerTempGameData.dots = inbound.active.dots.concat([inbound.dot]);
-    inbound.loops = await graph.getLoops(activePlayerTempGameData.dots);
+    inbound.loops = await Graph.getLoops(activePlayerTempGameData.dots);
     inbound.active.dots.push(inbound.dot);
 
     inbound.delta.active = [];
@@ -61,7 +63,7 @@ async function getGamersScoresV1(dot, activePlayerGameData, opponentGameData, op
     if (!inbound.delta.active.length) {
 /*        let loop = {};
         /!*    if (inbound.opponent.dots.length > 3) {
-         loop = await graph.getLoop(inbound.opponent.dots, inbound.dot);
+         loop = await Graph.getLoop(inbound.opponent.dots, inbound.dot);
          }*!/
         inbound.isNewDotHitInLoop = !_.isEmpty(loop);
         if (inbound.isNewDotHitInLoop) {
@@ -101,7 +103,20 @@ async function getGamersScoresV1(dot, activePlayerGameData, opponentGameData, op
 async function getGamersScoresV2(dot, activePlayerGameData, activePlayerCache, opponentGameData, opponentCache) {
     const activePlayerExistsLoop = getLoopToWhichDotHit(dot, activePlayerCache);
     if (activePlayerExistsLoop) {
+        if (activePlayerExistsLoop.capturedDots) {
+            throw new Errors.DotNotAllowed();
+        }
+        activePlayerGameData.dots.push(dot);
+        const loops = await Graph.getLoops(activePlayerGameData.dots);
+        TrappedDotsHelper.updateLoopsByCapturedDots(loops, opponentGameData);
+        activePlayerGameData.loops = _.map(loops, loop => loop.loop);
+    } else {
+        const loopsForVertex = Graph.getLoopsWithVertexInBorder(activePlayerGameData.concat([dot]), dot);
+        if (loopsForVertex.length) {
 
+        } else {
+
+        }
     }
 
 
@@ -129,7 +144,7 @@ async function getGamersScoresV2(dot, activePlayerGameData, activePlayerCache, o
     let activePlayerTempGameData = CreationUtils.newGameData();
 
     activePlayerTempGameData.dots = inbound.active.dots.concat([inbound.dot]);
-    inbound.loops = await graph.getLoops(activePlayerTempGameData.dots);
+    inbound.loops = await Graph.getLoops(activePlayerTempGameData.dots);
     inbound.active.dots.push(inbound.dot);
 
     inbound.delta.active = [];
@@ -142,7 +157,7 @@ async function getGamersScoresV2(dot, activePlayerGameData, activePlayerCache, o
     if (!inbound.delta.active.length) {
         /*        let loop = {};
          /!*    if (inbound.opponent.dots.length > 3) {
-         loop = await graph.getLoop(inbound.opponent.dots, inbound.dot);
+         loop = await Graph.getLoop(inbound.opponent.dots, inbound.dot);
          }*!/
          inbound.isNewDotHitInLoop = !_.isEmpty(loop);
          if (inbound.isNewDotHitInLoop) {

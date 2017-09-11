@@ -1,3 +1,5 @@
+'use strict';
+
 const _ = require('lodash');
 
 function updateLoop(loop, opponentGameData) {
@@ -21,6 +23,22 @@ function updateLoop(loop, opponentGameData) {
     return Boolean(loop.trappedDots.length);
 }
 
+function updateLoopAndOpponentGameDataWithCapturedDots(loop, opponentGameData) {
+    let index = loop.trappedDots.length - 1;
+    const opponentDots = opponentGameData.dots;
+    while(index >= 0) {
+        let trappedDot = loop.trappedDots[index];
+        let opponentDotIndex = _.findIndex(opponentDots, trappedDot);
+        if (opponentDotIndex > -1) {
+            // If dot in loop also belong to opponent dots we mark it as losing dot
+            opponentGameData.dots.splice(opponentDotIndex, 1);
+            opponentGameData.losingDots.push(trappedDot);
+            loop.capturedDots.push(trappedDot);
+        }
+        index--;
+    }
+}
+
 /**
  * Loops will be filtered by trapping opponent dots and game data will be updated
  * @param loops
@@ -38,7 +56,12 @@ function filterAndUpdateLoopsByOpponentTrappedDots(loopsDelta, opponentGameData,
     });
 }
 
+function updateLoopsByCapturedDots(loops, opponentGameData) {
+    _.forEach(loops, loop => updateLoopAndOpponentGameDataWithCapturedDots(loop, opponentGameData));
+}
+
 
 module.exports = {
-    filterAndUpdateLoopsByOpponentTrappedDots: filterAndUpdateLoopsByOpponentTrappedDots
+    filterAndUpdateLoopsByOpponentTrappedDots: filterAndUpdateLoopsByOpponentTrappedDots,
+    updateLoopsByCapturedDots: updateLoopsByCapturedDots
 };

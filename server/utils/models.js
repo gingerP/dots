@@ -27,7 +27,11 @@ module.exports = {
                 y: Joi.number().integer().required(),
             })),
             passed: Joi.number().integer().required(),
-            trappedDots: Joi.array().items(Joi.object().keys({
+            capturedDots: Joi.array().items(Joi.object().keys({ //only the opponent's captured dots
+                x: Joi.number().integer().required(),
+                y: Joi.number().integer().required(),
+            })),
+            trappedDots: Joi.array().items(Joi.object().keys({ //all dots inside the loop, not only the opponent's dots
                 x: Joi.number().integer().required(),
                 y: Joi.number().integer().required(),
             }))
@@ -54,6 +58,17 @@ module.exports = {
         updated: Joi.date().timestamp().required(),
         isOnline: Joi.boolean(),
         name: Joi.string().required()
-    })
+    }),
+    loops_from_graph: Joi.array().items(Joi.object().keys({
+        loop: Joi.array().items(Joi.object().keys({
+            x: Joi.number().integer().required(),
+            y: Joi.number().integer().required(),
+        })),
+        passed: Joi.number().integer().required(),
+        trappedDots: Joi.array().items(Joi.object().keys({
+            x: Joi.number().integer().required(),
+            y: Joi.number().integer().required(),
+        }))
+    }))
 
 };
