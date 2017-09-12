@@ -60,7 +60,6 @@ function updateLoopsByCapturedDots(loops, opponentGameData) {
     _.forEach(loops, loop => updateLoopAndOpponentGameDataWithCapturedDots(loop, opponentGameData));
 }
 
-
 module.exports = {
     filterAndUpdateLoopsByOpponentTrappedDots: filterAndUpdateLoopsByOpponentTrappedDots,
     updateLoopsByCapturedDots: updateLoopsByCapturedDots

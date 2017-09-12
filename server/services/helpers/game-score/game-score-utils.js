@@ -102,20 +102,24 @@ async function getGamersScoresV1(dot, activePlayerGameData, opponentGameData, op
 
 async function getGamersScoresV2(dot, activePlayerGameData, activePlayerCache, opponentGameData, opponentCache) {
     const activePlayerExistsLoop = getLoopToWhichDotHit(dot, activePlayerCache);
+    activePlayerGameData.dots.push(dot);
     if (activePlayerExistsLoop) {
         if (activePlayerExistsLoop.capturedDots) {
             throw new Errors.DotNotAllowed();
         }
-        activePlayerGameData.dots.push(dot);
         const loops = await Graph.getLoops(activePlayerGameData.dots);
         TrappedDotsHelper.updateLoopsByCapturedDots(loops, opponentGameData);
         activePlayerGameData.loops = _.map(loops, loop => loop.loop);
     } else {
-        const loopsForVertex = Graph.getLoopsWithVertexInBorder(activePlayerGameData.concat([dot]), dot);
+        const loopsForVertex = Graph.getLoopsWithVertexInBorder(activePlayerGameData.dots, dot);
         if (loopsForVertex.length) {
 
         } else {
-
+            const opponentLoop = getLoopToWhichDotHit(dot, opponentCache);
+            if (opponentLoop && opponentLoop.capturedDots.length) {
+                throw new Errors.DotNotAllowed();
+            }
+            TrappedDotsHelper.updateLoopsByCapturedDots(opponentCache.cache, activePlayerGameData);
         }
     }
 
