@@ -116,14 +116,15 @@ async function getGamersScoresV2(dot, activePlayerGameData, activePlayerCache, o
 
         } else {
             const opponentLoop = getLoopToWhichDotHit(dot, opponentCache);
-            if (opponentLoop && opponentLoop.capturedDots.length) {
-                throw new Errors.DotNotAllowed();
+            if (opponentLoop) {
+                if (opponentLoop.capturedDots.length) {
+                    throw new Errors.DotNotAllowed();
+                } else {
+                    TrappedDotsHelper.updateLoopsByCapturedDots(opponentCache.cache, activePlayerGameData);
+                }
             }
-            TrappedDotsHelper.updateLoopsByCapturedDots(opponentCache.cache, activePlayerGameData);
         }
     }
-
-
 
     const inbound = {
         dot: dot,
