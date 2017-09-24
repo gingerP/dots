@@ -100,8 +100,30 @@ async function getGamersScoresV1(dot, activePlayerGameData, opponentGameData, op
     };
 }
 
+/**
+ *
+ * @param dot
+ * @param activePlayerGameData
+ * @param activePlayerCache
+ * @param opponentGameData
+ * @param opponentCache
+ * @returns {Promise.<{gameData: {active: *, opponent: *}, delta: {active: Array, opponent: Array}, loops: Array}>}
+ * @throws {Errors.DotNotAllowed}
+ */
 async function getGamersScoresV2(dot, activePlayerGameData, activePlayerCache, opponentGameData, opponentCache) {
-    const activePlayerExistsLoop = getLoopToWhichDotHit(dot, activePlayerCache);
+    const activePlayerDelta = {
+        dots: [dot],
+        losingDots: [],
+        capturedDots: [],
+        loops: []
+    };
+    const opponentPlayerDelta = {
+        dots: [],
+        losingDots: [],
+        capturedDots: [],
+        loops: []
+    };
+    const [activePlayerExistsLoop] = getLoopInfoToWhichDotHit(dot, activePlayerCache);
     activePlayerGameData.dots.push(dot);
     if (activePlayerExistsLoop) {
         if (activePlayerExistsLoop.capturedDots) {
@@ -115,16 +137,28 @@ async function getGamersScoresV2(dot, activePlayerGameData, activePlayerCache, o
         if (loopsForVertex.length) {
 
         } else {
-            const opponentLoop = getLoopToWhichDotHit(dot, opponentCache);
-            if (opponentLoop) {
-                if (opponentLoop.capturedDots.length) {
+            const [opponentCacheLoop, opponentCacheLoopIndex] = getLoopInfoToWhichDotHit(dot, opponentCache);
+            if (opponentCacheLoop) {
+                if (opponentCacheLoop.capturedDots.length) {
                     throw new Errors.DotNotAllowed();
                 } else {
-                    TrappedDotsHelper.updateLoopsByCapturedDots(opponentCache.cache, activePlayerGameData);
+                    opponentGameData.loops.push(opponentCacheLoop.loop);
+                    opponentCacheLoop.capturedDots.push(dot);
+                    opponentPlayerDelta.capturedDots.push(dot);
+                    opponentPlayerDelta.loops.push(opponentCacheLoop);
+
+                    activePlayerGameData.losingDots.push(dot);
+                    activePlayerGameData.dots.pop();
+                    activePlayerDelta.dots = [];
+                    activePlayerDelta.losingDots.push(dot);
                 }
             }
         }
     }
+
+    return [
+        activePlayerGameData, activePlayerCache, activePlayerDelta,
+        opponentGameData, opponentCache, opponentPlayerDelta];
 
     const inbound = {
         dot: dot,
@@ -199,7 +233,17 @@ async function getGamersScoresV2(dot, activePlayerGameData, activePlayerCache, o
     };
 }
 
-function getLoopToWhichDotHit(dot, gameDataCache) {
+/**
+ * @typedef {Array} CacheLoopInfo
+ * @type {array}
+ * @property {Object} 0 - loop
+ * @property {number} 1 - index of loop in cache
+ *
+ * @param dot
+ * @param gameDataCache
+ * @returns {CacheLoopInfo}
+ */
+function getLoopInfoToWhichDotHit(dot, gameDataCache) {
     let cacheIndex = gameDataCache.length - 1;
     while(cacheIndex >= 0) {
         const loop = gameDataCache[cacheIndex];
@@ -207,13 +251,13 @@ function getLoopToWhichDotHit(dot, gameDataCache) {
         while(dotIndex >= 0) {
             const trappedDot = loop.trappedDots[dotIndex];
             if (dot.x === trappedDot.x && dot.y === trappedDot.y) {
-                return loop;
+                return [loop, cacheIndex];
             }
             dotIndex--;
         }
         cacheIndex--;
     }
-    return null;
+    return [];
 }
 
 module.exports = {

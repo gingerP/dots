@@ -7,12 +7,12 @@ module.exports = {
         _id: Joi.objectId().required(),
         game: Joi.objectId().required(),
         client: Joi.objectId().required(),
-        dots: Joi.array().items(Joi.object().keys({
+        dots: Joi.array().items(Joi.object().keys({ //only not captured dots
             x: Joi.number().integer().required(),
             y: Joi.number().integer().required(),
         })),
         loops: [],
-        losingDots: Joi.array().items(Joi.object().keys({
+        losingDots: Joi.array().items(Joi.object().keys({//only lost dots
             x: Joi.number().integer().required(),
             y: Joi.number().integer().required(),
         })),
