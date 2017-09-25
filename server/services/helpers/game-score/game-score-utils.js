@@ -130,11 +130,12 @@ async function getGamersScoresV2(dot, activePlayerGameData, activePlayerCache, o
             throw new Errors.DotNotAllowed();
         }
         const loops = await Graph.getLoops(activePlayerGameData.dots);
-        TrappedDotsHelper.updateLoopsByCapturedDots(loops, opponentGameData);
+        TrappedDotsHelper.deductLoopsTrappedDotsFromOpponentGameData(loops, opponentGameData);
         activePlayerGameData.loops = _.map(loops, loop => loop.loop);
     } else {
         const loopsForVertex = Graph.getLoopsWithVertexInBorder(activePlayerGameData.dots, dot);
         if (loopsForVertex.length) {
+
 
         } else {
             const [opponentCacheLoop, opponentCacheLoopIndex] = getLoopInfoToWhichDotHit(dot, opponentCache);
@@ -156,82 +157,13 @@ async function getGamersScoresV2(dot, activePlayerGameData, activePlayerCache, o
         }
     }
 
-    return [
-        activePlayerGameData, activePlayerCache, activePlayerDelta,
-        opponentGameData, opponentCache, opponentPlayerDelta];
-
-    const inbound = {
-        dot: dot,
-        active: {
-            dots: activePlayerGameData.dots || [],
-            loops: activePlayerGameData.loops || [],
-            losingDots: activePlayerGameData.losingDots || []
-        },
-        opponent: {
-            dots: opponentGameData.dots || [],
-            loops: opponentGameData.loops || [],
-            losingDots: opponentGameData.losingDots || []
-        },
-        loops: [],
-        delta: {
-            opponent: [],
-            active: []
-        },
-        isNewDotHitInLoop: false
-    };
-
-    let activePlayerTempGameData = CreationUtils.newGameData();
-
-    activePlayerTempGameData.dots = inbound.active.dots.concat([inbound.dot]);
-    inbound.loops = await Graph.getLoops(activePlayerTempGameData.dots);
-    inbound.active.dots.push(inbound.dot);
-
-    inbound.delta.active = [];
-    _.forEach(inbound.loops, function (loopData) {
-        if (_.findIndex(loopData.loop, dot) > -1) {
-            inbound.delta.active.push(loopData);
-        }
-    });
-
-    if (!inbound.delta.active.length) {
-        /*        let loop = {};
-         /!*    if (inbound.opponent.dots.length > 3) {
-         loop = await Graph.getLoop(inbound.opponent.dots, inbound.dot);
-         }*!/
-         inbound.isNewDotHitInLoop = !_.isEmpty(loop);
-         if (inbound.isNewDotHitInLoop) {
-         return;
-         }*/
-    }
-
-    if (inbound.loops && inbound.loops.length && inbound.opponent.dots && inbound.opponent.dots.length) {
-        TrappedDotsHelper.filterAndUpdateLoopsByOpponentTrappedDots(
-            inbound.delta.active,
-            inbound.opponent,
-            inbound.active
-        );
-        //inbound.active.loops = inbound.active.loops.concat(inbound.loopsDelta);
-    }
-
-    activePlayerGameData.dots = inbound.active.dots;
-    activePlayerGameData.loops = inbound.active.loops;
-    activePlayerGameData.losingDots = inbound.active.losingDots;
-
-    opponentGameData.dots = inbound.opponent.dots;
-    opponentGameData.loops = inbound.opponent.loops;
-    opponentGameData.losingDots = inbound.opponent.losingDots;
     return {
-        gameData: {
-            active: activePlayerGameData,
-            opponent: opponentGameData
-        },
-        delta: {
-            active: inbound.delta.active,
-            opponent: inbound.delta.opponent
-        },
-        loops: inbound.loops
+        active: [activePlayerGameData, activePlayerCache, activePlayerDelta],
+        opponent: [opponentGameData, opponentCache, opponentPlayerDelta]
     };
 }
+
+
 
 /**
  * @typedef {Array} CacheLoopInfo

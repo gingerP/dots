@@ -7,7 +7,7 @@ function updateLoop(loop, opponentGameData) {
     var opponentDots = opponentGameData.dots;
     var trappedDot;
     var opponentDotIndex;
-    while(index >= 0) {
+    while (index >= 0) {
         trappedDot = loop.trappedDots[index];
         opponentDotIndex = _.findIndex(opponentDots, trappedDot);
         if (opponentDotIndex > -1) {
@@ -23,7 +23,7 @@ function updateLoop(loop, opponentGameData) {
     return Boolean(loop.trappedDots.length);
 }
 
-function updateLoopAndOpponentGameDataWithCapturedDots(loop, opponentGameData) {
+function deductLoopTrappedDotsFromOpponentGameData(loop, opponentGameData, {excludeOpponentLoops}) {
     let index = loop.trappedDots.length - 1;
     const opponentDots = opponentGameData.dots;
     while(index >= 0) {
@@ -56,11 +56,14 @@ function filterAndUpdateLoopsByOpponentTrappedDots(loopsDelta, opponentGameData,
     });
 }
 
-function updateLoopsByCapturedDots(loops, opponentGameData) {
-    _.forEach(loops, loop => updateLoopAndOpponentGameDataWithCapturedDots(loop, opponentGameData));
+function deductLoopsTrappedDotsFromOpponentGameData(loops, opponentGameData, options) {
+    const preparedOptions = _.merge({
+        excludeOpponentLoops: false
+    }, options);
+    _.forEach(loops, loop => deductLoopTrappedDotsFromOpponentGameData(loop, opponentGameData, preparedOptions));
 }
 
 module.exports = {
     filterAndUpdateLoopsByOpponentTrappedDots: filterAndUpdateLoopsByOpponentTrappedDots,
-    updateLoopsByCapturedDots: updateLoopsByCapturedDots
+    deductLoopsTrappedDotsFromOpponentGameData: deductLoopsTrappedDotsFromOpponentGameData
 };

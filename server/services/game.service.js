@@ -13,6 +13,12 @@ const Errors = require('../errors');
 
 class GameService extends GenericService {
 
+    /**
+     *
+     * @param message
+     * @returns {Promise.<{active: *, opponent: *}>}
+     * @throws [GameNotFoundError, ClientNotFoundError, GameNotActiveError, ClientNotBelongToGameError, DotAlreadyExistsError, DotNotAllowed]
+     */
     async onAddDot(message) {
         const inst = this;
         const gameId = message.data.gameId;

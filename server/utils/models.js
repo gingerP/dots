@@ -2,39 +2,34 @@
 const Joi = require('joi');
 Joi.objectId = require('joi-objectid')(Joi);
 
+const Vertex = Joi.object().keys({
+    x: Joi.number().integer().required(),
+    y: Joi.number().integer().required(),
+});
+
 module.exports = {
     game_data: Joi.object().keys({
         _id: Joi.objectId().required(),
         game: Joi.objectId().required(),
         client: Joi.objectId().required(),
-        dots: Joi.array().items(Joi.object().keys({ //only not captured dots
-            x: Joi.number().integer().required(),
-            y: Joi.number().integer().required(),
-        })),
-        loops: [],
-        losingDots: Joi.array().items(Joi.object().keys({//only lost dots
-            x: Joi.number().integer().required(),
-            y: Joi.number().integer().required(),
-        })),
+        //only not captured dots
+        dots: Joi.array().items(Vertex),
+        // only loops with captured opponent dots
+        loops: Joi.array().items(Vertex),
+        //only lost dots
+        losingDots: Joi.array().items(Vertex),
         color: Joi.string().required()
     }),
     game_data_cache: Joi.object().keys({
         _id: Joi.objectId().required(),
         gameDataId: Joi.objectId().required(),
         cache: Joi.array().items(Joi.object().keys({
-            loop: Joi.array().items(Joi.object().keys({
-                x: Joi.number().integer().required(),
-                y: Joi.number().integer().required(),
-            })),
+            loop: Joi.array().items(Vertex),
             passed: Joi.number().integer().required(),
-            capturedDots: Joi.array().items(Joi.object().keys({ //only the opponent's captured dots
-                x: Joi.number().integer().required(),
-                y: Joi.number().integer().required(),
-            })),
-            trappedDots: Joi.array().items(Joi.object().keys({ //all dots inside the loop, not only the opponent's dots
-                x: Joi.number().integer().required(),
-                y: Joi.number().integer().required(),
-            }))
+            //only the opponent's captured dots
+            capturedDots: Joi.array().items(Vertex),
+            //all dots inside the loop, not only the opponent's dots
+            trappedDots: Joi.array().items(Vertex)
         }))
     }),
     game: Joi.object().keys({
@@ -60,15 +55,8 @@ module.exports = {
         name: Joi.string().required()
     }),
     loops_from_graph: Joi.array().items(Joi.object().keys({
-        loop: Joi.array().items(Joi.object().keys({
-            x: Joi.number().integer().required(),
-            y: Joi.number().integer().required(),
-        })),
+        loop: Joi.array().items(Vertex),
         passed: Joi.number().integer().required(),
-        trappedDots: Joi.array().items(Joi.object().keys({
-            x: Joi.number().integer().required(),
-            y: Joi.number().integer().required(),
-        }))
+        trappedDots: Joi.array().items(Vertex)
     }))
-
 };
