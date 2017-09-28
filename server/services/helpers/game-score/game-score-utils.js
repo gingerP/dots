@@ -123,16 +123,35 @@ async function getGamersScoresV2(dot, activePlayerGameData, activePlayerCache, o
         capturedDots: [],
         loops: []
     };
-    const [activePlayerExistsLoop] = getLoopInfoToWhichDotHit(dot, activePlayerCache);
+    const [activePlayerExistsLoop, existsLoopIndex] = getLoopCacheInfoToWhichDotHit(dot, activePlayerCache);
     activePlayerGameData.dots.push(dot);
     if (activePlayerExistsLoop) {
         if (activePlayerExistsLoop.capturedDots) {
             throw new Errors.DotNotAllowed();
         }
-        const loops = await Graph.getLoops(activePlayerGameData.dots);
-        TrappedDotsHelper.deductLoopsTrappedDotsFromOpponentGameData(loops, opponentGameData);
-        activePlayerGameData.loops = _.map(loops, loop => loop.loop);
+        const newLoops = Graph.getLoopsWithVertexInBorder(activePlayerGameData.dots, dot);
+        if (newLoops.length) {
+            activePlayerCache.cache.splice(existsLoopIndex, 1);
+            activePlayerCache.cache = activePlayerCache.cache.concat(newLoops);
+        }
     } else {
+        const [opponentCacheLoop] = getLoopCacheInfoToWhichDotHit(dot, opponentCache);
+
+        if (opponentCacheLoop) {
+            if (opponentCacheLoop.capturedDots.length) {
+              throw new Errors.DotNotAllowed();
+            } else {
+				const loopsForDot = Graph.getLoopsWithVertexInBorder(activePlayerGameData.dots, dot);
+				if (loopsForDot.length) {
+
+                } else {
+
+                }
+
+            }
+        }
+
+
         const loopsForVertex = Graph.getLoopsWithVertexInBorder(activePlayerGameData.dots, dot);
         if (loopsForVertex.length) {
 
@@ -175,7 +194,7 @@ async function getGamersScoresV2(dot, activePlayerGameData, activePlayerCache, o
  * @param gameDataCache
  * @returns {CacheLoopInfo}
  */
-function getLoopInfoToWhichDotHit(dot, gameDataCache) {
+function getLoopCacheInfoToWhichDotHit(dot, gameDataCache) {
     let cacheIndex = gameDataCache.length - 1;
     while(cacheIndex >= 0) {
         const loop = gameDataCache[cacheIndex];

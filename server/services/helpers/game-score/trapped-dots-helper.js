@@ -63,6 +63,18 @@ function deductLoopsTrappedDotsFromOpponentGameData(loops, opponentGameData, opt
     _.forEach(loops, loop => deductLoopTrappedDotsFromOpponentGameData(loop, opponentGameData, preparedOptions));
 }
 
+
+/**
+ * Return free opponent dots, captured by active player loops.
+ * Free dots means they are not captured active player dots as loops.
+ * @param opponentCache
+ * @param activePlayerLoops
+ * @returns {Array}
+ */
+function getFreeOpponentDotsCapturedByActivePlayerLoops(opponentCache, activePlayerLoops) {
+
+}
+
 module.exports = {
     filterAndUpdateLoopsByOpponentTrappedDots: filterAndUpdateLoopsByOpponentTrappedDots,
     deductLoopsTrappedDotsFromOpponentGameData: deductLoopsTrappedDotsFromOpponentGameData
