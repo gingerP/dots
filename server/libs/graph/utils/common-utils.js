@@ -106,7 +106,7 @@ function filterDotsInsideCorners(dots, corners) {
 module.exports = {
     getMinMaxCorners: getMinMaxCorners,
     isDotTrappedIntoCorners: isDotTrappedIntoCorners,
-	filterDotsInsideCorners: filterDotsInsideCorners,
+    filterDotsInsideBorders: filterDotsInsideCorners,
     findFirstUnselectedUnvisitedPosition: findFirstUnselectedUnvisitedPosition,
     getUnselectedUnvisitedVertexesCount: getUnselectedUnvisitedVertexesCount,
     makeUniqVertexesList: makeUniqVertexesList,

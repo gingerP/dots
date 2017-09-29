@@ -9,7 +9,7 @@ var LoopHelpers = require('test/server/libs/graph/helpers/loop-helper');
 const DIRECTORY_GET_LOOPS = __dirname + '/test-data/getLoops/';
 const DIRECTORY_GET_LOOP = __dirname + '/test-data/getLoop/';
 
-describe('Graph loops flood fill', function() {
+xdescribe('Graph loops flood fill', function() {
     describe('method "getLoops"', function() {
         xdescribe('Performance', function () {
             var files = FsHelper.getFiles(DIRECTORY_GET_LOOPS, ['performance']);

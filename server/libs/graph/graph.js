@@ -19,9 +19,9 @@ function getLoopWithDot() {
 
 
 /**
- *
- * @param vertexes, all vertexes, including vertex
- * @param vertex,
+ * @param {Dot[]} vertexes all vertexes, including vertex, immutable
+ * @param {Dot} vertex , immutable
+ * @returns Dot[]
  */
 function getLoopsWithVertexInBorder(vertexes, vertex) {
     let result = [];

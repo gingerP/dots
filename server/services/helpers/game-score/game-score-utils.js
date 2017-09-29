@@ -102,11 +102,11 @@ async function getGamersScoresV1(dot, activePlayerGameData, opponentGameData, op
 
 /**
  *
- * @param dot
- * @param activePlayerGameData
- * @param activePlayerCache
- * @param opponentGameData
- * @param opponentCache
+ * @param {Dot} dot
+ * @param {GameData} activePlayerGameData
+ * @param {GameDataCache} activePlayerCache
+ * @param {GameData} opponentGameData
+ * @param {GameDataCache} opponentCache
  * @returns {Promise.<{gameData: {active: *, opponent: *}, delta: {active: Array, opponent: Array}, loops: Array}>}
  * @throws {Errors.DotNotAllowed}
  */
@@ -184,13 +184,8 @@ async function getGamersScoresV2(dot, activePlayerGameData, activePlayerCache, o
 
 
 /**
- * @typedef {Array} CacheLoopInfo
- * @type {array}
- * @property {Object} 0 - loop
- * @property {number} 1 - index of loop in cache
- *
- * @param dot
- * @param gameDataCache
+ * @param {Dot} dot
+ * @param {GameDataCache} gameDataCache
  * @returns {CacheLoopInfo}
  */
 function getLoopCacheInfoToWhichDotHit(dot, gameDataCache) {
