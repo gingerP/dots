@@ -1,6 +1,7 @@
 'use strict';
 
 const _ = require('lodash');
+const CommonGraphUtils = require('../../../libs/graph/utils/common-utils');
 
 function updateLoop(loop, opponentGameData) {
     var index = loop.trappedDots.length - 1;
@@ -23,7 +24,7 @@ function updateLoop(loop, opponentGameData) {
     return Boolean(loop.trappedDots.length);
 }
 
-function deductLoopTrappedDotsFromOpponentGameData(loop, opponentGameData, {excludeOpponentLoops}) {
+function capturedFreeOpponentDotsByWithActivePlayerLoop(loop, opponentGameData) {
     let index = loop.trappedDots.length - 1;
     const opponentDots = opponentGameData.dots;
     while(index >= 0) {
@@ -71,8 +72,15 @@ function deductLoopsTrappedDotsFromOpponentGameData(loops, opponentGameData, opt
  * @param activePlayerLoops
  * @returns {Array}
  */
-function getFreeOpponentDotsCapturedByActivePlayerLoops(opponentCache, activePlayerLoops) {
+function capturedFreeOpponentDotsWithActivePlayerLoops(opponentGameData, opponentCache, newActivePlayerCacheLoops) {
+	let activeLoopIndex = 0;
+	let freeDots = opponentCache.dots_outside_loops;
+    while(activeLoopIndex < newActivePlayerCacheLoops.length) {
+        let activePlayerCacheLoop = newActivePlayerCacheLoops[activeLoopIndex];
+        let loopBorders = CommonGraphUtils.getMinMaxCorners(activePlayerCacheLoop.loop);
+        let acceptableFreeDots = CommonGraphUtils.filterDotsInsideCorners(freeDots, loopBorders);
 
+    }
 }
 
 module.exports = {

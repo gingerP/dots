@@ -55,7 +55,8 @@ function isVertexInsideLoop(loop, vertex) {
             }
         }
     });
-    return left && right && Math.floor(right / 2) !== right / 2 && Math.floor(left / 2) !== left / 2;
+    console.info(right, left);
+    return Boolean(left && right && Math.floor(right / 2) !== right / 2 && Math.floor(left / 2) !== left / 2);
 }
 
 module.exports = {

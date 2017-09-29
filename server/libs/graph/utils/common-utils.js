@@ -2,6 +2,10 @@
 
 var _ = require('lodash');
 
+/**
+ * @param {Array} dataArray
+ * @returns {{min: {x, y}, max: {x, y}, size: number}}
+ */
 function getMinMaxCorners(dataArray) {
     var minX = dataArray[0].x;
     var minY = dataArray[0].y;
@@ -83,8 +87,26 @@ function getNewLoops(/*newLoops, oldLoops*/) {
 
 }
 
+function isDotTrappedIntoCorners(dot, corners) {
+    return dot.x >= corners.min.x && dot.x <= corners.max.x && dot.y >= corners.min.y && dot.y <= corners.max.y;
+}
+
+function filterDotsInsideCorners(dots, corners) {
+    const result = [];
+    let index = 0;
+    while(index < dots.length) {
+        const dot = dots[index];
+        if (isDotTrappedIntoCorners(dot, corners)) {
+            result.push(dot);
+        }
+    }
+    return result;
+}
+
 module.exports = {
     getMinMaxCorners: getMinMaxCorners,
+    isDotTrappedIntoCorners: isDotTrappedIntoCorners,
+	filterDotsInsideCorners: filterDotsInsideCorners,
     findFirstUnselectedUnvisitedPosition: findFirstUnselectedUnvisitedPosition,
     getUnselectedUnvisitedVertexesCount: getUnselectedUnvisitedVertexesCount,
     makeUniqVertexesList: makeUniqVertexesList,
