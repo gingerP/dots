@@ -11,6 +11,7 @@ const DotAlreadyExistsError = require('./DotAlreadyExistsError');
 const InternalError = require('./InternalError');
 const GenericError = require('./GenericError');
 const DotNotAllowed = require('./DotNotAllowed');
+import DotsShouldBeCaptured from './DotsShouldBeCaptured';
 
 module.exports = {
     CouldNotCancelGameError: CouldNotCancelGameError,
@@ -23,5 +24,6 @@ module.exports = {
     DotAlreadyExistsError: DotAlreadyExistsError,
     DotNotAllowed: DotNotAllowed,
     InternalError: InternalError,
-    GenericError: GenericError
+    GenericError: GenericError,
+	DotsShouldBeCaptured: DotsShouldBeCaptured
 };

@@ -12,9 +12,9 @@ const DIRECTIONS_BOTH_WAYS = DIRECTIONS.BOTH_WAYS;
 
 /**
  *
- * @param vertexes
- * @param firstPosition
- * @returns {object}, e.g. {loop: [{x: 0, y: 1}, {x: 2, y: 3}, ...], trappedDots: [{x: 0, y: 1}, {x: 2, y: 3}, ...]}
+ * @param {Dot[]} vertexes
+ * @param {Dot} firstPosition
+ * @returns LoopCache
  */
 function getLoop(vertexes, firstPosition) {
     var prepared = prepareInbound(vertexes, firstPosition);
@@ -49,12 +49,8 @@ function getLoop(vertexes, firstPosition) {
 
 /**
  *
- * @param array, e.g. [{x: 0, y: 1}, {x: 2, y: 3}, ...]
- * @returns array, e.g.
- * [
- *  {loop: [{x: 0, y: 1}, {x: 2, y: 3}, ...], trappedDots: [{x: 0, y: 1}, {x: 2, y: 3}, ...]},
- *  ...
- * ]
+ * @param {Dot[]} array
+ * @returns LoopCache[]
  */
 function getLoops(array) {
     var prepared = prepareInbound(array);

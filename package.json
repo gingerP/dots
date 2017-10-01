@@ -49,7 +49,7 @@
     "chai": "^3.5.0",
     "chai-arrays": "0.0.1",
     "copy-webpack-plugin": "4.0.1",
-    "eslint": "^3.7.0",
+    "eslint": "^4.8.0",
     "grunt": "1.0.1",
     "grunt-angular-templates": "1.1.0",
     "grunt-contrib-less": "1.4.0",

@@ -5,23 +5,22 @@ const PathUtils = require('./utils/path-utils');
 const FloodLoops = require('./graph-loops-flood-fill');
 const VertexUtils = require('./utils/vertex-utils');
 
+/**
+ * @param {Dot[]} vertexes
+ * @returns LoopCache[]
+ */
 function getLoopsLinesUnsorted(vertexes) {
-    var loopsRaw = floodLoops.getLoops(vertexes);
+    var loopsRaw = FloodLoops.getLoops(vertexes);
     return _.map(loopsRaw, function (loopRaw) {
         loopRaw.loopLines = PathUtils.getUnSortedPath(loopRaw.loop);
         return loopRaw;
     });
 }
 
-function getLoopWithDot() {
-    var loopsRaw = floodLoops.getLoop(vertexes, vertex);
-}
-
-
 /**
  * @param {Dot[]} vertexes all vertexes, including vertex, immutable
  * @param {Dot} vertex , immutable
- * @returns Dot[]
+ * @returns LoopCache[]
  */
 function getLoopsWithVertexInBorder(vertexes, vertex) {
     let result = [];
@@ -55,6 +54,5 @@ module.exports = {
     getLoops: FloodLoops.getLoops,
     getLoop: FloodLoops.getLoop,
     getLoopsWithVertexInBorder: getLoopsWithVertexInBorder,
-    getLoopWithDot: getLoopWithDot,
     getLoopsLinesUnsorted: getLoopsLinesUnsorted
 };

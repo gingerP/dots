@@ -23,7 +23,8 @@ module.exports = {
     game_data_cache: Joi.object().keys({
         _id: Joi.objectId().required(),
         gameDataId: Joi.objectId().required(),
-        dots_outside_loops: Joi.array().items(Vertex),
+		dotsNotCapturedOpponentDots: Joi.array().items(Vertex),
+        dotsOutsideLoops: Joi.array().items(Vertex),
         cache: Joi.array().items(Joi.object().keys({
             loop: Joi.array().items(Vertex),
             passed: Joi.number().integer().required(),

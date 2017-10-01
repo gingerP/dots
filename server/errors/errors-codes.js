@@ -13,5 +13,6 @@ module.exports = {
     ClientNotBelongToGameError: code(7),
     DotAlreadyExistsError: code(8),
     InternalError: code(9),
-    DotNotAllowed: code(10)
+    DotNotAllowed: code(10),
+	DotsShouldBeCaptured: code(11)
 };
