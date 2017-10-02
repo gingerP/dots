@@ -132,7 +132,7 @@ function removeCapturedDotsFromGameDataAndCache(capturedDots, gameData, gameCach
 /**
  * @param {Dot[]} dotsToRemove, immutable
  * @param {Dot[]} removeFromDots, mutable
- * @returns Dot[] removeFromDots - dotsToRemove
+ * @returns {Dot[]} removeFromDots - dotsToRemove
  */
 function removeDotsFromList(dotsToRemove, removeFromDots) {
 	let indexTo = dotsToRemove.length - 1;
@@ -154,22 +154,24 @@ function removeDotsFromList(dotsToRemove, removeFromDots) {
 /**
  * @param {LoopCache[]} loopsCaches, mutable
  * @param {Dot[]} dots, immutable
- * @return number[] lists of indexes which were removed
+ * @returns {number[]} lists of indexes which were removed
  */
 function removeLoopsCachesWithDots(loopsCaches, dots) {
 	let indexCache = loopsCaches.length - 1;
 	let removedIndexes = [];
-	cacheLoop:while (indexCache >= 0) {
+	let toBreak = false;
+	while (indexCache >= 0 && !toBreak) {
 		const loop = loopsCaches[indexCache].loop;
 		let indexInLoop = loop.length - 1;
-		while (indexInLoop >= 0) {
+		while (indexInLoop >= 0 && !toBreak) {
 			const loopDot = loop[indexInLoop];
 			let indexDot = dots.length - 1;
-			while (indexDot >= 0) {
+			while (indexDot >= 0 && !toBreak) {
 				if (loopDot.x === dots[indexDot].x && loopDot.y === dots[indexDot].y) {
 					loopsCaches.splice(indexCache, 1);
 					removedIndexes.push(indexCache);
-					break cacheLoop;
+					toBreak = true;
+					break;
 				}
 				indexDot--;
 			}

@@ -116,31 +116,31 @@ async function getGamersScoresV1(dot, activePlayerGameData, opponentGameData, op
  * @throws {Errors.DotNotAllowed}
  */
 async function getGamersScoresV2(dot, activePlayerGameData, activePlayerCache, opponentGameData, opponentCache) {
-	const [activePlayerExistsLoop, existsLoopIndex] = getLoopCacheInfoToWhichDotHit(dot, activePlayerCache);
+	const [activePlayerLoopCache, existsLoopIndex] = getLoopCacheInfoToWhichDotHit(dot, activePlayerCache.cache);
 	activePlayerGameData.dots.push(dot);
-	if (activePlayerExistsLoop) {
-		if (activePlayerExistsLoop.capturedDots) {
-			throw new Errors.DotNotAllowed();
-		}
-		const newLoops = Graph.getLoopsWithVertexInBorder(activePlayerGameData.dots, dot);
-		if (newLoops.length) {
-			return ifDotTrappedInsideOwnLoop();
-		}
+	if (activePlayerLoopCache) {
+		return ifDotTrappedInsideOwnLoop(
+			dot, opponentLoopCacheIndex,
+			activePlayerGameData, activePlayerCache,
+			opponentGameData, opponentCache
+		);
 	} else {
 		const [, opponentLoopCacheIndex] = getLoopCacheInfoToWhichDotHit(dot, opponentCache);
 
-		if (opponentLoopCacheIndex) {
+		if (!_.isNil(opponentLoopCacheIndex)) {
 			return ifDotTrappedIntoOpponentLoop(
 				dot, opponentLoopCacheIndex,
 				activePlayerGameData, activePlayerCache,
 				opponentGameData, opponentCache
 			);
+		} else {
+			return ifDotNotTrappedIntoAnyLoop(
+				dot,
+				activePlayerGameData, activePlayerCache,
+				opponentGameData, opponentCache
+			);
 		}
-
-
-
 	}
-
 	return {
 		active: [activePlayerGameData, activePlayerCache, activePlayerDelta],
 		opponent: [opponentGameData, opponentCache, opponentPlayerDelta]
@@ -150,6 +150,15 @@ async function getGamersScoresV2(dot, activePlayerGameData, activePlayerCache, o
 async function ifDotTrappedInsideOwnLoop() {
 	activePlayerCache.cache.splice(existsLoopIndex, 1);
 	activePlayerCache.cache = activePlayerCache.cache.concat(newLoops);
+
+
+	if (activePlayerExistsLoop.capturedDots) {
+		throw new Errors.DotNotAllowed();
+	}
+	const newLoops = Graph.getLoopsWithVertexInBorder(activePlayerGameData.dots, dot);
+	if (newLoops.length) {
+
+	}
 }
 
 /**
@@ -202,12 +211,53 @@ async function ifDotTrappedIntoOpponentLoop(dot, opponentCacheLoopIndex,
 /**
  *
  * @param {Dot} dot
+ * @param {GameData} activePlayerGameData
+ * @param {GameDataCache} activePlayerCache
+ * @param {GameData} opponentGameData
+ * @param {GameDataCache} opponentCache
+ * @returns {Promise.<{active: GameDataResult, opponent: GameDataResult}>}
+ */
+async function ifDotNotTrappedIntoAnyLoop(dot,
+										  activePlayerGameData, activePlayerCache,
+										  opponentGameData, opponentCache) {
+	const loopsCachesForDot = Graph.getLoopsWithVertexInBorder(activePlayerGameData.dots, dot);
+	if (loopsCachesForDot.length) {
+		const newCapturedDotsInfo = TrappedDotsHelper.captureDotsByLoopsCaches(
+			opponentCache.dotsNotCapturedOpponentDots,
+			loopsCachesForDot
+		);
+		if (newCapturedDotsInfo) {
+			return collectSuccessfulDotForActivePlayer(
+				activePlayerGameData, activePlayerCache,
+				opponentGameData, opponentCache,
+				dot, loopsCachesForDot, newCapturedDotsInfo
+			);
+		} else {
+			return collectEmptyDotForActivePlayer(
+				activePlayerGameData, activePlayerCache,
+				opponentGameData, opponentCache,
+				dot, loopsCachesForDot
+			);
+		}
+	} else {
+		return collectEmptyDotForActivePlayer(
+			activePlayerGameData, activePlayerCache,
+			opponentGameData, opponentCache,
+			dot, []
+		);
+	}
+
+}
+
+/**
+ *
+ * @param {Dot} dot
  * @param {Dot[]} dots
  * @returns {number} dot index
  */
 function findDotIndexRight(dot, dots) {
 	let index = dots.length - 1;
-	while(index >= 0) {
+	while (index >= 0) {
 		if (dots[index].x === dot.x && dots[index].y === dot.y) {
 			return index;
 		}
@@ -219,7 +269,7 @@ function findDotIndexRight(dot, dots) {
 
 /**
  * @param {Dot} dot
- * @param {GameDataCache} gameDataCache
+ * @param {LoopCache[]} gameDataCache
  * @returns {CacheLoopInfo}
  */
 function getLoopCacheInfoToWhichDotHit(dot, gameDataCache) {
@@ -308,8 +358,8 @@ async function collectSuccessfulDotForActivePlayer(activePlayerGameData, activeP
  * @returns {Promise.<{active: GameDataResult , opponent: GameDataResult}>}
  */
 async function collectLosingDotForActivePlayer(activePlayerGameData, activePlayerCache,
-												 opponentGameData, opponentCache,
-												 dot, loopCacheIndex) {
+											   opponentGameData, opponentCache,
+											   dot, loopCacheIndex) {
 	const activePlayerDelta = {
 		dots: [],
 		losingDots: [dot],
@@ -339,6 +389,48 @@ async function collectLosingDotForActivePlayer(activePlayerGameData, activePlaye
 	//	GameData
 	activePlayerGameData.losingDots.push(dot);
 	//	GameDataCache
+
+	return {
+		active: [activePlayerGameData, activePlayerCache, activePlayerDelta],
+		opponent: [opponentGameData, opponentCache, opponentDelta]
+	};
+}
+
+/**
+ *
+ * @param {GameData} activePlayerGameData
+ * @param {GameDataCache} activePlayerCache
+ * @param {GameData} opponentGameData
+ * @param {GameDataCache} opponentCache
+ * @param {Dot} dot
+ * @param {LoopCache[]}loopsCachesForDot
+ * @returns {Promise.<{active: GameDataResult , opponent: GameDataResult}>}
+ */
+async function collectEmptyDotForActivePlayer(activePlayerGameData, activePlayerCache,
+											  opponentGameData, opponentCache,
+											  dot, loopsCachesForDot) {
+	const activePlayerDelta = {
+		dots: [dot],
+		losingDots: [],
+		capturedDots: [],
+		loops: []
+	};
+	const opponentDelta = {
+		dots: [],
+		losingDots: [],
+		capturedDots: [],
+		loops: []
+	};
+	//Opponent player
+	//	GameDataDelta
+	//	GameData
+	//	GameDataCache
+
+	//Active player
+	//	GameDataDelta
+	//	GameData
+	//	GameDataCache
+	activePlayerCache.cache = activePlayerCache.cache.concat(loopsCachesForDot);
 
 	return {
 		active: [activePlayerGameData, activePlayerCache, activePlayerDelta],
