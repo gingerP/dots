@@ -13,100 +13,98 @@ const Errors = require('../errors');
 
 class GameService extends GenericService {
 
-    /**
-     *
-     * @param message
-     * @returns {Promise.<{active: *, opponent: *}>}
-     * @throws [GameNotFoundError, ClientNotFoundError, GameNotActiveError, ClientNotBelongToGameError, DotAlreadyExistsError, DotNotAllowed]
-     */
-    async onAddDot(message) {
-        const inst = this;
-        const gameId = message.data.gameId;
-        const clientId = sessionUtils.getClientId(message.client.getSession());
-        const dot = {x: message.data.x, y: message.data.y};
+	/**
+	 *
+	 * @param {SocketMessage} message
+	 * @returns {Promise.<{active: *, opponent: *}>}
+	 * @throws [GameNotFoundError, ClientNotFoundError, GameNotActiveError, ClientNotBelongToGameError, DotAlreadyExistsError, DotNotAllowed]
+	 */
+	async onAddDot(message) {
+		const inst = this;
+		const gameId = message.data.gameId;
+		const clientId = sessionUtils.getClientId(message.client.getSession());
+		const dot = {x: message.data.x, y: message.data.y};
 
-        let [client, game] = await Promise.all([
-            this.clientsDBManager.get(clientId),
-            this.gameDBManager.get(gameId)
-        ]);
+		let [client, game] = await Promise.all([
+			this.clientsDBManager.get(clientId),
+			this.gameDBManager.get(gameId)
+		]);
 
-        if (_.isNil(game)) {
-            throw new Errors.GameNotFoundError();
-        }
+		if (_.isNil(game)) {
+			throw new Errors.GameNotFoundError();
+		}
 
-        if (_.isNil(client)) {
-            throw new Errors.ClientNotFoundError();
-        }
+		if (_.isNil(client)) {
+			throw new Errors.ClientNotFoundError();
+		}
 
-        if (game.status !== GameStatuses.active) {
-            throw new Errors.GameNotActiveError();
-        }
+		if (game.status !== GameStatuses.active) {
+			throw new Errors.GameNotActiveError();
+		}
 
-        if (!client._id.equals(game.from) && !client._id.equals(game.to)) {
-            throw new Errors.ClientNotBelongToGameError();
-        }
+		if (!client._id.equals(game.from) && !client._id.equals(game.to)) {
+			throw new Errors.ClientNotBelongToGameError();
+		}
 
-        const opponentId = game.to.equals(client._id) ? game.from : game.to;
-        const [activePlayerGameData, opponentGameData, opponent] = await Promise.all([
-            this.gameDataDBManager.getGameData(gameId, client._id),
-            this.gameDataDBManager.getGameData(gameId, opponentId),
-            this.clientsDBManager.get(opponentId)
-        ]);
-        const [activePlayerCache, opponentPlayerCache] = await this.gameDataCacheDBManager.getCacheByGameDataId([
-            activePlayerGameData._id,
-            opponentGameData._id
-        ]);
+		const opponentId = game.to.equals(client._id) ? game.from : game.to;
+		const [activePlayerGameData, opponentGameData, opponent] = await Promise.all([
+			this.gameDataDBManager.getGameData(gameId, client._id),
+			this.gameDataDBManager.getGameData(gameId, opponentId),
+			this.clientsDBManager.get(opponentId)
+		]);
+		const [activePlayerCache, opponentCache] = await this.gameDataCacheDBManager.getCacheByGameDataId([
+			activePlayerGameData._id,
+			opponentGameData._id
+		]);
 
-        let isDotNew = !_.some(activePlayerGameData.dots, clientDot => clientDot.x === dot.x && clientDot.y === dot.y);
-        isDotNew = isDotNew && !_.some(opponentGameData.dots, clientDot => clientDot.x === dot.x && clientDot.y === dot.y);
+		let isDotNew = !_.some(activePlayerGameData.dots, clientDot => clientDot.x === dot.x && clientDot.y === dot.y);
+		isDotNew = isDotNew && !_.some(opponentGameData.dots, clientDot => clientDot.x === dot.x && clientDot.y === dot.y);
 
-        if (!isDotNew) {
-            throw new Errors.DotAlreadyExistsError();
-        }
+		if (!isDotNew) {
+			throw new Errors.DotAlreadyExistsError();
+		}
 
-        const scores = await GameScoreUtils.getGamersScoresV2(
-            dot,
-            activePlayerGameData, activePlayerCache,
-            opponentGameData, opponentPlayerCache
-        );
+		const {active: [activePlayerDelta], opponent: [opponentDelta]} = await GameScoreUtils.getGamersScoresV2(
+			dot,
+			activePlayerGameData, activePlayerCache,
+			opponentGameData, opponentCache
+		);
 
-        const gameData = scores.gameData;
+		await Promise.all([
+			this.gameDataCacheDBManager.save(activePlayerCache),
+			this.gameDataCacheDBManager.save(opponentCache),
+			this.gameDataDBManager.save(activePlayerGameData),
+			this.gameDataDBManager.save(opponentGameData)
+		]);
 
-        await Promise.all([
-            this.gameDataCacheDBManager.saveCache(gameData.active._id, scores.loops),
-            this.gameDataDBManager.save(gameData.active),
-            this.gameDataDBManager.save(gameData.opponent)
-        ]);
+		game.activePlayer = opponent._id;
+		game = await inst.gameDBManager.save(game);
 
-        game.activePlayer = opponent._id;
-        game = await inst.gameDBManager.save(game);
+		inst.gameController.nextStep(
+			dot,
+			CreationUtils.newGamerStepData(client, activePlayerGameData, activePlayerDelta),
+			CreationUtils.newGamerStepData(opponent, opponentGameData, opponentDelta),
+			game
+		);
+		return true;
+	}
 
-        inst.gameController.nextStep(
-            dot,
-            CreationUtils.newGamerStepData(client, gameData.active, scores.delta.active),
-            CreationUtils.newGamerStepData(opponent, gameData.opponent, scores.delta.opponent),
-            game
-        );
+	getName() {
+		return IOC.SERVICE.GAME;
+	}
 
-        return gameData;
-    }
-
-    getName() {
-        return IOC.SERVICE.GAME;
-    }
-
-    postConstructor(ioc) {
-        this.gameController = ioc[IOC.CONTROLLER.GAME];
-        this.clientsDBManager = ioc[IOC.DB_MANAGER.CLIENTS];
-        this.gameDBManager = ioc[IOC.DB_MANAGER.GAME];
-        this.gameDataDBManager = ioc[IOC.DB_MANAGER.GAME_DATA];
-        this.gameDataCacheDBManager = ioc[IOC.DB_MANAGER.GAME_DATA_CACHE];
-        this.gameController.onAddDot(this.onAddDot.bind(this));
-        this.loopsDBManager = ioc[IOC.DB_MANAGER.LOOPS];
-    }
+	postConstructor(ioc) {
+		this.gameController = ioc[IOC.CONTROLLER.GAME];
+		this.clientsDBManager = ioc[IOC.DB_MANAGER.CLIENTS];
+		this.gameDBManager = ioc[IOC.DB_MANAGER.GAME];
+		this.gameDataDBManager = ioc[IOC.DB_MANAGER.GAME_DATA];
+		this.gameDataCacheDBManager = ioc[IOC.DB_MANAGER.GAME_DATA_CACHE];
+		this.gameController.onAddDot(this.onAddDot.bind(this));
+		this.loopsDBManager = ioc[IOC.DB_MANAGER.LOOPS];
+	}
 }
 
 module.exports = {
-    class: GameService
+	class: GameService
 };
 

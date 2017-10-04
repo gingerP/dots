@@ -107,13 +107,13 @@ async function getGamersScoresV1(dot, activePlayerGameData, opponentGameData, op
 
 /**
  *
- * @param {Dot} dot
- * @param {GameData} activePlayerGameData
- * @param {GameDataCache} activePlayerCache
- * @param {GameData} opponentGameData
- * @param {GameDataCache} opponentCache
+ * @param {Dot} dot immutable
+ * @param {GameData} activePlayerGameData mutable
+ * @param {GameDataCache} activePlayerCache mutable
+ * @param {GameData} opponentGameData mutable
+ * @param {GameDataCache} opponentCache mutable
  * @returns {Promise.<{active: GameDataResult , opponent: GameDataResult}>}
- * @throws {Errors.DotNotAllowed}
+ * @throws {Errors.DotNotAllowed, Errors.DotsShouldBeCaptured}
  */
 async function getGamersScoresV2(dot, activePlayerGameData, activePlayerCache, opponentGameData, opponentCache) {
 	const [, existsLoopCacheIndex] = getLoopCacheInfoToWhichDotHit(dot, activePlayerCache.cache);
@@ -142,8 +142,8 @@ async function getGamersScoresV2(dot, activePlayerGameData, activePlayerCache, o
 		}
 	}
 	return {
-		active: [activePlayerGameData, activePlayerCache, activePlayerDelta],
-		opponent: [opponentGameData, opponentCache, opponentPlayerDelta]
+		active: [activePlayerDelta, activePlayerGameData, activePlayerCache],
+		opponent: [opponentPlayerDelta, opponentGameData, opponentCache]
 	};
 }
 
@@ -343,8 +343,8 @@ async function collectSuccessfulDotForActivePlayer(activePlayerGameData, activeP
 	activePlayerGameData.loops = activePlayerGameData.loops.concat(activePlayerDelta.loops);
 
 	return {
-		active: [activePlayerGameData, activePlayerCache, activePlayerDelta],
-		opponent: [opponentGameData, opponentCache, opponentDelta]
+		active: [activePlayerDelta, activePlayerGameData, activePlayerCache],
+		opponent: [opponentDelta, opponentGameData, opponentCache]
 	};
 }
 
@@ -391,8 +391,8 @@ async function collectLosingDotForActivePlayer(activePlayerGameData, activePlaye
 	//	GameDataCache
 
 	return {
-		active: [activePlayerGameData, activePlayerCache, activePlayerDelta],
-		opponent: [opponentGameData, opponentCache, opponentDelta]
+		active: [activePlayerDelta, activePlayerGameData, activePlayerCache],
+		opponent: [opponentDelta, opponentGameData, opponentCache]
 	};
 }
 
@@ -433,8 +433,8 @@ async function collectEmptyDotForActivePlayer(activePlayerGameData, activePlayer
 	activePlayerCache.cache = activePlayerCache.cache.concat(loopsCachesForDot);
 
 	return {
-		active: [activePlayerGameData, activePlayerCache, activePlayerDelta],
-		opponent: [opponentGameData, opponentCache, opponentDelta]
+		active: [activePlayerDelta, activePlayerGameData, activePlayerCache],
+		opponent: [opponentDelta, opponentGameData, opponentCache]
 	};
 }
 
