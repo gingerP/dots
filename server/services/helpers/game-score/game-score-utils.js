@@ -116,11 +116,11 @@ async function getGamersScoresV1(dot, activePlayerGameData, opponentGameData, op
  * @throws {Errors.DotNotAllowed}
  */
 async function getGamersScoresV2(dot, activePlayerGameData, activePlayerCache, opponentGameData, opponentCache) {
-	const [activePlayerLoopCache, existsLoopIndex] = getLoopCacheInfoToWhichDotHit(dot, activePlayerCache.cache);
+	const [, existsLoopCacheIndex] = getLoopCacheInfoToWhichDotHit(dot, activePlayerCache.cache);
 	activePlayerGameData.dots.push(dot);
-	if (activePlayerLoopCache) {
+	if (!_.isNil(existsLoopCacheIndex)) {
 		return ifDotTrappedInsideOwnLoop(
-			dot, opponentLoopCacheIndex,
+			dot, existsLoopCacheIndex,
 			activePlayerGameData, activePlayerCache,
 			opponentGameData, opponentCache
 		);
@@ -147,18 +147,18 @@ async function getGamersScoresV2(dot, activePlayerGameData, activePlayerCache, o
 	};
 }
 
-async function ifDotTrappedInsideOwnLoop() {
-	activePlayerCache.cache.splice(existsLoopIndex, 1);
-	activePlayerCache.cache = activePlayerCache.cache.concat(newLoops);
-
-
-	if (activePlayerExistsLoop.capturedDots) {
+async function ifDotTrappedInsideOwnLoop(dot, existsLoopCacheIndex,
+										 activePlayerGameData, activePlayerCache,
+										 opponentGameData, opponentCache) {
+	const existLoopCache = activePlayerCache.cache[existsLoopCacheIndex];
+	if (existLoopCache.capturedDots.length) {
 		throw new Errors.DotNotAllowed();
 	}
-	const newLoops = Graph.getLoopsWithVertexInBorder(activePlayerGameData.dots, dot);
-	if (newLoops.length) {
-
+	const newLoopsCaches = Graph.getLoopsWithVertexInBorder(activePlayerGameData.dots, dot);
+	if (newLoopsCaches.length) {
+		activePlayerCache.cache.splice(existsLoopCacheIndex, 1);
 	}
+	return collectEmptyDotForActivePlayer(activePlayerGameData, activePlayerCache, opponentGameData, opponentCache, dot, newLoopsCaches);
 }
 
 /**
