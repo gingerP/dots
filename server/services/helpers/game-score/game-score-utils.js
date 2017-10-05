@@ -186,7 +186,7 @@ async function ifDotTrappedIntoOpponentLoop(dot, opponentCacheLoopIndex,
 				loopsCachesForDot
 			);
 			if (newCapturedDotsInfo.length) {
-				throw new Errors.DotsShouldBeCaptured();
+				throw new Errors.DotsShouldBeCapturedError();
 			}
 			return collectSuccessfulDotForActivePlayer(
 				activePlayerGameData, activePlayerCache,

@@ -107,7 +107,11 @@ class CreateGameService extends GenericService {
         const colors = getRandomColorsPair();
         const [gameDataFrom, gameDataTo] = await Promise.all([
             inst.gameDataDBManager.createNew(game._id, clientFrom._id, colors[0]),
-            inst.gameDataDBManager.createNew(game._id, clientTo._id, colors[1])
+            inst.gameDataDBManager.createNew(game._id, clientTo._id, colors[1]),
+        ]);
+        await Promise.all([
+            inst.gameDataCacheDBManager.createNew(gameDataFrom._id),
+            inst.gameDataCacheDBManager.createNew(gameDataTo._id)
         ]);
         return {
             gameDataFrom: gameDataFrom,
@@ -168,6 +172,7 @@ class CreateGameService extends GenericService {
         this.createGameDBManager = ioc[IOC.DB_MANAGER.CREATE_GAME];
         this.gameDBManager = ioc[IOC.DB_MANAGER.GAME];
         this.gameDataDBManager = ioc[IOC.DB_MANAGER.GAME_DATA];
+        this.gameDataCacheDBManager = ioc[IOC.DB_MANAGER.GAME_DATA_CACHE];
     }
 }
 

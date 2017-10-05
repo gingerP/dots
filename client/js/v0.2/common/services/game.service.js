@@ -11,7 +11,7 @@ define([
     function addDot(dot) {
         var game = gameStorage.getGame();
         if (game) {
-            Transport.send(
+            return Transport.send(
                 {
                     x: dot.x,
                     y: dot.y,

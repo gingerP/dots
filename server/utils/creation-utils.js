@@ -18,6 +18,19 @@ function newGameData(gameId, clientId, dots, losingDots, loops, color) {
     };
 }
 
+/**
+ * @param {MongoId} gameDataId - gameDataId
+ * @returns {GameDataCache} - new GameDataCache
+ */
+function newGameDataCache(gameDataId) {
+    return {
+        gameDataId: gameDataId,
+        dotsOutsideLoops: [],
+        dotsNotCapturedOpponentDots: [],
+        cache: []
+    };
+}
+
 function newClient(name, created, updated, isOnline) {
     return {
         created: created || Date.now(),
@@ -39,5 +52,6 @@ module.exports = {
     newLoopData: newLoopData,
     newGameData: newGameData,
     newClient: newClient,
-    newGamerStepData: newGamerStepData
+    newGamerStepData: newGamerStepData,
+    newGameDataCache: newGameDataCache
 };

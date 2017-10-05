@@ -27,30 +27,41 @@ class GameController extends GenericController {
         );
     }
 
-    nextStep(dot,
-             previousPlayerStepData,
-             currentPlayerStepData,
-             game) {
-        this.transmitter.send(
+    /**
+     *
+     * @param {Dot} dot
+     * @param {Gamer} previousPlayer
+     * @param {GameData} previousPlayerGameData
+     * @param {GameDataDelta} previousPlayerDelta
+     * @param {Gamer} currentPlayer
+     * @param {GameData} currentPlayerData
+     * @param {GameDataDelta} currentPlayerDelta
+     * @param {Game} game
+     * @returns {Promise.<void>}
+     */
+    async nextStep(dot,
+                   previousPlayer, previousPlayerGameData, previousPlayerDelta,
+                   currentPlayer, currentPlayerData, currentPlayerDelta, game) {
+        return this.transmitter.send(
             [
-                previousPlayerStepData.gamer._id,
-                currentPlayerStepData.gamer._id
+                previousPlayer._id,
+                currentPlayer._id
             ],
             Events.GAME.STEP.NEW(),
             {
                 dot: dot,
-                previous: extractStepData(previousPlayerStepData),
-                current: extractStepData(currentPlayerStepData),
+                previous: {gamerId: previousPlayer._id, gameData: previousPlayerGameData, delta: previousPlayerDelta},
+                current: {gamerId: currentPlayer._id, gameData: currentPlayerData, delta: currentPlayerDelta},
                 game: game
             }
         );
     }
 
-    invitePlayer() {
+	async invitePlayer() {
 
     }
 
-    rejectPlayer() {
+	async rejectPlayer() {
 
     }
 

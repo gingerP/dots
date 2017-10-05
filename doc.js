@@ -11,6 +11,21 @@
  * 				trappedDots: Dot[]
  * 			}} LoopCache
  * @typedef {{
+ *              _id: MongoId,
+ *              created: date,
+ *              updated: date,
+ *              isOnline: boolean,
+ *              name: string
+ *          }} Gamer
+ * @typedef {{
+ *              _id: MongoId,
+ *              from: MongoId,
+ *              to: MongoId,
+ *              activePlayer: MongoId,
+ *              status: ['active', 'closed', 'finished'],
+ *              timestamp: date
+ *          }} Game
+ * @typedef {{
  * 				dots: Dot[],
  * 				losingDots: Dot[],
  * 				capturedDots: Dot[],
@@ -51,4 +66,19 @@
  *          	equalConnection: function,
  *          	registerListeners: function
  *          }} SocketClient
+ *
+ * @typedef {{
+ *              dot: Dot,
+ *              previous: {
+ *                  gamerId: MongoId,
+ *                  gameData: GameData,
+ *                  delta: GameDataDelta
+ *              },
+ *              current: {
+ *                  gamerId: MongoId,
+ *                  gameDate: GameData,
+ *                  delta: GameDataDelta
+ *              },
+ *              game: Game
+ *          }} NewStepResponse
  */

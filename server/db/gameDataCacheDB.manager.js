@@ -21,15 +21,13 @@ class GameDataCacheDBManager extends GenericDBManager {
         return IOC.DB_MANAGER.GAME_DATA_CACHE;
     }
 
-    async createNew(gameId, clientId, color, dots, trappedDots, loops) {
-        const newGameData = CreationUtils.newGameData(
-            this.getObjectId(gameId),
-            this.getObjectId(clientId),
-            dots,
-            [],
-            loops,
-            color
-        );
+    /**
+     *
+     * @param {MongoId} gameDataId
+     * @returns {Promise<GameDataCache>}
+     */
+    async createNew(gameDataId) {
+        const newGameData = CreationUtils.newGameDataCache(gameDataId);
         return this.save(newGameData);
     }
 
@@ -42,13 +40,18 @@ class GameDataCacheDBManager extends GenericDBManager {
         });
     }
 
+    /**
+     *
+     * @param {...MongoId} gameDataIds
+     * @returns {Promise.<*>}
+     */
     async getCacheByGameDataId(...gameDataIds) {
         const preparedIds = _.map(gameDataIds, id => this.getObjectId(id));
         if (gameDataIds.length === 1) {
             return this.getByCriteria({gameDataId: preparedIds[0]});
         } else {
-            const caches = await this.getByCriteria({gameDataId: {$in: preparedIds}});
-            return this.orderByIds('gameDataId', caches, gameDataIds);
+            const caches = await this.listByCriteria({gameDataId: {$in: preparedIds}});
+            return this.orderByGenericIds('gameDataId', caches, gameDataIds);
         }
     };
 

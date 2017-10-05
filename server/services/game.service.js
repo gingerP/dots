@@ -52,10 +52,10 @@ class GameService extends GenericService {
 			this.gameDataDBManager.getGameData(gameId, opponentId),
 			this.clientsDBManager.get(opponentId)
 		]);
-		const [activePlayerCache, opponentCache] = await this.gameDataCacheDBManager.getCacheByGameDataId([
+		const [activePlayerCache, opponentCache] = await this.gameDataCacheDBManager.getCacheByGameDataId(
 			activePlayerGameData._id,
 			opponentGameData._id
-		]);
+		);
 
 		let isDotNew = !_.some(activePlayerGameData.dots, clientDot => clientDot.x === dot.x && clientDot.y === dot.y);
 		isDotNew = isDotNew && !_.some(opponentGameData.dots, clientDot => clientDot.x === dot.x && clientDot.y === dot.y);
@@ -80,10 +80,11 @@ class GameService extends GenericService {
 		game.activePlayer = opponent._id;
 		game = await inst.gameDBManager.save(game);
 
-		inst.gameController.nextStep(
+		message.callback();
+		await inst.gameController.nextStep(
 			dot,
-			CreationUtils.newGamerStepData(client, activePlayerGameData, activePlayerDelta),
-			CreationUtils.newGamerStepData(opponent, opponentGameData, opponentDelta),
+			client, activePlayerGameData, activePlayerDelta,
+			opponent, opponentGameData, opponentDelta,
 			game
 		);
 		return true;

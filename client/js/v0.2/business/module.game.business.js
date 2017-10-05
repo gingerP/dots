@@ -58,10 +58,14 @@ define([
             if (!canSelectDot(dot)) {
                 reject();
             } else {
-                activePlayer.selectDot(dot);
-                observable.emit(Events.ADD_DOT, {gamePlayerId: activePlayer.getId(), dot: dot});
-                GameService.addDot(dot);
-                Graphics.updatePlayerState(activePlayer.color, dot);
+                GameService.addDot(dot)
+                    .then(function () {
+                        activePlayer.selectDot(dot);
+                        observable.emit(Events.ADD_DOT, {gamePlayerId: activePlayer.getId(), dot: dot});
+                        Graphics.updatePlayerState(activePlayer.color, dot);
+                        resolve();
+                    })
+                    .catch(reject);
             }
         });
     }
@@ -190,39 +194,45 @@ define([
             }
         });
 
-        GameService.listen.gameStep(function (message) {
-            var gamePlayer = GameStorage.getGamePlayerById(message.current.gamerId);
-            var previousGamePlayer = GameStorage.getGamePlayerById(message.previous.gamerId);
-            var opponent = GameStorage.getGameOpponent();
-            var isPreviousIsOpponent = message.previous.gamerId === opponent.getId();
+        GameService.listen.gameStep(
+            /**
+             * @param {NewStepResponse} message server response for new dot
+             * @returns {undefined}
+             */
+            function (message) {
+                var gamePlayer = GameStorage.getGamePlayerById(message.current.gamerId);
+                var previousGamePlayer = GameStorage.getGamePlayerById(message.previous.gamerId);
+                var opponent = GameStorage.getGameOpponent();
+                var isPreviousIsOpponent = message.previous.gamerId === opponent.getId();
 
-            GameStorage.setGame(message.game);
-            makePlayerActive(gamePlayer);
-            Graphics.updatePlayerStep(
-                previousGamePlayer.color,
-                message.dot,
-                message.previous.delta,
-                null,
-                null,
-                isPreviousIsOpponent
-            );
+                GameStorage.setGame(message.game);
+                makePlayerActive(gamePlayer);
+                Graphics.updatePlayerStep(
+                    previousGamePlayer.color,
+                    message.dot,
+                    message.previous.delta,
+                    null,
+                    null,
+                    isPreviousIsOpponent
+                );
 
-            // Current player
-            GameUtils.updatePlayerState(
-                message.current.gamerId,
-                ConvertersUtils.convertToGameData(null, null, GameUtils.collectTrappedDots(message.previous.delta))
-            );
+                // Current player
+                GameUtils.updatePlayerState(
+                    message.current.gamerId,
+                    ConvertersUtils.convertToGameData(null, null, GameUtils.collectTrappedDots(message.previous.delta))
+                );
 
-            // Previous player
-            GameUtils.updatePlayerState(
-                message.previous.gamerId,
-                ConvertersUtils.convertToGameData(message.dot, message.previous.delta)
-            );
-            observable.emit(Events.GAME_STEP, {
-                dot: message.dot,
-                previousGamePlayerId: message.previous.gamerId
-            });
-        });
+                // Previous player
+                GameUtils.updatePlayerState(
+                    message.previous.gamerId,
+                    ConvertersUtils.convertToGameData(message.dot, message.previous.delta)
+                );
+                observable.emit(Events.GAME_STEP, {
+                    dot: message.dot,
+                    previousGamePlayerId: message.previous.gamerId
+                });
+            }
+        );
 
         GameSupportService.listen.networkStatusChange(function (message) {
             checkAndNotifyAboutOpponentNetworkStatus(message.disconnected, message.reconnected);

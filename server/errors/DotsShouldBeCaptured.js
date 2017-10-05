@@ -2,7 +2,7 @@ const HttpStatus = require('http-status');
 const ErrorCodes = require('./errors-codes');
 const GenericError = require('./GenericError');
 
-export default class DotsShouldBeCaptured extends GenericError {
+class DotsShouldBeCaptured extends GenericError {
     constructor(message) {
         super(
             HttpStatus.INTERNAL_SERVER_ERROR,
@@ -10,4 +10,6 @@ export default class DotsShouldBeCaptured extends GenericError {
             message
         );
     }
-}
+};
+
+module.exports = DotsShouldBeCaptured;

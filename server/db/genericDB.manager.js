@@ -336,10 +336,23 @@ class GenericDBManager extends Observable {
         return id;
     }
 
+    /**
+     *
+     * @param {Object[]} entities
+     * @param {MongoId[]} ids
+     * @returns {Object[]}
+     */
     orderByIds(entities, ids) {
         return this.orderByGenericIds('_id', entities, ids);
     }
 
+    /**
+     *
+     * @param {string} idKey
+     * @param {Object[]} entities
+     * @param {MongoId[]} ids
+     * @returns {Object[]}
+     */
     orderByGenericIds(idKey, entities, ids) {
         return _.map(ids, (id) => {
             let entity;
