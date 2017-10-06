@@ -6,67 +6,6 @@ const CommonGraphUtils = require('../../../libs/graph/utils/common-utils');
  * @typedef {{x: number, y: number, index: number}} DotWithLoopIndex
  */
 
-function updateLoop(loop, opponentGameData) {
-	var index = loop.trappedDots.length - 1;
-	var opponentDots = opponentGameData.dots;
-	var trappedDot;
-	var opponentDotIndex;
-	while (index >= 0) {
-		trappedDot = loop.trappedDots[index];
-		opponentDotIndex = _.findIndex(opponentDots, trappedDot);
-		if (opponentDotIndex > -1) {
-			// If dot in loop also belong to opponent dots we mark it as losing dot
-			opponentGameData.dots.splice(opponentDotIndex, 1);
-			opponentGameData.losingDots.push(trappedDot);
-		} else {
-			// If dot in loop do not belong to opponent dots we removed it from trapped dots
-			loop.trappedDots.splice(index, 1);
-		}
-		index--;
-	}
-	return Boolean(loop.trappedDots.length);
-}
-
-function capturedFreeOpponentDotsByWithActivePlayerLoop(loop, opponentGameData) {
-	let index = loop.trappedDots.length - 1;
-	const opponentDots = opponentGameData.dots;
-	while (index >= 0) {
-		let trappedDot = loop.trappedDots[index];
-		let opponentDotIndex = _.findIndex(opponentDots, trappedDot);
-		if (opponentDotIndex > -1) {
-			// If dot in loop also belong to opponent dots we mark it as losing dot
-			opponentGameData.dots.splice(opponentDotIndex, 1);
-			opponentGameData.losingDots.push(trappedDot);
-			loop.capturedDots.push(trappedDot);
-		}
-		index--;
-	}
-}
-
-/**
- * Loops will be filtered by trapping opponent dots and game data will be updated
- * @param loops
- * @param opponentGameData
- */
-function filterAndUpdateLoopsByOpponentTrappedDots(loopsDelta, opponentGameData, activeGameData) {
-	_.forEachRight(loopsDelta, (loop, index) => {
-		var hasTrappedDots = updateLoop(loop, opponentGameData);
-
-		if (!hasTrappedDots) {
-			// If after updating loop the trappedDots list is empty, so we removed it from loop;
-			loopsDelta.splice(index, 1);
-			activeGameData.loops.push(loop);
-		}
-	});
-}
-
-function deductLoopsTrappedDotsFromOpponentGameData(loops, opponentGameData, options) {
-	const preparedOptions = _.merge({
-		excludeOpponentLoops: false
-	}, options);
-	_.forEach(loops, loop => deductLoopTrappedDotsFromOpponentGameData(loop, opponentGameData, preparedOptions));
-}
-
 /**
  * If newActivePlayerCacheLoops capture any free dots (dots outside loops) from opponentGameData,
  * then that dots will be removed from opponentGameData.dots and opponentCache.dotsOutsideLoops,
@@ -74,7 +13,7 @@ function deductLoopsTrappedDotsFromOpponentGameData(loops, opponentGameData, opt
  * All captured dots will be returned as array, also the parameters will be mutated.
  * @param {Dot[]} dots, immutable
  * @param {LoopCache[]} loopsCaches, mutable
- * @returns LoopCacheCapturedDotsInfo[]
+ * @returns {LoopCacheCapturedDotsInfo[]} allCapturedDots
  */
 function captureDotsByLoopsCaches(dots, loopsCaches) {
 	let activeLoopIndex = 0;
@@ -87,6 +26,7 @@ function captureDotsByLoopsCaches(dots, loopsCaches) {
 		if (capturedFreeDots.length) {
 			allCapturedDots.push({index: activeLoopIndex, dots: capturedFreeDots});
 		}
+		activeLoopIndex++;
 	}
 	return allCapturedDots;
 }
@@ -95,7 +35,7 @@ function captureDotsByLoopsCaches(dots, loopsCaches) {
  * Return dots, which captured inside loop
  * @param {Dot[]} dots, immutable
  * @param {LoopCache} loopCache, immutable
- * @returns Dot[]
+ * @returns {Dot[]} result
  */
 function filterDotsInsideLoopCache(dots, loopCache) {
 	const result = [];
@@ -115,19 +55,6 @@ function filterDotsInsideLoopCache(dots, loopCache) {
 	}
 	return result;
 }
-
-/**
- * capturedDots will be removed from gameData.dots and gameCache.dotsOutsideLoops,
- * also that dots will be added to gameData.losingDots.
- * Parameters will be mutated.
- * @param {Dot[]} capturedDots, immutable
- * @param {GameData} gameData, mutable
- * @param {GameDataCache} gameCache, mutable
- */
-function removeCapturedDotsFromGameDataAndCache(capturedDots, gameData, gameCache) {
-
-}
-
 
 /**
  * @param {Dot[]} dotsToRemove, immutable
@@ -177,13 +104,12 @@ function removeLoopsCachesWithDots(loopsCaches, dots) {
 			}
 			indexInLoop--;
 		}
+		indexCache--;
 	}
 	return removedIndexes;
 }
 
 module.exports = {
-	filterAndUpdateLoopsByOpponentTrappedDots: filterAndUpdateLoopsByOpponentTrappedDots,
-	deductLoopsTrappedDotsFromOpponentGameData: deductLoopsTrappedDotsFromOpponentGameData,
 	captureDotsByLoopsCaches: captureDotsByLoopsCaches,
 	removeDotsFromList: removeDotsFromList,
 	removeLoopsCachesWithDots: removeLoopsCachesWithDots

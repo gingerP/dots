@@ -10,11 +10,11 @@ const VertexUtils = require('./utils/vertex-utils');
  * @returns LoopCache[]
  */
 function getLoopsLinesUnsorted(vertexes) {
-    var loopsRaw = FloodLoops.getLoops(vertexes);
-    return _.map(loopsRaw, function (loopRaw) {
-        loopRaw.loopLines = PathUtils.getUnSortedPath(loopRaw.loop);
-        return loopRaw;
-    });
+	var loopsRaw = FloodLoops.getLoops(vertexes);
+	return _.map(loopsRaw, function (loopRaw) {
+		loopRaw.loopLines = PathUtils.getUnSortedPath(loopRaw.loop);
+		return loopRaw;
+	});
 }
 
 /**
@@ -23,36 +23,60 @@ function getLoopsLinesUnsorted(vertexes) {
  * @returns LoopCache[]
  */
 function getLoopsWithVertexInBorder(vertexes, vertex) {
-    let result = [];
-    const holesGroups = VertexUtils.getHolesFromNeighborsAsGroups(vertex, vertexes);
-    if (holesGroups.length) {
-        let index = holesGroups.length - 1;
-        holesGroupsLoop:while (index >= 0) {
-            const holesGroup = holesGroups[index];
-            index--;
-            //if result are not empty we should check if first vertex of current group contained in trapped dots
-            if (result.length) {
-                let loopIndex = result.length - 1;
-                while(loopIndex >= 0) {
-                    const loop = result[loopIndex];
-                    if (_.findIndex(loop.trappedDots, holesGroup[0]) !== -1) {
-                        continue holesGroupsLoop;
-                    }
-                    loopIndex--;
-                }
-            }
-            const loops = FloodLoops.getLoop(vertexes, holesGroup[0]);
-            if (loops && loops.length) {
-                result = result.concat(loops);
-            }
-        }
-    }
-    return result;
+	let result = [];
+	const holesGroups = VertexUtils.getHolesFromNeighborsAsGroups(vertex, vertexes);
+	if (holesGroups.length) {
+		let index = holesGroups.length - 1;
+		holesGroupsLoop:while (index >= 0) {
+			const holesGroup = holesGroups[index];
+			index--;
+			//if result are not empty we should check if first vertex of current group contained in trapped dots
+			if (result.length) {
+				let loopIndex = result.length - 1;
+				while (loopIndex >= 0) {
+					const loop = result[loopIndex];
+					if (_.findIndex(loop.trappedDots, holesGroup[0]) !== -1) {
+						continue holesGroupsLoop;
+					}
+					loopIndex--;
+				}
+			}
+			const loops = FloodLoops.getLoop(vertexes, holesGroup[0]);
+			if (loops && loops.length) {
+				result = result.concat(loops);
+			}
+		}
+	}
+	return result;
+}
+
+/**
+ * Added default empty capturedDots array
+ * @param {LoopCache[]} loopsCaches, mutable
+ * @returns {LoopCache[]} result
+ */
+function normalizeLoopsCaches(loopsCaches) {
+	_.forEach(loopsCaches, (loopCache) => {
+		loopCache.capturedDots = [];
+	});
+	return loopsCaches;
+}
+
+function normalizer(getLoops) {
+	return async (dots) => {
+		const loopsCaches = await getLoops(dots);
+		if (_.isArray(loopsCaches)) {
+			return normalizeLoopsCaches(loopsCaches);
+		} else {
+			loopsCaches.capturedDots = [];
+			return loopsCaches;
+		}
+	}
 }
 
 module.exports = {
-    getLoops: FloodLoops.getLoops,
-    getLoop: FloodLoops.getLoop,
-    getLoopsWithVertexInBorder: getLoopsWithVertexInBorder,
-    getLoopsLinesUnsorted: getLoopsLinesUnsorted
+	getLoops: normalizer(FloodLoops.getLoops),
+	getLoop: normalizer(FloodLoops.getLoop),
+	getLoopsWithVertexInBorder: getLoopsWithVertexInBorder,
+	getLoopsLinesUnsorted: getLoopsLinesUnsorted
 };

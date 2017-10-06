@@ -11,10 +11,14 @@ const DIRECTIONS_NOWHERE = DIRECTIONS.NOWHERE;
 const DIRECTIONS_BOTH_WAYS = DIRECTIONS.BOTH_WAYS;
 
 /**
+ * @typedef {{x: number, y: number}} DotShift
+ */
+
+/**
  *
  * @param {Dot[]} vertexes
  * @param {Dot} firstPosition
- * @returns LoopCache
+ * @returns {LoopCache[]}
  */
 function getLoop(vertexes, firstPosition) {
     var prepared = prepareInbound(vertexes, firstPosition);
@@ -44,7 +48,7 @@ function getLoop(vertexes, firstPosition) {
             trappedDots: trappedDots
         });
     }
-    return loops.length ? prepareOutBound(loops, prepared.shift) : {};
+    return loops.length ? prepareOutBound(loops, prepared.shift) : [];
 }
 
 /**
@@ -134,6 +138,12 @@ function prepareInbound(array, firstPosition) {
     };
 }
 
+/**
+ *
+ * @param {LoopCache[]} loops LoopCache[] to prepare
+ * @param {DotShift} shift initial shifts
+ * @returns {LoopCache[]} prepared loops caches
+ */
 function prepareOutBound(loops, shift) {
     var loopIndex = 0;
     var loop;

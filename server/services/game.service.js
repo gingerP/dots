@@ -16,7 +16,6 @@ class GameService extends GenericService {
 	/**
 	 *
 	 * @param {SocketMessage} message
-	 * @returns {Promise.<{active: *, opponent: *}>}
 	 * @throws [GameNotFoundError, ClientNotFoundError, GameNotActiveError, ClientNotBelongToGameError, DotAlreadyExistsError, DotNotAllowed]
 	 */
 	async onAddDot(message) {
@@ -80,14 +79,13 @@ class GameService extends GenericService {
 		game.activePlayer = opponent._id;
 		game = await inst.gameDBManager.save(game);
 
-		message.callback();
 		await inst.gameController.nextStep(
 			dot,
 			client, activePlayerGameData, activePlayerDelta,
 			opponent, opponentGameData, opponentDelta,
 			game
 		);
-		return true;
+		message.callback();
 	}
 
 	getName() {
