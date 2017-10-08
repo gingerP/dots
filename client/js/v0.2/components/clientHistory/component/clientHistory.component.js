@@ -4,7 +4,7 @@ define([
     'module.observable',
     'graphics/module.game.graphics',
     'common/events',
-    'common/services/game-data.service',
+    'services/backend/game-data.service',
     'common/common-constants',
     'components/clientHistory/clientHistory.module',
     'components/clientHistory/factories/client-history.factory',

@@ -351,7 +351,12 @@ async function collectEmptyDotForActivePlayer(activePlayerGameData, activePlayer
 	//	GameDataDelta
 	//	GameData
 	//	GameDataCache
-	activePlayerCache.cache = activePlayerCache.cache.concat(loopsCachesForDot);
+	if (!loopsCachesForDot.length) {
+		activePlayerCache.dotsOutsideLoops.push(dot);
+	} else {
+		activePlayerCache.cache = activePlayerCache.cache.concat(loopsCachesForDot);
+	}
+	activePlayerCache.dotsNotCapturedOpponentDots.push(dot);
 
 	return {
 		active: [activePlayerDelta, activePlayerGameData, activePlayerCache],

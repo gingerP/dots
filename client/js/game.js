@@ -23,7 +23,7 @@ require.config({
 require([
     'module.observable',
     'common/events',
-    'business/module.game.business',
+    'services/business/module.game.business',
     'graphics/module.game.graphics',
     'utils/game-utils',
     'components/components.module'

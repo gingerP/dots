@@ -1,5 +1,5 @@
 define([
-    'common/services/invite.service',
+    'services/invite.service',
     'module.observable',
     'business/game.storage',
     'business/module.game.business',
