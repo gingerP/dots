@@ -52,6 +52,11 @@ GameDataDBManager.prototype.addDot = function addDot(dot, clientId, gameId) {
     });
 };
 
+/**
+ *
+ * @param {MongoId} gameId
+ * @returns {Promise<GameData[]>}
+ */
 GameDataDBManager.prototype.getGameDataForGame = function getGameDataForGame(gameId) {
     if (_.isArray(gameId)) {
         return this.listByCriteria({

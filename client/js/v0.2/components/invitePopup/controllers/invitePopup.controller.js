@@ -1,6 +1,6 @@
 define([
     'angular',
-    'business/module.game.business',
+    'services/business/module.game.business',
     '../invitePopup.module'
 ], function (angular, Business) {
     'use strict';

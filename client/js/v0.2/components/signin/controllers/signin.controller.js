@@ -2,7 +2,7 @@ define([
     'angular',
     'module.observable',
     'common/events',
-    'business/game.storage',
+    'services/business/game.storage',
     'common/auth-constants',
     'components/signin/signin.module',
     'components/utils/scope.utils'

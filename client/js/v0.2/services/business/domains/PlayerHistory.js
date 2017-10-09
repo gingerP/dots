@@ -1,5 +1,5 @@
 define([
-    'business/domains/PlayerHistoryRecord'
+    'services/business/domains/PlayerHistoryRecord'
 ], function(HistoryRecord) {
     'use strict';
 

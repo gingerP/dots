@@ -1,7 +1,7 @@
 define([
     'lodash',
-    'business/domains/Player',
-    'business/game.storage'
+    'services/business/domains/Player',
+    'services/business/game.storage'
 ], function (_, Player, GameStorage) {
     'use strict';
 
@@ -17,18 +17,23 @@ define([
         }
     }
 
-    function updatePlayerState(playerId, state) {
+	/**
+     *
+	 * @param playerId
+	 * @param {Dot} dot
+	 * @param {Dot[][]} loops
+	 * @param {Dot[]} capturedDots
+	 * @param {Dot[]} losingDots
+	 */
+    function updatePlayerState(playerId, dot, loops, capturedDots, losingDots) {
         var player = GameStorage.getGamePlayerById(playerId);
-        var trappedDots;
-
         if (player) {
-            trappedDots = collectTrappedDots(state.loops);
             player
-                .addDots(state.dots)
-                .addLoops(state.loops)
-                .addTrappedDots(trappedDots)
-                .addLosingDots(state.losingDots);
-            player.newStep();
+                .addDots([dot])
+                .addLoops(loops)
+                .addTrappedDots(capturedDots)
+                .addLosingDots(losingDots)
+                .newStep();
         }
     }
 

@@ -1,7 +1,7 @@
 define([
     'angular',
     'lodash',
-    'business/game.storage',
+    'services/business/game.storage',
     'components/clientHistory/clientHistory.module'
 ], function (angular, _, GameStorage) {
     'use strict';

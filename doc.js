@@ -67,18 +67,4 @@
  *          	registerListeners: function
  *          }} SocketClient
  *
- * @typedef {{
- *              dot: Dot,
- *              previous: {
- *                  gamerId: MongoId,
- *                  gameData: GameData,
- *                  delta: GameDataDelta
- *              },
- *              current: {
- *                  gamerId: MongoId,
- *                  gameDate: GameData,
- *                  delta: GameDataDelta
- *              },
- *              game: Game
- *          }} NewStepResponse
  */

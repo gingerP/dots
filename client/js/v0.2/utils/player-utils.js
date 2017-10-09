@@ -1,6 +1,6 @@
 define([
     'lodash',
-    'business/game.storage'
+    'services/business/game.storage'
 ], function (_, GameStorage) {
     'use strict';
 

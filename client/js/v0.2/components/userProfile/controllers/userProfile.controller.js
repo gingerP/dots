@@ -1,6 +1,6 @@
 define([
     'angular',
-    'business/game.storage',
+    'services/business/game.storage',
     'common/auth-constants',
     'components/userProfile/userProfile.module'
 ], function (angular, GameStorage, AuthConstants) {

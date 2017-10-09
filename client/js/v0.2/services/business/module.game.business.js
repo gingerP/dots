@@ -112,29 +112,20 @@ define([
         observable.emit(Events.REFRESH_MYSELF);
     }
 
-    function reloadGame() {
-        var game = GameStorage.getGame();
-        if (game) {
-            GameDataService.getGameState(game._id).then(function (gameState) {
-                if (gameState.game && gameState.game.status === 'active') {
-                    refreshGame(gameState);
-                } else {
-                    cancelGame();
-                }
-            });
-        } else {
-            cancelGame();
-        }
-    }
-
-    function refreshGame(gameState) {
-        var activeGamer = GameStorage.getGamePlayerById(gameState.game.activePlayer);
+    /**
+     *
+     * @param {Game} game
+     * @param {GameData[]} gameDataList
+     * @param {Gamer[]} clients
+     */
+    function refreshGame(game, gameDataList, clients) {
+        var activeGamer = GameStorage.getGamePlayerById(game.activePlayer);
         var opponent = GameStorage.getGameOpponent();
         makePlayerActive(activeGamer);
-        PlayerUtils.updatePlayersColorsFromGameData.apply(PlayerUtils, gameState.gameData);
+        PlayerUtils.updatePlayersColorsFromGameData.apply(PlayerUtils, gameDataList);
         observable.emit(Events.REFRESH_GAME, gameState);
-        _.forEach(gameState.gameData, function (gameData) {
-            var client = _.find(gameState.clients, {_id: gameData.client});
+        _.forEach(gameDataList, function (gameData) {
+            var client = _.find(clients, {_id: gameData.client});
             var gamePlayer = GameStorage.getGamePlayerById(gameData.client);
             var dots = (gameData.dots || []).concat(gameData.losingDots || []);
             var isOpponent = opponent.getId() === gameData.client;
@@ -160,26 +151,98 @@ define([
         }
     }
 
-    function init() {
-        reloadGameMode();
-        reloadMyself();
-        reloadGame();
+    function reloadGame() {
+        var game = GameStorage.getGame();
+        if (game) {
+            GameDataService.getGameState(game._id)
+                .then(
+                    /**
+                     *
+                     * @param {{game: Game, gameData: GameData, clients: Gamer}} gameState
+                     */
+                    function (gameState) {
+                    if (gameState.game && gameState.game.status === 'active') {
+                        refreshGame(gameState.game, gameState.gameData, gameState.clients);
+                    } else {
+                        cancelGame();
+                    }
+                });
+        } else {
+            cancelGame();
+        }
+    }
 
-        function checkAndNotifyAboutOpponentNetworkStatus(disconnected, reconnected) {
-            var opponent = GameStorage.getOpponent();
-            if (opponent) {
-                if (disconnected.length && disconnected.indexOf(opponent._id) > -1) {
-                    opponent.isOnline = false;
-                    GameStorage.setOpponent(opponent);
-                    observable.emit(Events.OPPONENT_OFFLINE);
-                } else if (reconnected.length && _.findIndex(reconnected, {_id: opponent._id}) > -1) {
-                    opponent.isOnline = true;
-                    GameStorage.setOpponent(opponent);
-                    observable.emit(Events.OPPONENT_ONLINE);
-                }
+    function checkAndNotifyAboutOpponentNetworkStatus(disconnected, reconnected) {
+        var opponent = GameStorage.getOpponent();
+        if (opponent) {
+            if (disconnected.length && disconnected.indexOf(opponent._id) > -1) {
+                opponent.isOnline = false;
+                GameStorage.setOpponent(opponent);
+                observable.emit(Events.OPPONENT_OFFLINE);
+            } else if (reconnected.length && _.findIndex(reconnected, {_id: opponent._id}) > -1) {
+                opponent.isOnline = true;
+                GameStorage.setOpponent(opponent);
+                observable.emit(Events.OPPONENT_ONLINE);
             }
         }
+    }
 
+    function updatePlayer(playerData, color) {
+        var delta = playerData.delta;
+        GameUtils.updatePlayerState(
+            playerData.gamerId,
+            delta.loops,
+            delta.capturedDots,
+            delta.losingDots
+        );
+        Graphics.updatePlayerState(
+            color,
+            delta.dots,
+            delta.loops,
+            delta.capturedDots,
+            delta.losingDots,
+            false
+        );
+    }
+
+    function listenNextStep() {
+        GameService.listen.gameStep(
+            /**
+             * @param {{
+             *  dot: Dot,
+             *  previous: {
+             *      gamerId: MongoId,
+             *      gameData: GameData,
+             *      delta: GameDataDelta
+             *  },
+             *  current: {
+             *      gamerId: MongoId,
+             *      gameDate: GameData,
+             *      delta: GameDataDelta
+             *  },
+             *  game: Game
+             * }} message server response for new dot
+             * @returns {undefined}
+             */
+            function (message) {
+                var currentPlayer = GameStorage.getGamePlayerById(message.current.gamerId);
+                var previousPlayer = GameStorage.getGamePlayerById(message.previous.gamerId);
+
+                GameStorage.setGame(message.game);
+                makePlayerActive(currentPlayer);
+
+                updatePlayer(message.current, currentPlayer.color);
+                updatePlayer(message.previous, previousPlayer.color);
+
+                observable.emit(Events.GAME_STEP, {
+                    dot: message.dot,
+                    previousGamePlayerId: message.previous.gamerId
+                });
+            }
+        );
+    }
+
+    function listenGameCancel() {
         InviteService.listen.cancel(function (message) {
             var currentGame;
             Graphics.clearAnimation();
@@ -193,47 +256,9 @@ define([
                 }
             }
         });
+    }
 
-        GameService.listen.gameStep(
-            /**
-             * @param {NewStepResponse} message server response for new dot
-             * @returns {undefined}
-             */
-            function (message) {
-                var gamePlayer = GameStorage.getGamePlayerById(message.current.gamerId);
-                var previousGamePlayer = GameStorage.getGamePlayerById(message.previous.gamerId);
-                var opponent = GameStorage.getGameOpponent();
-                var isPreviousIsOpponent = message.previous.gamerId === opponent.getId();
-
-                GameStorage.setGame(message.game);
-                makePlayerActive(gamePlayer);
-                Graphics.updatePlayerStep(
-                    previousGamePlayer.color,
-                    message.dot,
-                    message.previous.delta,
-                    null,
-                    null,
-                    isPreviousIsOpponent
-                );
-
-                // Current player
-                GameUtils.updatePlayerState(
-                    message.current.gamerId,
-                    ConvertersUtils.convertToGameData(null, null, GameUtils.collectTrappedDots(message.previous.delta))
-                );
-
-                // Previous player
-                GameUtils.updatePlayerState(
-                    message.previous.gamerId,
-                    ConvertersUtils.convertToGameData(message.dot, message.previous.delta)
-                );
-                observable.emit(Events.GAME_STEP, {
-                    dot: message.dot,
-                    previousGamePlayerId: message.previous.gamerId
-                });
-            }
-        );
-
+    function listenNetworkStatus() {
         GameSupportService.listen.networkStatusChange(function (message) {
             checkAndNotifyAboutOpponentNetworkStatus(message.disconnected, message.reconnected);
             if (message.disconnected.length) {
@@ -243,6 +268,17 @@ define([
                 observable.emit(Events.CLIENTS_RECONNECT, message.reconnected);
             }
         });
+
+    }
+
+    function init() {
+        reloadGameMode();
+        reloadMyself();
+        reloadGame();
+
+        listenNextStep();
+        listenGameCancel();
+        listenNetworkStatus();
         return api;
     }
 

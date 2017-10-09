@@ -1,8 +1,8 @@
 define([
-    'services/invite.service',
+    'services/backend/invite.service',
     'module.observable',
-    'business/game.storage',
-    'business/module.game.business',
+    'services/business/game.storage',
+    'services/business/module.game.business',
     'common/events',
     'utils/player-utils',
     'q'

@@ -2,7 +2,7 @@ define([
     'common/module.transport',
     'utils/service-utils',
     'common/backend-events',
-    'business/game.storage'
+    'services/business/game.storage'
 ], function (Transport, serviceUtils, BackendEvents, gameStorage) {
     'use strict';
 

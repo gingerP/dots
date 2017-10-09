@@ -8,102 +8,96 @@ var Promise = require('bluebird');
 var logger = require('server/logging/logger').create('GameDataService');
 var errorLog = funcUtils.error(logger);
 var sessionUtils = require('server/utils/session-utils');
+const Errors = require('../errors');
 
-function GameDataService() {
-}
+class GameDataService extends GenericService {
 
-GameDataService.prototype = Object.create(GenericService.prototype);
-GameDataService.prototype.constructor = GameDataService;
 
-GameDataService.prototype.onGetClients = function (data) {
-    this.clientsDBManager.getOnlineClients().then(data.callback);
-};
+    async onGetClients(data) {
+        return this.clientsDBManager.getOnlineClients().then(data.callback);
+    }
 
-GameDataService.prototype.onGetMySelf = function (message) {
-    var clientId = sessionUtils.getClientId(message.client.getSession());
-    this.clientsDBManager.get(clientId).then(message.callback);
-};
+    async onGetMySelf(message) {
+        var clientId = sessionUtils.getClientId(message.client.getSession());
+        return this.clientsDBManager.get(clientId).then(message.callback);
+    };
 
-GameDataService.prototype.onReject = function () {
+    async onReject() {
 
-};
+    }
 
-GameDataService.prototype.onSuccess = function () {
+    async onSuccess() {
 
-};
+    }
 
-/**
- *
- * @param clientId - client id, whose history is loaded
- */
+    /**
+     *
+     * @param clientId - client id, whose history is loaded
+     */
 
-GameDataService.prototype.getClientHistory = function (clientId) {
-    return this.clientHistory.aggregate(clientId);
-};
+    async getClientHistory(clientId) {
+        return this.clientHistory.aggregate(clientId);
+    }
 
-GameDataService.prototype.onGetGameState = function (message) {
-    let inst = this;
-    //noinspection Eslint,Eslint
-    let gameData;
-    let game;
-    const gameId = message.data.id;
-    return Promise.props({
-        game: this.gameDBManager.get(gameId),
-        gameData: this.gameDataDBManager.getGameDataForGame(gameId)
-    }).then(function (data) {
-        game = data.game;
-        gameData = data.gameData;
+    /**
+     *
+     * @param {SocketMessage} message
+     * @returns {Promise.<null>}
+     */
+    async onGetGameState(message) {
+        const gameId = message.data.id;
+        const [game, usersGameDataList] = await Promise.all([
+            this.gameDBManager.get(gameId),
+            this.gameDataDBManager.getGameDataForGame(gameId)
+        ]);
+
         if (!game) {
-            game = null;
-            gameData = null;
-            return null;
+            return message.callback({});
         }
-        return inst.clientsDBManager.get([game.to, game.from]);
-    }).then(function (clients) {
+        const users = await this.clientsDBManager.get([game.to, game.from]);
         message.callback({
             game: game,
-            gameData: gameData,
-            clients: clients
+            gameData: usersGameDataList,
+            clients: users
         });
-    }).catch(errorLog);
-};
+    }
 
-GameDataService.prototype.onIsGameClosed = function (message) {
-    this.gameDBManager.get(message.data.id).then(function (game) {
-        if (game) {
-            message.callback(game.status === gameStatuses.closed);
-        } else {
-            message.callback(false);
-        }
-    }).catch(errorLog);
-};
+    async onIsGameClosed(message) {
+        this.gameDBManager.get(message.data.id).then(function (game) {
+            if (game) {
+                message.callback(game.status === gameStatuses.closed);
+            } else {
+                message.callback(false);
+            }
+        }).catch(errorLog);
+    }
 
-GameDataService.prototype.getName = function () {
-    return IOC.SERVICE.GAME_DATA;
-};
+    getName() {
+        return IOC.SERVICE.GAME_DATA;
+    }
 
-GameDataService.prototype.bindApi = function bindApi() {
-    this.controller.onGetClientHistory(this.getClientHistory.bind(this));
-    this.controller.onGetClientsList(this.onGetClients.bind(this));
-    this.controller.onGetMyself(this.onGetMySelf.bind(this));
-    this.controller.onIsGameClosed(this.onIsGameClosed.bind(this));
-    this.controller.onGetGameState(this.onGetGameState.bind(this));
-};
+    bindApi() {
+        this.controller.onGetClientHistory(this.getClientHistory.bind(this));
+        this.controller.onGetClientsList(this.onGetClients.bind(this));
+        this.controller.onGetMyself(this.onGetMySelf.bind(this));
+        this.controller.onIsGameClosed(this.onIsGameClosed.bind(this));
+        this.controller.onGetGameState(this.onGetGameState.bind(this));
+    }
 
-GameDataService.prototype.applyInjection = function applyExternals(ioc) {
-    this.gameSupportService = ioc[IOC.SERVICE.GAME_SUPPORT];
-    this.gameDataController = ioc[IOC.CONTROLLER.GAME_DATA];
-    this.controller = ioc[IOC.CONTROLLER.GAME_DATA];
-    this.clientsDBManager = ioc[IOC.DB_MANAGER.CLIENTS];
-    this.gameDBManager = ioc[IOC.DB_MANAGER.GAME];
-    this.gameDataDBManager = ioc[IOC.DB_MANAGER.GAME_DATA];
-    this.clientHistory = ioc[IOC.DB_MANAGER.CLIENTS_HISTORY_AGGREGATE];
-};
+    applyInjection(ioc) {
+        this.gameSupportService = ioc[IOC.SERVICE.GAME_SUPPORT];
+        this.controller = ioc[IOC.CONTROLLER.GAME_DATA];
+        this.clientsDBManager = ioc[IOC.DB_MANAGER.CLIENTS];
+        this.gameDBManager = ioc[IOC.DB_MANAGER.GAME];
+        this.gameDataDBManager = ioc[IOC.DB_MANAGER.GAME_DATA];
+        this.clientHistory = ioc[IOC.DB_MANAGER.CLIENTS_HISTORY_AGGREGATE];
+    };
 
-GameDataService.prototype.postConstructor = function (ioc) {
-    this.applyInjection(ioc);
-    this.bindApi();
-};
+    postConstructor(ioc) {
+        this.applyInjection(ioc);
+        this.bindApi();
+    }
+}
 
 module.exports = {
     class: GameDataService

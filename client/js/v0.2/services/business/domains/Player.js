@@ -1,8 +1,8 @@
 define([
     'lodash',
-    'business/domains/PlayerHistoryRecord',
+    'services/business/domains/PlayerHistoryRecord',
     'utils/common-utils',
-    'business/domains/NetworkStatus'
+    'services/business/domains/NetworkStatus'
 ], function (_, Step, CommonUtils, NetworkStatus) {
     'use strict';
 
@@ -84,6 +84,7 @@ define([
                 inst.losingDots.push(dot);
             }
         });
+        return this;
     };
 
     Player.prototype.hasDot = function (data) {

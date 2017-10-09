@@ -2,7 +2,7 @@ define([
     'd3',
     'lodash',
     'common/events',
-    'business/game.storage',
+    'services/business/game.storage',
     'utils/common-utils',
     'graphics/utils/common-graphics-utils',
     'graphics/utils/convert-utils',
@@ -11,10 +11,10 @@ define([
     'graphics/utils/selection-utils',
     'graphics/common/graphics-constants'
 ], function (d3, _,
-             Events,
-             GameStorage,
-             CommonUtils, CommonGraphicsUtils, ConvertUtils, PathUtils, AnimationUtils, SelectionUtils,
-             GraphicsConstants) {
+    Events,
+    GameStorage,
+    CommonUtils, CommonGraphicsUtils, ConvertUtils, PathUtils, AnimationUtils, SelectionUtils,
+    GraphicsConstants) {
     'use strict';
 
     var api;
@@ -196,7 +196,7 @@ define([
              }*/
             //if (business.canSelectDot(data)) {
             hoverInDot(this);
-//            }
+            //            }
         }).on('mouseleave', function () {
             //if (business.canSelectDot(data)) {
             hoverOutDot(this);
@@ -286,6 +286,16 @@ define([
         return api;
     }
 
+	/**
+	 * Update player state
+	 * @param {string} color
+	 * @param {Dot} dots
+	 * @param {Dot[][]} loops
+	 * @param {Dot[]} trappedDots
+	 * @param {Dot[]} losingDots
+	 * @param {boolean} withAnimation
+	 * @returns {*}
+	 */
     function updatePlayerState(color, dots, loops, trappedDots, losingDots, withAnimation) {
         var preparedDots,
             preparedLoops,
@@ -319,22 +329,8 @@ define([
         return api;
     }
 
-    function updatePlayerStep(color, dot, loops, trappedDots, losingDots, withAnimation) {
-        var colorValue = CommonGraphicsUtils.getColorValue(color);
-
-        updatePlayerState(color, dot, loops, trappedDots, losingDots);
-
-        if (withAnimation) {
-            clearAnimation();
-            animations.push(
-                AnimationUtils.addPulsateAnimation(SelectionUtils.selectDotGroup(dot, circles), colorValue, dot)
-            );
-        }
-    }
-
     api = {
         init: init,
-        updatePlayerStep: updatePlayerStep,
         updatePlayerState: updatePlayerState,
         renderLoop: renderLoop,
         renderCircles: renderCircles,

@@ -1,11 +1,11 @@
 define([
     'angular',
     'module.observable',
-    'business/module.game.business',
+    'services/business/module.game.business',
     'common/common-constants',
     'common/events',
-    'business/game.storage',
-    'business/domains/Constants',
+    'services/business/game.storage',
+    'services/business/domains/Constants',
     'components/currentPlayer/currentPlayer.module',
     'components/utils/scope.utils'
 ], function (angular, Observable, Business,

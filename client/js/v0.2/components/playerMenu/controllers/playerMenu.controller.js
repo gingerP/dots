@@ -1,7 +1,7 @@
 define([
     'angular',
     'module.observable',
-    'business/game.storage',
+    'services/business/game.storage',
     'common/events',
     'components/utils/scope.utils',
     'components/playerMenu/playerMenu.module',

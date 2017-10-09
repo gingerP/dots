@@ -1,6 +1,6 @@
 define([
     'storage',
-    'business/domains/Player',
+    'services/business/domains/Player',
     'lodash'
 ], function (Storage, Player, _) {
     'use strict';

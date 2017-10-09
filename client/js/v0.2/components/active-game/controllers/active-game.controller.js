@@ -2,8 +2,8 @@ define([
     'angular',
     'module.observable',
     'common/events',
-    'business/game.storage',
-    'business/module.game.business',
+    'services/business/game.storage',
+    'services/business/module.game.business',
     'components/active-game/active-game.module',
     'components/utils/scope.utils'
 ], function (angular, Observable, Events, GameStorage, GameBusiness) {

@@ -4,7 +4,7 @@ define([
     'q',
     'common/events',
     'common/backend-events',
-    'business/game.storage'
+    'services/business/game.storage'
 ], function (Observable, io, q, Events, BackendEvents, gameStorage) {
     'use strict';
 

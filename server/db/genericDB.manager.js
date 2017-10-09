@@ -249,18 +249,9 @@ class GenericDBManager extends Observable {
         if (Array.isArray(ids)) {
 
             const criteria = {_id: {$in: _.map(ids, this.getObjectId)}};
-            const stringifiedIds = _.map(ids, id => id.toString());
             const entities = await this._list(criteria, mappings);
             this.propertyChange('list', [entities, ids, mappings]);
-            const sortedEntities = [];
-            sortedEntities.length = ids.length;
-            _.forEach(entities, (entity) => {
-                const index = stringifiedIds.indexOf(entity._id.toString());
-                if (index >= 0) {
-                    sortedEntities[index] = entity;
-                }
-            });
-            return sortedEntities;
+            return this.orderByIds(entities, ids);
         } else {
             const criteria = {
                 _id: this.getObjectId(ids)
