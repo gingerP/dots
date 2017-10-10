@@ -54,17 +54,11 @@ define([
 
     function select(dot) {
         return new Promise(function (resolve, reject) {
-            var activePlayer = GameStorage.getActiveGamePlayer();
             if (!canSelectDot(dot)) {
                 reject();
             } else {
                 GameService.addDot(dot)
-                    .then(function () {
-                        activePlayer.selectDot(dot);
-                        observable.emit(Events.ADD_DOT, {gamePlayerId: activePlayer.getId(), dot: dot});
-                        Graphics.updatePlayerState(activePlayer.color, dot);
-                        resolve();
-                    })
+                    .then(resolve)
                     .catch(reject);
             }
         });
@@ -123,15 +117,15 @@ define([
         var opponent = GameStorage.getGameOpponent();
         makePlayerActive(activeGamer);
         PlayerUtils.updatePlayersColorsFromGameData.apply(PlayerUtils, gameDataList);
-        observable.emit(Events.REFRESH_GAME, gameState);
+        observable.emit(Events.REFRESH_GAME);
         _.forEach(gameDataList, function (gameData) {
             var client = _.find(clients, {_id: gameData.client});
             var gamePlayer = GameStorage.getGamePlayerById(gameData.client);
             var dots = (gameData.dots || []).concat(gameData.losingDots || []);
             var isOpponent = opponent.getId() === gameData.client;
             if (gameData.dots.length) {
-                GameUtils.updatePlayerState(client._id, gameData);
-                Graphics.updatePlayerState(gamePlayer.color, dots, gameData.loops, null, null, isOpponent);
+                GameUtils.updatePlayerState(client._id, gameData.dots, gameData.loops, [], gameData.losingDots);
+                Graphics.updatePlayerState(gamePlayer.color, dots, gameData.loops, [], gameData.losingDots, isOpponent);
             }
         });
     }
@@ -156,8 +150,8 @@ define([
         if (game) {
             GameDataService.getGameState(game._id)
                 .then(
+                    //TODO GameData should contain also captured dots
                     /**
-                     *
                      * @param {{game: Game, gameData: GameData, clients: Gamer}} gameState
                      */
                     function (gameState) {
@@ -191,6 +185,7 @@ define([
         var delta = playerData.delta;
         GameUtils.updatePlayerState(
             playerData.gamerId,
+            delta.dots,
             delta.loops,
             delta.capturedDots,
             delta.losingDots

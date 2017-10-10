@@ -20,16 +20,16 @@ define([
 	/**
      *
 	 * @param playerId
-	 * @param {Dot} dot
+	 * @param {Dot[]} dots
 	 * @param {Dot[][]} loops
 	 * @param {Dot[]} capturedDots
 	 * @param {Dot[]} losingDots
 	 */
-    function updatePlayerState(playerId, dot, loops, capturedDots, losingDots) {
+    function updatePlayerState(playerId, dots, loops, capturedDots, losingDots) {
         var player = GameStorage.getGamePlayerById(playerId);
         if (player) {
             player
-                .addDots([dot])
+                .addDots(dots)
                 .addLoops(loops)
                 .addTrappedDots(capturedDots)
                 .addLosingDots(losingDots)
@@ -71,6 +71,9 @@ define([
         return result;
     }
 
+    /**
+     * @module GameUtils
+     */
     return {
         generateVertexes: generateVertexes,
         createNewPlayer: createNewPlayer,

@@ -52,6 +52,11 @@ define([
         return this;
     };
 
+    /**
+     * Add loops to player
+     * @param {Dot[]} loops new loops
+     * @returns {Player} player instance
+     */
     Player.prototype.addLoops = function (loops) {
         var preparedLoops = CommonUtils.createArray(loops);
         this.loops = this.loops.concat(preparedLoops);

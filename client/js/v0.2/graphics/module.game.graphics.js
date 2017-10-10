@@ -291,12 +291,12 @@ define([
 	 * @param {string} color
 	 * @param {Dot} dots
 	 * @param {Dot[][]} loops
-	 * @param {Dot[]} trappedDots
+	 * @param {Dot[]} capturedDots
 	 * @param {Dot[]} losingDots
 	 * @param {boolean} withAnimation
-	 * @returns {*}
+	 * @returns {GraphicsModule} graphics module instance
 	 */
-    function updatePlayerState(color, dots, loops, trappedDots, losingDots, withAnimation) {
+    function updatePlayerState(color, dots, loops, capturedDots, losingDots, withAnimation) {
         var preparedDots,
             preparedLoops,
             preparedTrappedDots,
@@ -305,7 +305,7 @@ define([
 
         preparedDots = CommonUtils.createArray(dots);
         preparedLoops = CommonUtils.createArray(loops);
-        preparedTrappedDots = CommonUtils.createArray(trappedDots);
+        preparedTrappedDots = CommonUtils.createArray(capturedDots);
         lastDot = preparedDots.length ? preparedDots[preparedDots.length - 1] : null;
 
         if (preparedDots && preparedDots.length) {
@@ -329,6 +329,9 @@ define([
         return api;
     }
 
+    /**
+     * @typedef {{init: init, updatePlayerState: updatePlayerState, renderLoop: renderLoop, renderCircles: renderCircles, clearPane: clearPane, clearAnimation: clearAnimation}} GraphicsModule
+     */
     api = {
         init: init,
         updatePlayerState: updatePlayerState,
