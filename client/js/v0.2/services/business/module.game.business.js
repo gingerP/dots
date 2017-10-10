@@ -109,8 +109,7 @@ define([
     /**
      *
      * @param {Game} game
-     * @param {GameData[]} gameDataList
-     * @param {Gamer[]} clients
+     * @param {GameStateUser[]} clients
      */
     function refreshGame(game, gameDataList, clients) {
         var activeGamer = GameStorage.getGamePlayerById(game.activePlayer);
@@ -150,13 +149,21 @@ define([
         if (game) {
             GameDataService.getGameState(game._id)
                 .then(
-                    //TODO GameData should contain also captured dots
                     /**
-                     * @param {{game: Game, gameData: GameData, clients: Gamer}} gameState
+                     * @typedef {{
+                     *              _id: MongoId,
+                     *              created: date,
+                     *              updated: date,
+                     *              isOnline: boolean,
+                     *              name: string
+                     *              gameData: GameData,
+                     *              capturedDots: Dot[]
+                     *          }} GameStateUser
+                     * @param {{game: Game, clients: GameStateUser[]}} gameState game state response
                      */
                     function (gameState) {
                     if (gameState.game && gameState.game.status === 'active') {
-                        refreshGame(gameState.game, gameState.gameData, gameState.clients);
+                        refreshGame(gameState.game, gameState.clients);
                     } else {
                         cancelGame();
                     }

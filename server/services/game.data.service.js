@@ -9,6 +9,7 @@ var logger = require('server/logging/logger').create('GameDataService');
 var errorLog = funcUtils.error(logger);
 var sessionUtils = require('server/utils/session-utils');
 const Errors = require('../errors');
+const _ = require('lodash');
 
 class GameDataService extends GenericService {
 
@@ -46,18 +47,28 @@ class GameDataService extends GenericService {
      */
     async onGetGameState(message) {
         const gameId = message.data.id;
+        const cacheManager = this.gameDataCacheDBManager;
         const [game, usersGameDataList] = await Promise.all([
             this.gameDBManager.get(gameId),
-            this.gameDataDBManager.getGameDataForGame(gameId)
+            this.gameDataDBManager.getGameDataForGame(gameId),
+        ]);
+        if (!game) {
+            throw new Errors.GameNotFoundError();
+        }
+        const gameDataIds = _.map(usersGameDataList, '_id');
+        let [gameDataCacheList, users] = await Promise.all([
+            cacheManager.getCacheByGameDataId.apply(cacheManager, gameDataIds),
+            this.clientsDBManager.get([game.to, game.from])
         ]);
 
-        if (!game) {
-            return message.callback({});
-        }
-        const users = await this.clientsDBManager.get([game.to, game.from]);
+        users = _.map(users, (user) => {
+           user.gameData = _.find(usersGameDataList, gameData => gameData.client.equal(user._id));
+           user.capturedDots = _.find(gameDataCacheList, cache => cache.gameDataId.equal(user.gameData._id));
+           return user;
+        });
+
         message.callback({
             game: game,
-            gameData: usersGameDataList,
             clients: users
         });
     }
@@ -90,6 +101,7 @@ class GameDataService extends GenericService {
         this.clientsDBManager = ioc[IOC.DB_MANAGER.CLIENTS];
         this.gameDBManager = ioc[IOC.DB_MANAGER.GAME];
         this.gameDataDBManager = ioc[IOC.DB_MANAGER.GAME_DATA];
+        this.gameDataCacheDBManager = ioc[IOC.DB_MANAGER.GAME_DATA_CACHE];
         this.clientHistory = ioc[IOC.DB_MANAGER.CLIENTS_HISTORY_AGGREGATE];
     };
 
