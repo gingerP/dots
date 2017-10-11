@@ -252,9 +252,9 @@ async function collectSuccessfulDotForActivePlayer(activePlayerGameData, activeP
 	//Active player
 	//	GameDataDelta
 	let dotsInLoopsBorders = [];
+    activePlayerDelta.loops = _.map(loopsCachesForDot, 'loop');
 	_.forEach(activePlayerDelta.loops, loop => dotsInLoopsBorders = dotsInLoopsBorders.concat(loop));
 	activePlayerDelta.capturedDots = newCapturedDots;
-	activePlayerDelta.loops = _.map(loopsCachesForDot, 'loop');
 	//	GameDataCache
 	TrappedDotsHelper.removeDotsFromList(dotsInLoopsBorders, activePlayerCache.dotsNotCapturedOpponentDots);
 	TrappedDotsHelper.removeDotsFromList(dotsInLoopsBorders, activePlayerCache.dotsOutsideLoops);

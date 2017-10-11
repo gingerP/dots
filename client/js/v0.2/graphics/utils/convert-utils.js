@@ -16,6 +16,12 @@ define([
         return result;
     }
 
+    /**
+     * @param {{start: Dot, finish: Dot}[]} lines
+     * @param {number} shift
+     * @param {number} offset
+     * @returns {{PathLine[]}}
+     */
     function convertLoopsLines(lines, shift, offset) {
         return _.map(lines, function (line) {
             line.start.x_ = line.start.x * shift + offset;

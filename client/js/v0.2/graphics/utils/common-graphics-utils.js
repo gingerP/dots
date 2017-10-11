@@ -90,18 +90,23 @@ define([
         }).join(',');
     }
 
+    /**
+     *
+     * @param {Dot[][]} loops player loops list
+     * @param {number} shift table pane shift
+     * @param {number} offset table cells offset
+     * @returns {Array}
+     */
     function getFilteredAndConvertedLoops(loops, shift, offset) {
         var result = [];
-        _.forEach(loops, function (loopData) {
-            if (loopData.trappedDots && loopData.trappedDots.length) {
-                result.push(
-                    ConvertUtils.convertLoopsLines(
-                        PathUtils.getUnSortedPath(loopData.loop),
-                        shift,
-                        offset
-                    )
-                );
-            }
+        _.forEach(loops, function (loop) {
+            result.push(
+                ConvertUtils.convertLoopsLines(
+                    PathUtils.getUnSortedPath(loop),
+                    shift,
+                    offset
+                )
+            );
         });
         return result;
     }

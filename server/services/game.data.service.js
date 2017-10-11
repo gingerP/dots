@@ -62,9 +62,15 @@ class GameDataService extends GenericService {
         ]);
 
         users = _.map(users, (user) => {
-           user.gameData = _.find(usersGameDataList, gameData => gameData.client.equal(user._id));
-           user.capturedDots = _.find(gameDataCacheList, cache => cache.gameDataId.equal(user.gameData._id));
-           return user;
+            user.gameData = _.find(usersGameDataList, gameData => gameData.client.equals(user._id));
+            const cache = _.find(gameDataCacheList, cache => cache.gameDataId.equals(user.gameData._id));
+            user.capturedDots = _.reduce(cache.cache,
+                (accumulator, loopCache) => {
+                    accumulator.push.apply(accumulator, loopCache.capturedDots);
+                    return accumulator;
+                }, []
+            );
+            return user;
         });
 
         message.callback({

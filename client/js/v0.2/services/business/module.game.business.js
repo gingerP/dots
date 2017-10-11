@@ -109,22 +109,26 @@ define([
     /**
      *
      * @param {Game} game
-     * @param {GameStateUser[]} clients
+     * @param {GameStateUser[]} users
      */
-    function refreshGame(game, gameDataList, clients) {
+    function refreshGame(game, users) {
         var activeGamer = GameStorage.getGamePlayerById(game.activePlayer);
         var opponent = GameStorage.getGameOpponent();
         makePlayerActive(activeGamer);
-        PlayerUtils.updatePlayersColorsFromGameData.apply(PlayerUtils, gameDataList);
+        PlayerUtils.updatePlayersColorsFromGameData.apply(PlayerUtils, _.map(users, 'gameData'));
         observable.emit(Events.REFRESH_GAME);
-        _.forEach(gameDataList, function (gameData) {
-            var client = _.find(clients, {_id: gameData.client});
-            var gamePlayer = GameStorage.getGamePlayerById(gameData.client);
+        _.forEach(users, function (user) {
+            var gameData = user.gameData;
+            var gamePlayer = GameStorage.getGamePlayerById(user._id);
             var dots = (gameData.dots || []).concat(gameData.losingDots || []);
-            var isOpponent = opponent.getId() === gameData.client;
+            var isOpponent = opponent.getId() === user._id;
             if (gameData.dots.length) {
-                GameUtils.updatePlayerState(client._id, gameData.dots, gameData.loops, [], gameData.losingDots);
-                Graphics.updatePlayerState(gamePlayer.color, dots, gameData.loops, [], gameData.losingDots, isOpponent);
+                GameUtils.updatePlayerState(
+                    user._id, gameData.dots, gameData.loops, user.capturedDots, gameData.losingDots
+                );
+                Graphics.updatePlayerState(
+                    gamePlayer.color, dots, gameData.loops, user.capturedDots, gameData.losingDots, isOpponent
+                );
             }
         });
     }
@@ -167,6 +171,9 @@ define([
                     } else {
                         cancelGame();
                     }
+                })
+                .catch(function () {
+                    cancelGame();
                 });
         } else {
             cancelGame();

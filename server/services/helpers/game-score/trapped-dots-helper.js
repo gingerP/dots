@@ -16,19 +16,19 @@ const CommonGraphUtils = require('../../../libs/graph/utils/common-utils');
  * @returns {LoopCacheCapturedDotsInfo[]} allCapturedDots
  */
 function captureDotsByLoopsCaches(dots, loopsCaches) {
-	let activeLoopIndex = 0;
-	let allCapturedDots = [];
-	while (activeLoopIndex < loopsCaches.length) {
-		let activePlayerCacheLoop = loopsCaches[activeLoopIndex];
-		let loopBorders = CommonGraphUtils.getMinMaxCorners(activePlayerCacheLoop.loop);
-		let acceptableFreeDots = CommonGraphUtils.filterDotsInsideBorders(dots, loopBorders);
-		let capturedFreeDots = filterDotsInsideLoopCache(acceptableFreeDots, activePlayerCacheLoop);
-		if (capturedFreeDots.length) {
-			allCapturedDots.push({index: activeLoopIndex, dots: capturedFreeDots});
-		}
-		activeLoopIndex++;
-	}
-	return allCapturedDots;
+    let activeLoopIndex = 0;
+    let allCapturedDots = [];
+    while (activeLoopIndex < loopsCaches.length) {
+        let activePlayerCacheLoop = loopsCaches[activeLoopIndex];
+        let loopBorders = CommonGraphUtils.getMinMaxCorners(activePlayerCacheLoop.loop);
+        let acceptableFreeDots = CommonGraphUtils.filterDotsInsideBorders(dots, loopBorders);
+        let capturedFreeDots = filterDotsInsideLoopCache(acceptableFreeDots, activePlayerCacheLoop);
+        if (capturedFreeDots.length) {
+            allCapturedDots.push({index: activeLoopIndex, dots: capturedFreeDots});
+        }
+        activeLoopIndex++;
+    }
+    return allCapturedDots;
 }
 
 /**
@@ -38,22 +38,22 @@ function captureDotsByLoopsCaches(dots, loopsCaches) {
  * @returns {Dot[]} result
  */
 function filterDotsInsideLoopCache(dots, loopCache) {
-	const result = [];
-	let dIndex = 0;
-	while (dIndex < dots.length) {
-		let trappedIndex = 0;
-		const dot = dots[trappedIndex];
-		while (trappedIndex < loopCache.trappedDots) {
-			const trappedDot = loopCache.trappedDots[trappedIndex];
-			if (trappedDot.x === dot.x && trappedDot.y === dot.y) {
-				result.push(dot);
-				break;
-			}
-			trappedIndex++;
-		}
-		dIndex++;
-	}
-	return result;
+    const result = [];
+    let dIndex = 0;
+    while (dIndex < dots.length) {
+        let trappedIndex = 0;
+        const dot = dots[dIndex];
+        while (trappedIndex < loopCache.trappedDots.length) {
+            const trappedDot = loopCache.trappedDots[trappedIndex];
+            if (trappedDot.x === dot.x && trappedDot.y === dot.y) {
+                result.push(dot);
+                break;
+            }
+            trappedIndex++;
+        }
+        dIndex++;
+    }
+    return result;
 }
 
 /**
@@ -62,20 +62,20 @@ function filterDotsInsideLoopCache(dots, loopCache) {
  * @returns {Dot[]} removeFromDots - dotsToRemove
  */
 function removeDotsFromList(dotsToRemove, removeFromDots) {
-	let indexTo = dotsToRemove.length - 1;
-	while (indexTo >= 0) {
-		const dotTo = dotsToRemove[indexTo];
-		let indexFrom = removeFromDots.length - 1;
-		while (indexFrom >= 0) {
-			if (dotTo.x === removeFromDots[indexFrom].x && dotTo.y === removeFromDots[indexFrom].y) {
-				removeFromDots.splice(indexFrom, 1);
-				break;
-			}
-			indexFrom--;
-		}
-		indexTo--;
-	}
-	return removeFromDots;
+    let indexTo = dotsToRemove.length - 1;
+    while (indexTo >= 0) {
+        const dotTo = dotsToRemove[indexTo];
+        let indexFrom = removeFromDots.length - 1;
+        while (indexFrom >= 0) {
+            if (dotTo.x === removeFromDots[indexFrom].x && dotTo.y === removeFromDots[indexFrom].y) {
+                removeFromDots.splice(indexFrom, 1);
+                break;
+            }
+            indexFrom--;
+        }
+        indexTo--;
+    }
+    return removeFromDots;
 }
 
 /**
@@ -84,33 +84,33 @@ function removeDotsFromList(dotsToRemove, removeFromDots) {
  * @returns {number[]} lists of indexes which were removed
  */
 function removeLoopsCachesWithDots(loopsCaches, dots) {
-	let indexCache = loopsCaches.length - 1;
-	let removedIndexes = [];
-	let toBreak = false;
-	while (indexCache >= 0 && !toBreak) {
-		const loop = loopsCaches[indexCache].loop;
-		let indexInLoop = loop.length - 1;
-		while (indexInLoop >= 0 && !toBreak) {
-			const loopDot = loop[indexInLoop];
-			let indexDot = dots.length - 1;
-			while (indexDot >= 0 && !toBreak) {
-				if (loopDot.x === dots[indexDot].x && loopDot.y === dots[indexDot].y) {
-					loopsCaches.splice(indexCache, 1);
-					removedIndexes.push(indexCache);
-					toBreak = true;
-					break;
-				}
-				indexDot--;
-			}
-			indexInLoop--;
-		}
-		indexCache--;
-	}
-	return removedIndexes;
+    let indexCache = loopsCaches.length - 1;
+    let removedIndexes = [];
+    let next = true;
+    while (indexCache >= 0 && next) {
+        const loop = loopsCaches[indexCache].loop;
+        let indexInLoop = loop.length - 1;
+        while (indexInLoop >= 0 && next) {
+            const loopDot = loop[indexInLoop];
+            let indexDot = dots.length - 1;
+            while (indexDot >= 0 && next) {
+                if (loopDot.x === dots[indexDot].x && loopDot.y === dots[indexDot].y) {
+                    loopsCaches.splice(indexCache, 1);
+                    removedIndexes.push(indexCache);
+                    next = false;
+                    break;
+                }
+                indexDot--;
+            }
+            indexInLoop--;
+        }
+        indexCache--;
+    }
+    return removedIndexes;
 }
 
 module.exports = {
-	captureDotsByLoopsCaches: captureDotsByLoopsCaches,
-	removeDotsFromList: removeDotsFromList,
-	removeLoopsCachesWithDots: removeLoopsCachesWithDots
+    captureDotsByLoopsCaches: captureDotsByLoopsCaches,
+    removeDotsFromList: removeDotsFromList,
+    removeLoopsCachesWithDots: removeLoopsCachesWithDots
 };

@@ -4,7 +4,7 @@ define([
 ], function (_, GameStorage) {
     'use strict';
 
-    function updatePlayersColorsFromGameData() {
+    function updatePlayersColorsFromGameData(/*...gameData*/) {
         var myself = GameStorage.getGameClient();
         var opponent = GameStorage.getGameOpponent();
 

@@ -330,6 +330,8 @@ define([
     }
 
     /**
+     * @typedef {{x: number, x_: number, y: number, y_: number}} PathDot
+     * @typedef {{start: Path, finish: PathDot}} PathLine
      * @typedef {{init: init, updatePlayerState: updatePlayerState, renderLoop: renderLoop, renderCircles: renderCircles, clearPane: clearPane, clearAnimation: clearAnimation}} GraphicsModule
      */
     api = {

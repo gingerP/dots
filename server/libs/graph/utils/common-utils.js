@@ -99,6 +99,7 @@ function filterDotsInsideCorners(dots, corners) {
         if (isDotTrappedIntoCorners(dot, corners)) {
             result.push(dot);
         }
+        index++;
     }
     return result;
 }
