@@ -1,6 +1,7 @@
 define([
     'angular',
     'angular-animate',
+    'angular-icons',
     'components/game/components/game.component',
     'components/clientsList/components/clientsList.component',
     'components/currentPlayer/components/currentPlayer.component',
@@ -24,6 +25,7 @@ define([
     'use strict';
 
     angular.module('app', [
+        'ngMdIcons',
         'active-game.module',
         'game.module',
         'clientsList.module',

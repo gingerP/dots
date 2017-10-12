@@ -1,5 +1,6 @@
 <div class="tabbar-header" ng-show="tabbarCtrl.isHeadersVisible">
     <div class="tabbar-header-item {{tabbarCtrl.tabbarHeaderClassName}}"
+         ng-class="{'tabbar-header-item-selected': tab.isActive}"
          ng-repeat="tab in tabbarCtrl.context.list track by tab.id"
          ng-bind="::tab.name"
          ng-click="tabbarCtrl.openTab(tab)"></div>

@@ -1,8 +1,9 @@
 require.config({
     baseUrl: '/static/js/v0.2',
     paths: {
-        'angular-animate': '/node_modules/angular-animate/angular-animate',
         angular: '/node_modules/angular/angular',
+        'angular-animate': '/node_modules/angular-animate/angular-animate',
+        'angular-icons': '/node_modules/angular-material-icons/angular-material-icons',
         storage: '/node_modules/basil.js/build/basil',
         q: '/node_modules/q/q',
         lodash: '/node_modules/lodash/lodash',
@@ -15,6 +16,9 @@ require.config({
             exports: 'angular'
         },
         'angular-animate': {
+            deps: ['angular']
+        },
+        'angular-icons': {
             deps: ['angular']
         }
     },

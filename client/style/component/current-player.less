@@ -61,10 +61,15 @@
     position: relative;
     float: left;
     font-size: @default-font-size;
+    cursor: pointer;
   }
 
   .myself-player {
     left: 0;
+    &-you {
+      color: gray;
+      font-size: small;
+    }
   }
 
   .choose-opponent,
@@ -72,16 +77,12 @@
     right: 0;
   }
 
-  .choose-opponent a{
+  button.choose-opponent{
+    background-color: @choose-opponent-color;
+    border-color: darken(@choose-opponent-color, 3%);
     height: @toolbar-height - 10px;
     line-height: @toolbar-height - 10px;
-    text-decoration: none;
-    border-bottom: 1px @text-color-dark dashed;
-    color: @text-color-dark;
-    &:hover {
-      color: @text-color-light;
-      border-bottom: 1px @text-color-dark dashed;
-    }
+    color: white;
   }
   .opponent-offline-title {
 
