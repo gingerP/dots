@@ -1,8 +1,10 @@
-<div ng-class="tabbar-content" ng-show="tabbarContent.tab.isActive">
-    <div class="tabbar-content-back"
-         ng-click="tabbarContent.back()"
-         ng-if="tabbarContent.isMobile">Back</div>
+<div class="tabbar-content" ng-show="tabbarContent.tab.isActive">
+    <div class="tabbar-content-back" ng-click="tabbarContent.back()">
+        <ng-md-icon icon="keyboard_arrow_left" class="tabbar-content-back-icon md-icon-fill-gray" style="" size="30"></ng-md-icon>
+        <span ng-bind="::tabbarContent.tab.name"></span>
+    </div>
+    <div class="horizontal-delimiter"></div>
     <div class="tabbar-content-placeholder">
-        <ng-transclude ></ng-transclude>
+        <ng-transclude></ng-transclude>
     </div>
 </div>

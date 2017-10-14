@@ -15,8 +15,7 @@
   height: @toolbar-height;
 
   .player-placeholder {
-    &-right,
-    &-left {
+    &-right {
       position: absolute;
     }
     &-right {
@@ -138,39 +137,16 @@
   .menu-open {
     outline: none;
     cursor: pointer;
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
+    position: relative;
     margin: 2px auto;
     width: @toolbar-height - 5px;
     height: @toolbar-height - 5px;
     border-radius: 50%;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-    background-color: @player-color-blue;
-    transition: backgroundColor .3s;
-    &.player-style-red {
-      background-color: @player-color-red;
-    }
-
-    &.player-style-blue {
-      background-color: @player-color-blue;
-    }
-    .menu-btn-icon {
-      width: 15px;
-      height: 15px;
-      position: absolute;
-      top: 0;
-      right: 0;
-      left: 0;
-      bottom: 0;
-      margin: auto;
-    }
+    float: left;
   }
 }
 
-.mobile-device {
+@media only screen and (max-width : 480px) {
   .menu-open {
     position: fixed;
     right: 0;
@@ -178,12 +154,12 @@
     top: initial;
     left: initial;
     margin: 20px;
-    border: 1px solid @player-color-inactive;
+    background-color: @main-color;
     height: @menu-btn-mobile-size;
     width: @menu-btn-mobile-size;
-    .menu-btn-icon {
-      width: 25px;
-      height: 25px;
+    .menu-open-icon {
+      margin-top: 4px;
+      display: block;
     }
   }
 }

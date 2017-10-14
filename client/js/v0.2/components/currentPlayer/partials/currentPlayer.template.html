@@ -1,7 +1,12 @@
 <div class="current-player">
+    <button class="btn-override menu-open"
+            ng-click="currentPlayerCtrl.triggerOpenMenu()">
+        <ng-md-icon class='menu-open-icon' icon="{{currentPlayerCtrl.isMenuOpened ? 'close' : 'menu'}}"
+                    style="fill: #ffffff;" size="24"></ng-md-icon>
+    </button>
     <div class="player-placeholder-left">
         <button class="myself-player player {{currentPlayerCtrl.style.myself}}"
-             ng-class="{'inactive-player': !currentPlayerCtrl.isMyselfActive && currentPlayerCtrl.opponent,
+                ng-class="{'inactive-player': !currentPlayerCtrl.isMyselfActive && currentPlayerCtrl.opponent,
              'active-player': currentPlayerCtrl.isMyselfActive && currentPlayerCtrl.opponent}">
             <div class="player-style" ng-click="currentPlayerCtrl.openMyself()">
                 <span ng-bind="currentPlayerCtrl.myself.name"></span>
@@ -11,14 +16,6 @@
         <div ng-show="currentPlayerCtrl.opponent" class="player-trapped-dots {{currentPlayerCtrl.style.myself}}"
              ng-bind="currentPlayerCtrl.myself.trappedDots.length || 0"></div>
     </div>
-
-    <a ng-if="currentPlayerCtrl.GAME_MODE.LOCAL === currentPlayerCtrl.gameMode" href="javascript:void(0)" type="button"
-       class="player-next" ng-click="currentPlayerCtrl.nextPlayer()">Next</a>
-    <button class="btn-override menu-open {{currentPlayerCtrl.style.active}}"
-            ng-class="{'menu-open-up': currentPlayerCtrl.isMenuOpened}"
-            ng-click="currentPlayerCtrl.triggerOpenMenu()">
-        <img src="static/images/menu.svg" alt="dots" class="menu-btn-icon">
-    </button>
 
     <div class="player-placeholder-right">
         <div ng-show="currentPlayerCtrl.opponent">
@@ -30,8 +27,9 @@
                 <div class="player-style" ng-bind="currentPlayerCtrl.opponent.name"></div>
             </div>
         </div>
-        <button ng-show="!currentPlayerCtrl.opponent" href="javascript:void(0)" type="button" class="choose-opponent player"
-           ng-click="currentPlayerCtrl.triggerOpenMenu()">
+        <button ng-show="!currentPlayerCtrl.opponent" href="javascript:void(0)" type="button"
+                class="choose-opponent player"
+                ng-click="currentPlayerCtrl.triggerOpenMenu()">
             Choose opponent
         </button>
     </div>

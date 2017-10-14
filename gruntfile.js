@@ -85,6 +85,15 @@ grunt.initConfig({
             },
             src: ['test/server/**/*.js']
         }
+    },
+    watch: {
+        less: {
+            files: ['client/style/**/*.less'],
+            tasks: ['less'],
+            options: {
+                spawn: false
+            }
+        }
     }
 });
 

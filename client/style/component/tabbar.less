@@ -1,15 +1,17 @@
 @import (reference) "../variables";
 
 .tabbar-header {
-  height: @toolbar-height;
   display: block;
   position: relative;
-  text-align: center;
-  line-height: @toolbar-height;
   border-bottom: 1px solid @toolbar-pane-background;
   &-item {
+    height: @toolbar-height;
+    display: block;
+    position: relative;
+    text-align: center;
+    line-height: @toolbar-height;
     float: left;
-    width: 50%;
+    width: 25%;
     cursor: pointer;
     &-selected {
       border-bottom: 2px solid @toolbar-background;
@@ -36,6 +38,7 @@ tabbar-content > div {
       text-align: center;
       line-height: @toolbar-height;
       cursor: pointer;
+      display: none;
     }
     &-placeholder {
       background-color: #fff;
@@ -45,11 +48,48 @@ tabbar-content > div {
   }
 }
 
-.mobile-device {
-  .tabbar-header-item {
-    clear: left;
-    width: 100%;
-    cursor: pointer;
-  }
+@media only screen and (max-width: 480px) {
+  .tabbar {
+    &-header {
+      padding: 5px 0 0 0;
+      border-bottom: none;
+      &-item {
+        color: @text-color-dark;
+        clear: left;
+        width: 100%;
+        text-align: left;
+        padding: 0 0 0 40px;
+        cursor: pointer;
+        &-selected {
+          border-bottom: none;
+        }
 
+        &:hover {
+          color: #000000;
+          background-color: @color-dark;
+        }
+      }
+    }
+  }
+  tabbar tabbar-content .tabbar {
+    &-content {
+      height: 100%;
+      width: 100%;
+      background-color: #ffffff;
+      position: absolute;
+      margin: 0;
+      padding: 0;
+      &-back {
+        display: block;
+        text-align: left;
+        padding: 0 0 0 40px;
+        margin: 0 0 5px 0;
+        &-icon {
+          position: absolute;
+          left: 5px;
+          margin: 4px 0 0 0;
+        }
+      }
+    }
+  }
 }

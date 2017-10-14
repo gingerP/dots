@@ -1,59 +1,14 @@
 @import (reference) "../variables";
 @import (reference) "../mixins";
 
-@animation-speed: .3s;
-
-.mobile-device {
-  player-menu {
-    .player-menu {
-      background-color: @toolbar-pane-background;
-      transition: all @animation-speed;
-      top: inherit;
-      left: inherit;
-      position: fixed;
-      bottom: 0;
-      right: 0;
-      min-height: inherit;
-
-      &.ng-hide-remove,
-      &:not(.ng-hide) {
-        width: 100%;
-        height: calc(~"100vh" - @toolbar-height);
-        border-radius: 0;
-      }
-      &:not(.ng-hide) {
-        .player-menu-clients {
-          display: block;
-        }
-      }
-
-      &.ng-hide-remove {
-        .player-menu-clients {
-          display: none;
-        }
-      }
-
-      &.ng-hide {
-        bottom: 20px;
-        right: 20px;
-        border-radius: 50%;
-        width: @menu-btn-mobile-size;
-        height: @menu-btn-mobile-size;
-        .player-menu-clients {
-          display: none;
-        }
-      }
-    }
-  }
-}
-
 player-menu {
   .player-menu {
     background-color: @toolbar-pane-background;
     border-bottom: 1px solid darken(@color-dark, 10%);
     position: fixed;
     width: 100%;
-    min-height: @player-menu-min-height;
+    max-height: @player-menu-min-height;
+    height: 100%;
     top: @toolbar-height;
     left: 0;
 
@@ -63,17 +18,12 @@ player-menu {
       padding: 0 5px;
     }
 
-    .player-menu-clients {
-      width: 820px;
+    .player-menu-sub-container {
+      max-width: 820px;
       margin: auto;
-      min-height: @player-menu-min-height;
+      height: 100%;
       background-color: @toolbar-pane-placeholder-background;
-    }
-
-    @media only screen and (max-width: 820px) {
-      .player-menu-clients {
-        width: 95%;
-      }
+      width: 100%;
     }
 
     .opponent-player {
@@ -100,6 +50,16 @@ player-menu {
       &:hover {
         border: 1px solid @color-control;
       }
+    }
+  }
+}
+
+@media only screen and (max-width : 480px) {
+  player-menu {
+    .player-menu {
+      background-color: @toolbar-pane-background;
+      height: 100%;
+      max-height: 100%;
     }
   }
 }

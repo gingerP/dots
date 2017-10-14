@@ -28,7 +28,6 @@ define([
                 tabbarCtrl.back();
             }
 
-            vm.isMobile = CommonUtils.isMobile();
             vm.tab = tabbarCtrl.registr(vm.tabId);
             vm.back = back;
         }

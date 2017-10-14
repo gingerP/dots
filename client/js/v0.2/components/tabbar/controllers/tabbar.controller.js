@@ -66,9 +66,10 @@ define([
         }
 
         function getHeaderClassName() {
-            var size = Math.floor(100 / vm.context.list.length);
+            //var size = Math.floor(100 / vm.context.list.length);
 
-            return 'w' + size + 'p';
+            //return 'w' + size + 'p';
+            return '';
         }
 
         vm.registr = registr;

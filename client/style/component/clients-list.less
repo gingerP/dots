@@ -8,7 +8,7 @@
 @clients-background: lighten(@color-dark, 5%);
 @client-background: @clients-background;
 @clients-list-height: 300px;
-@hover-client-background: darken(@clients-background, 3%);
+@hover-client-background: @color-dark;
 
 clients-list {
   .empty-list {
@@ -18,7 +18,7 @@ clients-list {
   }
 
   .clients-placeholder {
-    margin: 5px 0;
+    padding: 5px 0 0;
   }
 
   .client {
