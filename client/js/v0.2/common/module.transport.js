@@ -20,7 +20,7 @@ define([
         });
         socket.on('disconnect', function () {
         });
-        socket.on('reconnect', function (client) {
+        socket.on('reconnect', function (/*client*/) {
             //TODO
         });
         socket.on('connect', function () {

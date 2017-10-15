@@ -27,6 +27,9 @@ require('app-module-path').addPath(path.resolve(__dirname, './'));
 require('load-grunt-tasks')(grunt);
 grunt.initConfig({
     eslint: {
+        options: {
+            quiet: true
+        },
         target: [
             'client/**/*.js',
             'server/**/*.js',

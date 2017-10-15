@@ -108,8 +108,9 @@ define([
 
     /**
      *
-     * @param {Game} game
-     * @param {GameStateUser[]} users
+     * @param {Game} game game instance
+     * @param {GameStateUser[]} users game clients
+     * @returns {undefined}
      */
     function refreshGame(game, users) {
         var activeGamer = GameStorage.getGamePlayerById(game.activePlayer);

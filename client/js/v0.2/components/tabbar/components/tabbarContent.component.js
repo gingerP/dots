@@ -4,7 +4,7 @@ define([
     'components/tabbar/tabbar.module',
     'components/utils/scope.utils',
     'components/tabbar/factories/tabbarConfig.factory'
-], function (angular, CommonUtils) {
+], function (angular, ) {
     'use strict';
 
     angular.module('tabbar.module').component('tabbarContent', {
@@ -15,14 +15,9 @@ define([
         require: '^tabbar',
         transclude: true,
         controllerAs: 'tabbarContent',
-        controller: function TabbarContentCtrl(
-            $rootScope, $scope,
-            scopeUtils,
-            tabbarConfig) {
+        controller: function TabbarContentCtrl($rootScope, $scope) {
             var vm = this,
-                tabbarCtrl = $scope.$parent.$parent.tabbarCtrl,
-                destroyLater = scopeUtils.destroy($scope),
-                EVENTS = tabbarConfig.TAB;
+                tabbarCtrl = $scope.$parent.$parent.tabbarCtrl;
 
             function back() {
                 tabbarCtrl.back();

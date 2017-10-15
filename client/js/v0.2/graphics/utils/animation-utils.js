@@ -2,11 +2,10 @@ define([
     'd3',
     'graphics/common/graphics-constants',
     'graphics/utils/common-graphics-utils'
-], function (d3, GraphicsConstants, CommonGraphicsUtils) {
+], function () {
     'use strict';
 
     var api;
-    var ANIMATION = GraphicsConstants.ANIMATION.PULSATION;
 
 /*    function addPulsateAnimation(dotGroup, color, dot) {
         var position = CommonGraphicsUtils.getVertexPosition(dot);
