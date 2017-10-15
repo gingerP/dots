@@ -1,18 +1,20 @@
 define([
+    'jquery',
     'angular',
     'lodash',
     'utils/common-utils',
     'common/events',
     'components/utils/scope.utils',
     'components/tabbar/tabbar.module'
-], function (angular, _, CommonUtils, Events) {
+], function ($, angular, _, CommonUtils, Events) {
     'use strict';
 
     angular.module('tabbar.module').controller('tabbarCtrl', TabbarController);
 
     function TabbarController($scope, $rootScope, $element, $transclude, scopeUtils) {
         var vm = this,
-            onDestroy = scopeUtils.destroy($scope);
+            onDestroy = scopeUtils.destroy($scope),
+            apply = scopeUtils.getApply($scope);
 
         function onOpenedTab(event, tabId) {
             openTab(tabId);
@@ -72,6 +74,10 @@ define([
             return '';
         }
 
+        function isTabNotActive(tab) {
+            return !tab.isActive;
+        }
+
         vm.registr = registr;
         vm.openTab = function (tab) {
             openTab(tab.id);
@@ -82,6 +88,16 @@ define([
         vm.isHeadersVisible = true;
         vm.tabbarHeaderClassName = getHeaderClassName();
 
+        $(window).resize(_.throttle(function () {
+            var width;
+            if (vm.context.list && vm.context.list.length && _.every(vm.context.list, isTabNotActive)) {
+                width = $(window).width();
+                if (width >= 480) {
+                    vm.context.list[0].isActive = true;
+                    apply();
+                }
+            }
+        }, 300));
         onDestroy($rootScope.$on(Events.OPEN_TAB, onOpenedTab));
     }
 });

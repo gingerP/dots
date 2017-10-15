@@ -40,7 +40,7 @@ ClientsDBManager.prototype.getClientsExcept = function (client) {
 };
 
 ClientsDBManager.prototype.getOnlineClients = function () {
-    return this.listByCriteria({isOnline: true}).catch(errorLogger);
+    return this.listByCriteria({isOnline: true});
 };
 
 ClientsDBManager.prototype.getClientsPair = function (clientId, connectionId) {

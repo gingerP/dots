@@ -1,11 +1,11 @@
 <div ng-hide="playerMenuCtrl.isMenuClosed" class="player-menu">
     <div class="player-menu-sub-container">
         <tabbar context="playerMenuCtrl.config">
-            <tabbar-content tab-id="playerMenuCtrl.TABS.ACTIVE_GAME">
-                <active-game></active-game>
-            </tabbar-content>
             <tabbar-content tab-id="playerMenuCtrl.TABS.GAMERS">
                 <clients-list></clients-list>
+            </tabbar-content>
+            <tabbar-content tab-id="playerMenuCtrl.TABS.ACTIVE_GAME">
+                <active-game></active-game>
             </tabbar-content>
             <tabbar-content tab-id="playerMenuCtrl.TABS.CLIENT_HISTORY">
                 <client-history></client-history>

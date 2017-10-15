@@ -14,28 +14,32 @@ define([
             return {
                 list: [
                     {
-                        id: TABS.ACTIVE_GAME,
-                        name: 'Active Game',
-                        isActive: false,
-                        isDefault: false
-                    },
-                    {
                         id: TABS.GAMERS,
                         name: 'Gamers',
                         isActive: true,
-                        isDefault: true
+                        isDefault: true,
+                        icon: 'people'
                     },
                     {
-                        id: TABS.SIGNIN,
-                        name: 'Sign-in',
+                        id: TABS.ACTIVE_GAME,
+                        name: 'Active Game',
                         isActive: false,
-                        isDefault: false
+                        isDefault: false,
+                        icon: 'games'
                     },
                     {
                         id: TABS.CLIENT_HISTORY,
                         name: 'My history',
                         isActive: false,
-                        isDefault: false
+                        isDefault: false,
+                        icon: 'history'
+                    },
+                    {
+                        id: TABS.SIGNIN,
+                        name: 'Sign-in',
+                        isActive: false,
+                        isDefault: false,
+                        icon: 'login'
                     }
                 ]
             };

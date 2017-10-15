@@ -1,4 +1,8 @@
 <div class="clients-list">
+    <div class="clients-search">
+        <input class="clients-search-input" ng-model="clientsListCtrl.query.search"
+               ng-model-options="{debounce: 300}" placeholder="Type to search...">
+    </div>
     <div class="clients-placeholder">
         <div ng-repeat="client in clientsListCtrl.clientsList track by client._id| orderBy: '-name'" class="client">
             <span class="client-name" ng-bind="client.name"></span>

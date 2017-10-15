@@ -1,8 +1,9 @@
 'use strict';
 
-var IOC = require('../constants/ioc.constants');
-var Events = require('server/events');
-var GenericController = require('./generic.controller').class;
+const IOC = require('../constants/ioc.constants');
+const Events = require('server/events');
+const GenericController = require('./generic.controller').class;
+const Joi = require('joi');
 
 function GameDataController() {
 }
@@ -11,7 +12,13 @@ GameDataController.prototype = Object.create(GenericController.prototype);
 GameDataController.prototype.constructor = GameDataController;
 
 GameDataController.prototype.onGetClientsList = function (handler) {
-    this.wss.setHandler(Events.CLIENT.LIST.GET(), handler);
+    this.wss.setHandler(
+        Events.CLIENT.LIST.GET(),
+        this.validator({
+            search: Joi.string().min(1).optional(),
+            isOnline: Joi.boolean().optional()
+        }),
+        handler);
 };
 
 GameDataController.prototype.onGetMyself = function (handler) {

@@ -21,6 +21,10 @@ define([
             observable = Observable.instance;
 
         vm.clientsList = [];
+        vm.query = {
+            search: '',
+            isOnline: true
+        };
 
         function rejectClient(exclusionsIdsList) {
             return function (client) {
@@ -33,7 +37,7 @@ define([
         }
 
         function reloadClients() {
-            gameDataService.getClients().then(function (clients) {
+            gameDataService.getClients(vm.query).then(function (clients) {
                 var preparedClients = _.map(clients, clientsListUtil.prepareClientForUI);
                 var myself = GameStorage.getClient();
                 var opponent = GameStorage.getOpponent();
@@ -117,6 +121,8 @@ define([
         observable.on(Events.CREATE_GAME, onCreateGame);
         observable.on(Events.CANCEL_GAME, onCancelGame);
         observable.on(Events.INVITE_REJECT, onInviteReject);
+
+        $scope.$watch('clientsListCtrl.query', reloadClients, true);
 
         updateClient();
     }

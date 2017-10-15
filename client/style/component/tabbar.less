@@ -17,6 +17,14 @@
       border-bottom: 2px solid @toolbar-background;
     }
   }
+  &-icon {
+    position: absolute;
+    left: 0;
+    margin: 6px 0 0 11px;
+    width: 24px;
+    height: 24px;
+    fill: #5a5a5a;
+  }
 }
 
 .tabbar-content-container {
@@ -29,7 +37,6 @@ tabbar-content > div {
   min-height: 100px;
   display: block;
   margin: 5px 0;
-  padding: 5px 0;
   overflow-y: auto;
   .tabbar-content {
     &-back {
@@ -41,14 +48,14 @@ tabbar-content > div {
       display: none;
     }
     &-placeholder {
-      background-color: #fff;
+      background-color: @tabbar-content-color;
       border-radius: 2px;
       overflow-y: auto;
     }
   }
 }
 
-@media only screen and (max-width: 480px) {
+//@media only screen and (max-width: 480px) {
   .tabbar {
     &-header {
       padding: 5px 0 0 0;
@@ -58,8 +65,9 @@ tabbar-content > div {
         clear: left;
         width: 100%;
         text-align: left;
-        padding: 0 0 0 40px;
+        padding: 0 0 0 50px;
         cursor: pointer;
+        box-sizing: border-box;
         &-selected {
           border-bottom: none;
         }
@@ -75,7 +83,7 @@ tabbar-content > div {
     &-content {
       height: 100%;
       width: 100%;
-      background-color: #ffffff;
+      background-color: @tabbar-content-color;
       position: absolute;
       margin: 0;
       padding: 0;
@@ -84,6 +92,7 @@ tabbar-content > div {
         text-align: left;
         padding: 0 0 0 40px;
         margin: 0 0 5px 0;
+        box-sizing: border-box;
         &-icon {
           position: absolute;
           left: 5px;
@@ -92,4 +101,4 @@ tabbar-content > div {
       }
     }
   }
-}
+//}

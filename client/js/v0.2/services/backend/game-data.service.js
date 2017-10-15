@@ -1,17 +1,27 @@
 define([
+    'lodash',
     'common/module.transport',
     'utils/service-utils',
     'common/backend-events',
     'services/business/game.storage'
-], function (Transport, ServiceUtils, BackendEvents, GameStorage) {
+], function (_, Transport, ServiceUtils, BackendEvents, GameStorage) {
     'use strict';
 
     var api;
 
     api = {
         listen: {},
-        getClients: function getClients() {
-            return Transport.send({}, BackendEvents.CLIENT.LIST.GET);
+        /**
+         * Search clients with params
+         * @param {{search: string, isOnline: boolean}} params params for searching, immutable
+         * @returns {Promise<Gamer[]>} searched clients
+         */
+        getClients: function getClients(params) {
+            var preparedParams = _.cloneDeep(params);
+            if (!preparedParams.search) {
+                delete preparedParams.search;
+            }
+            return Transport.send(preparedParams, BackendEvents.CLIENT.LIST.GET);
         },
         isGameClosed: function (gameId) {
             return Transport.send({id: gameId}, BackendEvents.GAME.IS_CLOSED);

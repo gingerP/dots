@@ -3,10 +3,10 @@
 
 player-menu {
   .player-menu {
-    background-color: @toolbar-pane-background;
+    background-color: @player-menu-color;
     border-bottom: 1px solid darken(@color-dark, 10%);
     position: fixed;
-    width: 100%;
+    width: @player-menu-width;
     max-height: @player-menu-min-height;
     height: 100%;
     top: @toolbar-height;
@@ -22,7 +22,7 @@ player-menu {
       max-width: 820px;
       margin: auto;
       height: 100%;
-      background-color: @toolbar-pane-placeholder-background;
+      background-color: @player-menu-color;
       width: 100%;
     }
 
@@ -54,7 +54,7 @@ player-menu {
   }
 }
 
-@media only screen and (max-width : 480px) {
+//@media only screen and (max-width : 480px) {
   player-menu {
     .player-menu {
       background-color: @toolbar-pane-background;
@@ -62,4 +62,4 @@ player-menu {
       max-height: 100%;
     }
   }
-}
+//}

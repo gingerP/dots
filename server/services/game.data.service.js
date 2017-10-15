@@ -1,25 +1,42 @@
 'use strict';
 
-var GenericService = require('./generic.service').class;
+const GenericService = require('./generic.service').class;
 const IOC = require('server/constants/ioc.constants');
-var funcUtils = require('../utils/function-utils');
-var gameStatuses = require('../constants/game-statuses');
-var Promise = require('bluebird');
-var logger = require('server/logging/logger').create('GameDataService');
-var errorLog = funcUtils.error(logger);
-var sessionUtils = require('server/utils/session-utils');
+const funcUtils = require('../utils/function-utils');
+const gameStatuses = require('../constants/game-statuses');
+const Promise = require('bluebird');
+const logger = require('server/logging/logger').create('GameDataService');
+const errorLog = funcUtils.error(logger);
+const escapeRegexp = require('escape-string-regexp');
+const sessionUtils = require('server/utils/session-utils');
 const Errors = require('../errors');
 const _ = require('lodash');
 
 class GameDataService extends GenericService {
 
-
-    async onGetClients(data) {
-        return this.clientsDBManager.getOnlineClients().then(data.callback);
+    /**
+     *
+     * @param {SocketMessage} message
+     * @returns {Promise.<*|Promise.<TResult>>}
+     */
+    async onGetClients(message) {
+        const params = {};
+        if (message.data.search) {
+            params.name = {$regex: new RegExp('.*' + escapeRegexp(message.data.search) + '.*', 'gi')};
+        }
+        if (!_.isNil(message.data.isOnline)) {
+            params.isOnline = {$eq: message.data.isOnline};
+        }
+        return this.clientsDBManager.listByCriteria(params).then(message.callback);
     }
 
+    /**
+     *
+     * @param {SocketMessage} message
+     * @returns {Promise.<*|Promise.<TResult>>}
+     */
     async onGetMySelf(message) {
-        var clientId = sessionUtils.getClientId(message.client.getSession());
+        const clientId = sessionUtils.getClientId(message.client.getSession());
         return this.clientsDBManager.get(clientId).then(message.callback);
     };
 
@@ -33,7 +50,7 @@ class GameDataService extends GenericService {
 
     /**
      *
-     * @param clientId - client id, whose history is loaded
+     * @param {MongoId} clientId - client id, whose history is loaded
      */
 
     async getClientHistory(clientId) {
