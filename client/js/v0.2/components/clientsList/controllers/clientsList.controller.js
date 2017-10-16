@@ -21,10 +21,17 @@ define([
             observable = Observable.instance;
 
         vm.clientsList = [];
+        vm.totalCount = 0;
         vm.query = {
             search: '',
-            isOnline: true
+            isOnline: true,
+            page: 1,
+            pageSize: 30
         };
+
+        function hasNext() {
+            return vm.query.page * vm.query.pageSize < vm.totalCount;
+        }
 
         function rejectClient(exclusionsIdsList) {
             return function (client) {
@@ -37,12 +44,15 @@ define([
         }
 
         function reloadClients() {
-            gameDataService.getClients(vm.query).then(function (clients) {
+            gameDataService.getClients(vm.query).then(function (response) {
+                var clients = response.list;
                 var preparedClients = _.map(clients, clientsListUtil.prepareClientForUI);
                 var myself = GameStorage.getClient();
                 var opponent = GameStorage.getOpponent();
                 var exclusion = opponent ? [myself._id, opponent._id] : [myself._id];
-                vm.clientsList = _.reject(preparedClients, rejectClient(exclusion));
+                vm.totalCount = response.totalCount;
+                vm.hasNext = hasNext();
+                vm.clientsList = vm.clientsList.concat(_.reject(preparedClients, rejectClient(exclusion)));
                 scopeUtils.apply($scope);
             });
         }
@@ -113,6 +123,13 @@ define([
             inviteBusiness.reject(toClient._id);
         };
 
+        vm.loadNext = function loadNext() {
+            if (hasNext()) {
+                vm.query.page++;
+                reloadClients();
+            }
+        };
+
         observable.on(Events.CLIENTS_RECONNECT, onClientsReconnected);
         observable.on(Events.CLIENTS_DISCONNECT, onClientsDisconnected);
         observable.on(Events.NEW_CLIENT, onNewClient);
@@ -122,7 +139,7 @@ define([
         observable.on(Events.CANCEL_GAME, onCancelGame);
         observable.on(Events.INVITE_REJECT, onInviteReject);
 
-        $scope.$watch('clientsListCtrl.query', reloadClients, true);
+        $scope.$watch('clientsListCtrl.query.search', reloadClients);
 
         updateClient();
     }

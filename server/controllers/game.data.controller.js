@@ -16,7 +16,9 @@ GameDataController.prototype.onGetClientsList = function (handler) {
         Events.CLIENT.LIST.GET(),
         this.validator({
             search: Joi.string().min(1).optional(),
-            isOnline: Joi.boolean().optional()
+            isOnline: Joi.boolean().optional(),
+            page: Joi.number().integer().min(1).optional(),
+            pageSize: Joi.number().integer().min(1).optional()
         }),
         handler);
 };

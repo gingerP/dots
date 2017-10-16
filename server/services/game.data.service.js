@@ -20,14 +20,17 @@ class GameDataService extends GenericService {
      * @returns {Promise.<*|Promise.<TResult>>}
      */
     async onGetClients(message) {
-        const params = {};
+        const options = {where: {}};
+        if (!_.isNil(message.data.page) && !_.isNil(message.data.pageSize)) {
+            options.limit = [(message.data.page - 1) * message.data.pageSize, message.data.pageSize];
+        }
         if (message.data.search) {
-            params.name = {$regex: new RegExp('.*' + escapeRegexp(message.data.search) + '.*', 'gi')};
+            options.where.name = {$regex: new RegExp('.*' + escapeRegexp(message.data.search) + '.*', 'gi')};
         }
         if (!_.isNil(message.data.isOnline)) {
-            params.isOnline = {$eq: message.data.isOnline};
+            options.where.isOnline = {$eq: message.data.isOnline};
         }
-        return this.clientsDBManager.listByCriteria(params).then(message.callback);
+        return this.clientsDBManager.findAll(options).then(message.callback);
     }
 
     /**

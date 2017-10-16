@@ -21,9 +21,10 @@ player-menu {
     .player-menu-sub-container {
       max-width: 820px;
       margin: auto;
-      height: 100%;
+      height: calc(~"100%" - @toolbar-height);
       background-color: @player-menu-color;
       width: 100%;
+      overflow-y: auto;
     }
 
     .opponent-player {

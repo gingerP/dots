@@ -191,6 +191,56 @@ class GenericDBManager extends Observable {
         }
     }
 
+    async _findAll(options = {}) {
+        try {
+            validate.collectionName(this.collectionName);
+            const where = options.where || {};
+            const mappings = options.mappings || {};
+            const db = await this.exec();
+            let cursor;
+            if (options.limit) {
+                cursor = await db.collection(this.collectionName).find(where).skip(options.limit[0]).limit(options.limit[1]);
+            } else {
+                cursor = await db.collection(this.collectionName).find(where);
+            }
+            let index = 0;
+            let result = [];
+            const totalCount = await cursor.count();
+            let count;
+            if (totalCount > options.limit[0] && totalCount <= options.limit[0] + options.limit[1]) {
+                count = totalCount - options.limit[0];
+            } else {
+                count = options.limit[1];
+            }
+            if (count) {
+                result = await new Promise((resolve) => {
+                    cursor.forEach((doc) => {
+                        index++;
+                        if (!_.isEmpty(mappings)) {
+                            result.push(utils.extractFields(doc, mappings));
+                        } else {
+                            result.push(doc);
+                        }
+                        if (index === count) {
+                            resolve(result);
+                        }
+                    });
+                });
+            }
+            if (options.limit) {
+                return {
+                    totalCount: totalCount,
+                    list: result
+                }
+            } else {
+                return result;
+            }
+        } catch (error) {
+            logger.error(error);
+            throw error;
+        }
+    }
+
     async _list(criteria, mappings) {
         try {
             validate.collectionName(this.collectionName);
@@ -293,6 +343,10 @@ class GenericDBManager extends Observable {
         const entities = await this._list(criteria, mappings);
         this.propertyChange('list', [criteria, mappings]);
         return entities;
+    }
+
+    async findAll(options) {
+        return this._findAll(options);
     }
 
     getObjectIdsList(ids) {

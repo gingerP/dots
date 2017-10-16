@@ -20,6 +20,9 @@
                 </button>
             </div>
         </div>
+        <div ng-if="clientsListCtrl.hasNext" class="client load-more" ng-click="clientsListCtrl.loadNext()">
+            <ng-md-icon class="icon" icon="more_horiz" style="" size="24"></ng-md-icon>
+        </div>
         <div ng-if="!clientsListCtrl.clientsList.length" class="empty-list">No gamers...</div>
     </div>
 </div>
