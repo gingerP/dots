@@ -1,15 +1,18 @@
 'use strict';
 
-var _ = require('lodash');
-var events = require('./events');
+const _ = require('lodash');
+const events = require('./events');
+const midllewares = require('./middlewares/websocket');
+
 function initialize(wss, web) {
     var ioc = require('./initialize.ioc').initialize(wss, web);
+    midllewares(ioc);
     _.forEach(ioc, postConstructor(ioc));
     handleNewConnections(wss);
 }
 
 function postConstructor(ioc) {
-    return function(module) {
+    return function (module) {
         if (typeof(module.postConstructor) === 'function') {
             module.postConstructor(ioc);
         }
@@ -17,7 +20,7 @@ function postConstructor(ioc) {
 }
 
 function eachEvents(eventsTree, callback) {
-    for(let key in eventsTree) {
+    for (let key in eventsTree) {
         if (eventsTree.hasOwnProperty(key)) {
             if (typeof eventsTree[key] === 'function') {
                 callback(eventsTree[key]());
@@ -29,8 +32,8 @@ function eachEvents(eventsTree, callback) {
 }
 
 function handleNewConnections(wss) {
-    wss.addListener('new_connection', function(client) {
-        eachEvents(events, function(event) {
+    wss.addListener('new_connection', function (client) {
+        eachEvents(events, function (event) {
             client.registerListeners(event);
         });
     });

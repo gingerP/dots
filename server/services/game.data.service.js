@@ -3,7 +3,7 @@
 const GenericService = require('./generic.service').class;
 const IOC = require('server/constants/ioc.constants');
 const funcUtils = require('../utils/function-utils');
-const gameStatuses = require('../constants/game-statuses');
+const GameStatuses = require('../constants/game-statuses');
 const Promise = require('bluebird');
 const logger = require('server/logging/logger').create('GameDataService');
 const errorLog = funcUtils.error(logger);
@@ -20,17 +20,32 @@ class GameDataService extends GenericService {
      * @returns {Promise.<*|Promise.<TResult>>}
      */
     async onGetClients(message) {
-        const options = {where: {}};
-        if (!_.isNil(message.data.page) && !_.isNil(message.data.pageSize)) {
-            options.limit = [(message.data.page - 1) * message.data.pageSize, message.data.pageSize];
-        }
+        const options = {
+            where: {},
+            limit: [(message.data.page - 1) * message.data.pageSize, message.data.pageSize]
+        };
         if (message.data.search) {
             options.where.name = {$regex: new RegExp('.*' + escapeRegexp(message.data.search) + '.*', 'gi')};
         }
         if (!_.isNil(message.data.isOnline)) {
             options.where.isOnline = {$eq: message.data.isOnline};
         }
-        return this.clientsDBManager.findAll(options).then(message.callback);
+        if (!_.isNil(message.data.excludeGameUsers) && message.data.excludeGameUsers) {
+            const game = await this.gameDb.getByCriteria({
+                $or: [{from: message.user._id}, {to: message.user._id}],
+                status: GameStatuses.active
+            });
+            if (game) {
+                options.where._id = {$nin: [game.from, game.to]};
+            }
+        }
+        const response = await this.clientsDb.findAll(options);
+        message.callback({
+            totalCount: response.totalCount,
+            list: response.list,
+            page: message.data.page,
+            pageSize: message.data.pageSize
+        });
     }
 
     /**
@@ -40,7 +55,7 @@ class GameDataService extends GenericService {
      */
     async onGetMySelf(message) {
         const clientId = sessionUtils.getClientId(message.client.getSession());
-        return this.clientsDBManager.get(clientId).then(message.callback);
+        return this.clientsDb.get(clientId).then(message.callback);
     };
 
     async onReject() {
@@ -69,7 +84,7 @@ class GameDataService extends GenericService {
         const gameId = message.data.id;
         const cacheManager = this.gameDataCacheDBManager;
         const [game, usersGameDataList] = await Promise.all([
-            this.gameDBManager.get(gameId),
+            this.gameDb.get(gameId),
             this.gameDataDBManager.getGameDataForGame(gameId),
         ]);
         if (!game) {
@@ -78,7 +93,7 @@ class GameDataService extends GenericService {
         const gameDataIds = _.map(usersGameDataList, '_id');
         let [gameDataCacheList, users] = await Promise.all([
             cacheManager.getCacheByGameDataId.apply(cacheManager, gameDataIds),
-            this.clientsDBManager.get([game.to, game.from])
+            this.clientsDb.get([game.to, game.from])
         ]);
 
         users = _.map(users, (user) => {
@@ -100,7 +115,7 @@ class GameDataService extends GenericService {
     }
 
     async onIsGameClosed(message) {
-        this.gameDBManager.get(message.data.id).then(function (game) {
+        this.gameDb.get(message.data.id).then(function (game) {
             if (game) {
                 message.callback(game.status === gameStatuses.closed);
             } else {
@@ -124,8 +139,8 @@ class GameDataService extends GenericService {
     applyInjection(ioc) {
         this.gameSupportService = ioc[IOC.SERVICE.GAME_SUPPORT];
         this.controller = ioc[IOC.CONTROLLER.GAME_DATA];
-        this.clientsDBManager = ioc[IOC.DB_MANAGER.CLIENTS];
-        this.gameDBManager = ioc[IOC.DB_MANAGER.GAME];
+        this.clientsDb = ioc[IOC.DB_MANAGER.CLIENTS];
+        this.gameDb = ioc[IOC.DB_MANAGER.GAME];
         this.gameDataDBManager = ioc[IOC.DB_MANAGER.GAME_DATA];
         this.gameDataCacheDBManager = ioc[IOC.DB_MANAGER.GAME_DATA_CACHE];
         this.clientHistory = ioc[IOC.DB_MANAGER.CLIENTS_HISTORY_AGGREGATE];

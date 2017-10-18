@@ -13,7 +13,8 @@ define([
         listen: {},
         /**
          * Search clients with params
-         * @param {{search: string, isOnline: boolean}} params params for searching, immutable
+         * @param {{search: string, isOnline: boolean, page: page, pageSize: pageSize}} params params for searching,
+         * immutable
          * @returns {Promise<Gamer[]>} searched clients
          */
         getClients: function getClients(params) {

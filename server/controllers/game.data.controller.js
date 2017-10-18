@@ -17,8 +17,9 @@ GameDataController.prototype.onGetClientsList = function (handler) {
         this.validator({
             search: Joi.string().min(1).optional(),
             isOnline: Joi.boolean().optional(),
-            page: Joi.number().integer().min(1).optional(),
-            pageSize: Joi.number().integer().min(1).optional()
+            page: Joi.number().integer().min(1).required(),
+            pageSize: Joi.number().integer().min(1).required(),
+            excludeGameUsers: Joi.boolean().optional()
         }),
         handler);
 };

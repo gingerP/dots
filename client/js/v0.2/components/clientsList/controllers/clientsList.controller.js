@@ -10,8 +10,7 @@ define([
     'components/clientsList/factories/clientsListUtil.factory',
     'components/clientsList/clientsList.module',
     'components/utils/scope.utils'
-], function (angular, _, Observable, GameStorage, Events, Business, inviteBusiness,
-             gameDataService) {
+], function (angular, _, Observable, GameStorage, Events, Business, inviteBusiness, gameDataService) {
     'use strict';
 
     angular.module('clientsList.module').controller('clientsListCtrl', ClientsListController);
@@ -26,17 +25,12 @@ define([
             search: '',
             isOnline: true,
             page: 1,
-            pageSize: 30
+            pageSize: 30,
+            excludeGameUsers: true
         };
 
         function hasNext() {
             return vm.query.page * vm.query.pageSize < vm.totalCount;
-        }
-
-        function rejectClient(exclusionsIdsList) {
-            return function (client) {
-                return exclusionsIdsList.indexOf(client._id) > -1;
-            };
         }
 
         function updateClient() {
@@ -47,12 +41,13 @@ define([
             gameDataService.getClients(vm.query).then(function (response) {
                 var clients = response.list;
                 var preparedClients = _.map(clients, clientsListUtil.prepareClientForUI);
-                var myself = GameStorage.getClient();
-                var opponent = GameStorage.getOpponent();
-                var exclusion = opponent ? [myself._id, opponent._id] : [myself._id];
                 vm.totalCount = response.totalCount;
                 vm.hasNext = hasNext();
-                vm.clientsList = vm.clientsList.concat(_.reject(preparedClients, rejectClient(exclusion)));
+                if (response.page === 1) {
+                    vm.clientsList = preparedClients;
+                } else {
+                    vm.clientsList = vm.clientsList.concat(preparedClients);
+                }
                 scopeUtils.apply($scope);
             });
         }
@@ -139,7 +134,10 @@ define([
         observable.on(Events.CANCEL_GAME, onCancelGame);
         observable.on(Events.INVITE_REJECT, onInviteReject);
 
-        $scope.$watch('clientsListCtrl.query.search', reloadClients);
+        $scope.$watch('clientsListCtrl.query.search', function () {
+            vm.query.page = 1;
+            reloadClients();
+        });
 
         updateClient();
     }

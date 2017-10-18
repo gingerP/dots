@@ -17,6 +17,7 @@ class WSServer extends Observable {
         this.connections = {};
         this.listeners = {};
         this.handlers = {};
+        this.midllewares = [];
         this.events = {
             NEW_CONNECTION: 'new_connection',
             REMOVE_CONNECTION: 'remove_connection'
@@ -227,18 +228,24 @@ class WSServer extends Observable {
         return this;
     }
 
+    use(midlleware) {
+        this.midllewares.push(midlleware);
+        return this;
+    }
+
     async runHandler(endPointName, message) {
         let callbackExecuted = false;
-        async function _callback(responseData) {
-            callbackExecuted = true;
-            await message.callback(responseData);
-        }
         const handlers = this.handlers[endPointName];
         if (!handlers || !handlers.length) {
             throw new Errors.RouteNotFoundError(`Route "${endPointName}" not found.`);
         }
+        let mIndex = 0;
+        while(mIndex < this.midllewares.length) {
+            await this.midllewares[mIndex](message, endPointName);
+            mIndex++;
+        }
         let index = 0;
-        while(index < handlers.length && !callbackExecuted) {
+        while(index < handlers.length) {
             await handlers[index](message, endPointName);
             index++;
         }

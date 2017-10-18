@@ -55,6 +55,7 @@
  * 				client: SocketClient,
  * 				data: Object,
  * 				callback: function
+ * 			    user: Object
  * 			}} SocketMessage
  * @typedef {{
  * 				getId: function,
