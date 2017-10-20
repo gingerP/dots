@@ -1,6 +1,6 @@
 define([
     'angular',
-    'angular-animate',
+    /*'angular-animate',*/
     'angular-icons',
     'components/game/components/game.component',
     'components/clientsList/components/clientsList.component',
@@ -44,7 +44,7 @@ define([
         'tabbar.module',
         'userProfile.module',
         'app-cache',
-        'ngAnimate',
+        /*'ngAnimate',*/
         'client.history.module'
     ]);
     angular.element(document).ready(function () {

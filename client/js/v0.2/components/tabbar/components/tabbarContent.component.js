@@ -4,7 +4,7 @@ define([
     'components/tabbar/tabbar.module',
     'components/utils/scope.utils',
     'components/tabbar/factories/tabbarConfig.factory'
-], function (angular, ) {
+], function (angular) {
     'use strict';
 
     angular.module('tabbar.module').component('tabbarContent', {

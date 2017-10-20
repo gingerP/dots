@@ -7,7 +7,7 @@
         <span ng-bind="::tab.name"></span>
     </div>
 </div>
-<div class="tabbar-content-container">
+<div class="tabbar-content-container" ng-show="tabbarCtrl.hasSelected">
     <ng-transclude></ng-transclude>
 </div>
 

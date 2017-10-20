@@ -3,6 +3,7 @@
 tabbar {
   display: block;
   position: relative;
+  height: 100%;
 }
 
 .tabbar-header {
@@ -33,7 +34,13 @@ tabbar {
 }
 
 .tabbar-content-container {
+  height: 100%;
   transition: height 1s;
+  ng-transclude {
+    display: block;
+    position: relative;
+    height: 100%;
+  }
 }
 
 tabbar-content > div {

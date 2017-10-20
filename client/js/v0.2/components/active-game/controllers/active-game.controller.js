@@ -26,5 +26,6 @@ define([
 
         observable.on(Events.REFRESH_GAME, onRefreshGame);
         vm.cancelGame = cancelGame;
+        onRefreshGame();
     }
 });
