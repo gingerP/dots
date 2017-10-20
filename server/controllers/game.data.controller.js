@@ -19,6 +19,11 @@ GameDataController.prototype.onGetClientsList = function (handler) {
             isOnline: Joi.boolean().optional(),
             page: Joi.number().integer().min(1).required(),
             pageSize: Joi.number().integer().min(1).required(),
+            order: Joi.object().keys(
+                {
+                    rating: Joi.number().valid([-1, 1])
+                }
+            ).optional(),
             excludeGameUsers: Joi.boolean().optional()
         }),
         handler);

@@ -5,6 +5,10 @@
     </div>
     <div class="clients-placeholder">
         <div ng-repeat="client in clientsListCtrl.clientsList track by client._id| orderBy: '-name'" class="client">
+            <div class="client-rating-container">
+                <div class="client-rating-total"></div>
+                <div class="client-rating-positive" style="width: {{::(client.relativeRating)}}%;"></div>
+            </div>
             <span class="client-name" ng-bind="client.name"></span>
             <div ng-show="client.mode == 'common'" class="invite-btns-container">
                 <button class="btn-override btn-right btn-invite-ask btn-client" ng-click="clientsListCtrl.invite(client)">

@@ -4,13 +4,14 @@ define([
     'module.observable',
     'services/business/game.storage',
     'common/events',
+    'common/common-constants',
     'services/business/module.game.business',
     'services/business/business.invite',
     'services/backend/game-data.service',
     'components/clientsList/factories/clientsListUtil.factory',
     'components/clientsList/clientsList.module',
     'components/utils/scope.utils'
-], function (angular, _, Observable, GameStorage, Events, Business, inviteBusiness, gameDataService) {
+], function (angular, _, Observable, GameStorage, Events, Constants, Business, inviteBusiness, gameDataService) {
     'use strict';
 
     angular.module('clientsList.module').controller('clientsListCtrl', ClientsListController);
@@ -21,6 +22,7 @@ define([
 
         vm.clientsList = [];
         vm.totalCount = 0;
+        vm.maxRating = Constants.PLAYER.DEFAULT_RATING;
         vm.query = {
             search: '',
             isOnline: true,
@@ -34,20 +36,30 @@ define([
         }
 
         function updateClient() {
-            reloadClients();
+            //reloadClients();
+        }
+
+        function recalculateRelativeRating() {
+            _.forEach(vm.clientsList, function (client) {
+                var rating = client.rating || Constants.PLAYER.DEFAULT_RATING;
+                client.relativeRating = rating * 100 / vm.maxRating;
+            });
         }
 
         function reloadClients() {
             gameDataService.getClients(vm.query).then(function (response) {
+                var meta = response.meta;
                 var clients = response.list;
                 var preparedClients = _.map(clients, clientsListUtil.prepareClientForUI);
-                vm.totalCount = response.totalCount;
+                vm.maxRating = response.maxRate;
+                vm.totalCount = meta.totalCount;
                 vm.hasNext = hasNext();
-                if (response.page === 1) {
+                if (meta.page === 1) {
                     vm.clientsList = preparedClients;
                 } else {
                     vm.clientsList = vm.clientsList.concat(preparedClients);
                 }
+                recalculateRelativeRating();
                 scopeUtils.apply($scope);
             });
         }

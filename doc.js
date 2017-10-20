@@ -15,7 +15,8 @@
  *              created: date,
  *              updated: date,
  *              isOnline: boolean,
- *              name: string
+ *              name: string,
+ *              rating: number
  *          }} Gamer
  * @typedef {{
  *              _id: MongoId,

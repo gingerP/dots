@@ -198,11 +198,14 @@ class GenericDBManager extends Observable {
             const mappings = options.mappings || {};
             const db = await this.exec();
             let cursor;
-            if (options.limit) {
-                cursor = await db.collection(this.collectionName).find(where).skip(options.limit[0]).limit(options.limit[1]);
-            } else {
-                cursor = await db.collection(this.collectionName).find(where);
+            let chain = db.collection(this.collectionName).find(where);
+            if (options.order) {
+                chain = chain.sort(options.order);
             }
+            if (options.limit) {
+                chain = chain.skip(options.limit[0]).limit(options.limit[1]);
+            }
+            cursor = await chain;
             let index = 0;
             let result = [];
             const totalCount = await cursor.count();
@@ -282,6 +285,11 @@ class GenericDBManager extends Observable {
     }
 
     /**************************/
+
+    async getCollection() {
+        const db = await this.exec();
+        return db.collection(this.collectionName);
+    }
 
     async save(doc, mappings) {
         const entity = await this._save(doc, null, mappings);

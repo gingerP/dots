@@ -36,7 +36,8 @@ function newClient(name, created, updated, isOnline) {
         created: created || Date.now(),
         updated: updated || Date.now(),
         isOnline: Boolean(isOnline),
-        name: name
+        name: name,
+        rating: 1000
     };
 }
 

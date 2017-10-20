@@ -8,61 +8,71 @@ var logger = require('server/logging/logger').create('ClientsDBManager');
 var errorLogger = funcUtils.error(logger);
 var Promise = require('bluebird');
 
-function ClientsDBManager() {
-    this.collectionName = DB.COLLECTION.CLIENTS;
-}
+class ClientsDBManager extends GenericDBManager {
 
-ClientsDBManager.prototype = Object.create(GenericDBManager.prototype);
-ClientsDBManager.prototype.constructor = ClientsDBManager;
+    constructor() {
+        super();
+        this.collectionName = DB.COLLECTION.CLIENTS;
+    }
 
-ClientsDBManager.prototype.getClient = function (id) {
-    if (id) {
-        return this.get(id).then((client) => {
+    async getClient(id) {
+        if (id) {
+            const client = this.get(id);
             if (client.auth) {
                 delete client.auth.token;
             }
             return client;
+        }
+        return null;
+    }
+
+    async getClientByConnectionId(connectionId) {
+        return this.getByCriteria({connection_id: connectionId});
+    }
+
+    async getClientsExcept(client) {
+        return this.listByCriteria({
+            _id: {
+                $ne: this.getObjectId(client._id)
+            }
         });
     }
-    return funcUtils.emptyPromise({});
-};
 
-ClientsDBManager.prototype.getClientByConnectionId = function (connectionId) {
-    return this.getByCriteria({connection_id: connectionId});
-};
+    async getOnlineClients() {
+        return this.listByCriteria({isOnline: true});
+    }
 
-ClientsDBManager.prototype.getClientsExcept = function (client) {
-    return this.listByCriteria({
-        _id: {
-            $ne: this.getObjectId(client._id)
+    async getClientsPair(clientId, connectionId) {
+        return Promise.all([
+            this.getClient(clientId),                            //To
+            this.getClientByConnectionId(connectionId)           //From
+        ]);
+    }
+
+    async getMaxRating(criteria = {}) {
+        const collection = await this.getCollection();
+        const cursor = await collection.find(criteria).sort({'rating':-1}).limit(1);
+        if (await cursor.hasNext()) {
+            const user = await cursor.next();
+            return user ? user.rating : 0;
         }
-    });
-};
+        return 0;
+    }
 
-ClientsDBManager.prototype.getOnlineClients = function () {
-    return this.listByCriteria({isOnline: true});
-};
+    getByAuthIdType(authId, type) {
+        return this.getByCriteria({
+            'auth.id': authId,
+            'auth.type': type
+        });
+    }
 
-ClientsDBManager.prototype.getClientsPair = function (clientId, connectionId) {
-    return Promise.all([
-        this.getClient(clientId),                            //To
-        this.getClientByConnectionId(connectionId)           //From
-    ]);
-};
+    getName() {
+        return IOC.DB_MANAGER.CLIENTS;
+    }
 
-ClientsDBManager.prototype.getByAuthIdType = function (authId, type) {
-    return this.getByCriteria({
-        'auth.id': authId,
-        'auth.type': type
-    })
-};
-
-ClientsDBManager.prototype.getName = function () {
-    return IOC.DB_MANAGER.CLIENTS;
-};
-
-ClientsDBManager.prototype.postConstructor = function () {
-};
+    postConstructor() {
+    }
+}
 
 module.exports = {
     class: ClientsDBManager

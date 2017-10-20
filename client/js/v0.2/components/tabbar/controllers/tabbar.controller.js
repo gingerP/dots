@@ -88,16 +88,6 @@ define([
         vm.isHeadersVisible = true;
         vm.tabbarHeaderClassName = getHeaderClassName();
 
-        $(window).resize(_.throttle(function () {
-            var width;
-            if (vm.context.list && vm.context.list.length && _.every(vm.context.list, isTabNotActive)) {
-                width = $(window).width();
-                if (width >= 480) {
-                    vm.context.list[0].isActive = true;
-                    apply();
-                }
-            }
-        }, 300));
         onDestroy($rootScope.$on(Events.OPEN_TAB, onOpenedTab));
     }
 });

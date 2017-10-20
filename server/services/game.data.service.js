@@ -20,17 +20,18 @@ class GameDataService extends GenericService {
      * @returns {Promise.<*|Promise.<TResult>>}
      */
     async onGetClients(message) {
+        const data = message.data;
         const options = {
             where: {},
-            limit: [(message.data.page - 1) * message.data.pageSize, message.data.pageSize]
+            limit: [(data.page - 1) * data.pageSize, data.pageSize]
         };
-        if (message.data.search) {
-            options.where.name = {$regex: new RegExp('.*' + escapeRegexp(message.data.search) + '.*', 'gi')};
+        if (data.search) {
+            options.where.name = {$regex: new RegExp('.*' + escapeRegexp(data.search) + '.*', 'gi')};
         }
-        if (!_.isNil(message.data.isOnline)) {
-            options.where.isOnline = {$eq: message.data.isOnline};
+        if (!_.isNil(data.isOnline)) {
+            options.where.isOnline = {$eq: data.isOnline};
         }
-        if (!_.isNil(message.data.excludeGameUsers) && message.data.excludeGameUsers) {
+        if (!_.isNil(data.excludeGameUsers) && data.excludeGameUsers) {
             const game = await this.gameDb.getByCriteria({
                 $or: [{from: message.user._id}, {to: message.user._id}],
                 status: GameStatuses.active
@@ -39,12 +40,21 @@ class GameDataService extends GenericService {
                 options.where._id = {$nin: [game.from, game.to]};
             }
         }
-        const response = await this.clientsDb.findAll(options);
+        if (!data.order) {
+            options.order = {rating: -1};
+        }
+        const [response, maxRating = 0] = await Promise.all([
+            this.clientsDb.findAll(options),
+            this.clientsDb.getMaxRating()
+        ]);
         message.callback({
-            totalCount: response.totalCount,
-            list: response.list,
-            page: message.data.page,
-            pageSize: message.data.pageSize
+            meta: {
+                totalCount: response.totalCount,
+                page: data.page,
+                pageSize: data.pageSize
+            },
+            maxRate: maxRating,
+            list: response.list
         });
     }
 

@@ -27,13 +27,14 @@ clients-list {
     padding: 0 10px;
     overflow: hidden;
     text-overflow: ellipsis;
-    background-color: @client-item-height;
+    background-color: @client-background;
     position: relative;
     cursor: pointer;
     color: @text-color-dark;
 
     &-name {
       margin-left: 10px;
+      position: relative;
     }
 
     &:hover {
@@ -52,6 +53,31 @@ clients-list {
       margin: 5px 5px 5px 0;
       &:hover {
         color: #ffffff;
+      }
+    }
+
+
+    &-rating {
+      &-positive,
+      &-total {
+        height: 100%;
+        left: 0;
+        bottom: 0;
+        position: absolute;
+      }
+      &-positive {
+        background-color: @main-color;
+      }
+      &-total {
+        width: 100%;
+        background-color: darken(@client-background, 20%);
+      }
+      &-container {
+        height: 2px;
+        width: 90%;
+        position: absolute;
+        left: 5%;
+        bottom: 0;
       }
     }
 

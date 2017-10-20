@@ -3,6 +3,7 @@ define(function () {
 
     return {
         PLAYER: {
+            DEFAULT_RATING: 1000,
             COLORS: {
                 red: '#F44336',
                 blue: '#2196F3'
