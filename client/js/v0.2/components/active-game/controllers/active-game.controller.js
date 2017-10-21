@@ -20,12 +20,28 @@ define([
             scopeUtils.apply($scope);
         }
 
-        function cancelGame() {
-            GameBusiness.cancelGame();
+        function offerToComplete() {
+            GameBusiness
+                .offerToComplete()
+                .then();
+        }
+
+        function offerDraw() {
+            GameBusiness
+                .gameOfferDraw()
+                .then();
+        }
+
+        function gaveUp() {
+            GameBusiness
+                .gameGaveUp()
+                .then();
         }
 
         observable.on(Events.REFRESH_GAME, onRefreshGame);
-        vm.cancelGame = cancelGame;
+        vm.offerToComplete = offerToComplete;
+        vm.offerDraw = offerDraw;
+        vm.gaveUp = gaveUp;
         onRefreshGame();
     }
 });

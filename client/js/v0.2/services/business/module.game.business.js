@@ -11,13 +11,14 @@ define([
     'utils/converters-utils',
     'services/business/game.storage',
     'services/backend/game-data.service',
+    'servives/backend/gameCancel.service',
     'services/backend/game.service',
     'services/backend/invite.service',
     'services/backend/gameSupport.service',
     'graphics/module.game.graphics'
 ], function (_, q, Events, NetworkStatus, Observable, rules, CommonConstants,
              GameUtils, PlayerUtils, ConvertersUtils, GameStorage,
-             GameDataService, GameService, InviteService, GameSupportService,
+             GameDataService, GameCancelService, GameService, InviteService, GameSupportService,
              Graphics) {
     'use strict';
 
@@ -215,6 +216,21 @@ define([
         );
     }
 
+    function gameGaveUp() {
+        var game = GameStorage.getGame();
+        if (game) {
+            GameCancelService.gave
+        }
+    }
+
+    function gameOfferDraw() {
+
+    }
+
+    function gameOfferComplete() {
+        GameService.
+    }
+
     function listenNextStep() {
         GameService.listen.gameStep(
             /**
@@ -303,7 +319,10 @@ define([
         addListener: addListener,
         cancelGame: function () {
             cancelGame(true);
-        }
+        },
+        gameGaveUp: gameGaveUp,
+        gameOfferDraw: gameOfferDraw,
+        gameOfferComplete: gameOfferComplete
     };
     return api;
 });

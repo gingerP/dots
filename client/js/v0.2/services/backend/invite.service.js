@@ -17,19 +17,19 @@ define([
             cancel: serviceUtils.createListener(BackendEvents.GAME.CANCEL)
         },
         ask: function (clientId) {
-            return Transport.send({clientId: clientId}, BackendEvents.INVITE.INVITE);
+            return Transport.send(BackendEvents.INVITE.INVITE, {clientId: clientId});
         },
         success: function (clientId) {
-            return Transport.send({clientId: clientId}, BackendEvents.INVITE.SUCCESS);
+            return Transport.send(BackendEvents.INVITE.SUCCESS, {clientId: clientId});
         },
         successToLate: function (clientId) {
-            return Transport.send({clientId: clientId}, BackendEvents.INVITE.SUCCESS_TO_LATE);
+            return Transport.send(BackendEvents.INVITE.SUCCESS_TO_LATE, {clientId: clientId});
         },
         reject: function (clientId) {
-            return Transport.send({clientId: clientId}, BackendEvents.INVITE.REJECT);
+            return Transport.send(BackendEvents.INVITE.REJECT, {clientId: clientId});
         },
         cancelGame: function (gameId) {
-            return Transport.send({gameId: gameId}, BackendEvents.GAME.CANCEL);
+            return Transport.send(BackendEvents.GAME.CANCEL, {gameId: gameId});
         }
     };
 

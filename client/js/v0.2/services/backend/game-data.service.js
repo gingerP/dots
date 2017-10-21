@@ -22,18 +22,18 @@ define([
             if (!preparedParams.search) {
                 delete preparedParams.search;
             }
-            return Transport.send(preparedParams, BackendEvents.CLIENT.LIST.GET);
+            return Transport.send(BackendEvents.CLIENT.LIST.GET, preparedParams);
         },
         isGameClosed: function (gameId) {
-            return Transport.send({id: gameId}, BackendEvents.GAME.IS_CLOSED);
+            return Transport.send(BackendEvents.GAME.IS_CLOSED, {id: gameId});
         },
         getGameState: function (gameId) {
-            return Transport.send({id: gameId}, BackendEvents.GAME.STATE.GET);
+            return Transport.send(BackendEvents.GAME.STATE.GET, {id: gameId});
         },
         getCurrentClientHistory: function getCurrentClientHistory() {
             var clientId = GameStorage.getClient()._id;
 
-            return Transport.send({id: clientId}, BackendEvents.CLIENT.HISTORY.GET);
+            return Transport.send(BackendEvents.CLIENT.HISTORY.GET, {id: clientId});
         }
     };
 

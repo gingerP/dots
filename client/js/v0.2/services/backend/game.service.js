@@ -24,8 +24,8 @@ define([
 
     api = {
         listen: {
-            addDot: serviceUtils.createListener(BackendEvents.DOT.ADD),
-            gameStep: serviceUtils.createListener(BackendEvents.GAME.STEP.NEW)
+            addDot: Transport.getListenerTrap(BackendEvents.DOT.ADD),
+            gameStep: Transport.getListenerTrap(BackendEvents.GAME.STEP.NEW)
         },
         addDot: addDot
     };

@@ -1,5 +1,5 @@
-<div ng-if="activeGameCtrl.opponent" class="opponent-player">
-    <button class="btn-override " ng-click="activeGameCtrl.offerToComplete()">Offer to complete</button>
-    <button class="btn-override " ng-click="activeGameCtrl.offerDraw()">Offer a draw</button>
-    <a href="" class="active-game-action-gave-up" ng-click="activeGameCtrl.gaveUp()">Gave up</a>
+<div ng-if="activeGameCtrl.opponent" class="">
+    <button class="btn-override btn-action btn-complete" ng-click="activeGameCtrl.offerToComplete()">Offer to complete</button>
+    <button class="btn-override btn-action btn-draw" ng-click="activeGameCtrl.offerDraw()">Offer a draw</button>
+    <a href="" class="active-game-action-gave-up btn-action btn-gave-up" ng-click="activeGameCtrl.gaveUp()">Gave up</a>
 </div>
