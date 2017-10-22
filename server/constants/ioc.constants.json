@@ -4,14 +4,16 @@
     "CREATE_GAME": "createGame.controller",
     "GAME": "game.controller",
     "GAME_DATA": "game.data.controller",
-    "GAME_SUPPORT": "game.support.controller"
+    "GAME_SUPPORT": "game.support.controller",
+    "GAME_CANCEL": "game.cancel"
   },
   "SERVICE": {
     "GENERIC": "generic.service",
     "GAME_SUPPORT": "game.support.service",
     "CREATE_GAME": "createGame.service",
     "GAME": "game.service",
-    "GAME_DATA": "game.data.service"
+    "GAME_DATA": "game.data.service",
+    "GAME_CANCEL": "game.cancel.service"
   },
   "DB_MANAGER": {
     "GENERIC": "generic.db.manager",

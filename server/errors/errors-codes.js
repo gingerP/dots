@@ -14,5 +14,8 @@ module.exports = {
     DotAlreadyExistsError: code(8),
     InternalError: code(9),
     DotNotAllowed: code(10),
-	DotsShouldBeCaptured: code(11)
+	DotsShouldBeCaptured: code(11),
+    GameActionOfferDrawNotAllowed: code(12),
+    GameActionOfferCompleteNotAllowed: code(13),
+    GameActionGaveUpNotAllowed: code(14)
 };

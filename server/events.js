@@ -3,12 +3,16 @@ var _ = require('lodash');
 module.exports = {
     GAME: {
         IS_CLOSED: _.constant('game/is_closed'),
-        CANCEL: _.constant('game/cancel'),
         STATE: {
             GET: _.constant('game/state/get')
         },
         STEP: {
             NEW: _.constant('game/step/new')
+        },
+        CANCEL: {
+            GAVE_UP: _.constant('game/gave_up'),
+            OFFER_DRAW: _.constant('game/offer_draw'),
+            OFFER_COMPLETE: _.constant('game/offer_complete')
         }
     },
     INVITE: {

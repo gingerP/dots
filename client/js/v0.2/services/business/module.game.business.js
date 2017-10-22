@@ -168,12 +168,12 @@ define([
                      * @param {{game: Game, clients: GameStateUser[]}} gameState game state response
                      */
                     function (gameState) {
-                    if (gameState.game && gameState.game.status === 'active') {
-                        refreshGame(gameState.game, gameState.clients);
-                    } else {
-                        cancelGame();
-                    }
-                })
+                        if (gameState.game && gameState.game.status === 'active') {
+                            refreshGame(gameState.game, gameState.clients);
+                        } else {
+                            cancelGame();
+                        }
+                    })
                 .catch(function () {
                     cancelGame();
                 });
@@ -217,18 +217,48 @@ define([
     }
 
     function gameGaveUp() {
+        var deferred = q.defer();
         var game = GameStorage.getGame();
         if (game) {
-            GameCancelService.gave
+            GameCancelService.gaveUp()
+                .then(function (result) {
+                    deferred[result ? 'resolve' : 'reject']();
+                })
+                .catch(function () {
+                    deferred.reject();
+                });
         }
+        return deferred.promise;
     }
 
     function gameOfferDraw() {
-
+        var deferred = q.defer();
+        var game = GameStorage.getGame();
+        if (game) {
+            GameCancelService.offerDraw()
+                .then(function (result) {
+                    deferred[result ? 'resolve' : 'reject']();
+                })
+                .catch(function () {
+                    deferred.reject();
+                });
+        }
+        return deferred.promise;
     }
 
     function gameOfferComplete() {
-        GameService.
+        var deferred = q.defer();
+        var game = GameStorage.getGame();
+        if (game) {
+            GameCancelService.offerToComplete()
+                .then(function (result) {
+                    deferred[result ? 'resolve' : 'reject']();
+                })
+                .catch(function () {
+                    deferred.reject();
+                });
+        }
+        return deferred.promise;
     }
 
     function listenNextStep() {

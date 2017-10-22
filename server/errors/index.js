@@ -12,6 +12,9 @@ const InternalError = require('./InternalError');
 const GenericError = require('./GenericError');
 const DotNotAllowed = require('./DotNotAllowed');
 const DotsShouldBeCapturedError = require('./DotsShouldBeCaptured');
+const GameActionOfferDrawNotAllowed = require('./GameActionOfferDrawNotAllowed');
+const GameActionOfferCompleteNotAllowed = require('./GameActionOfferCompleteNotAllowed');
+const GameActionGaveUpNotAllowed = require('./GameActionGaveUpNotAllowed');
 
 module.exports = {
     CouldNotCancelGameError: CouldNotCancelGameError,
@@ -25,5 +28,8 @@ module.exports = {
     DotNotAllowed: DotNotAllowed,
     InternalError: InternalError,
     GenericError: GenericError,
-    DotsShouldBeCapturedError: DotsShouldBeCapturedError
+    DotsShouldBeCapturedError: DotsShouldBeCapturedError,
+    GameActionOfferDrawNotAllowed: GameActionOfferDrawNotAllowed,
+    GameActionOfferCompleteNotAllowed: GameActionOfferCompleteNotAllowed,
+    GameActionGaveUpNotAllowed: GameActionGaveUpNotAllowed
 };
