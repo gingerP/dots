@@ -15,6 +15,7 @@ const DotsShouldBeCapturedError = require('./DotsShouldBeCaptured');
 const GameActionOfferDrawNotAllowed = require('./GameActionOfferDrawNotAllowed');
 const GameActionOfferCompleteNotAllowed = require('./GameActionOfferCompleteNotAllowed');
 const GameActionGaveUpNotAllowed = require('./GameActionGaveUpNotAllowed');
+const GameActionNotAllowed = require('./GameActionNotAllowed');
 
 module.exports = {
     CouldNotCancelGameError: CouldNotCancelGameError,
@@ -31,5 +32,6 @@ module.exports = {
     DotsShouldBeCapturedError: DotsShouldBeCapturedError,
     GameActionOfferDrawNotAllowed: GameActionOfferDrawNotAllowed,
     GameActionOfferCompleteNotAllowed: GameActionOfferCompleteNotAllowed,
-    GameActionGaveUpNotAllowed: GameActionGaveUpNotAllowed
+    GameActionGaveUpNotAllowed: GameActionGaveUpNotAllowed,
+    GameActionNotAllowed: GameActionNotAllowed
 };

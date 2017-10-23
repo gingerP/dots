@@ -17,5 +17,6 @@ module.exports = {
 	DotsShouldBeCaptured: code(11),
     GameActionOfferDrawNotAllowed: code(12),
     GameActionOfferCompleteNotAllowed: code(13),
-    GameActionGaveUpNotAllowed: code(14)
+    GameActionGaveUpNotAllowed: code(14),
+    GameActionNotAllowed: code(15)
 };

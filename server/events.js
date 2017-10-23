@@ -9,11 +9,7 @@ module.exports = {
         STEP: {
             NEW: _.constant('game/step/new')
         },
-        CANCEL: {
-            GAVE_UP: _.constant('game/gave_up'),
-            OFFER_DRAW: _.constant('game/offer_draw'),
-            OFFER_COMPLETE: _.constant('game/offer_complete')
-        }
+        CANCEL: _.constant('game/cancel')
     },
     INVITE: {
         INVITE: _.constant('invite'),

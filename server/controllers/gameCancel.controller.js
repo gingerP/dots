@@ -9,11 +9,12 @@ const Joi = require('joi');
 
 class GameController extends GenericController {
 
-    onAction(handler) {
+    onCancel(handler) {
         this.wss.setHandler(
             Events.GAME.CANCEL.GAVE_UP(),
             this.validator({
-                type: Joi.string().valid(GameActions.ALL).required()
+                type: Joi.string().valid(GameActions.ALL).required(),
+                success: Joi.boolean().optional()
             }),
             handler
         );

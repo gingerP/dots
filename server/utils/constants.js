@@ -6,5 +6,10 @@ module.exports = {
         DRAW: 'draw',
         COMPLETE: 'complete',
         ALL: ['gave_up', 'draw', 'complete']
+    },
+    GAME_STATUSES: {
+        ACTIVE: 'active',
+        CLOSED: 'closed',
+        FINISHED: 'finished'
     }
 };
