@@ -10,7 +10,7 @@ class CreateGameController extends GenericController {
 
     onInvitePlayer(handler) {
         this.wss.setHandler(
-            Events.INVITE.INVITE(),
+            Events.INVITE.INVITE,
             this.validator({clientId: Joi.string().length(24).required()}),
             handler
         )
@@ -18,14 +18,14 @@ class CreateGameController extends GenericController {
 
     onSuccessPlayer(handler) {
         this.wss.setHandler(
-            Events.INVITE.SUCCESS(),
+            Events.INVITE.SUCCESS,
             this.validator({clientId: Joi.string().length(24).required()}),
             handler);
     }
 
     onRejectPlayer(handler) {
         this.wss.setHandler(
-            Events.INVITE.REJECT(),
+            Events.INVITE.REJECT,
             this.validator({clientId: Joi.string().length(24).required()}),
             handler
         );
@@ -33,32 +33,26 @@ class CreateGameController extends GenericController {
 
     onCancelGame(handler) {
         this.wss.setHandler(
-            Events.GAME.CANCEL(),
+            Events.GAME.CANCEL,
             this.validator({gameId: Joi.string().length(24).required()}),
             handler
         );
     }
 
     invitePlayer(fromClient, toClient) {
-        this.transmitter.send(toClient._id, Events.INVITE.INVITE(), {
-            from: fromClient
-        });
+        this.transmitter.send(Events.INVITE.INVITE, toClient._id, {from: fromClient});
     }
 
     rejectPlayer(fromClient, toClient) {
-        this.transmitter.send(fromClient._id, Events.INVITE.REJECT(), {
-            to: toClient
-        });
+        this.transmitter.send(Events.INVITE.REJECT, fromClient._id, {to: toClient});
     }
 
     rejectPlayerBeLate(fromClient, toClient) {
-        this.transmitter.send(fromClient._id, Events.INVITE.REJECT_TO_LATE(), {
-            to: toClient
-        });
+        this.transmitter.send(Events.INVITE.REJECT_TO_LATE, fromClient._id, {to: toClient});
     }
 
     successPlayer(fromClient, toClient, gameId, gameDataFrom, gameDataTo) {
-        this.transmitter.send([fromClient._id, toClient._id], Events.INVITE.SUCCESS(), {
+        this.transmitter.send(Events.INVITE.SUCCESS, [fromClient._id, toClient._id], {
             to: toClient,
             from: fromClient,
             game: gameId,
@@ -70,17 +64,12 @@ class CreateGameController extends GenericController {
     }
 
     successPlayerBeLate(fromClient, toClient) {
-        this.transmitter.send(toClient._id, Events.INVITE.SUCCESS_TO_LATE(), {
-            from: fromClient
-        });
+        this.transmitter.send(Events.INVITE.SUCCESS_TO_LATE, toClient._id, {from: fromClient});
     }
 
     async cancelGame(clients, game) {
         const ids = _.map(clients, '_id');
-        return this.transmitter.send(ids, Events.GAME.CANCEL(), {
-            clients: clients,
-            game: game
-        });
+        return this.transmitter.send(Events.GAME.CANCEL, ids, {clients: clients,game: game});
     }
 
     getName() {

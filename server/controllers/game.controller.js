@@ -42,12 +42,7 @@ class GameController extends GenericController {
     async nextStep(dot,
                    previousPlayer, previousPlayerGameData, previousPlayerDelta,
                    currentPlayer, currentPlayerData, currentPlayerDelta, game) {
-        return this.transmitter.send(
-            [
-                previousPlayer._id,
-                currentPlayer._id
-            ],
-            Events.GAME.STEP.NEW(),
+        return this.transmitter.send(Events.GAME.STEP.NEW, [previousPlayer._id, currentPlayer._id],
             {
                 dot: dot,
                 previous: {gamerId: previousPlayer._id, gameData: previousPlayerGameData, delta: previousPlayerDelta},

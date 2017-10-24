@@ -2,48 +2,48 @@ var _ = require('lodash');
 
 module.exports = {
     GAME: {
-        IS_CLOSED: _.constant('game/is_closed'),
+        IS_CLOSED: 'game/is_closed',
         STATE: {
-            GET: _.constant('game/state/get')
+            GET: 'game/state/get'
         },
         STEP: {
-            NEW: _.constant('game/step/new')
+            NEW: 'game/step/new'
         },
-        CANCEL: _.constant('game/cancel')
+        CANCEL: 'game/cancel'
     },
     INVITE: {
-        INVITE: _.constant('invite'),
-        REJECT: _.constant('invite/reject'),
-        REJECT_TO_LATE: _.constant('invite/reject_to_late'),
-        SUCCESS: _.constant('invite/success'),
-        SUCCESS_TO_LATE: _.constant('invite/success_to_late')
+        INVITE: 'invite',
+        REJECT: 'invite/reject',
+        REJECT_TO_LATE: 'invite/reject_to_late',
+        SUCCESS: 'invite/success',
+        SUCCESS_TO_LATE: 'invite/success_to_late'
     },
     CLIENT: {
         LIST: {
-            GET: _.constant('client/list/get')
+            GET: 'client/list/get'
         },
         MYSELF: {
-            GET: _.constant('client/myself/get')
+            GET: 'client/myself/get'
         },
-        NEW: _.constant('client/new'),
-        RECONNECT: _.constant('client/reconnect'),
-        DISCONNECT: _.constant('client/disconnect'),
+        NEW: 'client/new',
+        RECONNECT: 'client/reconnect',
+        DISCONNECT: 'client/disconnect',
         STATUS: {
-            CHANGE: _.constant('client/status/change')
+            CHANGE: 'client/status/change'
         },
         HISTORY: {
-            GET: _.constant('client/history/get')
+            GET: 'client/history/get'
         }
     },
     CONNECTION: {
-        NEW: _.constant('connnection/new')
+        NEW: 'connnection/new'
     },
     EVENTS: {
         LIST: {
-            GET: _.constant('events/list/get')
+            GET: 'events/list/get'
         }
     },
     DOT: {
-        ADD: _.constant('dot/add')
+        ADD: 'dot/add'
     }
 };

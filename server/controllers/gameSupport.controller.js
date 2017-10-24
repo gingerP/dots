@@ -17,7 +17,7 @@ class GameSupportController extends GenericController {
 
     onReconnect(handler) {
         this.wss.setHandler(
-            Events.CLIENT.RECONNECT(),
+            Events.CLIENT.RECONNECT,
             this.validatorRaw(Joi.string().length(24).required()),
             handler
         );
@@ -49,11 +49,7 @@ class GameSupportController extends GenericController {
         };
 
         logger.debug('Notify about network status: %s', JSON.stringify(notifyDetails));
-        this.transmitter.sendAllExcept(
-            summaryClients,
-            Events.CLIENT.STATUS.CHANGE(),
-            notifyDetails
-        );
+        this.transmitter.sendAllExcept(Events.CLIENT.STATUS.CHANGE, summaryClients, notifyDetails);
     }
 
     notifyAboutNetworkStatusChange(clientsIdsToNotify, disconnectedClientsIds, reconnectedClientsIds) {
@@ -62,8 +58,8 @@ class GameSupportController extends GenericController {
             reconnected: CommonUtils.createArray(reconnectedClientsIds || [])
         };
         this.transmitter.send(
+            Events.CLIENT.DISCONNECT,
             _.map(CommonUtils.createArray(clientsIdsToNotify), '_id'),
-            Events.CLIENT.DISCONNECT(),
             data);
     }
 
@@ -79,7 +75,7 @@ class GameSupportController extends GenericController {
      };*/
 
     notifyAboutNewClient(newClient, clients) {
-        this.transmitter.send(_.map(clients, '_id'), Events.CLIENT.NEW(), newClient);
+        this.transmitter.send(Events.CLIENT.NEW, _.map(clients, '_id'), newClient);
     }
 
     postConstructor(ioc) {
