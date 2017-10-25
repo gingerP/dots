@@ -31,20 +31,11 @@ class GameController extends GenericController {
     }
 
     async notifyCancel(userId, action) {
-        return this.transmitter.send(
-            Events.GAME.STEP.NEW,
-            [userId],
-            {
-                dot: dot,
-                previous: {gamerId: previousPlayer._id, gameData: previousPlayerGameData, delta: previousPlayerDelta},
-                current: {gamerId: currentPlayer._id, gameData: currentPlayerData, delta: currentPlayerDelta},
-                game: game
-            }
-        );
+        return this.transmitter.send(Events.GAME.STEP.NEW, [userId], {action: action});
     }
 
-    notifyCancelReply() {
-
+    async notifyCancelReply(userId, action, decision) {
+        return this.transmitter.send(Events.GAME.STEP.NEW, [userId], {action: action, decision: decision});
     }
 
     postConstructor(ioc) {

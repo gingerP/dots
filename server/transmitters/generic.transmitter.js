@@ -12,21 +12,18 @@ function prepareIds(clientIds) {
 function GenericTransmitter() {
 }
 
-GenericTransmitter.prototype.send = function (clientsIds, type, message) {
-    var preparedClientsIds;
-    if (clientsIds) {
-        new Promise((resolve) => {
-            preparedClientsIds = prepareIds(clientsIds);
-            this.wss.forEach((connection) => {
-                var id = SessionUtils.getClientId(connection.getSession());
-                if (id && preparedClientsIds.indexOf(id.toString()) >= 0) {
-                    connection.sendData(message, type);
-                    logger.debug('send(to: %s)', connection.getId());
-                }
-            });
-            resolve();
+GenericTransmitter.prototype.send = function (type, clientsIds, message) {
+    return new Promise((resolve) => {
+        const preparedClientsIds = prepareIds(clientsIds);
+        this.wss.forEach((connection) => {
+            var id = SessionUtils.getClientId(connection.getSession());
+            if (id && preparedClientsIds.indexOf(id.toString()) >= 0) {
+                connection.sendData(message, type);
+                logger.debug('send(to: %s)', connection.getId());
+            }
         });
-    }
+        resolve();
+    });
 };
 
 GenericTransmitter.prototype.sendAllExcept = function (exceptClientsIds, type, message) {

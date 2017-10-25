@@ -83,22 +83,6 @@ class CreateGameService extends GenericService {
         }
     }
 
-    async onCancelGame(message) {
-        const gameId = message.data.gameId;
-        let clientId = sessionUtils.getClientId(message.client.getSession());
-        const [game, client] = await Promise.all([
-            this.gameDBManager.get(gameId),
-            this.clientsDBManager.get(clientId)
-        ]);
-        if (!game.from.equals(client._id) && !game.to.equals(client._id)) {
-            throw new Errors.CouldNotCancelGameError();
-        }
-
-        let opponentId = game.from.equals(client._id) ? game.to : game.from;
-        const opponent = await this.clientsDBManager.get(opponentId);
-        await this.cancelGame([opponent, client], game);
-    }
-
     async newGame(clientFrom, clientTo, activePlayer, invite) {
         const inst = this;
         const game = await this.gameSupportService.newGame(clientFrom._id, clientTo._id, activePlayer._id);

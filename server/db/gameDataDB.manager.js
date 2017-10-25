@@ -36,6 +36,12 @@ GameDataDBManager.prototype.createNew = function createNew(gameId, clientId, col
 GameDataDBManager.prototype.saveGameData = function saveGameData(/*id, dots, trappedDots, loops*/) {
 };
 
+/**
+ * Find game data by game id and gamer id
+ * @param {MongoId} gameId game id
+ * @param {MongoId}  clientId client id
+ * @returns {Promise<GameData>} game data
+ */
 GameDataDBManager.prototype.getGameData = function getGameData(gameId, clientId) {
     return this.getByCriteria({
         game: this.getObjectId(gameId),
