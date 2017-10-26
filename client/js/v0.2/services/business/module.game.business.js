@@ -5,18 +5,18 @@ define([
     'services/business/domains/NetworkStatus',
     'module.observable',
     'services/business/game.rules',
-    'common/common-constants',
+    'utils/constants',
     'utils/game-utils',
     'utils/player-utils',
     'utils/converters-utils',
     'services/business/game.storage',
     'services/backend/game-data.service',
-    'servives/backend/gameCancel.service',
+    'services/backend/gameCancel.service',
     'services/backend/game.service',
     'services/backend/invite.service',
     'services/backend/gameSupport.service',
     'graphics/module.game.graphics'
-], function (_, q, Events, NetworkStatus, Observable, rules, CommonConstants,
+], function (_, q, Events, NetworkStatus, Observable, rules, Constants,
              GameUtils, PlayerUtils, ConvertersUtils, GameStorage,
              GameDataService, GameCancelService, GameService, InviteService, GameSupportService,
              Graphics) {
@@ -24,7 +24,7 @@ define([
 
     var api;
     var observable = Observable.instance;
-    var GAME_MODE = CommonConstants.GAME_MODE;
+    var GAME_MODE = Constants.GAME_MODE;
 
     function canSelectDot(data) {
         return rules.rulesCanSelect.every(function (rule) {

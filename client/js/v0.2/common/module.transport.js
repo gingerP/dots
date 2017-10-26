@@ -4,7 +4,7 @@ define(
         'socket',
         'q',
         'common/events',
-        'common/backend-events',
+        'utils/constants',
         'services/business/game.storage'
     ],
     /**
@@ -18,7 +18,7 @@ define(
      * @param gameStorage
      * @returns {{Transport}} backend transport
      */
-    function (Observable, io, q, Events, BackendEvents, gameStorage) {
+    function (Observable, io, q, Events, Constants, gameStorage) {
         /**
          * @exports Transport
          */
@@ -29,6 +29,7 @@ define(
         var socket = io({'sync disconnect on unload': true});
         var connectionTimes = 0;
         var myself;
+        var ClientApi = Constants.API.CLIENT;
 
         function initEvents() {
             socket.on('error', function (error) {
@@ -71,13 +72,13 @@ define(
                 connectionTimes += myself ? 1 : 0;
             }
             if (connectionTimes === 1 || !myself) {
-                api.send(BackendEvents.CLIENT.NEW).then(function (data) {
+                api.send(ClientApi.NEW).then(function (data) {
                     myself = data;
                     gameStorage.setClient(myself);
                     observable.emit(Events.REFRESH_MYSELF);
                 });
             } else {
-                api.send(BackendEvents.CLIENT.RECONNECT, myself._id).then(function (data) {
+                api.send(ClientApi.RECONNECT, myself._id).then(function (data) {
                     myself = data;
                     gameStorage.setClient(myself);
                     observable.emit(Events.REFRESH_MYSELF);
@@ -85,7 +86,7 @@ define(
             }
         }
 
-        function getListenerTrap(endpoint) {
+        function getDeferredListener(endpoint) {
             return function (callback) {
                 api.addListener(endpoint, callback);
             };
@@ -98,9 +99,9 @@ define(
                 //observable.addListener(property, listener);
                 return api;
             },
-            getListenerTrap: getListenerTrap,
+            getDeferredListener: getDeferredListener,
             getMyself: function () {
-                return api.send({}, BackendEvents.CLIENT.MYSELF.GET);
+                return api.send({}, ClientApi.MYSELF.GET);
             },
             getId: function () {
                 return socket.id;

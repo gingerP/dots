@@ -12,7 +12,7 @@ var logger = require('server/logging/logger').create('GameSupportController');
 class GameSupportController extends GenericController {
 
     onNewClient(handler) {
-        this.wss.setHandler(Events.CLIENT.NEW(), handler);
+        this.wss.setHandler(Events.CLIENT.NEW, handler);
     }
 
     onReconnect(handler) {

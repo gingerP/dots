@@ -1,8 +1,7 @@
 define(
     [
         'common/module.transport',
-        'utils/service-utils',
-        'common/backend-events',
+        'utils/constants',
         'services/business/game.storage'
     ],
     /**
@@ -17,31 +16,33 @@ define(
      *  gaveUp: function
      * }} GameCancelService
      * @param {{Transport}} Transport
-     * @param {{ServiceUtils}}
      * @param {{BackendEvents}} BackendEvents
      * @returns {{GameCancelService}}
      */
 
-    function (Transport, BackendEvents) {
+    function (Transport, Constants) {
         'use strict';
+        var Cancel = Constants.GAME.CANCEL;
+        var GameApi = Constants.API.GAME;
+        var DotApi = Constants.API.DOT;
 
         function offerToComplete() {
-            return Transport.send(BackendEvents.GAME.CANCEL.OFFER_COMPLETE);
+            return Transport.send(GameApi.CANCEL, {type: Cancel.COMPLETE});
         }
 
         function offerDraw() {
-            return Transport.send(BackendEvents.GAME.CANCEL.OFFER_DRAW);
+            return Transport.send(GameApi.CANCEL, {type: Cancel.DRAW});
         }
 
         function gaveUp() {
-            return Transport.send(BackendEvents.GAME.CANCEL.GAVE_UP);
+            return Transport.send(GameApi.CANCEL, {type: Cancel.GAVE_UP});
         }
 
         return {
             listen: {
-                offerToComplete: Transport.getListenerTrap(BackendEvents.DOT.ADD),
-                offerDraw: Transport.getListenerTrap(BackendEvents.GAME.STEP.NEW),
-                gaveUp: Transport.getListenerTrap(BackendEvents.GAME.STEP.NEW)
+                offerToComplete: Transport.getDeferredListener(DotApi.ADD),
+                offerDraw: Transport.getDeferredListener(GameApi.STEP.NEW),
+                gaveUp: Transport.getDeferredListener(GameApi.STEP.NEW)
             },
             offerToComplete: offerToComplete,
             offerDraw: offerDraw,

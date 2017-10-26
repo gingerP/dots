@@ -117,13 +117,6 @@ class CreateGameService extends GenericService {
         }
     }
 
-    async cancelGame(clients, game) {
-        if (game.status !== GameStatuses.closed) {
-            game.status = GameStatuses.closed;
-            game = await this.gameDBManager.save(game);
-        }
-        return this.controller.cancelGame(clients, game);
-    }
 
     async giveAnAnswerToClient(message) {
         const clientId = message.data.clientId;
@@ -150,7 +143,6 @@ class CreateGameService extends GenericService {
         this.controller.onInvitePlayer(this.onInvite.bind(this));
         this.controller.onRejectPlayer(this.onReject.bind(this));
         this.controller.onSuccessPlayer(this.onSuccess.bind(this));
-        this.controller.onCancelGame(this.onCancelGame.bind(this));
 
         this.clientsDBManager = ioc[IOC.DB_MANAGER.CLIENTS];
         this.createGameDBManager = ioc[IOC.DB_MANAGER.CREATE_GAME];

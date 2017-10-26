@@ -4,7 +4,7 @@ define([
     'module.observable',
     'services/business/game.storage',
     'common/events',
-    'common/common-constants',
+    'utils/constants',
     'services/business/module.game.business',
     'services/business/business.invite',
     'services/backend/game-data.service',

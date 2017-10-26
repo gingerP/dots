@@ -2,14 +2,14 @@ define([
     'angular',
     'module.observable',
     'services/business/module.game.business',
-    'common/common-constants',
+    'utils/constants',
     'common/events',
     'services/business/game.storage',
     'services/business/domains/Constants',
     'components/currentPlayer/currentPlayer.module',
     'components/utils/scope.utils'
 ], function (angular, Observable, Business,
-             CommonConstants, Events,
+             Constants, Events,
              GameStorage) {
     'use strict';
 
@@ -20,7 +20,7 @@ define([
             observable = Observable.instance,
             PLAYER_STYLE_PREFIX = 'player-style-',
             apply = scopeUtils.getApply($scope),
-            TABS = CommonConstants.TABS;
+            TABS = Constants.TABS;
 
 
         function initialize() {
@@ -110,7 +110,7 @@ define([
             observable.emit(Events.MENU_VISIBILITY, vm.isMenuOpened);
         }
 
-        vm.GAME_MODE = CommonConstants.GAME_MODE;
+        vm.GAME_MODE = Constants.GAME_MODE;
         vm.isMenuOpened = false;
         vm.isMyselfActive = true;
         vm.isOpponentActive = false;

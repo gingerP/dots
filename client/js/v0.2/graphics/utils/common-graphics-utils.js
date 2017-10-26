@@ -1,10 +1,10 @@
 define([
     'lodash',
-    'common/common-constants',
+    'utils/constants',
     'graphics/utils/path-utils',
     'graphics/utils/convert-utils',
     'graphics/common/graphics-constants'
-], function (_, CommonConstants,
+], function (_, Constants,
              PathUtils, ConvertUtils, GraphicsConstants) {
     'use strict';
 
@@ -137,7 +137,7 @@ define([
     }
 
     function getColorValue(colorCode) {
-        var color = CommonConstants.PLAYER.COLORS[colorCode];
+        var color = Constants.PLAYER.COLORS[colorCode];
 
         return color ? color : colorCode;
     }

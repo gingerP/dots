@@ -5,11 +5,11 @@ define([
     'graphics/module.game.graphics',
     'common/events',
     'services/backend/game-data.service',
-    'common/common-constants',
+    'utils/constants',
     'components/clientHistory/clientHistory.module',
     'components/clientHistory/factories/client-history.factory',
     'components/utils/scope.utils'
-], function (angular, _, Observable, graphics, Events, GameDataService, CommonConstants) {
+], function (angular, _, Observable, graphics, Events, GameDataService, Constants) {
     'use strict';
 
     angular.module('client.history.module').component('clientHistory', {
@@ -28,7 +28,7 @@ define([
             }
 
             function reload(event, tabId) {
-                if (tabId === CommonConstants.TABS.CLIENT_HISTORY && isNeedToUpdate) {
+                if (tabId === Constants.TABS.CLIENT_HISTORY && isNeedToUpdate) {
                     GameDataService
                         .getCurrentClientHistory()
                         .then(applyHistory);

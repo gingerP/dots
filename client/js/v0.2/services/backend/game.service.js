@@ -1,12 +1,14 @@
 define([
     'common/module.transport',
     'utils/service-utils',
-    'common/backend-events',
+    'utils/constants',
     'services/business/game.storage'
-], function (Transport, serviceUtils, BackendEvents, gameStorage) {
+], function (Transport, serviceUtils, Constants, gameStorage) {
     'use strict';
 
     var api;
+    var DotApi = Constants.API.DOT;
+    var GameApi = Constants.API.GAME;
 
     function addDot(dot) {
         var game = gameStorage.getGame();
@@ -17,15 +19,15 @@ define([
                     y: dot.y,
                     gameId: game._id
                 },
-                BackendEvents.DOT.ADD
+                DotApi.ADD
             );
         }
     }
 
     api = {
         listen: {
-            addDot: Transport.getListenerTrap(BackendEvents.DOT.ADD),
-            gameStep: Transport.getListenerTrap(BackendEvents.GAME.STEP.NEW)
+            addDot: Transport.getDeferredListener(DotApi.ADD),
+            gameStep: Transport.getDeferredListener(GameApi.STEP.NEW)
         },
         addDot: addDot
     };

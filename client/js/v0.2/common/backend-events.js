@@ -9,55 +9,5 @@ define([],
      * @returns {{BackendEvents}} backend api endpoints
      */
     function () {
-        return {
-            GAME: {
-                IS_CLOSED: 'game/is_closed',
-                STATE: {
-                    GET: 'game/state/get'
-                },
-                STEP: {
-                    NEW: 'game/step/new'
-                },
-                CANCEL: {
-                    GAVE_UP: 'game/gave_up',
-                    OFFER_DRAW: 'game/offer_draw',
-                    OFFER_COMPLETE: 'game/offer_complete'
-                }
-            },
-            INVITE: {
-                INVITE: 'invite',
-                REJECT: 'invite/reject',
-                REJECT_TO_LATE: 'invite/reject_to_late',
-                SUCCESS: 'invite/success',
-                SUCCESS_TO_LATE: 'invite/success_to_late'
-            },
-            CLIENT: {
-                LIST: {
-                    GET: 'client/list/get'
-                },
-                MYSELF: {
-                    GET: 'client/myself/get'
-                },
-                NEW: 'client/new',
-                RECONNECT: 'client/reconnect',
-                DISCONNECT: 'client/disconnect',
-                STATUS: {
-                    CHANGE: 'client/status/change'
-                },
-                HISTORY: {
-                    GET: 'client/history/get'
-                }
-            },
-            CONNECTION: {
-                NEW: 'connnection/new'
-            },
-            EVENTS: {
-                LIST: {
-                    GET: 'events/list/get'
-                }
-            },
-            DOT: {
-                ADD: 'dot/add'
-            }
-        };
+        return ;
     });

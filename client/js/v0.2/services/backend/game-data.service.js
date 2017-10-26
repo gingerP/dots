@@ -2,12 +2,14 @@ define([
     'lodash',
     'common/module.transport',
     'utils/service-utils',
-    'common/backend-events',
+    'utils/constants',
     'services/business/game.storage'
-], function (_, Transport, ServiceUtils, BackendEvents, GameStorage) {
+], function (_, Transport, ServiceUtils, Constants, GameStorage) {
     'use strict';
 
     var api;
+    var ClientApi = Constants.API.CLIENT;
+    var GameApi = Constants.API.GAME;
 
     api = {
         listen: {},
@@ -22,18 +24,18 @@ define([
             if (!preparedParams.search) {
                 delete preparedParams.search;
             }
-            return Transport.send(BackendEvents.CLIENT.LIST.GET, preparedParams);
+            return Transport.send(ClientApi.LIST.GET, preparedParams);
         },
         isGameClosed: function (gameId) {
-            return Transport.send(BackendEvents.GAME.IS_CLOSED, {id: gameId});
+            return Transport.send(GameApi.IS_CLOSED, {id: gameId});
         },
         getGameState: function (gameId) {
-            return Transport.send(BackendEvents.GAME.STATE.GET, {id: gameId});
+            return Transport.send(GameApi.STATE.GET, {id: gameId});
         },
         getCurrentClientHistory: function getCurrentClientHistory() {
             var clientId = GameStorage.getClient()._id;
 
-            return Transport.send(BackendEvents.CLIENT.HISTORY.GET, {id: clientId});
+            return Transport.send(ClientApi.HISTORY.GET, {id: clientId});
         }
     };
 

@@ -5,14 +5,33 @@ const Promise = require('bluebird');
 
 class UserRatingService {
 
-    async updateRatings(game, initiator, respondent, action) {
+    async calculateRatings(game, initiator, respondent, action) {
         const [initiatorData, respondentData] = await Promise.all([
             this.gameDataDb.getGameData(game._id, initiator._id),
             this.gameDataDb.getGameData(game._id, respondent._id),
         ]);
         const [initiatorCache, respondentCache] = await this.gameCacheDb.getCacheByGameDataId(initiatorData._id, respondentData._id);
+        const initCaptured = this.calculateCapturedDots(initiatorCache);
+        const respCaptured = this.calculateCapturedDots(respondentCache);
+        const isEqual = initCaptured === respCaptured;
+        const isInit = initCaptured > respCaptured;
+        return {
+            initiator: isEqual ? 0 : (isInit ? initCaptured : -1 * initCaptured),
+            respondent: isEqual ? 0 : (isInit ? -1 * respCaptured : respCaptured)
+        };
+    }
 
-
+    /**
+     *
+     * @param {GameDataCache} gameCache
+     * @returns {number}
+     */
+    calculateCapturedDots(gameCache) {
+        let number = 0;
+        for (let loop in gameCache.cache) {
+            number += loop.loop.length;
+        }
+        return number;
     }
 
     postConstructor(ioc) {

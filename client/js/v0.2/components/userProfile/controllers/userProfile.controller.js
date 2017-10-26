@@ -1,19 +1,20 @@
 define([
     'angular',
     'services/business/game.storage',
-    'common/auth-constants',
+    'utils/constants',
     'components/userProfile/userProfile.module'
-], function (angular, GameStorage, AuthConstants) {
+], function (angular, GameStorage, Constants) {
     'use strict';
 
     angular.module('userProfile.module').controller('userProfileCtrl', UserProfileCtrl);
 
     function UserProfileCtrl($window) {
-        var vm = this;
+        var vm = this,
+            Auth = Constants.AUTH;
 
         function logout() {
             GameStorage.clear();
-            $window.open(AuthConstants.LOGOUT, '_self');
+            $window.open(Auth.LOGOUT, '_self');
         }
 
         vm.user = GameStorage.getGameClient();

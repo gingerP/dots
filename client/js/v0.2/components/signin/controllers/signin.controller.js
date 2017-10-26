@@ -3,10 +3,10 @@ define([
     'module.observable',
     'common/events',
     'services/business/game.storage',
-    'common/auth-constants',
+    'utils/constants',
     'components/signin/signin.module',
     'components/utils/scope.utils'
-], function (angular, Observable, Events, GameStorage, AuthConstants) {
+], function (angular, Observable, Events, GameStorage, Constants) {
     'use strict';
 
     angular.module('signin.module').controller('signinCtrl', SigninCtrl);
@@ -14,7 +14,8 @@ define([
     function SigninCtrl($scope, $window, scopeUtils) {
         var vm = this,
             observable = Observable.instance,
-            apply = scopeUtils.getApply($scope);
+            apply = scopeUtils.getApply($scope),
+            Auth = Constants.AUTH;
 
         function canAuth() {
             return !vm.isAuthenticated;
@@ -38,9 +39,9 @@ define([
             vm.isAuthenticated = Boolean(vm.myself ? vm.myself.auth : false);
         }
 
-        vm.loginGoogle = getLoginFn(AuthConstants.SOCIAL.GOOGLE);
-        vm.loginVk = getLoginFn(AuthConstants.SOCIAL.VK);
-        vm.loginFacebook = getLoginFn(AuthConstants.SOCIAL.FACEBOOK);
+        vm.loginGoogle = getLoginFn(Auth.SOCIAL.GOOGLE);
+        vm.loginVk = getLoginFn(Auth.SOCIAL.VK);
+        vm.loginFacebook = getLoginFn(Auth.SOCIAL.FACEBOOK);
         observable.on(Events.REFRESH_MYSELF, onRefreshMyself);
 
         vm.$onInit = init;
