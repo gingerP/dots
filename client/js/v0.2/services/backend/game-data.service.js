@@ -19,6 +19,9 @@ define([
          * immutable
          * @returns {Promise<Gamer[]>} searched clients
          */
+        getInvites: function () {
+            return Transport.send(ClientApi.INVITES.LIST.GET);
+        },
         getClients: function getClients(params) {
             var preparedParams = _.cloneDeep(params);
             if (!preparedParams.search) {

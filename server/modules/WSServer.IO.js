@@ -170,15 +170,17 @@ class WSServer extends Observable {
                         callback({error: null, data: data});
                     }
                 }
+                const start = Date.now();
                 try {
                     const data = inst.extractMessage(message);
                     await inst.propertyChange(key, {client: api, data: data, callback: cb});
                     await inst.runHandler(key, {client: api, data: data, callback: cb});
+                    logger.debug(`Api request "${key}" (${Date.now() - start}ms).`);
                 } catch (error) {
                     if (!(error instanceof Errors.GenericError)) {
                         error = new Errors.InternalError(error.stack);
                     }
-                    logger.error(`Api request "${key}" finished with error.`);
+                    logger.error(`Api request "${key}" finished with error (${Date.now() - start}ms).`);
                     logger.error(error.stack);
                     cb(error);
                 }

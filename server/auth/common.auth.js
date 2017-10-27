@@ -6,15 +6,15 @@ var logger = require('server/logging/logger').create('CommonAuth');
 
 class CommonAuth {
 
-    initApi(server, ws) {
-        function isLogin(request, response, next) {
+    initApi(server/*, ws*/) {
+/*        function isLogin(request, response, next) {
             if (request.isAuthenticated()) {
                 next();
             }
 
             // if they aren't redirect them to the home page
             response.redirect('/');
-        }
+        }*/
 
         // used to serialize the user for the session
         server.passport.serializeUser(function (user, done) {
@@ -28,7 +28,7 @@ class CommonAuth {
             }).catch(done);
         });
 
-        let config = server.sessionConfig;
+        /*let config = server.sessionConfig;*/
         // route for logging out
         server.app.get('/logout', (req, res) => {
             var oldClientId = SessionUtils.getOldClientId(req.session);

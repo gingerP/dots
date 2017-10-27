@@ -21,6 +21,7 @@ class GameDataService extends GenericService {
      */
     async onGetClients(message) {
         const data = message.data;
+        let excludeUsers = [];
         const options = {
             where: {},
             limit: [(data.page - 1) * data.pageSize, data.pageSize]
@@ -37,12 +38,16 @@ class GameDataService extends GenericService {
                 status: GameStatuses.active
             });
             if (game) {
-                options.where._id = {$nin: [game.from, game.to]};
+                excludeUsers = excludeUsers.concat([game.from, game.to]);
             }
         }
         if (!data.order) {
             options.order = {rating: -1};
         }
+        if (message.user) {
+            excludeUsers.push(message.user._id);
+        }
+        options.where._id = {$nin: excludeUsers};
         const [response, maxRating = 0] = await Promise.all([
             this.clientsDb.findAll(options),
             this.clientsDb.getMaxRating()
@@ -56,6 +61,16 @@ class GameDataService extends GenericService {
             maxRate: maxRating,
             list: response.list
         });
+    }
+
+    async onGetInvites(message) {
+        const data = message.data;
+        const userIds = await this.invitesDb.findAll({
+            where: {to: message.user._id, status: GameStatuses.active},
+            limit: [0, 5],
+            distinct: 'to'
+        });
+        return this.clientsDb.findAll({where: {$in: userIds}});
     }
 
     /**
@@ -141,6 +156,7 @@ class GameDataService extends GenericService {
     bindApi() {
         this.controller.onGetClientHistory(this.getClientHistory.bind(this));
         this.controller.onGetClientsList(this.onGetClients.bind(this));
+        this.controller.onGetInvites(this.onGetInvites.bind(this));
         this.controller.onGetMyself(this.onGetMySelf.bind(this));
         this.controller.onIsGameClosed(this.onIsGameClosed.bind(this));
         this.controller.onGetGameState(this.onGetGameState.bind(this));
@@ -151,6 +167,7 @@ class GameDataService extends GenericService {
         this.controller = ioc[IOC.CONTROLLER.GAME_DATA];
         this.clientsDb = ioc[IOC.DB_MANAGER.CLIENTS];
         this.gameDb = ioc[IOC.DB_MANAGER.GAME];
+        this.invitesDb = ioc[IOC.DB_MANAGER.CREATE_GAME];
         this.gameDataDBManager = ioc[IOC.DB_MANAGER.GAME_DATA];
         this.gameDataCacheDBManager = ioc[IOC.DB_MANAGER.GAME_DATA_CACHE];
         this.clientHistory = ioc[IOC.DB_MANAGER.CLIENTS_HISTORY_AGGREGATE];

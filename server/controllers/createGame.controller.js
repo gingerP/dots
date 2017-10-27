@@ -13,7 +13,7 @@ class CreateGameController extends GenericController {
             Events.INVITE.INVITE,
             this.validator({clientId: Joi.string().length(24).required()}),
             handler
-        )
+        );
     }
 
     onSuccessPlayer(handler) {
@@ -65,11 +65,6 @@ class CreateGameController extends GenericController {
 
     successPlayerBeLate(fromClient, toClient) {
         this.transmitter.send(Events.INVITE.SUCCESS_TO_LATE, toClient._id, {from: fromClient});
-    }
-
-    async cancelGame(clients, game) {
-        const ids = _.map(clients, '_id');
-        return this.transmitter.send(Events.GAME.CANCEL, ids, {clients: clients,game: game});
     }
 
     getName() {

@@ -199,6 +199,10 @@ class GenericDBManager extends Observable {
             const db = await this.exec();
             let cursor;
             let chain = db.collection(this.collectionName).find(where);
+
+            if (options.distinct) {
+                chain = chain.distinct(options.distinct);
+            }
             if (options.order) {
                 chain = chain.sort(options.order);
             }

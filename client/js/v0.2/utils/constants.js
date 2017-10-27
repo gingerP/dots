@@ -53,6 +53,11 @@ define(function () {
                 SUCCESS_TO_LATE: 'invite/success_to_late'
             },
             CLIENT: {
+                INVITES: {
+                    LIST: {
+                        GET: 'client/list/invites/get'
+                    }
+                },
                 LIST: {
                     GET: 'client/list/get'
                 },

@@ -11,7 +11,7 @@ class GameController extends GenericController {
 
     onCancel(handler) {
         this.wss.setHandler(
-            Events.GAME.CANCEL.GAVE_UP,
+            Events.GAME.CANCEL,
             this.validator({
                 type: Joi.string().valid(GameActions.ALL).required()
             }),
@@ -21,7 +21,7 @@ class GameController extends GenericController {
 
     onCancelReply(handler) {
         this.wss.setHandler(
-            Events.GAME.CANCEL.GAVE_UP,
+            Events.GAME.CANCEL_REPLY,
             this.validator({
                 type: Joi.string().valid(GameActions.ALL).required(),
                 success: Joi.boolean().required()

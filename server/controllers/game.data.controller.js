@@ -24,9 +24,18 @@ GameDataController.prototype.onGetClientsList = function (handler) {
                     rating: Joi.number().valid([-1, 1])
                 }
             ).optional(),
-            excludeGameUsers: Joi.boolean().optional()
+            excludeGameUsers: Joi.boolean().optional(),
+            includeInvites: Joi.boolean().optional()
         }),
         handler);
+};
+
+GameDataController.prototype.onGetInvites = function (handler) {
+    this.wss.setHandler(
+        Events.CLIENT.INVITES.LIST,
+        this.validator({}),
+        handler
+    );
 };
 
 GameDataController.prototype.onGetMyself = function (handler) {

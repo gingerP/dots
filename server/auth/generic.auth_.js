@@ -96,7 +96,7 @@ GenericAuth.prototype.getName = function getName() {
     return IOC.AUTH.GENERIC;
 };
 
-GenericAuth.prototype.postConstructor = function postConstructor(ioc) {
+GenericAuth.prototype.postConstructor = function postConstructor(/*ioc*/) {
 };
 
 module.exports = {

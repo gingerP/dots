@@ -72,10 +72,6 @@ define([
             return '';
         }
 
-        function isTabNotActive(tab) {
-            return !tab.isActive;
-        }
-
         vm.registr = registr;
         vm.openTab = function (tab) {
             openTab(tab.id);

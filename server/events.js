@@ -9,7 +9,8 @@ module.exports = {
         STEP: {
             NEW: 'game/step/new'
         },
-        CANCEL: 'game/cancel'
+        CANCEL: 'game/cancel',
+        CANCEL_REPLY: 'game/cancel/reply'
     },
     INVITE: {
         INVITE: 'invite',
@@ -19,6 +20,11 @@ module.exports = {
         SUCCESS_TO_LATE: 'invite/success_to_late'
     },
     CLIENT: {
+        INVITES: {
+            LIST: {
+                GET: 'client/list/invites/get'
+            }
+        },
         LIST: {
             GET: 'client/list/get'
         },
