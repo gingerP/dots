@@ -63,25 +63,12 @@ define([
             });
         }
 
-        function removeDisconnectedClients(disconnectedClientsIds, existClients) {
-            var index = existClients.length - 1;
-
-            while (index >= 0) {
-                if (disconnectedClientsIds.indexOf(existClients[index]._id) >= 0) {
-                    existClients.splice(index, 1);
-                }
-                index--;
-            }
-            return existClients;
-        }
-
         return {
             setSuccess: setSuccess,
             setInvite: setInvite,
             setReject: setReject,
             setCancelGame: setCancelGame,
-            filterReconnectedClients: filterReconnectedClients,
-            removeDisconnectedClients: removeDisconnectedClients
+            filterReconnectedClients: filterReconnectedClients
         };
     }
 });

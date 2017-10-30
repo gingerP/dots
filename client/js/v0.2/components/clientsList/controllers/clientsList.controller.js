@@ -68,8 +68,8 @@ define([
             });
         }
 
-        function reloadClients() {
-            return gameDataService.getClients(vm.query).then(function (response) {
+        function reloadClients(query) {
+            return gameDataService.getClients(query || vm.query).then(function (response) {
                 var meta = response.meta;
                 var clients = response.list;
                 vm.maxRating = response.maxRate;
@@ -106,11 +106,14 @@ define([
             scopeUtils.apply($scope);
         }
 
-        function onNewClient(client) {
-            if (vm.query.page * vm.query.pageSize > vm.clientsList.length) {
-                vm.clientsList.splice(0, 0, preparedClient);
-                scopeUtils.apply($scope);
-            }
+        function onNewClient() {
+            //TODO
+            reloadClients({
+                isOnline: true,
+                page: 1,
+                pageSize: vm.query.pageSize * vm.query.page,
+                excludeGameUsers: true
+            });
         }
 
         function onClientsReconnected(clients) {
@@ -122,12 +125,14 @@ define([
             }
         }
 
-        function onClientsDisconnected(clientIds) {
-            var oldCount = vm.clientsList.length;
-            vm.clientsList = clientsListUtil.removeDisconnectedClients(clientIds, vm.clientsList);
-            if (oldCount !== vm.clientsList.length) {
-                scopeUtils.apply($scope);
-            }
+        function onClientsDisconnected() {
+            //TODO
+            reloadClients({
+                isOnline: true,
+                page: 1,
+                pageSize: vm.query.pageSize * vm.query.page,
+                excludeGameUsers: true
+            });
         }
 
         function initialLoad() {
