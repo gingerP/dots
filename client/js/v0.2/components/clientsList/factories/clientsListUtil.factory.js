@@ -9,11 +9,6 @@ define([
     angular.module('clientsList.module').factory('clientsListUtil', clientsListUtilFactory);
 
     function clientsListUtilFactory() {
-        var modes = {
-            common: 'common',
-            invite: 'invite'
-        };
-
         function getClientsHashes(clients) {
             return _.map(clients, '_id');
         }
@@ -22,11 +17,10 @@ define([
             return client._id;
         }
 
-        function setCancelGame(opponent, clients) {
-            var isInList = _.find(clients, {_id: opponent._id});
-            if (!isInList) {
-                clients.push(opponent);
-                opponent.mode = modes.common;
+        function setCancelGame(opponent, ctrl) {
+            var opponentInList = _.find(ctrl.clientsList, {_id: opponent._id});
+            if (opponentInList) {
+                opponentInList.isVisible = true;
             }
         }
 
@@ -59,12 +53,6 @@ define([
             }
         }
 
-        function prepareClientForUI(client) {
-            var preparedClient = _.cloneDeep(client);
-            preparedClient.mode = modes.common;
-            return preparedClient;
-        }
-
         function filterReconnectedClients(reconnectedClients, existClients) {
             var opponent = GameStorage.getOpponent();
             var myself = GameStorage.getClient();
@@ -92,7 +80,6 @@ define([
             setInvite: setInvite,
             setReject: setReject,
             setCancelGame: setCancelGame,
-            prepareClientForUI: prepareClientForUI,
             filterReconnectedClients: filterReconnectedClients,
             removeDisconnectedClients: removeDisconnectedClients
         };

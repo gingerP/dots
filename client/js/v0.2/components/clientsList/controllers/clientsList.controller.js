@@ -107,9 +107,10 @@ define([
         }
 
         function onNewClient(client) {
-            var preparedClient = clientsListUtil.prepareClientForUI(client);
-            vm.clientsList.splice(0, 0, preparedClient);
-            scopeUtils.apply($scope);
+            if (vm.query.page * vm.query.pageSize > vm.clientsList.length) {
+                vm.clientsList.splice(0, 0, preparedClient);
+                scopeUtils.apply($scope);
+            }
         }
 
         function onClientsReconnected(clients) {
