@@ -30,33 +30,33 @@ define([
             }
         }
 
-        function setSuccess(invite, clients) {
-            var clientIndex = _.findIndex(clients, {_id: invite._id});
-            return clients.splice(clientIndex, 1)[0];
+        function setSuccess(invite, ctrl) {
+            var clientIndex = _.findIndex(ctrl.clientsList, {_id: invite._id});
+            if (clientIndex >= 0) {
+                ctrl.clientsList.splice(clientIndex, 1);
+            }
+            ctrl.invites = [];
         }
 
-        function setReject(invite, clients) {
-            var client = _.find(clients, {_id: invite._id});
+        function setReject(invite, ctrl) {
+            var client = _.find(ctrl.clientsList, {_id: invite._id});
+            var existInviteIndex = _.findIndex(ctrl.invites, {_id: invite._id});
             if (!client) {
-                client = invite;
-                clients.splice(0, 0, client);
+                client.isVisible = true;
             }
-            client.mode = modes.common;
+            if (existInviteIndex >= 0) {
+                ctrl.invites.splice(existInviteIndex, 1);
+            }
         }
 
-        function setInvite(invite, clients) {
-            var clientIndex = _.findIndex(clients, {_id: invite._id});
-            var client;
-            if (clientIndex > 0) {
-                client = clients.splice(clientIndex, 1)[0];
-                clients.splice(0, 0, client);
-            } else if (clientIndex === -1) {
-                clients.splice(0, 0, invite);
-                client = clients[0];
-            } else {
-                client = clients[0];
+        function setInvite(invite, ctrl) {
+            var user = _.find(ctrl.clientList, {_id: invite._id});
+            if (user) {
+                user.isVisible = false;
             }
-            clients[0].mode = modes.invite;
+            if (!_.find(ctrl.invites, {_id: invite})) {
+                ctrl.invites.push(invite);
+            }
         }
 
         function prepareClientForUI(client) {

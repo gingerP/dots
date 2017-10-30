@@ -86,32 +86,24 @@ define([
         }
 
         function onInvite(message) {
-            if (message.from) {
-                observable.emit(Events.INVITE, message.from);
-                clientsListUtil.setInvite(message.from, vm.clientsList);
-                scopeUtils.apply($scope);
-            }
+            observable.emit(Events.INVITE, message.from);
+            clientsListUtil.setInvite(message.from, vm);
+            scopeUtils.apply($scope);
         }
 
         function onCreateGame(message) {
-            if (message.from && message.to && message.game) {
-                clientsListUtil.setSuccess(message.opponent, vm.clientsList);
-                scopeUtils.apply($scope);
-            }
+            clientsListUtil.setSuccess(message.opponent, vm);
+            scopeUtils.apply($scope);
         }
 
-        function onCancelGame(data) {
-            if (data.opponent) {
-                clientsListUtil.setCancelGame(data.opponent, vm.clientsList);
-                scopeUtils.apply($scope);
-            }
+        function onCancelGame() {
+            initialLoad();
+            scopeUtils.apply($scope);
         }
 
         function onInviteReject(message) {
-            if (message.to) {
-                clientsListUtil.setReject(message.to, vm.clientsList);
-                scopeUtils.apply($scope);
-            }
+            clientsListUtil.setReject(message.to, vm.clientsList);
+            scopeUtils.apply($scope);
         }
 
         function onNewClient(client) {
@@ -135,6 +127,11 @@ define([
             if (oldCount !== vm.clientsList.length) {
                 scopeUtils.apply($scope);
             }
+        }
+
+        function initialLoad() {
+            vm.query.page = 1;
+            reloadClients().then(reloadInvites);
         }
 
         vm.invite = function (client) {
@@ -174,7 +171,6 @@ define([
             }
         });
 
-        updateClient();
-        reloadClients();
+        initialLoad();
     }
 });
