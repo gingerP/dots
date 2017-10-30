@@ -198,15 +198,16 @@ class GenericDBManager extends Observable {
             const mappings = options.mappings || {};
             const db = await this.exec();
             let cursor;
-            let chain = db.collection(this.collectionName).find(where);
-
+            let chain = db.collection(this.collectionName);
             if (options.distinct) {
-                chain = chain.distinct(options.distinct);
+                chain = chain.distinct(options.distinct, options.where || {});
+            } else {
+                chain = chain.find(where);
             }
             if (options.order) {
                 chain = chain.sort(options.order);
             }
-            if (options.limit) {
+            if (_.isNil(options.distinct) && options.limit) {
                 chain = chain.skip(options.limit[0]).limit(options.limit[1]);
             }
             cursor = await chain;
@@ -214,10 +215,14 @@ class GenericDBManager extends Observable {
             let result = [];
             const totalCount = await cursor.count();
             let count;
-            if (totalCount > options.limit[0] && totalCount <= options.limit[0] + options.limit[1]) {
-                count = totalCount - options.limit[0];
+            if (_.isNil(options.limit)) {
+                count = totalCount;
             } else {
-                count = options.limit[1];
+                if (totalCount > options.limit[0] && totalCount <= options.limit[0] + options.limit[1]) {
+                    count = totalCount - options.limit[0];
+                } else {
+                    count = options.limit[1];
+                }
             }
             if (count) {
                 result = await new Promise((resolve) => {

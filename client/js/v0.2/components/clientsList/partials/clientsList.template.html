@@ -4,18 +4,13 @@
                ng-model-options="{debounce: 300}" placeholder="Type to search...">
     </div>
     <div class="clients-placeholder">
-        <div ng-repeat="client in clientsListCtrl.clientsList track by client._id| orderBy: '-name'" class="client">
+        <div ng-repeat="client in clientsListCtrl.invites track by client._id| orderBy: '-name'" class="client">
             <div class="client-rating-container">
                 <div class="client-rating-total"></div>
                 <div class="client-rating-positive" style="width: {{::(client.relativeRating)}}%;"></div>
             </div>
             <span class="client-name" ng-bind="client.name"></span>
-            <div ng-show="client.mode == 'common'" class="invite-btns-container">
-                <button class="btn-override btn-right btn-invite-ask btn-client" ng-click="clientsListCtrl.invite(client)">
-                    <ng-md-icon icon="send" style="" size="24"></ng-md-icon>
-                </button>
-            </div>
-            <div ng-show="client.mode == 'invite'" class="invite-btns-container">
+            <div class="invite-btns-container">
                 <button class="btn-override btn-right btn-invite-submit btn-client" ng-click="clientsListCtrl.submitInvite(client)">
                     <ng-md-icon icon="thumb_up" style="" size="24"></ng-md-icon>
                 </button>
@@ -24,9 +19,21 @@
                 </button>
             </div>
         </div>
+        <div ng-if="client.isVisible" ng-repeat="client in clientsListCtrl.clientsList track by client._id| orderBy: '-name'" class="client">
+            <div class="client-rating-container">
+                <div class="client-rating-total"></div>
+                <div class="client-rating-positive" style="width: {{::(client.relativeRating)}}%;"></div>
+            </div>
+            <span class="client-name" ng-bind="::client.name"></span>
+            <div class="invite-btns-container">
+                <button class="btn-override btn-right btn-invite-ask btn-client" ng-click="clientsListCtrl.invite(client)">
+                    <ng-md-icon icon="send" style="" size="24"></ng-md-icon>
+                </button>
+            </div>
+        </div>
         <div ng-if="clientsListCtrl.hasNext" class="client load-more" ng-click="clientsListCtrl.loadNext()">
             <ng-md-icon class="icon" icon="more_horiz" style="" size="24"></ng-md-icon>
         </div>
-        <div ng-if="!clientsListCtrl.clientsList.length" class="empty-list">No gamers...</div>
+        <div ng-if="!clientsListCtrl.invites.length && !clientsListCtrl.clientsList.length" class="empty-list">No gamers...</div>
     </div>
 </div>

@@ -39,27 +39,48 @@ define([
             //reloadClients();
         }
 
-        function recalculateRelativeRating() {
-            _.forEach(vm.clientsList, function (client) {
+        function recalculateRelativeRating(users) {
+            _.forEach(users, function (client) {
                 var rating = client.rating || Constants.PLAYER.DEFAULT_RATING;
                 client.relativeRating = rating * 100 / vm.maxRating;
+            });
+            return users;
+        }
+
+        function showHideUsersByInvites() {
+            _.forEach(vm.clientsList, function (user) {
+                user.isVisible = true;
+            });
+            _.forEach(vm.invites, function (invite) {
+                var user = _.find(vm.clientsList, {_id: invite._id});
+                if (user) {
+                    user.isVisible = false;
+                }
+            });
+        }
+
+        function reloadInvites() {
+            gameDataService.getInvites().then(function (response) {
+                vm.invites = response;
+                recalculateRelativeRating(vm.invites);
+                showHideUsersByInvites();
+                scopeUtils.apply($scope);
             });
         }
 
         function reloadClients() {
-            gameDataService.getClients(vm.query).then(function (response) {
+            return gameDataService.getClients(vm.query).then(function (response) {
                 var meta = response.meta;
                 var clients = response.list;
-                var preparedClients = _.map(clients, clientsListUtil.prepareClientForUI);
                 vm.maxRating = response.maxRate;
                 vm.totalCount = meta.totalCount;
                 vm.hasNext = hasNext();
                 if (meta.page === 1) {
-                    vm.clientsList = preparedClients;
+                    vm.clientsList = clients;
                 } else {
-                    vm.clientsList = vm.clientsList.concat(preparedClients);
+                    vm.clientsList = vm.clientsList.concat(clients);
                 }
-                recalculateRelativeRating();
+                recalculateRelativeRating(vm.clientsList);
                 scopeUtils.apply($scope);
             });
         }
@@ -146,11 +167,14 @@ define([
         observable.on(Events.CANCEL_GAME, onCancelGame);
         observable.on(Events.INVITE_REJECT, onInviteReject);
 
-        $scope.$watch('clientsListCtrl.query.search', function () {
-            vm.query.page = 1;
-            reloadClients();
+        $scope.$watch('clientsListCtrl.query.search', function (newSearch, oldSearch) {
+            if (newSearch !== oldSearch) {
+                vm.query.page = 1;
+                reloadClients();
+            }
         });
 
         updateClient();
+        reloadClients();
     }
 });

@@ -55,7 +55,7 @@ define(function () {
             CLIENT: {
                 INVITES: {
                     LIST: {
-                        GET: 'client/list/invites/get'
+                        GET: 'client/invites/list/get'
                     }
                 },
                 LIST: {

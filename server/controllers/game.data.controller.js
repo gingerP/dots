@@ -32,7 +32,7 @@ GameDataController.prototype.onGetClientsList = function (handler) {
 
 GameDataController.prototype.onGetInvites = function (handler) {
     this.wss.setHandler(
-        Events.CLIENT.INVITES.LIST,
+        Events.CLIENT.INVITES.LIST.GET,
         this.validator({}),
         handler
     );

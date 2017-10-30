@@ -22,7 +22,7 @@ module.exports = {
     CLIENT: {
         INVITES: {
             LIST: {
-                GET: 'client/list/invites/get'
+                GET: 'client/invites/list/get'
             }
         },
         LIST: {

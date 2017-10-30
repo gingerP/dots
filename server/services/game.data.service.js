@@ -67,10 +67,12 @@ class GameDataService extends GenericService {
         const data = message.data;
         const userIds = await this.invitesDb.findAll({
             where: {to: message.user._id, status: GameStatuses.active},
-            limit: [0, 5],
-            distinct: 'to'
+            order: {rating: -1}
         });
-        return this.clientsDb.findAll({where: {$in: userIds}});
+        if (userIds.length) {
+            message.callback(await this.clientsDb.listByCriteria({_id: {$in: userIds.map(user => user.from)}, isOnline: true}));
+        }
+        message.callback([]);
     }
 
     /**
